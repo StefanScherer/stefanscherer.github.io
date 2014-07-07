@@ -1,5 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Sun, 06 Jul 2014 19:59:23 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Canon MF8540Cdn einrichten]]></title><description><![CDATA[<p>... oder: Windows ändert die Menschheit</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Mon, 07 Jul 2014 19:45:11 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href='https://pages.github.com/' >GitHub Pages</a> with <a href='https://ghost.org/' >Ghost</a>, just follow these steps.</p>
+
+<h2 id="installnodejs">Install Node.js</h2>
+
+<p>Ghost is written in Node.js, so you will need the Node.js runtime.</p>
+
+<pre><code>brew install node  
+brew install wget  
+</code></pre>
+
+<h2 id="downloadandinstallghost">Download and Install Ghost</h2>
+
+<p>Check for the latest version of Ghost from <a href='http://ghost.org/download' >Ghost.org</a></p>
+
+<pre><code>mkdir ghost  
+cd ghost  
+wget --no-check-certificate https://ghost.org/zip/ghost-0.4.2.zip  
+unzip ghost-0.4.2.zip  
+npm install --production  
+</code></pre>
+
+<h2 id="startghost">Start Ghost</h2>
+
+<pre><code>npm start  
+</code></pre>
+
+<h2 id="logintoghost">Login to Ghost</h2>
+
+<pre><code>open http://localhost:2368/ghost  
+</code></pre>
+
+<p>Create an account, read the intial blog post how to edit with Markdown etc.</p>
+
+<h2 id="createyourgithubpagesrepo">Create your GitHub Pages repo</h2>
+
+<p>See the <a href='https://help.github.com/categories/20/articles' >GitHub Pages Basics Documentation</a> for details.</p>
+
+<p>You must use the <code>username/username.github.io</code> naming scheme. The repo name must be <strong>lower case</strong> even if your username has upper case letters.</p>
+
+<h2 id="installbuster">Install Buster</h2>
+
+<p>With the tool <a href='https://github.com/axitkhurana/buster' >Buster</a> you can export the Ghost blogs into static pages. First we install Buster with:  </p>
+
+<pre><code>brew install python  
+sudo pip install buster  
+</code></pre>
+
+<h2 id="preparestaticfolder">Prepare static folder</h2>
+
+<p>I have placed the <code>static</code> folder for Buster inside my Ghost installation. So I just cloned my <code>username/username.github.io</code> repo with a target directory name like this:</p>
+
+<pre><code>git clone git@githbub.com:username/username.github.io.git static  
+</code></pre>
+
+<h2 id="writeblogposts">Write Blog posts</h2>
+
+<p>Now your setup is complete and you can start writing Blog posts in Ghost.</p>
+
+<h2 id="exportghostwithbuster">Export Ghost with Buster</h2>
+
+<p>All published blog posts could be exported to the <code>static</code> folder with Buster.</p>
+
+<pre><code>buster generate --domain=http://localhost:2368  
+buster preview  
+open http://localhost:9000  
+</code></pre>
+
+<p>The output of Buster could be previewed on port 9000.</p>
+
+<h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
+
+<pre><code>buster deploy  
+</code></pre>
+
+<p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
+
+<p>For the initial push, please wait up to 10 minutes until GitHub deploys your subdomain.</p>
+
+<p>All upcoming pushes are much faster and you can see your static Ghost blog posts on <a href='https://username.github.io/' >https://username.github.io</a></p>]]></description><link>http://localhost:2368/setup-ghost-for-github-pages/</link><guid isPermaLink="false">e3811a2a-11ec-47f7-8153-185c829d7f29</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 07 Jul 2014 19:38:59 GMT</pubDate></item><item><title><![CDATA[Canon MF8540Cdn einrichten]]></title><description><![CDATA[<p>... oder: Windows ändert die Menschheit</p>
 
 <p>Neulich wurde mein alter HP LaserJet 1200 durch ein schickeres Gerät ersetzt: Ein Canon MF8540CDn Farblaser mit Duplex und Netzwerkanschluss. Dann mal ran an den schweren Karton und auspacken...</p>
 

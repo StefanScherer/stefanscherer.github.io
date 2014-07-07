@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+    <title>Setup Ghost for GitHub Pages</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=d718fc8edf" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+    
+    <meta name="generator" content="Ghost 0.4" />
+<link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#39;s Blog" href="../rss/index.html">
+<link rel="canonical" href="index.html" />
+</head>
+<body class="post-template">
+
+    
+    
+
+
+
+<main class="content" role="main">
+
+    <article class="post">
+
+        
+        <header class="post-header">
+            <a class="blog-logo" href="../index.html">
+                
+                    <span class="blog-title">Stefan Scherer&#x27;s Blog</span>
+                
+            </a>
+        </header>
+
+        
+        
+
+            <span class="post-meta"><time datetime="2014-07-07">07 Jul 2014</time> </span>
+
+            <h1 class="post-title">Setup Ghost for GitHub Pages</h1>
+
+            <section class="post-content">
+                <p>To build your own static <a href="https://pages.github.com">GitHub Pages</a> with <a href="https://ghost.org">Ghost</a>, just follow these steps.</p>
+
+<h2 id="installnodejs">Install Node.js</h2>
+
+<p>Ghost is written in Node.js, so you will need the Node.js runtime.</p>
+
+<pre><code>brew install node  
+brew install wget  
+</code></pre>
+
+<h2 id="downloadandinstallghost">Download and Install Ghost</h2>
+
+<p>Check for the latest version of Ghost from <a href="http://ghost.org/download">Ghost.org</a></p>
+
+<pre><code>mkdir ghost  
+cd ghost  
+wget --no-check-certificate https://ghost.org/zip/ghost-0.4.2.zip  
+unzip ghost-0.4.2.zip  
+npm install --production  
+</code></pre>
+
+<h2 id="startghost">Start Ghost</h2>
+
+<pre><code>npm start  
+</code></pre>
+
+<h2 id="logintoghost">Login to Ghost</h2>
+
+<pre><code>open http://localhost:2368/ghost  
+</code></pre>
+
+<p>Create an account, read the intial blog post how to edit with Markdown etc.</p>
+
+<h2 id="createyourgithubpagesrepo">Create your GitHub Pages repo</h2>
+
+<p>See the <a href="https://help.github.com/categories/20/articles">GitHub Pages Basics Documentation</a> for details.</p>
+
+<p>You must use the <code>username/username.github.io</code> naming scheme. The repo name must be <strong>lower case</strong> even if your username has upper case letters.</p>
+
+<h2 id="installbuster">Install Buster</h2>
+
+<p>With the tool <a href="https://github.com/axitkhurana/buster">Buster</a> you can export the Ghost blogs into static pages. First we install Buster with:  </p>
+
+<pre><code>brew install python  
+sudo pip install buster  
+</code></pre>
+
+<h2 id="preparestaticfolder">Prepare static folder</h2>
+
+<p>I have placed the <code>static</code> folder for Buster inside my Ghost installation. So I just cloned my <code>username/username.github.io</code> repo with a target directory name like this:</p>
+
+<pre><code>git clone git@githbub.com:username/username.github.io.git static  
+</code></pre>
+
+<h2 id="writeblogposts">Write Blog posts</h2>
+
+<p>Now your setup is complete and you can start writing Blog posts in Ghost.</p>
+
+<h2 id="exportghostwithbuster">Export Ghost with Buster</h2>
+
+<p>All published blog posts could be exported to the <code>static</code> folder with Buster.</p>
+
+<pre><code>buster generate --domain=http://localhost:2368  
+buster preview  
+open http://localhost:9000  
+</code></pre>
+
+<p>The output of Buster could be previewed on port 9000.</p>
+
+<h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
+
+<pre><code>buster deploy  
+</code></pre>
+
+<p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
+
+<p>For the initial push, please wait up to 10 minutes until GitHub deploys your subdomain.</p>
+
+<p>All upcoming pushes are much faster and you can see your static Ghost blog posts on <a href='https://username.github.io'>https://username.github.io</a></p>
+            </section>
+
+            <footer class="post-footer">
+
+                <section class="author">
+                    <h4>Stefan Scherer</h4>
+                    <p></p>
+                    <ul class="author-meta clearfix">
+                        <li>Germany</li>
+                        <li><a href="http://stefanscherer.github.io">http://stefanscherer.github.io</a></li>
+                    </ul>
+                </section>
+
+                <section class="share">
+                    <h4>Share this post</h4>
+                    <a class="icon-twitter" href="https://twitter.com/share?text=Setup%20Ghost%20for%20GitHub%20Pages&amp;url=http://localhost:2368/setup-ghost-for-github-pages/"
+                        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                        <span class="hidden">Twitter</span>
+                    </a>
+                    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/setup-ghost-for-github-pages/"
+                        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                        <span class="hidden">Facebook</span>
+                    </a>
+                    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/setup-ghost-for-github-pages/"
+                       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                        <span class="hidden">Google+</span>
+                    </a>
+                </section>
+
+            </footer>
+
+        
+
+    </article>
+
+</main>
+
+
+    <footer class="site-footer">
+        <a class="subscribe icon-feed" href="../rss/index.html"><span class="tooltip">Subscribe!</span></a>
+        <div class="inner">
+             <section class="copyright">All content copyright <a href="../index.html">Stefan Scherer&#x27;s Blog</a> &copy; 2014 &bull; All rights reserved.</section>
+             <section class="poweredby">Proudly published with <a class="icon-ghost" href="https://ghost.org">Ghost</a></section>
+        </div>
+    </footer>
+
+    
+    <script src="../public/jquery.js?v=d718fc8edf"></script>
+
+    
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=d718fc8edf"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=d718fc8edf"></script>
+
+</body>
+</html>
