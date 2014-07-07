@@ -130,6 +130,18 @@ open http://localhost:9000
 <p>For the initial push, please wait up to 10 minutes until GitHub deploys your subdomain.</p>
 
 <p>All upcoming pushes are much faster and you can see your static Ghost blog posts on <a href='https://username.github.io'>https://username.github.io</a></p>
+
+<h2 id="writenewblogposts">Write new Blog posts</h2>
+
+<p>To write new Blog posts or update the existing ones, just start Ghost, edit, then generate and deploy the static pages.</p>
+
+<pre><code>cd ghost  
+npm start  
+buster generate --domain=http://localhost:2368  
+buster deploy  
+</code></pre>
+
+<p>That's it.</p>
             </section>
 
             <footer class="post-footer">
