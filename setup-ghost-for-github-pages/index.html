@@ -114,9 +114,7 @@ open http://localhost:9000
 
 <h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
 
-<pre><code>find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
-buster deploy  
+<pre><code>buster deploy  
 </code></pre>
 
 <p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
@@ -131,15 +129,28 @@ buster deploy
 
 <pre><code>cd ghost  
 npm start  
-buster generate --domain=http://localhost:2368  
-find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
 buster deploy  
 </code></pre>
 
 <p>The <code>sed</code> commands will fix the share links from localhost to your correct GitHub pages URL.</p>
 
 <p>That's it.</p>
+
+<h2 id="fixinglinks">Fixing links</h2>
+
+<p><strong>Update</strong> It seems that buster has problems fixing all hyperlinks. So I made this script that works for me:</p>
+
+<pre><code class="bash">#!/bin/bash
+buster generate --domain=http://127.0.0.1:2368  
+find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#href="https://stefanscherer.github.io#href="https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#src="https://stefanscherer.github.io#src="https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#link&gt;http://localhost:2368#link&gt;https://stefanscherer.github.io#g' {} \;  
+buster deploy  
+</code></pre>
+
+<p>This will generate the new pages, fix all links and then deploy them on GitHub.</p>
         </section>
 
         <footer class="post-footer">
