@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Fri, 17 Oct 2014 06:12:42 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href='http://packer.io/' >Packer</a> and <a href='http://vagrantup.com/' >Vagrant</a>.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Fri, 17 Oct 2014 20:06:54 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Easy setup for Atom from dotfiles]]></title><description><![CDATA[<p>I am using <a href='https://atom.io/' >Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+
+<p>My <a href='https://github.com/StefanScherer/dotfiles' >dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href='http://vim.org/' >VIM</a> and <a href='http://sublimetext.com/' >Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
+
+<h2 id="cloningdotfilesrepo">Cloning dotfiles repo</h2>
+
+<p>On a fresh machine, I normally clone my dotfiles repo and then call a script to do the rest of the setup.</p>
+
+<pre><code class="bash">git clone https://github.com/StefanScherer/dotfiles &amp;&amp; cd dotfiles &amp;&amp; ./sync.sh  
+</code></pre>
+
+<p>This sets up the configs for VIM, Sublime Text and now also for Atom (as well as a lot of bash aliases, functions, etc.)</p>
+
+<p>The <code>sync.sh</code> script is just copying all <code>.atom/</code> configs to <code>~/.atom/</code> directory. But this is only for key bindings and other preferences.</p>
+
+<h2 id="enterparcel">Enter Parcel</h2>
+
+<p>The difficult part was how to install a list of Atom packages and sync them between all of my machines. Atom does not create a list of installed packages. But there is a package <code>parcel</code> that does exactly what I need.</p>
+
+<p>So the <code>sync.sh</code> just assures that the <a href='https://atom.io/packages/parcel' ><code>parcel</code></a> package is installed.</p>
+
+<h2 id="packagesparcelsync">Packages / Parcel / Sync</h2>
+
+<p>Now just open Atom from command line or from your Dock and click on <strong>Packages / Parcel / Sync</strong> and all other packages will be installed.</p>
+
+<p>You may have to reload or restart Atom. Then you have all your listed plugins and of course all your configs installed from your dotfiles repo.</p>
+
+<h2 id="storingconfig">Storing Config</h2>
+
+<p>You can install other packages from menu or with <code>apm install</code>. If you want to save your changes in your dotfiles repo, just click on <strong>Packages / Parcel / Sync</strong> again and an updated <code>~/.atom/packages.cson</code> files will be written.</p>
+
+<p>Go back to the dotfiles repo and copy all files from <code>~/.atom/</code> back and commit and push it. I have my <code>sync-atom-prefs.sh</code> script.</p>
+
+<p>Now you can transport your favorite Atom settings to any machine.</p>
+
+<p>Tested on Mac OS X and Linux at the moment.</p>]]></description><link>http://localhost:2368/easy-setup-for-atom-from-dotfiles/</link><guid isPermaLink="false">4f17c895-b9a5-4b75-a037-7708268b8671</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 19:56:06 GMT</pubDate></item><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href='http://packer.io/' >Packer</a> and <a href='http://vagrantup.com/' >Vagrant</a>.</p>
 
 <p>First I have to download the new image.</p>
 
@@ -143,7 +178,9 @@ vagrant box add osx1010 ~/code/yosemite/osx1010.box
 
 <p>But this VM is much bigger than a newly built one, as the disk grows.</p>
 
-<p>Just watch the <a href='https://github.com/box-cutter/osx-vm' ><strong>box-cutter/osx-vm</strong></a> GitHub repo for updates.</p>]]></description><link>http://localhost:2368/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href='https://pages.github.com/' >GitHub Pages</a> with <a href='https://ghost.org/' >Ghost</a>, just follow these steps.</p>
+<p>Just watch the <a href='https://github.com/box-cutter/osx-vm' ><strong>box-cutter/osx-vm</strong></a> GitHub repo for updates.</p>
+
+<p>You can find my work in progress <a href='https://github.com/StefanScherer/osx-vm/tree/feature/yosemite' >here</a>.</p>]]></description><link>http://localhost:2368/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href='https://pages.github.com/' >GitHub Pages</a> with <a href='https://ghost.org/' >Ghost</a>, just follow these steps.</p>
 
 <h2 id="installnodejs">Install Node.js</h2>
 
