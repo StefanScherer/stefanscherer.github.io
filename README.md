@@ -86,7 +86,7 @@ Write post in your browser [locally](http://stefanscherer.github.io/ghost).
 cd ghost
 npm start
 open http://stefanscherer.github.io/ghost
-buster generate --domain=http://stefanscherer.github.io
+buster generate --domain=http://localhost:2368
 buster deploy
 ```
 
