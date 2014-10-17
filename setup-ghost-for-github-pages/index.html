@@ -59,8 +59,8 @@ brew install wget
 
 <pre><code>mkdir ghost  
 cd ghost  
-wget --no-check-certificate https://ghost.org/zip/ghost-0.4.2.zip  
-unzip ghost-0.4.2.zip  
+wget --no-check-certificate https://ghost.org/zip/ghost-0.5.2.zip  
+unzip ghost-0.5.2.zip  
 npm install --production  
 </code></pre>
 
@@ -114,7 +114,9 @@ open http://localhost:9000
 
 <h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
 
-<pre><code>buster deploy  
+<pre><code>find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
+buster deploy  
 </code></pre>
 
 <p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
@@ -130,8 +132,12 @@ open http://localhost:9000
 <pre><code>cd ghost  
 npm start  
 buster generate --domain=http://localhost:2368  
+find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
 buster deploy  
 </code></pre>
+
+<p>The <code>sed</code> commands will fix the share links from localhost to your correct GitHub pages URL.</p>
 
 <p>That's it.</p>
         </section>
