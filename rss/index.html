@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Fri, 17 Oct 2014 04:54:22 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href='http://packer.io/' >Packer</a> and <a href='http://vagrantup.com/' >Vagrant</a>.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost v0.4.2</generator><lastBuildDate>Fri, 17 Oct 2014 06:12:42 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href='http://packer.io/' >Packer</a> and <a href='http://vagrantup.com/' >Vagrant</a>.</p>
 
 <p>First I have to download the new image.</p>
 
@@ -67,15 +67,83 @@ end
 <p>Now it's time to clone the GitHub repo from <a href='https://github.com/box-cutter/osx-vm' ><strong>box-cutter/osx-vm</strong></a>.</p>
 
 <pre><code class="bash">git clone https://github.com/box-cutter/osx-vm  
+cd osx-vm  
 </code></pre>
 
 <p>At the moment, there is no template ready, but I build one based on the <code>osx109-desktop.json</code> file.</p>
 
-<h3 id="preparingtheiso">Preparing the ISO</h3>
+<h3 id="preparingthetemplate">Preparing the template</h3>
 
-<p>Further steps are needed, as descriped in <a href='https://github.com/box-cutter/osx-vm/blob/master/README-timsutton.md' >README-timsutton.md</a></p>
+<p>Just make a copy of the 10.9 template</p>
 
-<p>TBD.</p>]]></description><link>http://localhost:2368/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href='https://pages.github.com/' >GitHub Pages</a> with <a href='https://ghost.org/' >Ghost</a>, just follow these steps.</p>
+<pre><code class="bash">cp osx109.json osx1010.json  
+vi osx1010.json  
+</code></pre>
+
+<p>and update the <code>iso_url</code>, <code>vm_name</code> and <code>output</code> keys as needed. My updated values are:</p>
+
+<pre><code>$ diff osx109.json osx1010.json 
+  "iso_url": "dmg/dmg/OSX_InstallESD_10.10_14A389.dmg",
+  "vm_name": "osx1010",
+  "output": "box/{{.Provider}}/osx1010-{{user `cm`}}{{user `cm_version`}}.box"
+</code></pre>
+
+<h3 id="copydownloadediso">Copy downloaded ISO</h3>
+
+<p>You have to copy the downloaded Yosemite ISO into the <code>iso/OS X Yosemite/</code> folder.</p>
+
+<pre><code class="bash">mkdir iso/OS\ X\ Yosemite  
+cp ../InstallESD.dmg iso/OS\ X\ Yosemite  
+</code></pre>
+
+<h3 id="runpacker">Run packer</h3>
+
+<p>There is a <code>Makefile</code> that will help you preparing the ISO and building the basebox with Packer.</p>
+
+<pre><code class="bash">make list  
+make osx1010  
+</code></pre>
+
+<p>Oh, there seems to be a problem as the VM complains</p>
+
+<p><strong>Failed to open OS X Installer.</strong> <br/>
+The path (null) appears to be missing or damaged.</p>
+
+<p><img src='http://localhost:2368/content/images/2014/Oct/Bildschirmfoto-2014-10-17-um-07-59-07.png'  alt="Failed to open OS X Installer" /></p>
+
+<p>So, I have to stop here. But this will be fixed soon.</p>
+
+<h2 id="workaround">Workaround</h2>
+
+<p>I have done these steps with the first preview of Yosemite:</p>
+
+<p>Use the Mavericks VM from above:  </p>
+
+<pre><code class="bash">mkdir osx109 &amp;&amp; cd osx109  
+vagrant init osx109  
+vi Vagrantfile  
+vagrant up  
+</code></pre>
+
+<p>Then in the VM download and install Yosemite. After installation, stop the VM.</p>
+
+<pre><code>vagrant halt  
+cd .vagrant/machines/yosemite/vmware_fusion/  
+cd a7e85e2a-fb19-416d-b5d3-e9700893d307/  
+cp osx109.nvram osx1010.nvram  
+cp osx109.vmsd osx1010.vmsd  
+cp osx109.vmx osx1010.vmx  
+cp osx109.vmxf osx1010.vmxf  
+vi osx1010*  
+tar cvf ~/code/yosemite/osx1010.box Vagrantfile disk* metadata.json osx1010*  
+cd ..
+
+vagrant box add osx1010 ~/code/yosemite/osx1010.box  
+</code></pre>
+
+<p>But this VM is much bigger than a newly built one, as the disk grows.</p>
+
+<p>Just watch the <a href='https://github.com/box-cutter/osx-vm' ><strong>box-cutter/osx-vm</strong></a> GitHub repo for updates.</p>]]></description><link>http://localhost:2368/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href='https://pages.github.com/' >GitHub Pages</a> with <a href='https://ghost.org/' >Ghost</a>, just follow these steps.</p>
 
 <h2 id="installnodejs">Install Node.js</h2>
 
