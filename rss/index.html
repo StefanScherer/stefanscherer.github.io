@@ -1,5 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Fri, 17 Oct 2014 21:51:15 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Easy setup for Atom from dotfiles]]></title><description><![CDATA[<p>I am using <a href="https://atom.io/">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Fri, 24 Oct 2014 21:15:04 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to work across GitHub repos]]></title><description><![CDATA[<p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
+
+<p>Here are some bash functions that help me doing such cross repo tasks.</p>
+
+<h2 id="cloneallorgsrepos">Clone all org's repos</h2>
+
+<p>If you want to clone all repos of a GitHub organization, or of a specific user, use this command.</p>
+
+<pre><code class="bash">gitcloneall git@github.com:YOUR_ORG [user[:pass]]  
+</code></pre>
+
+<p>The optional user name is only needed for private repos. To retrieve the list of repos we have to access the GitHub API with https + Basic Auth, so that's the user name for. If you skip the password, curl will ask you for it.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt=""></p>
+
+<p>To make the command <code>gitcloneall</code> work you have to add the following function to your bash <code>~/.functions</code> file.</p>
+
+<pre><code class="bash">function gitcloneall {  
+  if [ "$#" -lt 1  ]; then
+    echo "Usage: gitcloneall git@github.com:YOUR_ORG [user[:pass]]"
+    echo "Clones all repos of a GitHub org or user."
+    return
+  fi
+  org=$(echo $1 | sed -e s/.*://)
+  user=""
+  if [ "$#" -eq 2  ]; then
+    user="-u $2"
+  fi
+  curl $user -s https://api.github.com/orgs/$org/repos?per_page=200 | jq '.[] | .ssh_url' | sed -e s/git.*$org/$1/ | xargs -I % git clone %
+}
+</code></pre>
+
+<p>The function first lists all the repos with the GitHub API. Next it filters the JSON response with <code>jq</code> and calls <code>git clone</code> for each repo with its SSH URL. The first part of the SSH URL will be replaced with the value given in the command line. This is to access GitHub with another SSH key than your default.</p>
+
+<p>If you don't know jq yet, <a href="http://stedolan.github.io/jq/">jq is like sed for JSON data</a>.</p>
+
+<p>Use your favorite package manager to install jq:  </p>
+
+<pre><code class="bash">OSX:     brew install jq  
+Linux:   sudo apt-get install jq  
+Windows: cinst jq  
+</code></pre>
+
+<h2 id="startagitcommandforalldirs">Start a git command for all dirs</h2>
+
+<p>After cloning all repos you now can start a <code>git</code> command for all directories found with the <code>gitall</code> function.</p>
+
+<pre><code class="bash">gitall pull  
+vi */README.md  
+gitall add REAMDE.md  
+gitall commit -m "updated README"  
+gitall push  
+gitall status  
+</code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt=""></p>
+
+<p>You have to add the <code>gitall</code> function to your bash functions.</p>
+
+<pre><code class="bash">function gitall {  
+  if [ "$#" -lt 1  ]; then
+    echo "Usage: gitall pull|push|commit ..."
+    echo "Starts a git command for each directory found in current dir."
+    return
+  fi
+  if tput setaf 1 &amp;&gt; /dev/null; then
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)
+  else
+    BOLD=""
+    RESET="\033[m"
+  fi
+  for DIR in `ls`;
+  do
+    if [ -d $DIR/.git ]; then
+      echo $BOLD"Entering "$DIR$RESET
+      pushd $DIR &gt;/dev/null
+      git "$@"
+      popd &gt;/dev/null
+    fi
+  done
+}
+</code></pre>
+
+<h2 id="shortgitstatusofalldirs">Short git status of all dirs</h2>
+
+<p>The <code>gitall status</code> command was too large for me. I like my bash prompt that shows me the current git branch and whether there are local changes.</p>
+
+<p>Here is a short example. First you can see that I am in my dotfiles and in branch <strong>master</strong> without changes. The echo command changes one file in my repo. Then the prompt changes to <strong>master*</strong></p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt=""></p>
+
+<p>So I have made a <code>gitls</code> function that shows me these information for all directories in the current dir.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt=""></p>
+
+<p>And again, you have to add this to your bash functions:</p>
+
+<pre><code class="bash">function gitls {  
+  if tput setaf 1 &amp;&gt; /dev/null; then
+    tput sgr0
+    if [[ $(tput colors) -ge 256 ]] 2&gt;/dev/null; then
+      GREEN=$(tput setaf 70)
+      PURPLE=$(tput setaf 141)
+    else
+      GREEN=$(tput setaf 2)
+      PURPLE=$(tput setaf 1)
+
+    fi
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)
+  else
+    GREEN="\033[1;32m"
+    PURPLE="\033[1;35m"
+    BOLD=""
+    RESET="\033[m"
+  fi
+
+  for d in `find . -name ".git"`; do
+    # check if we're in a git repo
+    git --git-dir=$d --work-tree=$d/.. rev-parse --is-inside-work-tree &amp;&gt;/dev/null # || return
+
+    # quickest check for what branch we're on
+    branch=$(git --git-dir=$d --work-tree=$d/.. symbolic-ref -q HEAD | sed -e 's|^refs/heads/||')
+
+    # check if it's dirty (via github.com/sindresorhus/pure)
+    dirty=$(git --git-dir=$d --work-tree=$d/.. diff --quiet --ignore-submodules HEAD &amp;&gt;/dev/null; [ $? -eq 1 ]&amp;&amp; echo -e "*")
+    dir=`echo $d | sed -e 's|^\.\/||' -e 's|\/.git||'`
+    echo $RESET$BOLD$GREEN"$dir$RESET$BOLD on "$PURPLE$branch$dirty$RESET
+  done
+}
+</code></pre>
+
+<p>You can find all these functions in my <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> repo in the <a href="https://github.com/StefanScherer/dotfiles/blob/master/.functions">.functions</a> file.</p>
+
+<p>Have fun!</p>]]></description><link>https://stefanscherer.github.io/how-to-work-across-github-repos/</link><guid isPermaLink="false">7df21bb4-12ce-4bcf-8cc8-0910827ea71f</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 24 Oct 2014 21:14:49 GMT</pubDate></item><item><title><![CDATA[Easy setup for Atom from dotfiles]]></title><description><![CDATA[<p>I am using <a href="https://atom.io/">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
 
 <p>My <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href="http://vim.org/">VIM</a> and <a href="http://sublimetext.com/">Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
 

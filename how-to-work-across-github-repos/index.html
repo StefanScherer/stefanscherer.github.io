@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How to work across GitHub repos</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7802b0b9da" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <meta name="generator" content="Ghost 0.5" />
+<link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#39;s Blog" href="../rss/index.html">
+<link rel="canonical" href="https://stefanscherer.github.io/how-to-work-across-github-repos/" />
+</head>
+<body class="post-template">
+
+    
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="back-button icon-arrow-left" href="https://stefanscherer.github.io">Home</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">How to work across GitHub repos</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2014-10-24">24 October 2014</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
+
+<p>Here are some bash functions that help me doing such cross repo tasks.</p>
+
+<h2 id="cloneallorgsrepos">Clone all org's repos</h2>
+
+<p>If you want to clone all repos of a GitHub organization, or of a specific user, use this command.</p>
+
+<pre><code class="bash">gitcloneall git@github.com:YOUR_ORG [user[:pass]]  
+</code></pre>
+
+<p>The optional user name is only needed for private repos. To retrieve the list of repos we have to access the GitHub API with https + Basic Auth, so that's the user name for. If you skip the password, curl will ask you for it.</p>
+
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt="" /></p>
+
+<p>To make the command <code>gitcloneall</code> work you have to add the following function to your bash <code>~/.functions</code> file.</p>
+
+<pre><code class="bash">function gitcloneall {  
+  if [ "$#" -lt 1  ]; then
+    echo "Usage: gitcloneall git@github.com:YOUR_ORG [user[:pass]]"
+    echo "Clones all repos of a GitHub org or user."
+    return
+  fi
+  org=$(echo $1 | sed -e s/.*://)
+  user=""
+  if [ "$#" -eq 2  ]; then
+    user="-u $2"
+  fi
+  curl $user -s https://api.github.com/orgs/$org/repos?per_page=200 | jq '.[] | .ssh_url' | sed -e s/git.*$org/$1/ | xargs -I % git clone %
+}
+</code></pre>
+
+<p>The function first lists all the repos with the GitHub API. Next it filters the JSON response with <code>jq</code> and calls <code>git clone</code> for each repo with its SSH URL. The first part of the SSH URL will be replaced with the value given in the command line. This is to access GitHub with another SSH key than your default.</p>
+
+<p>If you don't know jq yet, <a href="http://stedolan.github.io/jq/">jq is like sed for JSON data</a>.</p>
+
+<p>Use your favorite package manager to install jq:  </p>
+
+<pre><code class="bash">OSX:     brew install jq  
+Linux:   sudo apt-get install jq  
+Windows: cinst jq  
+</code></pre>
+
+<h2 id="startagitcommandforalldirs">Start a git command for all dirs</h2>
+
+<p>After cloning all repos you now can start a <code>git</code> command for all directories found with the <code>gitall</code> function.</p>
+
+<pre><code class="bash">gitall pull  
+vi */README.md  
+gitall add REAMDE.md  
+gitall commit -m "updated README"  
+gitall push  
+gitall status  
+</code></pre>
+
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt="" /></p>
+
+<p>You have to add the <code>gitall</code> function to your bash functions.</p>
+
+<pre><code class="bash">function gitall {  
+  if [ "$#" -lt 1  ]; then
+    echo "Usage: gitall pull|push|commit ..."
+    echo "Starts a git command for each directory found in current dir."
+    return
+  fi
+  if tput setaf 1 &amp;&gt; /dev/null; then
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)
+  else
+    BOLD=""
+    RESET="\033[m"
+  fi
+  for DIR in `ls`;
+  do
+    if [ -d $DIR/.git ]; then
+      echo $BOLD"Entering "$DIR$RESET
+      pushd $DIR &gt;/dev/null
+      git "$@"
+      popd &gt;/dev/null
+    fi
+  done
+}
+</code></pre>
+
+<h2 id="shortgitstatusofalldirs">Short git status of all dirs</h2>
+
+<p>The <code>gitall status</code> command was too large for me. I like my bash prompt that shows me the current git branch and whether there are local changes.</p>
+
+<p>Here is a short example. First you can see that I am in my dotfiles and in branch <strong>master</strong> without changes. The echo command changes one file in my repo. Then the prompt changes to <strong>master*</strong></p>
+
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt="" /></p>
+
+<p>So I have made a <code>gitls</code> function that shows me these information for all directories in the current dir.</p>
+
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt="" /></p>
+
+<p>And again, you have to add this to your bash functions:</p>
+
+<pre><code class="bash">function gitls {  
+  if tput setaf 1 &amp;&gt; /dev/null; then
+    tput sgr0
+    if [[ $(tput colors) -ge 256 ]] 2&gt;/dev/null; then
+      GREEN=$(tput setaf 70)
+      PURPLE=$(tput setaf 141)
+    else
+      GREEN=$(tput setaf 2)
+      PURPLE=$(tput setaf 1)
+
+    fi
+    BOLD=$(tput bold)
+    RESET=$(tput sgr0)
+  else
+    GREEN="\033[1;32m"
+    PURPLE="\033[1;35m"
+    BOLD=""
+    RESET="\033[m"
+  fi
+
+  for d in `find . -name ".git"`; do
+    # check if we're in a git repo
+    git --git-dir=$d --work-tree=$d/.. rev-parse --is-inside-work-tree &amp;&gt;/dev/null # || return
+
+    # quickest check for what branch we're on
+    branch=$(git --git-dir=$d --work-tree=$d/.. symbolic-ref -q HEAD | sed -e 's|^refs/heads/||')
+
+    # check if it's dirty (via github.com/sindresorhus/pure)
+    dirty=$(git --git-dir=$d --work-tree=$d/.. diff --quiet --ignore-submodules HEAD &amp;&gt;/dev/null; [ $? -eq 1 ]&amp;&amp; echo -e "*")
+    dir=`echo $d | sed -e 's|^\.\/||' -e 's|\/.git||'`
+    echo $RESET$BOLD$GREEN"$dir$RESET$BOLD on "$PURPLE$branch$dirty$RESET
+  done
+}
+</code></pre>
+
+<p>You can find all these functions in my <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> repo in the <a href="https://github.com/StefanScherer/dotfiles/blob/master/.functions">.functions</a> file.</p>
+
+<p>Have fun!</p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/index.html" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/index.html">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/index.html">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="http://stefanscherer.github.io">http://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20work%20across%20GitHub%20repos&amp;url=https://stefanscherer.github.io/how-to-work-across-github-repos/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-work-across-github-repos/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-work-across-github-repos/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+
+</main>
+
+
+
+    <footer class="site-footer clearfix">
+         <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2014</section>
+         <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+    </footer>
+
+    <script src="../public/jquery.js?v=7802b0b9da"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=7802b0b9da"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=7802b0b9da"></script>
+
+</body>
+</html>
