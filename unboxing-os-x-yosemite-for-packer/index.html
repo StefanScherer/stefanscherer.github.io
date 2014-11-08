@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=7802b0b9da" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=179a95980c" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <meta name="generator" content="Ghost 0.5" />
@@ -114,22 +114,12 @@ end
 cd osx-vm  
 </code></pre>
 
-<p>At the moment, there is no template ready, but I build one based on the <code>osx109-desktop.json</code> file.</p>
+<p>At the moment, there is my <a href="https://github.com/box-cutter/osx-vm/pull/3">PR #3</a> to add templates like <code>osx1010-desktop.json</code> file. As long as this PR isn't merged, please clone my fork as described in the next steps. After the PR is accepted and merged, just skip these steps.</p>
 
-<h3 id="preparingthetemplate">Preparing the template</h3>
-
-<p>Just make a copy of the 10.9 template</p>
-
-<pre><code class="bash">cp osx109.json osx1010.json  
-vi osx1010.json  
-</code></pre>
-
-<p>and update the <code>iso_url</code>, <code>vm_name</code> and <code>output</code> keys as needed. My updated values are:</p>
-
-<pre><code>$ diff osx109.json osx1010.json 
-  "iso_url": "dmg/dmg/OSX_InstallESD_10.10_14A389.dmg",
-  "vm_name": "osx1010",
-  "output": "box/{{.Provider}}/osx1010-{{user `cm`}}{{user `cm_version`}}.box"
+<pre><code class="bash">rm -rf osx-vm  
+git clone https://github.com/StefanScherer/osx-vm  
+cd osx-vm  
+git checkout feature/yosemite  
 </code></pre>
 
 <h3 id="copydownloadediso">Copy downloaded ISO</h3>
@@ -140,58 +130,36 @@ vi osx1010.json
 cp ../InstallESD.dmg iso/OS\ X\ Yosemite  
 </code></pre>
 
-<h3 id="runpacker">Run packer</h3>
+<h3 id="runpacker">Run Packer</h3>
 
 <p>There is a <code>Makefile</code> that will help you preparing the ISO and building the basebox with Packer.</p>
 
 <pre><code class="bash">make list  
-make osx1010  
+make osx1010-desktop  
 </code></pre>
 
-<p>Oh, there seems to be a problem as the VM complains</p>
+<p>It will prepare the original DMG to make it work with packer. Then the basebox will be created. The final basebox will be placed in <strong>box/vmware/osx1010-desktop-nocm-1.0.0.box</strong>.</p>
 
-<p><strong>Failed to open OS X Installer.</strong> <br/>
-The path (null) appears to be missing or damaged.</p>
+<h3 id="addvagrantbasebox">Add Vagrant basebox</h3>
 
-<p><img src="../content/images/2014/Oct/Bildschirmfoto-2014-10-17-um-07-59-07.png" alt="Failed to open OS X Installer" /></p>
+<p>Now it's time to add the basebox to be used with Vagrant.</p>
 
-<p>So, I have to stop here. But this will be fixed soon.</p>
-
-<p><strong>Update</strong>: This problem is already known and handled in issue <a href="https://github.com/timsutton/osx-vm-templates/issues/17">timsutton/osx-vm-templates#17</a>.</p>
-
-<h2 id="workaround">Workaround</h2>
-
-<p>I have done these steps with the first preview of Yosemite:</p>
-
-<p>Use the Mavericks VM from above:  </p>
-
-<pre><code class="bash">mkdir osx109 &amp;&amp; cd osx109  
-vagrant init osx109  
-vi Vagrantfile  
-vagrant up  
+<pre><code class="bash">vagrant box add osx1010-desktop box/vmware/osx1010-desktop-nocm-1.0.0.box --force  
 </code></pre>
 
-<p>Then in the VM download and install Yosemite. After installation, stop the VM.</p>
+<h3 id="vagrantup">Vagrant Up</h3>
 
-<pre><code>vagrant halt  
-cd .vagrant/machines/yosemite/vmware_fusion/  
-cd a7e85e2a-fb19-416d-b5d3-e9700893d307/  
-cp osx109.nvram osx1010.nvram  
-cp osx109.vmsd osx1010.vmsd  
-cp osx109.vmx osx1010.vmx  
-cp osx109.vmxf osx1010.vmxf  
-vi osx1010*  
-tar cvf ~/code/yosemite/osx1010.box Vagrantfile disk* metadata.json osx1010*  
-cd ..
+<p>Now spin up your first OSX Yosemite VM with Vagrant.  </p>
 
-vagrant box add osx1010 ~/code/yosemite/osx1010.box  
+<pre><code class="bash">mkdir yosemite  
+cd yosemite  
+vagrant init osx1010-desktop  
+vagrant  
 </code></pre>
 
-<p>But this VM is much bigger than a newly built one, as the disk grows.</p>
+<p>Have fun with your new toy!</p>
 
-<p>Just watch the <a href="https://github.com/box-cutter/osx-vm"><strong>box-cutter/osx-vm</strong></a> GitHub repo for updates.</p>
-
-<p>You can find my work in progress <a href="https://github.com/StefanScherer/osx-vm/tree/feature/yosemite">here</a>.</p>
+<p>I have built and tested the OSX Yosemite box only with VMware Fusion 6.0.5 and not with VirtualBox.</p>
         </section>
 
         <footer class="post-footer">
@@ -241,10 +209,10 @@ vagrant box add osx1010 ~/code/yosemite/osx1010.box
          <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
     </footer>
 
-    <script src="../public/jquery.js?v=7802b0b9da"></script>
+    <script src="../public/jquery.js?v=179a95980c"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=7802b0b9da"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=7802b0b9da"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=179a95980c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=179a95980c"></script>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Fri, 24 Oct 2014 21:15:04 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to work across GitHub repos]]></title><description><![CDATA[<p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Sat, 08 Nov 2014 15:23:31 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to work across GitHub repos]]></title><description><![CDATA[<p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
 
 <p>Here are some bash functions that help me doing such cross repo tasks.</p>
 
@@ -240,22 +240,12 @@ end
 cd osx-vm  
 </code></pre>
 
-<p>At the moment, there is no template ready, but I build one based on the <code>osx109-desktop.json</code> file.</p>
+<p>At the moment, there is my <a href="https://github.com/box-cutter/osx-vm/pull/3">PR #3</a> to add templates like <code>osx1010-desktop.json</code> file. As long as this PR isn't merged, please clone my fork as described in the next steps. After the PR is accepted and merged, just skip these steps.</p>
 
-<h3 id="preparingthetemplate">Preparing the template</h3>
-
-<p>Just make a copy of the 10.9 template</p>
-
-<pre><code class="bash">cp osx109.json osx1010.json  
-vi osx1010.json  
-</code></pre>
-
-<p>and update the <code>iso_url</code>, <code>vm_name</code> and <code>output</code> keys as needed. My updated values are:</p>
-
-<pre><code>$ diff osx109.json osx1010.json 
-  "iso_url": "dmg/dmg/OSX_InstallESD_10.10_14A389.dmg",
-  "vm_name": "osx1010",
-  "output": "box/{{.Provider}}/osx1010-{{user `cm`}}{{user `cm_version`}}.box"
+<pre><code class="bash">rm -rf osx-vm  
+git clone https://github.com/StefanScherer/osx-vm  
+cd osx-vm  
+git checkout feature/yosemite  
 </code></pre>
 
 <h3 id="copydownloadediso">Copy downloaded ISO</h3>
@@ -266,58 +256,36 @@ vi osx1010.json
 cp ../InstallESD.dmg iso/OS\ X\ Yosemite  
 </code></pre>
 
-<h3 id="runpacker">Run packer</h3>
+<h3 id="runpacker">Run Packer</h3>
 
 <p>There is a <code>Makefile</code> that will help you preparing the ISO and building the basebox with Packer.</p>
 
 <pre><code class="bash">make list  
-make osx1010  
+make osx1010-desktop  
 </code></pre>
 
-<p>Oh, there seems to be a problem as the VM complains</p>
+<p>It will prepare the original DMG to make it work with packer. Then the basebox will be created. The final basebox will be placed in <strong>box/vmware/osx1010-desktop-nocm-1.0.0.box</strong>.</p>
 
-<p><strong>Failed to open OS X Installer.</strong> <br>
-The path (null) appears to be missing or damaged.</p>
+<h3 id="addvagrantbasebox">Add Vagrant basebox</h3>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Oct/Bildschirmfoto-2014-10-17-um-07-59-07.png" alt="Failed to open OS X Installer"></p>
+<p>Now it's time to add the basebox to be used with Vagrant.</p>
 
-<p>So, I have to stop here. But this will be fixed soon.</p>
-
-<p><strong>Update</strong>: This problem is already known and handled in issue <a href="https://github.com/timsutton/osx-vm-templates/issues/17">timsutton/osx-vm-templates#17</a>.</p>
-
-<h2 id="workaround">Workaround</h2>
-
-<p>I have done these steps with the first preview of Yosemite:</p>
-
-<p>Use the Mavericks VM from above:  </p>
-
-<pre><code class="bash">mkdir osx109 &amp;&amp; cd osx109  
-vagrant init osx109  
-vi Vagrantfile  
-vagrant up  
+<pre><code class="bash">vagrant box add osx1010-desktop box/vmware/osx1010-desktop-nocm-1.0.0.box --force  
 </code></pre>
 
-<p>Then in the VM download and install Yosemite. After installation, stop the VM.</p>
+<h3 id="vagrantup">Vagrant Up</h3>
 
-<pre><code>vagrant halt  
-cd .vagrant/machines/yosemite/vmware_fusion/  
-cd a7e85e2a-fb19-416d-b5d3-e9700893d307/  
-cp osx109.nvram osx1010.nvram  
-cp osx109.vmsd osx1010.vmsd  
-cp osx109.vmx osx1010.vmx  
-cp osx109.vmxf osx1010.vmxf  
-vi osx1010*  
-tar cvf ~/code/yosemite/osx1010.box Vagrantfile disk* metadata.json osx1010*  
-cd ..
+<p>Now spin up your first OSX Yosemite VM with Vagrant.  </p>
 
-vagrant box add osx1010 ~/code/yosemite/osx1010.box  
+<pre><code class="bash">mkdir yosemite  
+cd yosemite  
+vagrant init osx1010-desktop  
+vagrant  
 </code></pre>
 
-<p>But this VM is much bigger than a newly built one, as the disk grows.</p>
+<p>Have fun with your new toy!</p>
 
-<p>Just watch the <a href="https://github.com/box-cutter/osx-vm"><strong>box-cutter/osx-vm</strong></a> GitHub repo for updates.</p>
-
-<p>You can find my work in progress <a href="https://github.com/StefanScherer/osx-vm/tree/feature/yosemite">here</a>.</p>]]></description><link>https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href="https://pages.github.com/">GitHub Pages</a> with <a href="https://ghost.org/">Ghost</a>, just follow these steps.</p>
+<p>I have built and tested the OSX Yosemite box only with VMware Fusion 6.0.5 and not with VirtualBox.</p>]]></description><link>https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href="https://pages.github.com/">GitHub Pages</a> with <a href="https://ghost.org/">Ghost</a>, just follow these steps.</p>
 
 <h2 id="installnodejs">Install Node.js</h2>
 
