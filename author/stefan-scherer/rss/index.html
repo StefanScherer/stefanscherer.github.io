@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Sat, 08 Nov 2014 15:23:31 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/author/stefan-scherer/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to work across GitHub repos]]></title><description><![CDATA[<p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><generator>Ghost 0.5</generator><lastBuildDate>Thu, 12 Feb 2015 00:51:00 GMT</lastBuildDate><atom:link href="http://localhost:2368/author/stefan-scherer/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to work across GitHub repos]]></title><description><![CDATA[<p>If you are a member of a GitHub organization you sometimes have to work across all repos.</p>
 
 <p>Here are some bash functions that help me doing such cross repo tasks.</p>
 
@@ -12,7 +12,7 @@
 
 <p>The optional user name is only needed for private repos. To retrieve the list of repos we have to access the GitHub API with https + Basic Auth, so that's the user name for. If you skip the password, curl will ask you for it.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt=""></p>
 
 <p>To make the command <code>gitcloneall</code> work you have to add the following function to your bash <code>~/.functions</code> file.</p>
 
@@ -54,7 +54,7 @@ gitall push
 gitall status  
 </code></pre>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt=""></p>
 
 <p>You have to add the <code>gitall</code> function to your bash functions.</p>
 
@@ -89,11 +89,11 @@ gitall status
 
 <p>Here is a short example. First you can see that I am in my dotfiles and in branch <strong>master</strong> without changes. The echo command changes one file in my repo. Then the prompt changes to <strong>master*</strong></p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt=""></p>
 
 <p>So I have made a <code>gitls</code> function that shows me these information for all directories in the current dir.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt=""></p>
 
 <p>And again, you have to add this to your bash functions:</p>
 
@@ -134,7 +134,7 @@ gitall status
 
 <p>You can find all these functions in my <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> repo in the <a href="https://github.com/StefanScherer/dotfiles/blob/master/.functions">.functions</a> file.</p>
 
-<p>Have fun!</p>]]></description><link>https://stefanscherer.github.io/how-to-work-across-github-repos/</link><guid isPermaLink="false">7df21bb4-12ce-4bcf-8cc8-0910827ea71f</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 24 Oct 2014 21:14:49 GMT</pubDate></item><item><title><![CDATA[Easy setup for Atom from dotfiles]]></title><description><![CDATA[<p>I am using <a href="https://atom.io/">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+<p>Have fun!</p>]]></description><link>http://localhost:2368/how-to-work-across-github-repos/</link><guid isPermaLink="false">7df21bb4-12ce-4bcf-8cc8-0910827ea71f</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 24 Oct 2014 21:14:49 GMT</pubDate></item><item><title><![CDATA[Easy setup for Atom from dotfiles]]></title><description><![CDATA[<p>I am using <a href="https://atom.io/">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
 
 <p>My <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href="http://vim.org/">VIM</a> and <a href="http://sublimetext.com/">Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
 
@@ -169,7 +169,7 @@ gitall status
 
 <p>Now you can transport your favorite Atom settings to any machine.</p>
 
-<p>Tested on Mac OS X and Linux at the moment.</p>]]></description><link>https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/</link><guid isPermaLink="false">4f17c895-b9a5-4b75-a037-7708268b8671</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 19:56:06 GMT</pubDate></item><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href="http://packer.io/">Packer</a> and <a href="http://vagrantup.com/">Vagrant</a>.</p>
+<p>Tested on Mac OS X and Linux at the moment.</p>]]></description><link>http://localhost:2368/easy-setup-for-atom-from-dotfiles/</link><guid isPermaLink="false">4f17c895-b9a5-4b75-a037-7708268b8671</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 19:56:06 GMT</pubDate></item><item><title><![CDATA[Unboxing OS X Yosemite for Packer]]></title><description><![CDATA[<p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href="http://packer.io/">Packer</a> and <a href="http://vagrantup.com/">Vagrant</a>.</p>
 
 <p>First I have to download the new image.</p>
 
@@ -210,11 +210,11 @@ end
 
 <p>I open up the Mac App Store from that VM, and click on the Download button for the OS X Yosemite update.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-01-PM.png" alt="yosemite downloaded"></p>
+<p><img src="http://localhost:2368/content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-01-PM.png" alt="yosemite downloaded"></p>
 
 <p>After downloading the installer starts automatically and shows </p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-07-PM.png" alt="yosemite installer"></p>
+<p><img src="http://localhost:2368/content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-07-PM.png" alt="yosemite installer"></p>
 
 <h2 id="copyinstallesddmg">Copy InstallESD.dmg</h2>
 
@@ -285,7 +285,7 @@ vagrant
 
 <p>Have fun with your new toy!</p>
 
-<p>I have built and tested the OSX Yosemite box only with VMware Fusion 6.0.5 and not with VirtualBox.</p>]]></description><link>https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href="https://pages.github.com/">GitHub Pages</a> with <a href="https://ghost.org/">Ghost</a>, just follow these steps.</p>
+<p>I have built and tested the OSX Yosemite box only with VMware Fusion 6.0.5 and not with VirtualBox.</p>]]></description><link>http://localhost:2368/unboxing-os-x-yosemite-for-packer/</link><guid isPermaLink="false">02b9db96-7d40-4aae-b9bc-c3f3dde17737</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 17 Oct 2014 04:49:19 GMT</pubDate></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<p>To build your own static <a href="https://pages.github.com/">GitHub Pages</a> with <a href="https://ghost.org/">Ghost</a>, just follow these steps.</p>
 
 <h2 id="installnodejs">Install Node.js</h2>
 
@@ -384,15 +384,15 @@ buster deploy
 
 <pre><code class="bash">#!/bin/bash
 buster generate --domain=http://127.0.0.1:2368  
-find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.github.io#u=https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#href="https://stefanscherer.github.io#href="https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#src="https://stefanscherer.github.io#src="https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#u=http://localhost:2368#u=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#url=http://localhost:2368#url=https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#href="http://localhost:2368#href="https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#src="http://localhost:2368#src="https://stefanscherer.github.io#g' {} \;  
 find static/* -name *.html -type f -exec sed -i '' 's#link&gt;http://localhost:2368#link&gt;https://stefanscherer.github.io#g' {} \;  
 buster deploy  
 </code></pre>
 
-<p>This will generate the new pages, fix all links and then deploy them on GitHub.</p>]]></description><link>https://stefanscherer.github.io/setup-ghost-for-github-pages/</link><guid isPermaLink="false">e3811a2a-11ec-47f7-8153-185c829d7f29</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 07 Jul 2014 19:38:59 GMT</pubDate></item><item><title><![CDATA[Canon MF8540Cdn einrichten]]></title><description><![CDATA[<p>... oder: Windows ändert die Menschheit</p>
+<p>This will generate the new pages, fix all links and then deploy them on GitHub.</p>]]></description><link>http://localhost:2368/setup-ghost-for-github-pages/</link><guid isPermaLink="false">e3811a2a-11ec-47f7-8153-185c829d7f29</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 07 Jul 2014 19:38:59 GMT</pubDate></item><item><title><![CDATA[Canon MF8540Cdn einrichten]]></title><description><![CDATA[<p>... oder: Windows ändert die Menschheit</p>
 
 <p>Neulich wurde mein alter HP LaserJet 1200 durch ein schickeres Gerät ersetzt: Ein Canon MF8540CDn Farblaser mit Duplex und Netzwerkanschluss. Dann mal ran an den schweren Karton und auspacken...</p>
 
@@ -403,11 +403,11 @@ Danke Microsoft! Ohne euch gäbe es den Beruf des USB-Stöpsel-Schleifen-Binders
 Bei Robert Lembke wäre das bestimmt ein lustiger Abend geworden. Machen Sie eine typische Handbewegung… <br>
 Seit Jahrzehnten wird um dieses Problem herum gebaut.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-20-57-39.png" alt="Do not connect USB cable before installing software"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-20-57-39.png" alt="Do not connect USB cable before installing software"></p>
 
 <p>Erinnert mich irgendwie an das hier: </p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-20-57-12-1.png" alt="Remove Before Flight"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-20-57-12-1.png" alt="Remove Before Flight"></p>
 
 <p>Was passiert wohl, wenn man es trotz dieser Warnung das Gerät an den Computer anschließt? -> <a href="https://www.youtube.com/watch?v=ow0eDTC_uuQ&amp;t=48s">Vermutlich das hier, da wackeln die Wände.</a> </p>
 
@@ -415,11 +415,11 @@ Seit Jahrzehnten wird um dieses Problem herum gebaut.</p>
 
 <p>Drucken vom Mac aus geht ganz einfach. Einfach aus der aktuellen Anwendung drucken, den Drucker suchen - drucken. Ab jetzt ist er als Standarddrucker bekannt. Keine Treiber, keine CD, einfach das Gerät benutzen.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-00-58.png" alt="Add Printer on Mac"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-00-58.png" alt="Add Printer on Mac"></p>
 
 <p>Ganz genauso sieht es auf iPhone und iPad aus.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-01-22-1.png" alt="Print from iPhone"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-01-22-1.png" alt="Print from iPhone"></p>
 
 <p>Aus der Anwendung einfach anfangen zu drucken, Drucker suchen, auswählen, drucken. Keine App installieren, geht einfach.</p>
 
@@ -428,27 +428,27 @@ Seit Jahrzehnten wird um dieses Problem herum gebaut.</p>
 <p>Der Druckerhersteller gibt dem Kunden gleich fünf CDs mit auf den Weg. („Dieser Weg wird kein leichter sein…“) <br>
 Erst einmal die richtige CD finden, dann Software installieren.</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-03-56.png" alt="Disc Jockey"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-03-56.png" alt="Disc Jockey"></p>
 
 <p>Dann die CD einlegen, es kommt ein UAC Dialog, damit der Installer gleich mit Adminrechten loslegt. Soweit so gut.</p>
 
 <p>Ich wähle die Einfache Installation (wird der Weg wohl doch einfach sein?).</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-04-25.png" alt="Easy Installation"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-04-25.png" alt="Easy Installation"></p>
 
 <p>Doch die Freude wird schnell getrübt:</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-06-42.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-06-42.png" alt=""></p>
 
 <p>Alternativ wähle ich die Suche in der Systemsteuerung unter „Geräte und Drucker“. Dort „Gerät hinzufügen“. Ein Canon taucht auf. Diesen einrichten.</p>
 
 <p>Nach kurzer Zeit dann das: </p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-07-58.png" alt="Software not installed"></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-07-58.png" alt="Software not installed"></p>
 
 <p>Zum Glück hat Microsoft die Problembehandlung erfunden. „Da werden sie geholfen“ - oder auch nicht:</p>
 
-<p><img src="https://stefanscherer.github.io/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-09-42.png" alt=""></p>
+<p><img src="http://localhost:2368/content/images/2014/Jul/Bildschirmfoto-2014-07-06-um-21-09-42.png" alt=""></p>
 
 <p>Problembehandlung abgeschlossen - Kunde steht im Regen. Problem nicht behoben. <br>
 Ich muss dann wohl die CD mal direkt als Admin eingeloggt einlegen. Also Anwendungen schließen, ausloggen, als Admin einloggen, die Prozedur noch einmal durchspielen - hoffen, dass es nun klappt. Ausloggen, wieder als normaler Benutzer einloggen, Anwendung öffnen und das Dokument drucken, das ich drucken wollte. Hoffentlich weiß ich bis dahin, was ich drucken wollte.</p>
@@ -457,7 +457,7 @@ Ich muss dann wohl die CD mal direkt als Admin eingeloggt einlegen. Also Anwendu
 
 <p>Nach 10 Wochen mit einem Mac und 3,5 Jahren iPad gebe ich zu: Apple, du „verblödest“ mich, aber ich bin heilfroh, dass ihr der Menschheit zeigt, wie es funktionieren sollte. Das ist, was der Anwender will: Der will nur drucken.</p>
 
-<p>Gerät auspacken, mit Papier, Strom und Netzwerk "füttern" - fertig.</p>]]></description><link>https://stefanscherer.github.io/canon-mf8540cdn-einrichten/</link><guid isPermaLink="false">aac122a1-449e-44b6-8ae5-127c268bab54</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 06 Jul 2014 19:58:51 GMT</pubDate></item><item><title><![CDATA[Welcome to Ghost]]></title><description><![CDATA[<p>You're live! Nice. We've put together a little post to introduce you to the Ghost editor and get you started. You can manage your content by signing in to the admin area at <code>&lt;your blog URL&gt;/ghost/</code>. When you arrive, you can select this post from a list on the left and see a preview of it on the right. Click the little pencil icon at the top of the preview to edit this post and read the next section!</p>
+<p>Gerät auspacken, mit Papier, Strom und Netzwerk "füttern" - fertig.</p>]]></description><link>http://localhost:2368/canon-mf8540cdn-einrichten/</link><guid isPermaLink="false">aac122a1-449e-44b6-8ae5-127c268bab54</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 06 Jul 2014 19:58:51 GMT</pubDate></item><item><title><![CDATA[Welcome to Ghost]]></title><description><![CDATA[<p>You're live! Nice. We've put together a little post to introduce you to the Ghost editor and get you started. You can manage your content by signing in to the admin area at <code>&lt;your blog URL&gt;/ghost/</code>. When you arrive, you can select this post from a list on the left and see a preview of it on the right. Click the little pencil icon at the top of the preview to edit this post and read the next section!</p>
 
 <h2 id="gettingstarted">Getting Started</h2>
 
@@ -522,4 +522,4 @@ Ich muss dann wohl die CD mal direkt als Admin eingeloggt einlegen. Also Anwendu
 
 <p><input type="text" placeholder="I'm an input field!"></p>
 
-<p>That should be enough to get you started. Have fun - and let us know what you think :)</p>]]></description><link>https://stefanscherer.github.io/welcome-to-ghost/</link><guid isPermaLink="false">35be8c55-f50b-4f38-9aad-e76ab9fc78f2</guid><category><![CDATA[Getting Started]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 14 Jun 2014 09:41:47 GMT</pubDate></item></channel></rss>
+<p>That should be enough to get you started. Have fun - and let us know what you think :)</p>]]></description><link>http://localhost:2368/welcome-to-ghost/</link><guid isPermaLink="false">35be8c55-f50b-4f38-9aad-e76ab9fc78f2</guid><category><![CDATA[Getting Started]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 14 Jun 2014 09:41:47 GMT</pubDate></item></channel></rss>
