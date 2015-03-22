@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Docker on Raspberry Pi</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=561d1c4de6" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <meta name="generator" content="Ghost 0.5" />
+<link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#39;s Blog" href="../rss/index.html">
+<link rel="canonical" href="https://stefanscherer.github.io/docker-on-raspberry-pi/" />
+</head>
+<body class="post-template">
+
+    
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="back-button icon-arrow-left" href="https://stefanscherer.github.io">Home</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Docker on Raspberry Pi</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2015-03-22">22 March 2015</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device.</p>
+
+<p>Our small team at <a href="http://blog.hypriot.com">Hypriot</a> started in January 2015 to make using Docker as simple as possible on the Raspberry Pi. You only need a Raspberry Pi B, B+ or Pi 2 and an empty SD card to get started.</p>
+
+<h2 id="installation">Installation</h2>
+
+<h3 id="downloadsdimage">Download SD Image</h3>
+
+<p>Download the lastest Hypriot SD card image</p>
+
+<pre><code class="bash">curl -o hypriot-rpi-20150301-140537.img.zip http://assets.hypriot.com/hypriot-rpi-20150301-140537.img.zip  
+</code></pre>
+
+<h3 id="downloadflashsh">Download flash.sh</h3>
+
+<p>I've written a small helper script for my Mac to make the flashing part a very easy step. I've put my <code>flash.sh</code> script into a <a href="https://gist.github.com/StefanScherer/debaf068e398df13be68#file-flash-sh">Gist</a></p>
+
+<pre><code class="bash">curl -o flash.sh https://gist.githubusercontent.com/StefanScherer/debaf068e398df13be68/raw/f879333854e25c2994f6f276bec6aa3c57c73758/flash.sh  
+chmod +x flash.sh  
+</code></pre>
+
+<h3 id="extractthezip">Extract the ZIP</h3>
+
+<p>One thing that I have to improve in the flash.sh script is to extract the Image automatically. At the moment you have to extract the ZIP with</p>
+
+<pre><code class="bash">unzip hypriot-rpi-20150301-140537.img.zip  
+</code></pre>
+
+<h3 id="flashsdimage">Flash SD image</h3>
+
+<p>Now run the script with the name of the SD card image.</p>
+
+<pre><code class="bash">./flash.sh hypriot-rpi-20150301-140537.img
+</code></pre>
+
+<p><img src="../content/images/2015/03/Bildschirmfoto-2015-03-22-um-10-15-31.png" alt="flash.sh" /></p>
+
+<p>The script searches for an SD card plugged into your Mac. You can even start the script before inserting the SD card, it will wait for you. The script has a security prompt if you really want to flash onto the shown SD card. Enter <code>y</code> and then enter your root password to start flashing.</p>
+
+<p>If you have installed <code>pv</code> as well (perhaps with <code>brew install pv</code>) then you also get a nice progress bar while flashing. (But at the moment you have to enter your root password while the progress starts writing into the shell window.)</p>
+
+<p>The script will "plop" after finishing, so you can do some other things wail waiting.</p>
+
+<p>After that "plop" just remove the SD card as it is automatically unmounted by the <code>flash.sh</code> script.</p>
+
+<h2 id="bootyourraspberrypi">Boot your Raspberry Pi</h2>
+
+<p>Insert the SD card into your Raspberry Pi and wait until it reboots. The first reboot is needed as we automatically increase the filesystem to the size of the whole SD card.</p>
+
+<h2 id="findyourpi">Find your Pi</h2>
+
+<p>If you have only one Raspberry Pi and don't know the IP address you may use the Adafruit Pi Finder script.</p>
+
+<pre><code class="bash">curl -o finder.sh https://raw.githubusercontent.com/adafruit/Adafruit-Occidentalis/master/finder.sh  
+chmod +x finder.sh  
+./finder.sh -t
+ipconfig  
+</code></pre>
+
+<h2 id="login">Login</h2>
+
+<p>Log into the HypriotOS with user <code>pi</code> and password <code>raspberry</code>. You may also use the user <code>root</code> with password <code>hypriot</code>.</p>
+
+<p>As a first step I normally copy my SSH public key to the Pi with  </p>
+
+<pre><code class="bash">ssh-copy-id pi@ip-of-your-pi  
+</code></pre>
+
+<p>Afterwards you can SSH into your Pi without a password</p>
+
+<p><img src="../content/images/2015/03/Bildschirmfoto-2015-03-22-um-10-40-20.png" alt="ssh-copy-id" /></p>
+
+<p>Docker 1.5.0 is already up and running and you can start playing with Docker on your Pi.</p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/index.html" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/index.html">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/index.html">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="http://stefanscherer.github.io">http://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Docker%20on%20Raspberry%20Pi&amp;url=https://stefanscherer.github.io/docker-on-raspberry-pi/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/docker-on-raspberry-pi/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/docker-on-raspberry-pi/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+
+</main>
+
+
+
+    <footer class="site-footer clearfix">
+         <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
+         <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+    </footer>
+
+    <script src="../public/jquery.js?v=561d1c4de6"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=561d1c4de6"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=561d1c4de6"></script>
+
+</body>
+</html>
