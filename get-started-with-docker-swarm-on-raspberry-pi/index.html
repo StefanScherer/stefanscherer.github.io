@@ -49,6 +49,19 @@
 
 <p><img src="../content/images/2015/03/Bildschirmfoto-2015-03-22-um-10-55-50.png" alt="three docker pis" /></p>
 
+<p>I have flashed the Hypriot SD image three times and logged into the Pi's.</p>
+
+<p>I played with Bonjour to find my Pi's more easily by installing the avahi daemon on each Pi with</p>
+
+<pre><code class="bash">apt-get install -y avahi-daemon  
+vi /etc/hostname # eg. pi6  
+vi /etc/hosts  # eg. 127.0.1.1 pi6  
+/etc/init.d/hostname.sh
+reboot  
+</code></pre>
+
+<p>Now each Docker host could be found with <code>piX.local</code>.</p>
+
 <p>More to come the next few days...</p>
         </section>
 
