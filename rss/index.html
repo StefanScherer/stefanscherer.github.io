@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Mon, 22 Jun 2015 13:44:43 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Warmup for Docker swarm on Raspberry Pi]]></title><description><![CDATA[<p>After Matt William's Blog <a href="http://matthewkwilliams.com/index.php/2015/03/21/swarming-raspberry-pi-part-1/">Swarming Raspberry Pi – Part 1</a> I definitely have to install Docker Swarm onto this little Pi cluster.</p>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.5</generator><lastBuildDate>Mon, 22 Jun 2015 13:45:13 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Access private GitHub repos in Vagrant up]]></title><description><![CDATA[<p>Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box.</p>
+
+<h2 id="enablesshagentforwarding">Enable SSH agent forwarding</h2>
+
+<p>It is very easys to use SSH agent forwarding in interactive sessions while running <code>vagrant ssh</code>. The config setting in your <code>Vagrantfile</code> is this line</p>
+
+<pre><code>  config.ssh.forward_agent = true
+</code></pre>
+
+<h2 id="knowyourhosts">Know your hosts</h2>
+
+<p>To make SSH agent forwarding work at provisioning time we have to do an additional step. The host where we want to SSH into has to be added to the known hosts in the Vagrant box.</p>
+
+<p>For a concrete example we want to try to clone a private repo from GitHub. So we have to add the host <code>github.com</code> to the <code>known_hosts</code> file.</p>
+
+<p>The following command can be added into a shell provision script.</p>
+
+<pre><code>ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts  
+</code></pre>
+
+<p>After that a <code>git clone</code> can access GitHub via SSH with your SSH agent running on your host machine.</p>
+
+<h2 id="completeexample">Complete example</h2>
+
+<p>Here is a complete <code>Vagrantfile</code> that can be used to test it.</p>
+
+<pre><code># -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|  
+  config.vm.box = "boxcutter/ubuntu1404"
+  config.ssh.forward_agent = true
+
+  config.vm.provision "shell", inline: &lt;&lt;-SHELL
+    sudo apt-get update
+    sudo apt-get install -y git
+    mkdir -p ~/.ssh
+    chmod 700 ~/.ssh
+    ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts
+    ssh -T git@github.com
+    git clone git@github.com:you/your-private-repo
+  SHELL
+end  
+</code></pre>
+
+<p>There may be issues on a Windows host even with an SSH agent running. Tested on a Mac.</p>]]></description><link>https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/</link><guid isPermaLink="false">1621e05d-3603-4d5a-a066-5830e12b736f</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 22 Jun 2015 13:45:09 GMT</pubDate></item><item><title><![CDATA[Warmup for Docker swarm on Raspberry Pi]]></title><description><![CDATA[<p>After Matt William's Blog <a href="http://matthewkwilliams.com/index.php/2015/03/21/swarming-raspberry-pi-part-1/">Swarming Raspberry Pi – Part 1</a> I definitely have to install Docker Swarm onto this little Pi cluster.</p>
 
 <p>My little Hypriot "pirate ships" are powered with a 4 port USB charger from Anker. You only need one power supply. The D-Link 5-port Switch is also powered with a USB to 5.4mm cable.</p>
 

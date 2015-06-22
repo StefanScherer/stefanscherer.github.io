@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Access private GitHub repos in Vagrant up</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6dcbab34be" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <meta name="generator" content="Ghost 0.5" />
+<link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#39;s Blog" href="../rss/index.html">
+<link rel="canonical" href="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" />
+</head>
+<body class="post-template">
+
+    
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="back-button icon-arrow-left" href="https://stefanscherer.github.io">Home</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Access private GitHub repos in Vagrant up</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2015-06-22">22 June 2015</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box.</p>
+
+<h2 id="enablesshagentforwarding">Enable SSH agent forwarding</h2>
+
+<p>It is very easys to use SSH agent forwarding in interactive sessions while running <code>vagrant ssh</code>. The config setting in your <code>Vagrantfile</code> is this line</p>
+
+<pre><code>  config.ssh.forward_agent = true
+</code></pre>
+
+<h2 id="knowyourhosts">Know your hosts</h2>
+
+<p>To make SSH agent forwarding work at provisioning time we have to do an additional step. The host where we want to SSH into has to be added to the known hosts in the Vagrant box.</p>
+
+<p>For a concrete example we want to try to clone a private repo from GitHub. So we have to add the host <code>github.com</code> to the <code>known_hosts</code> file.</p>
+
+<p>The following command can be added into a shell provision script.</p>
+
+<pre><code>ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts  
+</code></pre>
+
+<p>After that a <code>git clone</code> can access GitHub via SSH with your SSH agent running on your host machine.</p>
+
+<h2 id="completeexample">Complete example</h2>
+
+<p>Here is a complete <code>Vagrantfile</code> that can be used to test it.</p>
+
+<pre><code># -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|  
+  config.vm.box = "boxcutter/ubuntu1404"
+  config.ssh.forward_agent = true
+
+  config.vm.provision "shell", inline: &lt;&lt;-SHELL
+    sudo apt-get update
+    sudo apt-get install -y git
+    mkdir -p ~/.ssh
+    chmod 700 ~/.ssh
+    ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts
+    ssh -T git@github.com
+    git clone git@github.com:you/your-private-repo
+  SHELL
+end  
+</code></pre>
+
+<p>There may be issues on a Windows host even with an SSH agent running. Tested on a Mac.</p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/index.html" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/index.html">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/index.html">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="http://stefanscherer.github.io">http://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Access%20private%20GitHub%20repos%20in%20Vagrant%20up&amp;url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+
+</main>
+
+
+
+    <footer class="site-footer clearfix">
+         <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
+         <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+    </footer>
+
+    <script src="../public/jquery.js?v=6dcbab34be"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6dcbab34be"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=6dcbab34be"></script>
+
+</body>
+</html>
