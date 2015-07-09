@@ -12,27 +12,76 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6dcbab34be" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=4e0e703622" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
-    <meta name="generator" content="Ghost 0.5" />
-<link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#39;s Blog" href="../rss/index.html">
-<link rel="canonical" href="https://stefanscherer.github.io/get-started-with-docker-swarm-on-raspberry-pi/" />
-</head>
-<body class="post-template">
-
+    <link rel="canonical" href="https://stefanscherer.github.io/get-started-with-docker-swarm-on-raspberry-pi/" />
     
+    <meta property="og:site_name" content="Stefan Scherer's Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Warmup for Docker swarm on Raspberry Pi" />
+    <meta property="og:description" content="After Matt William&#x27;s Blog Swarming Raspberry Pi – Part 1 I definitely have to install Docker Swarm onto this little Pi cluster. My little Hypriot &quot;pirate ships&quot; are powered with a 4 port USB charger from Anker. You only need one..." />
+    <meta property="og:url" content="http://localhost:2368/get-started-with-docker-swarm-on-raspberry-pi/" />
+    <meta property="article:published_time" content="2015-03-22T10:04:27.898Z" />
+    <meta property="article:modified_time" content="2015-03-22T10:11:59.575Z" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Warmup for Docker swarm on Raspberry Pi" />
+    <meta name="twitter:description" content="After Matt William&#x27;s Blog Swarming Raspberry Pi – Part 1 I definitely have to install Docker Swarm onto this little Pi cluster. My little Hypriot &quot;pirate ships&quot; are powered with a 4 port USB charger from Anker. You only need one..." />
+    <meta name="twitter:url" content="http://localhost:2368/get-started-with-docker-swarm-on-raspberry-pi/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "http://localhost:2368/author/stefan-scherer",
+        "sameAs": "http://stefanscherer.github.io",
+        "description": null
+    },
+    "headline": "Warmup for Docker swarm on Raspberry Pi",
+    "url": "http://localhost:2368/get-started-with-docker-swarm-on-raspberry-pi/",
+    "datePublished": "2015-03-22T10:04:27.898Z",
+    "dateModified": "2015-03-22T10:11:59.575Z",
+    "description": "After Matt William&#x27;s Blog Swarming Raspberry Pi – Part 1 I definitely have to install Docker Swarm onto this little Pi cluster. My little Hypriot &quot;pirate ships&quot; are powered with a 4 port USB charger from Anker. You only need one..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.6" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
 
 
 <header class="main-header post-head no-cover">
     <nav class="main-nav  clearfix">
-        <a class="back-button icon-arrow-left" href="https://stefanscherer.github.io">Home</a>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
     </nav>
 </header>
 
 <main class="content" role="main">
-
     <article class="post">
 
         <header class="post-header">
@@ -63,6 +112,20 @@ reboot
 <p>Now each Docker host could be found with <code>piX.local</code>.</p>
 
 <p>More to come the next few days...</p>
+            <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                    var disqus_shortname = 'stefanscherersblog';
+            
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                    
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -102,20 +165,36 @@ reboot
         </footer>
 
     </article>
-
 </main>
 
+<aside class="read-next">
+    <a class="read-next-story no-cover" href="../access-private-github-repos-in-vagrant-up/index.html">
+        <section class="post">
+            <h2>Access private GitHub repos in Vagrant up</h2>
+            <p>Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without&hellip;</p>
+        </section>
+    </a>
+    <a class="read-next-story prev no-cover" href="../docker-on-raspberry-pi/index.html">
+        <section class="post">
+            <h2>Docker on Raspberry Pi</h2>
+            <p>The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our&hellip;</p>
+        </section>
+    </a>
+</aside>
 
 
-    <footer class="site-footer clearfix">
-         <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
-         <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
-    </footer>
 
-    <script src="../public/jquery.js?v=6dcbab34be"></script>
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6dcbab34be"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=6dcbab34be"></script>
+    </div>
+
+    <script src="../public/jquery.js?v=4e0e703622"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=4e0e703622"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=4e0e703622"></script>
 
 </body>
 </html>
