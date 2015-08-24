@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=66f7430359" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=5b3f4629fd" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/" />
@@ -23,7 +23,7 @@
     <meta property="og:description" content="Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..." />
     <meta property="og:url" content="http://localhost:2368/create-an-io-js-container-image-for-windows/" />
     <meta property="article:published_time" content="2015-08-23T18:36:00.025Z" />
-    <meta property="article:modified_time" content="2015-08-24T06:34:14.194Z" />
+    <meta property="article:modified_time" content="2015-08-24T12:55:49.338Z" />
     <meta property="article:tag" content="scherer_stefan@icloud.com" />
     
     <meta name="twitter:card" content="summary" />
@@ -47,7 +47,7 @@
     "headline": "Create a Node.js Container image for Windows",
     "url": "http://localhost:2368/create-an-io-js-container-image-for-windows/",
     "datePublished": "2015-08-23T18:36:00.025Z",
-    "dateModified": "2015-08-24T06:34:14.194Z",
+    "dateModified": "2015-08-24T12:55:49.338Z",
     "keywords": "scherer_stefan@icloud.com",
     "description": "Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..."
 }
@@ -106,16 +106,16 @@
 C:\ContainerSetup.ps1  
 </code></pre>
 
-<p>Now the Docker daemon should be up and running as well as a first Docker base image <code>windowsservercore</code>. You can check that you are working with a Windows Docker daemon with the command <code>docker version</code>.</p>
+<p>This script will download and install the Docker daemon and a base image. Now the Docker daemon should be up and running as well as a first Docker base image <code>windowsservercore</code>. You can check that you are working with a Windows Docker daemon with the command <code>docker version</code>.</p>
 
 <p><img src="../content/images/2015/08/docker-version-png-shadow.png" alt="" /></p>
 
 <h2 id="thefirstownwindowsdockerimage">The first own Windows Docker image</h2>
 
-<p>As a first example I tested to create a Node.js Docker image for Windows. I started with the <a href="https://github.com/nodejs/docker-iojs/blob/662d803695a66cc3f01687bdca93ef23f416d030/3.1/Dockerfile">official iojs Dockerfile</a> and ported that to Windows commands. There are three steps to do:</p>
+<p>As a first example I want to show how to create a Node.js Docker image for Windows. I started with the <a href="https://github.com/nodejs/docker-iojs/blob/662d803695a66cc3f01687bdca93ef23f416d030/3.1/Dockerfile">official iojs Dockerfile</a> and ported that to Windows commands. There are three steps to do:</p>
 
 <ul>
-<li>download the package</li>
+<li>download the Node.js package</li>
 <li>install the package</li>
 <li>use the interpreter as the CMD</li>
 </ul>
@@ -134,7 +134,7 @@ RUN msiexec.exe /q /i iojs.msi
 CMD [ "iojs" ]  
 </code></pre>
 
-<p>So open up an editor, put these lines into a file <code>Dockerfile</code> and save it. Then build the Docker image with</p>
+<p>To try it yourself, open up an editor and put these lines into a file <code>Dockerfile</code> and save it. Then build the Docker image with</p>
 
 <pre><code>docker build -t iojs .  
 docker tag iojs:latest iojs:3.1.0  
@@ -145,7 +145,7 @@ docker tag iojs:latest iojs:3.1.0
 <pre><code>docker images  
 </code></pre>
 
-<p>You can check the Docker image by getting the iojs version with</p>
+<p>You can check the Docker image by running the installed Node.js runtime and retrieve the iojs version</p>
 
 <pre><code>PS C:\Users\vagrant&gt; docker run -it iojs iojs --version  
 v3.1.0  
@@ -155,7 +155,7 @@ v3.1.0
 
 <h2 id="createaniojsonbuilddockerimage">Create an iojs:onbuild Docker image</h2>
 
-<p>The official iojs Docker image has a nice second Dockerfile that uses the <code>ONBUILD</code> feature. This can be used to add your Node.js application into a new Docker image very easily. You do not need to have Node.js installed on your host.</p>
+<p>The official iojs Docker image has a nice second Dockerfile that uses the <code>ONBUILD</code> keyword. This Dockerfile can be used to add your Node.js application into a new Docker image very easily. You do not need to have Node.js installed on your host.</p>
 
 <p>Again I started with the <a href="https://github.com/nodejs/docker-iojs/blob/662d803695a66cc3f01687bdca93ef23f416d030/3.1/onbuild/Dockerfile">official iojs:onbuild Dockerfile</a> and ported it to Windows.</p>
 
@@ -197,7 +197,7 @@ CMD "cd \app &amp; npm start"
 
 <h2 id="putyournodejsappintoacontainer">Put your Node.js app into a Container</h2>
 
-<p>Now we create a simple Node.js application and create a Windows Docker image. We now create three files</p>
+<p>Now we create a simple Node.js application and create a Windows Docker image with it. We now create three files</p>
 
 <ul>
 <li>package.json - with the start command and optional dependencies</li>
@@ -208,13 +208,13 @@ CMD "cd \app &amp; npm start"
 <h3 id="packagejson">package.json</h3>
 
 <pre><code class="language-json">{
-  "name": "node-hello",
-  "version": "1.0.0",
+  "name": "hello-node",
+  "version": "0.0.1",
   "description": "Hello world from io.js in a Windows docker container",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+    "test": "echo \"Error: no test specified\" &amp; exit 1"
   },
   "author": "Stefan Scherer",
   "license": "MIT"
@@ -223,7 +223,7 @@ CMD "cd \app &amp; npm start"
 
 <h3 id="indexjs">index.js</h3>
 
-<p>As a simple example we just print a message, wait five seconds and print another message and exit the application.</p>
+<p>As a simple example we just print a message, wait five seconds and print another message and exit the Node.js application.</p>
 
 <pre><code>'use strict';
 
@@ -243,7 +243,7 @@ setTimeout(function () {
 <pre><code>FROM iojs:onbuild  
 </code></pre>
 
-<p>All further steps to add the Node.js code and run <code>npm install</code> is already in this Docker image.</p>
+<p>All further steps to add the Node.js code and run <code>npm install</code> is already in this Docker image. We now install the Node.js application and create a new Container image with name <code>hello-node</code>.</p>
 
 <pre><code>docker build -t hello-node .  
 </code></pre>
@@ -267,11 +267,11 @@ setTimeout(function () {
 
 <p><img src="../content/images/2015/08/docker-run-png-shadow.png" alt="" /></p>
 
-<p>I hope you enjoyed this blog post. Please feel free to add comments below and share this post if you like.</p>
+<p>So as you can see it is amazing what is already possible with Docker on Windows. I hope you enjoyed this blog post. Please feel free to add comments below and share this post if you like.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>The technical preview gives us the possibility to get in touch with Docker for Windows for the first time. There are some rough edges here and there, but I think there will be a fast progress to run Docker as smooth as with Linux containers.</p>
+<p>The technical preview gives us the possibility to get in touch with Docker for Windows for the first time. There may be some rough edges here and there, but I think there will be a fast progress to run Docker on Windows as smooth as with Linux containers.</p>
             <div id="disqus_thread"></div>
                 <script type="text/javascript">
                 /* * * CONFIGURATION VARIABLES * * */
@@ -345,10 +345,10 @@ setTimeout(function () {
 
     </div>
 
-    <script src="../public/jquery.js?v=66f7430359"></script>
+    <script src="../public/jquery.js?v=5b3f4629fd"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=66f7430359"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=66f7430359"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=5b3f4629fd"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=5b3f4629fd"></script>
 
 </body>
 </html>
