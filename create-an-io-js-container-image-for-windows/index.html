@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Create a Node.js Container image for Windows</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=66f7430359" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Create a Node.js Container image for Windows" />
+    <meta property="og:description" content="Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..." />
+    <meta property="og:url" content="http://localhost:2368/create-an-io-js-container-image-for-windows/" />
+    <meta property="article:published_time" content="2015-08-23T18:36:00.025Z" />
+    <meta property="article:modified_time" content="2015-08-24T06:34:14.194Z" />
+    <meta property="article:tag" content="scherer_stefan@icloud.com" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Create a Node.js Container image for Windows" />
+    <meta name="twitter:description" content="Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..." />
+    <meta name="twitter:url" content="http://localhost:2368/create-an-io-js-container-image-for-windows/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "http://localhost:2368/author/stefan-scherer",
+        "sameAs": "https://stefanscherer.github.io",
+        "description": null
+    },
+    "headline": "Create a Node.js Container image for Windows",
+    "url": "http://localhost:2368/create-an-io-js-container-image-for-windows/",
+    "datePublished": "2015-08-23T18:36:00.025Z",
+    "dateModified": "2015-08-24T06:34:14.194Z",
+    "keywords": "scherer_stefan@icloud.com",
+    "description": "Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.6" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template tag-scherer_stefanicloud-com nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-scherer_stefanicloud-com">
+
+        <header class="post-header">
+            <h1 class="post-title">Create a Node.js Container image for Windows</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2015-08-23">23 August 2015</time>  on <a href="../tag/scherer_stefanicloud-com/index.html">scherer_stefan@icloud.com</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows.</p>
+
+<p>So everybody who is interested in Docker on Windows is now able to get a first impression of the current work. You either need a VM running in Azure with Windows 2016 TP3 or you <a href="http://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-technical-preview">try Windows 2016 TP3</a> locally in a VM.</p>
+
+<h2 id="setupdockeronwindows">Setup Docker on Windows</h2>
+
+<p>In the case you only have a vanilla Window 2016 TP3 machine without Docker installed, you can follow this <a href="https://msdn.microsoft.com/virtualization/windowscontainers/quick_start/inplace_setup">Quick start guide</a>. Open a Powershell as an administrator and run these commands:</p>
+
+<pre><code>wget -uri http://aka.ms/setupcontainers -OutFile C:\ContainerSetup.ps1  
+C:\ContainerSetup.ps1  
+</code></pre>
+
+<p>Now the Docker daemon should be up and running as well as a first Docker base image <code>windowsservercore</code>. You can check that you are working with a Windows Docker daemon with the command <code>docker version</code>.</p>
+
+<p><img src="../content/images/2015/08/docker-version-png-shadow.png" alt="" /></p>
+
+<h2 id="thefirstownwindowsdockerimage">The first own Windows Docker image</h2>
+
+<p>As a first example I tested to create a Node.js Docker image for Windows. I started with the <a href="https://github.com/nodejs/docker-iojs/blob/662d803695a66cc3f01687bdca93ef23f416d030/3.1/Dockerfile">official iojs Dockerfile</a> and ported that to Windows commands. There are three steps to do:</p>
+
+<ul>
+<li>download the package</li>
+<li>install the package</li>
+<li>use the interpreter as the CMD</li>
+</ul>
+
+<p>This is <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/iojs/3.1/Dockerfile">my Windows version</a> of the <code>Dockerfile</code>:</p>
+
+<pre><code>FROM windowsservercore
+
+ENV NPM_CONFIG_LOGLEVEL info  
+ENV IOJS_VERSION 3.1.0
+
+RUN powershell -Command "wget -Uri https://iojs.org/dist/v%IOJS_VERSION%/iojs-v%IOJS_VERSION%-x64.msi -OutFile iojs.msi -UseBasicParsing"
+
+RUN msiexec.exe /q /i iojs.msi
+
+CMD [ "iojs" ]  
+</code></pre>
+
+<p>So open up an editor, put these lines into a file <code>Dockerfile</code> and save it. Then build the Docker image with</p>
+
+<pre><code>docker build -t iojs .  
+docker tag iojs:latest iojs:3.1.0  
+</code></pre>
+
+<p>Now you have your own iojs Docker image for Windows. The second command also tags the <code>iojs:latest</code> with the version number of io.js. You can check your available images with</p>
+
+<pre><code>docker images  
+</code></pre>
+
+<p>You can check the Docker image by getting the iojs version with</p>
+
+<pre><code>PS C:\Users\vagrant&gt; docker run -it iojs iojs --version  
+v3.1.0  
+</code></pre>
+
+<p>OK, we now have the latest io.js running in a Windows Docker container.</p>
+
+<h2 id="createaniojsonbuilddockerimage">Create an iojs:onbuild Docker image</h2>
+
+<p>The official iojs Docker image has a nice second Dockerfile that uses the <code>ONBUILD</code> feature. This can be used to add your Node.js application into a new Docker image very easily. You do not need to have Node.js installed on your host.</p>
+
+<p>Again I started with the <a href="https://github.com/nodejs/docker-iojs/blob/662d803695a66cc3f01687bdca93ef23f416d030/3.1/onbuild/Dockerfile">official iojs:onbuild Dockerfile</a> and ported it to Windows.</p>
+
+<p>This is the Linux version of the Dockerfile:</p>
+
+<pre><code>FROM iojs:3.1.0
+
+RUN mkdir -p /usr/src/app  
+WORKDIR /usr/src/app
+
+ONBUILD COPY package.json /usr/src/app/  
+ONBUILD RUN npm install  
+ONBUILD COPY . /usr/src/app
+
+CMD [ "npm", "start" ]  
+</code></pre>
+
+<p>It uses <code>WORKDIR</code> to set the current directory for all further commands. On Windows this seems to be a work in progress. Setting the current directory works, but I had problems with the <code>CMD</code> to run the <code>npm</code> binary. So I commented out this keyword for the moment and changed the current directory where needed.</p>
+
+<p>Another issue seems to be the <code>COPY</code> command that added a file <code>app</code> instead of the <code>package.json</code>. So I added the filename for the target file again to make it work.</p>
+
+<p>This is <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/iojs/3.1/onbuild/Dockerfile">my current Windows version</a> of the onbuild Dockerfile that works with the current version of the Windows docker daemon.</p>
+
+<pre><code>FROM iojs:3.1.0
+
+RUN mkdir \app
+
+ONBUILD COPY package.json /app/package.json  
+ONBUILD RUN cd \app &amp; npm install  
+ONBUILD COPY . /app
+
+CMD "cd \app &amp; npm start"  
+</code></pre>
+
+<p>Now create the Docker image for this Dockerfile with this command:</p>
+
+<pre><code>docker build -t iojs:onbuild .  
+</code></pre>
+
+<h2 id="putyournodejsappintoacontainer">Put your Node.js app into a Container</h2>
+
+<p>Now we create a simple Node.js application and create a Windows Docker image. We now create three files</p>
+
+<ul>
+<li>package.json - with the start command and optional dependencies</li>
+<li>index.js - with the application source code</li>
+<li>Dockerfile - to build the Docker image </li>
+</ul>
+
+<h3 id="packagejson">package.json</h3>
+
+<pre><code class="language-json">{
+  "name": "node-hello",
+  "version": "1.0.0",
+  "description": "Hello world from io.js in a Windows docker container",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "author": "Stefan Scherer",
+  "license": "MIT"
+}
+</code></pre>
+
+<h3 id="indexjs">index.js</h3>
+
+<p>As a simple example we just print a message, wait five seconds and print another message and exit the application.</p>
+
+<pre><code>'use strict';
+
+const os = require('os');
+
+console.log('Hello World from', os.hostname());
+
+setTimeout(function () {  
+  console.log('Bye bye!');
+}, 5*1000);
+</code></pre>
+
+<h3 id="dockerfile">Dockerfile</h3>
+
+<p>The <code>Dockerfile</code> for this example is quite simple. It just uses the Windows version of the <code>iojs:onbuild</code> Docker image:</p>
+
+<pre><code>FROM iojs:onbuild  
+</code></pre>
+
+<p>All further steps to add the Node.js code and run <code>npm install</code> is already in this Docker image.</p>
+
+<pre><code>docker build -t hello-node .  
+</code></pre>
+
+<p><img src="../content/images/2015/08/docker-build-png-shadow.png" alt="" /></p>
+
+<p>Now run the application with</p>
+
+<pre><code>docker run -t hello-node  
+</code></pre>
+
+<p>You also can run the container in detached mode with</p>
+
+<pre><code>docker run --name=hello -d hello-node  
+</code></pre>
+
+<p>and check the output while running the container or afterwards with</p>
+
+<pre><code>docker logs hello  
+</code></pre>
+
+<p><img src="../content/images/2015/08/docker-run-png-shadow.png" alt="" /></p>
+
+<p>I hope you enjoyed this blog post. Please feel free to add comments below and share this post if you like.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The technical preview gives us the possibility to get in touch with Docker for Windows for the first time. There are some rough edges here and there, but I think there will be a fast progress to run Docker as smooth as with Linux containers.</p>
+            <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                    var disqus_shortname = 'stefanscherersblog';
+            
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                    
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/index.html" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/index.html">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/index.html">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Create%20a%20Node.js%20Container%20image%20for%20Windows&amp;url=https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../automate-building-vagrant-boxes-with-atlas/index.html">
+        <section class="post">
+            <h2>Git push to build Vagrant Boxes with Atlas</h2>
+            <p>Today I have tested the new available service Atlas to build Vagrant Boxes with Packer in the Cloud. As&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script src="../public/jquery.js?v=66f7430359"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=66f7430359"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=66f7430359"></script>
+
+</body>
+</html>
