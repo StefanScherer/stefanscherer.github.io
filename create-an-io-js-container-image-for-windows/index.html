@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=5b3f4629fd" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=8db507dc61" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/" />
@@ -23,7 +23,7 @@
     <meta property="og:description" content="Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..." />
     <meta property="og:url" content="http://localhost:2368/create-an-io-js-container-image-for-windows/" />
     <meta property="article:published_time" content="2015-08-23T18:36:00.025Z" />
-    <meta property="article:modified_time" content="2015-08-24T12:55:49.338Z" />
+    <meta property="article:modified_time" content="2015-08-24T20:13:28.293Z" />
     <meta property="article:tag" content="scherer_stefan@icloud.com" />
     
     <meta name="twitter:card" content="summary" />
@@ -47,7 +47,7 @@
     "headline": "Create a Node.js Container image for Windows",
     "url": "http://localhost:2368/create-an-io-js-container-image-for-windows/",
     "datePublished": "2015-08-23T18:36:00.025Z",
-    "dateModified": "2015-08-24T12:55:49.338Z",
+    "dateModified": "2015-08-24T20:13:28.293Z",
     "keywords": "scherer_stefan@icloud.com",
     "description": "Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version of the Docker daemon for Windows. So everybody who is interested in Docker on Windows is now able to get a..."
 }
@@ -173,9 +173,10 @@ ONBUILD COPY . /usr/src/app
 CMD [ "npm", "start" ]  
 </code></pre>
 
-<p>It uses <code>WORKDIR</code> to set the current directory for all further commands. On Windows this seems to be a work in progress. Setting the current directory works, but I had problems with the <code>CMD</code> to run the <code>npm</code> binary. So I commented out this keyword for the moment and changed the current directory where needed.</p>
+<p>It uses <code>WORKDIR</code> to set the current directory for all further commands. On Windows this seems to be a work in progress. Setting the current directory works, but I had problems with the <code>CMD</code> to run the <code>npm</code> binary. So I commented out this keyword for the moment and changed the current directory where needed. <br />
+<strong>Update:</strong> The <code>CMD [ "npm", "start" ]</code>should be <code>CMD [ "npm.cmd", "start" ]</code> on Windows, as the PATHEXT variable is not used to find executables in this context.</p>
 
-<p>Another issue seems to be the <code>COPY</code> command that added a file <code>app</code> instead of the <code>package.json</code>. So I added the filename for the target file again to make it work.</p>
+<p>Another issue seems to be a combination of the <code>WORKDIR</code> and the <code>COPY</code> command that added a file <code>app</code> instead of the <code>package.json</code>. Also copying the whole source tree with <code>COPY . .</code> resulted in a sub directory <code>app</code>. So I added the filename for the target file again to make it work.</p>
 
 <p>This is <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/iojs/3.1/onbuild/Dockerfile">my current Windows version</a> of the onbuild Dockerfile that works with the current version of the Windows docker daemon.</p>
 
@@ -345,10 +346,10 @@ setTimeout(function () {
 
     </div>
 
-    <script src="../public/jquery.js?v=5b3f4629fd"></script>
+    <script src="../public/jquery.js?v=8db507dc61"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=5b3f4629fd"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=5b3f4629fd"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=8db507dc61"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=8db507dc61"></script>
 
 </body>
 </html>
