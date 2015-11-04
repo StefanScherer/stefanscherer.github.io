@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Run your own dockerized openVPN server at Scaleway</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=16fabfe994" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/run-your-own-dockerized-openvpn-server-at-scaleway/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Run your own dockerized openVPN server at Scaleway" />
+    <meta property="og:description" content="After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..." />
+    <meta property="og:url" content="http://localhost:2368/run-your-own-dockerized-openvpn-server-at-scaleway/" />
+    <meta property="article:published_time" content="2015-11-04T12:16:00.322Z" />
+    <meta property="article:modified_time" content="2015-11-04T12:16:45.731Z" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Run your own dockerized openVPN server at Scaleway" />
+    <meta name="twitter:description" content="After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..." />
+    <meta name="twitter:url" content="http://localhost:2368/run-your-own-dockerized-openvpn-server-at-scaleway/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "http://localhost:2368/author/stefan-scherer",
+        "sameAs": "https://stefanscherer.github.io",
+        "description": null
+    },
+    "headline": "Run your own dockerized openVPN server at Scaleway",
+    "url": "http://localhost:2368/run-your-own-dockerized-openvpn-server-at-scaleway/",
+    "datePublished": "2015-11-04T12:16:00.322Z",
+    "dateModified": "2015-11-04T12:16:45.731Z",
+    "description": "After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.6" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Run your own dockerized openVPN server at Scaleway</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2015-11-04">04 November 2015</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>After reading this <a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html">blog post</a> about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.</p>
+
+<p><a href="https://www.scaleway.com">Scaleway</a> provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker container at minimal costs.</p>
+
+<h2 id="installlocaltools">Install local tools</h2>
+
+<p>First install the scaleway commandline tool as well as the VPN client for Mac OSX.</p>
+
+<pre><code>brew install scw  
+brew cask install tunnelblick  
+</code></pre>
+
+<h2 id="prepareascalewayserver">Prepare a Scaleway server</h2>
+
+<p>If you haven't one yet, create a Scaleway server running with Docker. The commandline tool makes this is really easy.</p>
+
+<pre><code>scw login  
+scw create --name scwdocker Docker_1_7_1  
+scw start scwdocker  
+</code></pre>
+
+<h2 id="prepareandstartyouropenvpncontainer">Prepare and start your openVPN container</h2>
+
+<p>The next steps should be done on the Scaleway server, so login to it with</p>
+
+<pre><code>scw exec scwdocker bash  
+</code></pre>
+
+<p>There already is an ARM port of the <a href="https://github.com/jpetazzo/dockvpn">jpetazzo/dockvpn</a> Docker image for the Raspberry Pi. We just clone the GitHub repo <a href="https://github.com/dimetron/dockvpn-rpi">dimetron/dockvpn-rpi</a> and build the Docker image.</p>
+
+<pre><code>git clone https://github.com/dimetron/dockvpn-rpi.git  
+cd dockvpn-rpi  
+docker build -t jpetazzo/dockvpn .  
+docker run -d --cap-add=NET_ADMIN --name=dockvpn -p 1194:1194/udp -p 443:443/tcp jpetazzo/dockvpn  
+</code></pre>
+
+<p>Now create the ovpn file by running another container and extract it with <code>curl</code>.</p>
+
+<pre><code>docker run --rm -t -i -p 8080:8080 --volumes-from dockvpn jpetazzo/dockvpn serveconfig  
+curl -k -v https://localhost:8080 &gt;scwvpn.ovpn  
+</code></pre>
+
+<p>You now may logout from your Scaleway server.</p>
+
+<h2 id="backtomac">Back to Mac</h2>
+
+<p>Copy the ovpn file back to your Mac with</p>
+
+<pre><code>scw cp scwdocker:dockvpn-rpi/scwvpn.ovpn scwvpn.ovpn  
+</code></pre>
+
+<p>If the <code>scw cp</code> command hangs, try this command instead</p>
+
+<pre><code>scw exec scwdocker cat dockvpn-rpi/scwvpn.ovpn &gt;scwvpn.ovpn  
+</code></pre>
+
+<p>Then double click on the ovpn file or open it with</p>
+
+<pre><code>open scwvpn.ovpn  
+</code></pre>
+
+<p>and Tunnelblick should start and import the file. Now you're ready to connect to your VPN server running at Scaleway!</p>
+
+<p>Please read the <a href="https://github.com/jpetazzo/dockvpn#security-discussion">security discussion</a> section and decide if you are happy with it.</p>
+            <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                    var disqus_shortname = 'stefanscherersblog';
+            
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                    
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/index.html" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/index.html">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/index.html">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Run%20your%20own%20dockerized%20openVPN%20server%20at%20Scaleway&amp;url=https://stefanscherer.github.io/run-your-own-dockerized-openvpn-server-at-scaleway/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/run-your-own-dockerized-openvpn-server-at-scaleway/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/run-your-own-dockerized-openvpn-server-at-scaleway/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../kitematic-meets-windows-docker/index.html">
+        <section class="post">
+            <h2>Kitematic meets Windows Docker</h2>
+            <p>I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2015</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script src="../public/jquery.js?v=16fabfe994"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=16fabfe994"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=16fabfe994"></script>
+
+</body>
+</html>
