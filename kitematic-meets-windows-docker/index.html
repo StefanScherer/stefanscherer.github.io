@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <title>Easy setup for Atom from dotfiles</title>
+    <title>Kitematic meets Windows Docker</title>
     <meta name="description" content="" />
 
     <meta name="HandheldFriendly" content="True" />
@@ -15,20 +15,20 @@
     <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=16fabfe994" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
-    <link rel="canonical" href="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
+    <link rel="canonical" href="http://localhost:2368/kitematic-meets-windows-docker/" />
     
     <meta property="og:site_name" content="Stefan Scherer's Blog" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="Easy setup for Atom from dotfiles" />
-    <meta property="og:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..." />
-    <meta property="og:url" content="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
-    <meta property="article:published_time" content="2014-10-17T19:56:06.259Z" />
-    <meta property="article:modified_time" content="2014-10-17T20:13:17.327Z" />
+    <meta property="og:title" content="Kitematic meets Windows Docker" />
+    <meta property="og:description" content="I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between. A closer look at the..." />
+    <meta property="og:url" content="http://localhost:2368/kitematic-meets-windows-docker/" />
+    <meta property="article:published_time" content="2015-09-08T22:03:23.155Z" />
+    <meta property="article:modified_time" content="2015-09-08T22:04:09.799Z" />
     
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Easy setup for Atom from dotfiles" />
-    <meta name="twitter:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..." />
-    <meta name="twitter:url" content="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
+    <meta name="twitter:title" content="Kitematic meets Windows Docker" />
+    <meta name="twitter:description" content="I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between. A closer look at the..." />
+    <meta name="twitter:url" content="http://localhost:2368/kitematic-meets-windows-docker/" />
     
     <script type="application/ld+json">
 {
@@ -43,11 +43,11 @@
         "sameAs": "https://stefanscherer.github.io",
         "description": null
     },
-    "headline": "Easy setup for Atom from dotfiles",
-    "url": "http://localhost:2368/easy-setup-for-atom-from-dotfiles/",
-    "datePublished": "2014-10-17T19:56:06.259Z",
-    "dateModified": "2014-10-17T20:13:17.327Z",
-    "description": "I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..."
+    "headline": "Kitematic meets Windows Docker",
+    "url": "http://localhost:2368/kitematic-meets-windows-docker/",
+    "datePublished": "2015-09-08T22:03:23.155Z",
+    "dateModified": "2015-09-08T22:04:09.799Z",
+    "description": "I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between. A closer look at the..."
 }
     </script>
 
@@ -85,49 +85,26 @@
     <article class="post">
 
         <header class="post-header">
-            <h1 class="post-title">Easy setup for Atom from dotfiles</h1>
+            <h1 class="post-title">Kitematic meets Windows Docker</h1>
             <section class="post-meta">
-                <time class="post-date" datetime="2014-10-17">17 October 2014</time> 
+                <time class="post-date" datetime="2015-09-09">09 September 2015</time> 
             </section>
         </header>
 
         <section class="post-content">
-            <p>I am using <a href="https://atom.io">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+            <p>I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between.</p>
 
-<p>My <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href="http://vim.org">VIM</a> and <a href="http://sublimetext.com">Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
+<p><img src="../content/images/2015/09/kitematic-win2016tp3-png-shadow.png" alt="" /></p>
 
-<h2 id="cloningdotfilesrepo">Cloning dotfiles repo</h2>
+<p>A closer look at the left column shows a running <strong>mongo</strong> container. Yes, I know, you cannot pull docker images with the Windows Docker Engine at the moment. But if you have created some local Docker images with the official names it looks pretty impressive right now.</p>
 
-<p>On a fresh machine, I normally install the editors I like and then clone my dotfiles repo and then call a script to do the rest of the setup.</p>
+<p><img src="../content/images/2015/09/kitematic-mongo-png-shadow.png" alt="" /></p>
 
-<pre><code class="bash">git clone https://github.com/StefanScherer/dotfiles &amp;&amp; cd dotfiles &amp;&amp; ./sync.sh  
-</code></pre>
+<p>And to show that this is no fake you can see some windows pathes in the container logs view:</p>
 
-<p>This sets up the configs for VIM, Sublime Text and now also for Atom (as well as a lot of bash aliases, functions, etc.)</p>
+<p><img src="../content/images/2015/09/kitematic-list-png-shadow.png" alt="" /></p>
 
-<p>The <code>sync.sh</code> script is just copying all <code>.atom/</code> configs to <code>~/.atom/</code> directory. But this is only for key bindings and other preferences.</p>
-
-<h2 id="enterparcel">Enter Parcel</h2>
-
-<p>The difficult part was how to install a list of Atom packages and sync them between all of my machines. Atom does not create a list of installed packages. But there is a package <code>parcel</code> that does exactly what I need.</p>
-
-<p>So the <code>sync.sh</code> just assures that the <a href="https://atom.io/packages/parcel"><code>parcel</code></a> package is installed.</p>
-
-<h2 id="packagesparcelsync">Packages / Parcel / Sync</h2>
-
-<p>Now just open Atom from command line or from your Dock and click on <strong>Packages / Parcel / Sync</strong> and all other packages will be installed.</p>
-
-<p>You may have to reload or restart Atom. Then you have all your listed plugins and of course all your configs installed from your dotfiles repo.</p>
-
-<h2 id="savingconfigandinstalledplugins">Saving Config and installed Plugins</h2>
-
-<p>You can install other packages from menu or with <code>apm install</code>. If you want to save your changes in your dotfiles repo, just click on <strong>Packages / Parcel / Sync</strong> again and an updated <code>~/.atom/packages.cson</code> files will be written.</p>
-
-<p>Go back to the dotfiles repo and copy all files from <code>~/.atom/</code> back and commit and push it. I have my <code>sync-atom-prefs.sh</code> script.</p>
-
-<p>Now you can transport your favorite Atom settings to any machine.</p>
-
-<p>Tested on Mac OS X and Linux at the moment.</p>
+<p>That's all for now.</p>
             <div id="disqus_thread"></div>
                 <script type="text/javascript">
                 /* * * CONFIGURATION VARIABLES * * */
@@ -164,15 +141,15 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Easy%20setup%20for%20Atom%20from%20dotfiles&amp;url=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-twitter" href="https://twitter.com/share?text=Kitematic%20meets%20Windows%20Docker&amp;url=http://localhost:2368/kitematic-meets-windows-docker/"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/kitematic-meets-windows-docker/"
                     onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/kitematic-meets-windows-docker/"
                    onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
@@ -184,16 +161,16 @@
 </main>
 
 <aside class="read-next">
-    <a class="read-next-story no-cover" href="../how-to-work-across-github-repos/index.html">
+    <a class="read-next-story no-cover" href="../run-your-own-openvpn-on-scaleway/index.html">
         <section class="post">
-            <h2>How to work across GitHub repos</h2>
-            <p>If you are a member of a GitHub organization you sometimes have to work across all repos. Here are&hellip;</p>
+            <h2>Run your own dockerized openVPN server at Scaleway</h2>
+            <p>After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible&hellip;</p>
         </section>
     </a>
-    <a class="read-next-story prev no-cover" href="../unboxing-os-x-yosemite-for-packer/index.html">
+    <a class="read-next-story prev no-cover" href="../create-an-io-js-container-image-for-windows/index.html">
         <section class="post">
-            <h2>Unboxing OS X Yosemite for Packer</h2>
-            <p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for&hellip;</p>
+            <h2>Create a Node.js Container image for Windows</h2>
+            <p>Last week Microsoft has released a technical preview of the upcoming Windows Server 2016 with a first running version&hellip;</p>
         </section>
     </a>
 </aside>

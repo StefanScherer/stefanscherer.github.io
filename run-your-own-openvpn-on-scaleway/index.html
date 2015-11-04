@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <title>Easy setup for Atom from dotfiles</title>
+    <title>Run your own dockerized openVPN server at Scaleway</title>
     <meta name="description" content="" />
 
     <meta name="HandheldFriendly" content="True" />
@@ -15,20 +15,20 @@
     <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=16fabfe994" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
-    <link rel="canonical" href="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
+    <link rel="canonical" href="http://localhost:2368/run-your-own-openvpn-on-scaleway/" />
     
     <meta property="og:site_name" content="Stefan Scherer's Blog" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="Easy setup for Atom from dotfiles" />
-    <meta property="og:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..." />
-    <meta property="og:url" content="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
-    <meta property="article:published_time" content="2014-10-17T19:56:06.259Z" />
-    <meta property="article:modified_time" content="2014-10-17T20:13:17.327Z" />
+    <meta property="og:title" content="Run your own dockerized openVPN server at Scaleway" />
+    <meta property="og:description" content="After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..." />
+    <meta property="og:url" content="http://localhost:2368/run-your-own-openvpn-on-scaleway/" />
+    <meta property="article:published_time" content="2015-11-04T11:59:43.799Z" />
+    <meta property="article:modified_time" content="2015-11-04T12:04:35.652Z" />
     
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Easy setup for Atom from dotfiles" />
-    <meta name="twitter:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..." />
-    <meta name="twitter:url" content="http://localhost:2368/easy-setup-for-atom-from-dotfiles/" />
+    <meta name="twitter:title" content="Run your own dockerized openVPN server at Scaleway" />
+    <meta name="twitter:description" content="After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..." />
+    <meta name="twitter:url" content="http://localhost:2368/run-your-own-openvpn-on-scaleway/" />
     
     <script type="application/ld+json">
 {
@@ -43,11 +43,11 @@
         "sameAs": "https://stefanscherer.github.io",
         "description": null
     },
-    "headline": "Easy setup for Atom from dotfiles",
-    "url": "http://localhost:2368/easy-setup-for-atom-from-dotfiles/",
-    "datePublished": "2014-10-17T19:56:06.259Z",
-    "dateModified": "2014-10-17T20:13:17.327Z",
-    "description": "I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for..."
+    "headline": "Run your own dockerized openVPN server at Scaleway",
+    "url": "http://localhost:2368/run-your-own-openvpn-on-scaleway/",
+    "datePublished": "2015-11-04T11:59:43.799Z",
+    "dateModified": "2015-11-04T12:04:35.652Z",
+    "description": "After reading this blog post about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well. Scaleway provides real ARM hardware in the cloud and Docker runs well on it. So here are..."
 }
     </script>
 
@@ -85,49 +85,75 @@
     <article class="post">
 
         <header class="post-header">
-            <h1 class="post-title">Easy setup for Atom from dotfiles</h1>
+            <h1 class="post-title">Run your own dockerized openVPN server at Scaleway</h1>
             <section class="post-meta">
-                <time class="post-date" datetime="2014-10-17">17 October 2014</time> 
+                <time class="post-date" datetime="2015-11-04">04 November 2015</time> 
             </section>
         </header>
 
         <section class="post-content">
-            <p>I am using <a href="https://atom.io">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+            <p>After reading this <a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html">blog post</a> about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.</p>
 
-<p>My <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href="http://vim.org">VIM</a> and <a href="http://sublimetext.com">Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
+<p><a href="https://www.scaleway.com">Scaleway</a> provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker container at minimal costs.</p>
 
-<h2 id="cloningdotfilesrepo">Cloning dotfiles repo</h2>
+<h2 id="installlocaltools">Install local tools</h2>
 
-<p>On a fresh machine, I normally install the editors I like and then clone my dotfiles repo and then call a script to do the rest of the setup.</p>
+<p>First install the scaleway commandline tool as well as the VPN client for Mac OSX.</p>
 
-<pre><code class="bash">git clone https://github.com/StefanScherer/dotfiles &amp;&amp; cd dotfiles &amp;&amp; ./sync.sh  
+<pre><code>brew install scw  
+brew cask install tunnelblick  
 </code></pre>
 
-<p>This sets up the configs for VIM, Sublime Text and now also for Atom (as well as a lot of bash aliases, functions, etc.)</p>
+<h2 id="prepareascalewayserver">Prepare a Scaleway server</h2>
 
-<p>The <code>sync.sh</code> script is just copying all <code>.atom/</code> configs to <code>~/.atom/</code> directory. But this is only for key bindings and other preferences.</p>
+<p>If you haven't one yet, create a Scaleway server running with Docker. The commandline tool makes this is really easy.</p>
 
-<h2 id="enterparcel">Enter Parcel</h2>
+<pre><code>scw login  
+scw create --name scwdocker Docker_1_7_1  
+scw start scwdocker  
+</code></pre>
 
-<p>The difficult part was how to install a list of Atom packages and sync them between all of my machines. Atom does not create a list of installed packages. But there is a package <code>parcel</code> that does exactly what I need.</p>
+<h2 id="prepareandstartyouropenvpncontainer">Prepare and start your openVPN container</h2>
 
-<p>So the <code>sync.sh</code> just assures that the <a href="https://atom.io/packages/parcel"><code>parcel</code></a> package is installed.</p>
+<p>The next steps should be done on the Scaleway server, so login to it with</p>
 
-<h2 id="packagesparcelsync">Packages / Parcel / Sync</h2>
+<pre><code>scw exec scwdocker bash  
+</code></pre>
 
-<p>Now just open Atom from command line or from your Dock and click on <strong>Packages / Parcel / Sync</strong> and all other packages will be installed.</p>
+<p>There already is an ARM port of the <a href="https://github.com/jpetazzo/dockvpn">jpetazzo/dockvpn</a> Docker image for the Raspberry Pi. We just clone the GitHub repo <a href="https://github.com/dimetron/dockvpn-rpi">dimetron/dockvpn-rpi</a> and build the Docker image.</p>
 
-<p>You may have to reload or restart Atom. Then you have all your listed plugins and of course all your configs installed from your dotfiles repo.</p>
+<pre><code>git clone https://github.com/dimetron/dockvpn-rpi.git  
+cd dockvpn-rpi  
+docker build -t jpetazzo/dockvpn .  
+docker run -d --cap-add=NET_ADMIN --name=dockvpn -p 1194:1194/udp -p 443:443/tcp jpetazzo/dockvpn  
+</code></pre>
 
-<h2 id="savingconfigandinstalledplugins">Saving Config and installed Plugins</h2>
+<p>Now create the ovpn file by running another container and extract it with <code>curl</code>.</p>
 
-<p>You can install other packages from menu or with <code>apm install</code>. If you want to save your changes in your dotfiles repo, just click on <strong>Packages / Parcel / Sync</strong> again and an updated <code>~/.atom/packages.cson</code> files will be written.</p>
+<pre><code>docker run --rm -t -i -p 8080:8080 --volumes-from dockvpn jpetazzo/dockvpn serveconfig  
+curl -k -v https://localhost:8080 &gt;scwvpn.ovpn  
+</code></pre>
 
-<p>Go back to the dotfiles repo and copy all files from <code>~/.atom/</code> back and commit and push it. I have my <code>sync-atom-prefs.sh</code> script.</p>
+<p>You now may logout from your Scaleway server.</p>
 
-<p>Now you can transport your favorite Atom settings to any machine.</p>
+<h2 id="backtomac">Back to Mac</h2>
 
-<p>Tested on Mac OS X and Linux at the moment.</p>
+<p>Copy the ovpn file back to your Mac with</p>
+
+<pre><code>scw cp scwdocker:dockvpn-rpi/scwvpn.ovpn scwvpn.ovpn  
+</code></pre>
+
+<p>If the <code>scw cp</code> command hangs, try this command instead</p>
+
+<pre><code>scw exec scwdocker cat dockvpn-rpi/scwvpn.ovpn &gt;scwvpn.ovpn  
+</code></pre>
+
+<p>Then double click on the ovpn file or open it with</p>
+
+<pre><code>open scwvpn.ovpn  
+</code></pre>
+
+<p>and Tunnelblick should start and import the file. Now you're ready to connect to your VPN server running at Scaleway!</p>
             <div id="disqus_thread"></div>
                 <script type="text/javascript">
                 /* * * CONFIGURATION VARIABLES * * */
@@ -164,15 +190,15 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Easy%20setup%20for%20Atom%20from%20dotfiles&amp;url=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-twitter" href="https://twitter.com/share?text=Run%20your%20own%20dockerized%20openVPN%20server%20at%20Scaleway&amp;url=http://localhost:2368/run-your-own-openvpn-on-scaleway/"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:2368/run-your-own-openvpn-on-scaleway/"
                     onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/easy-setup-for-atom-from-dotfiles/"
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://localhost:2368/run-your-own-openvpn-on-scaleway/"
                    onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
@@ -184,16 +210,10 @@
 </main>
 
 <aside class="read-next">
-    <a class="read-next-story no-cover" href="../how-to-work-across-github-repos/index.html">
+    <a class="read-next-story prev no-cover" href="../kitematic-meets-windows-docker/index.html">
         <section class="post">
-            <h2>How to work across GitHub repos</h2>
-            <p>If you are a member of a GitHub organization you sometimes have to work across all repos. Here are&hellip;</p>
-        </section>
-    </a>
-    <a class="read-next-story prev no-cover" href="../unboxing-os-x-yosemite-for-packer/index.html">
-        <section class="post">
-            <h2>Unboxing OS X Yosemite for Packer</h2>
-            <p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for&hellip;</p>
+            <h2>Kitematic meets Windows Docker</h2>
+            <p>I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server&hellip;</p>
         </section>
     </a>
 </aside>
