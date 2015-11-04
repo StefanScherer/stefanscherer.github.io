@@ -524,7 +524,7 @@ find static/* -name *.html -type f -exec sed -i '' 's#u=https://stefanscherer.gi
 find static/* -name *.html -type f -exec sed -i '' 's#url=https://stefanscherer.github.io#url=https://stefanscherer.github.io#g' {} \;  
 find static/* -name *.html -type f -exec sed -i '' 's#href="https://stefanscherer.github.io#href="https://stefanscherer.github.io#g' {} \;  
 find static/* -name *.html -type f -exec sed -i '' 's#src="https://stefanscherer.github.io#src="https://stefanscherer.github.io#g' {} \;  
-find static/* -name *.html -type f -exec sed -i '' 's#link&gt;http://localhost:2368#link&gt;https://stefanscherer.github.io#g' {} \;  
+find static/* -name *.html -type f -exec sed -i '' 's#link&gt;https://stefanscherer.github.io#link&gt;https://stefanscherer.github.io#g' {} \;  
 buster deploy  
 </code></pre>
 
