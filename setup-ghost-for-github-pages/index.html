@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=dcf5f07595" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=cf1731675a" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/setup-ghost-for-github-pages/" />
@@ -191,7 +191,7 @@ buster deploy
 
 <pre><code class="language-bash">#!/bin/bash
 buster generate --domain=http://127.0.0.1:2368  
-find static -name *.html -type f -exec sed -i '' 's#http://localhost:2368#https://stefanscherer.github.io#g' {} \;  
+find static -name *.html -type f -exec sed -i '' 's#https://stefanscherer.github.io#https://stefanscherer.github.io#g' {} \;  
 buster deploy  
 </code></pre>
 
@@ -275,10 +275,10 @@ buster deploy
 
     </div>
 
-    <script src="../public/jquery.js?v=dcf5f07595"></script>
+    <script src="../public/jquery.js?v=cf1731675a"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=dcf5f07595"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=dcf5f07595"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=cf1731675a"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=cf1731675a"></script>
 
 </body>
 </html>
