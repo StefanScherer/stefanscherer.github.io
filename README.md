@@ -80,14 +80,16 @@ All upcoming pushes are much faster and you can see your static Ghost blog posts
 ## Write new Blog posts
 To write new Blog posts or update the existing ones, just start Ghost, edit, then generate and deploy the static pages.
 
-Write post in your browser [locally](http://stefanscherer.github.io/ghost).
+Write post in your browser [locally](http://localhost.2368/ghost).
 
 ```
 cd ghost
+nvm use 0.12
 npm start
-open http://stefanscherer.github.io/ghost
-buster generate --domain=http://localhost:2368
-buster deploy
+open http://localhost:2368/ghost
+./deploy.sh
 ```
 
-View results on [GitHub Pages](http://stefanscherer.github.io).
+See the [`deploy.sh`](https://github.com/StefanScherer/stefanscherer.github.io/blob/master/deploy.sh) for details.
+
+View results on [GitHub Pages](https://stefanscherer.github.io).
