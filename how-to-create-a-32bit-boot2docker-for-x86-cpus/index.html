@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How to create a 32bit boot2docker for x86 CPU&#x27;s</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ff69a2309f" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to create a 32bit boot2docker for x86 CPU&#x27;s" />
+    <meta property="og:description" content="Normally we build Docker for ARM to run Docker on these 32bit ARM CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the..." />
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
+    <meta property="article:published_time" content="2016-02-18T23:12:05.682Z" />
+    <meta property="article:modified_time" content="2016-02-18T23:12:05.680Z" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to create a 32bit boot2docker for x86 CPU&#x27;s" />
+    <meta name="twitter:description" content="Normally we build Docker for ARM to run Docker on these 32bit ARM CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the..." />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "https://stefanscherer.github.io/author/stefan-scherer",
+        "sameAs": "https://stefanscherer.github.io",
+        "description": null
+    },
+    "headline": "How to create a 32bit boot2docker for x86 CPU&#x27;s",
+    "url": "https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/",
+    "datePublished": "2016-02-18T23:12:05.682Z",
+    "dateModified": "2016-02-18T23:12:05.680Z",
+    "description": "Normally we build Docker for ARM to run Docker on these 32bit ARM CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the..."
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.6" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">How to create a 32bit boot2docker for x86 CPU&#x27;s</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-02-19">19 February 2016</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>Normally we build Docker for ARM to run Docker on these 32bit ARM CPU's. But does Docker run on 32bit Intel CPU's as well?</p>
+
+<h2 id="whytheheck">Why the heck?</h2>
+
+<p>Weeks ago when I wrote some integration tests for <code>docker-machine</code> to test the Chocolatey package on AppVeyor CI and I thought: Wouldn't it be cool to create eg. a real VirtualBox Docker Machine on a CI server and have some real tests there? But I soon found out that most/all of the CI servers out in the cloud also are virtualized. And none really supports what's called <strong>nested hypervisor</strong> - to run a 64bit VM in a 64bit VM. I left the integration tests with some tests with the driver <code>none</code> and forgot about the idea.</p>
+
+<p>Last week I sat before my old PC running 32bit Windows and I thought if it is possible to run Docker on it as well. I normally use <code>docker-machine</code> to spin up Docker from Windows in a Linux boot2docker VM. And with Chocolatey I can install the 32bit Windows version of <code>docker-machine</code>. But spinning up a VirtualBox Docker Machine doesn't work on my PC as it can't run 64bit VM's. So the idea came back into my mind.</p>
+
+<p>So what is missing to create such a 32bit VM to have at least a running Docker Engine?</p>
+
+<ul>
+<li>a 32bit Docker Engine binary for x86 CPU</li>
+<li>a 32bit boot2docker.iso file that is used by <code>docker-machine</code></li>
+</ul>
+
+<p>So I first searched for some issues on GitHub what others said about 32bit Docker.</p>
+
+<p>I found this interesting Issue <a href="https://github.com/docker/docker/issues/136">docker/docker#136</a> with a comment by Solomon Hykes:</p>
+
+<blockquote>
+  <p>Here's what I suggest:</p>
+  
+  <p>Step 1: docker only supports amd64. It will refuse to start a container on any other architecture.This should be made clear to the user.</p>
+  
+  <p>Step 2: docker will eventually support more architectures, including i386. This will include arch-specific images, facilities to look them up etc.</p>
+  
+  <p>So, I will accept anything that makes it easier to support multiple architectures <em>in the future</em>. But for now we're sticking to amd64.</p>
+</blockquote>
+
+<p>That last sentence made me smile. Hey, aren't we doing multi architecture right now? Is the future now?</p>
+
+<p>I started a proof of concept, but didn't want to waste disk space and computing power locally. So I also tested if such a task could be done right from your web browser. Just fork the <a href="https://github.com/docker/docker">docker/docker</a> repo and start patching the <code>Dockerfile</code> to build it for 32bit. Then fork the <a href="https://github.com/boot2docker/boot2docker">boot2docker/boot2docker</a> repo as well and do the same thing here. To build the DEB package and the ISO file I used TravisCI and deployed the output as a GitHub release to the forked repo.</p>
+
+<p>So my build pipeline looks like this:</p>
+
+<p><img src="../content/images/2016/02/boot2docker_build_pipeline.png" alt="boot2docker build pipeline" /></p>
+
+<p>I created two pull requests against the forked repos to have the TravisCI build status for each commit. And also we can diff the modified files very easily in the browser.</p>
+
+<ul>
+<li><a href="https://github.com/StefanScherer/docker/pull/1">docker/pull/1</a></li>
+<li><a href="https://github.com/StefanScherer/boot2docker/pull/1">boot2docker/pull/1</a></li>
+</ul>
+
+<p>On the afternoon my kids wanted to play some computer games, so I had to leave my MacBook and PC. But no problem with this setup, I just continued on my iPad.</p>
+
+<p><img src="../content/images/2016/02/boot2docker-ipad.jpg" alt="committing from iPad" /></p>
+
+<p>Porting the <code>Dockerfile</code> from amd64 to another CPU you first have to solve the <code>FROM ubuntu:trusty</code> line and find a base image. Crazy enough there already are some 32bit Docker Image, so I just could use <code>FROM 32bit/ubuntu:14.04</code> instead.</p>
+
+<p>And step by step I ported packages, filenames, directory names to fit the i386 architecture. <br />
+For the boot2docker the problem was to compile a 32bit kernel first, but a <code>make menuconfig</code> is your friend to change all the kernel switches needed to turn off 64bit.</p>
+
+<h2 id="willitwork">Will it work?</h2>
+
+<p>And after the ISO file was finished I tried it with an <code>appveyor.yml</code> to build a integration test for the Chocolatey package on a Windows CI server. There are some technical details to solve right now to install VirtualBox inside the build server without network issues.</p>
+
+<p>So I tested it manually in an AppVeyor CI server through a RDP session. I installed VirtualBox with Chocolatey and then downloaded the 32bit boot2docker.iso file from the GitHub release and started up a boot2docker VM right in AppVeyor:</p>
+
+<p><img src="../content/images/2016/02/boot2docker-in-appveyor.png" alt="boot2docker in appveyor" /></p>
+
+<p>And does it run containers? Yes, pulling the <code>32bit/ubuntu:14.04</code> Docker image and running it also works inside the AppVeyor CI server:</p>
+
+<p><img src="../content/images/2016/02/boot2docker-run-container.png" alt="boot2docker in appveyor" /></p>
+
+<p>You can try the 32bit version of Docker yourself on your laptop by creating a VM with  <code>docker-machine</code> and adjusting some defaults:</p>
+
+<pre><code class="language-bash">docker-machine -D create -d virtualbox \  
+  --virtualbox-boot2docker-url \
+  https://github.com/StefanScherer/boot2docker/releases/download/v1.9.1-386/boot2docker.iso dev32
+</code></pre>
+
+<p>Here is the output of <code>docker version</code> running from my Mac against the 32bit Linux Docker Engine running in VirtualBox:</p>
+
+<p><img src="../content/images/2016/02/boot2docker-version.png" alt="boot2docker in appveyor" /></p>
+
+<p>I hope you enjoyed this little tour. As always use the comments below to give us feedback and share it on Twitter or Facebook.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20create%20a%2032bit%20boot2docker%20for%20x86%20CPU's&amp;url=https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../how-to-run-windows-docker-engine-in-azure/">
+        <section class="post">
+            <h2>How to run a Windows Docker Engine in Azure</h2>
+            <p>Over the weekend I had a look at how easy it is to get in touch with Docker on&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script src="../public/jquery.js?v=ff69a2309f"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ff69a2309f"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=ff69a2309f"></script>
+
+</body>
+</html>
