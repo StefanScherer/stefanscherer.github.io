@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f20d68de23" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=1481296f98" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
@@ -23,7 +23,7 @@
     <meta property="og:description" content="You normally can use Docker on 64bit Intel CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the Chocolatey package on AppVeyor CI..." />
     <meta property="og:url" content="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
     <meta property="article:published_time" content="2016-02-18T23:12:05.682Z" />
-    <meta property="article:modified_time" content="2016-02-19T23:45:39.338Z" />
+    <meta property="article:modified_time" content="2016-02-20T01:23:00.922Z" />
     
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="How to create a 32bit boot2docker for x86 CPU&#x27;s" />
@@ -46,7 +46,7 @@
     "headline": "How to create a 32bit boot2docker for x86 CPU&#x27;s",
     "url": "https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/",
     "datePublished": "2016-02-18T23:12:05.682Z",
-    "dateModified": "2016-02-19T23:45:39.338Z",
+    "dateModified": "2016-02-20T01:23:00.922Z",
     "description": "You normally can use Docker on 64bit Intel CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the Chocolatey package on AppVeyor CI..."
 }
     </script>
@@ -157,6 +157,8 @@ For the boot2docker the problem was to compile a 32bit kernel first, but a <code
 
 <p><img src="../content/images/2016/02/boot2docker-run-container.png" alt="boot2docker in appveyor" /></p>
 
+<h2 id="tryityourself">Try it yourself</h2>
+
 <p>You can try the 32bit version of Docker yourself on your laptop by creating a VM with <code>docker-machine</code> and adjusting some defaults:</p>
 
 <pre><code class="language-bash">docker-machine create -d virtualbox --virtualbox-boot2docker-url https://github.com/StefanScherer/boot2docker/releases/download/v1.10.1-386/boot2docker.iso dev32  
@@ -166,7 +168,49 @@ For the boot2docker the problem was to compile a 32bit kernel first, but a <code
 
 <p><img src="../content/images/2016/02/boot2docker-version-1.png" alt="boot2docker in appveyor" /></p>
 
-<p>This proof of concept shows that running Docker in a 32bit VM really works. I hope you enjoyed this little tour. As always I love to get feedback. What is your use case to run Docker on 32bit? Please leave a comment below or share it on Twitter.</p>
+<h2 id="nestedvm">"Nested" VM?</h2>
+
+<p>We can do another crazy thing with it. VirtualBox is not able to run nested 64bit VM's. But with this 32bit boot2docker it is possible to run the boot2docker VM inside a VirtualBox VM: </p>
+
+<p><img src="../content/images/2016/02/container_in_virtualbox_in_virtualbox_on_mac-2.png" alt="nested-virtualbox" /></p>
+
+<p>I used this <code>Vagrantfile</code> to create the 64bit VirtualBox VM</p>
+
+<pre><code class="language-ruby">Vagrant.configure(2) do |config|  
+  config.vm.box = "boxcutter/ubuntu1404"
+  config.vm.network "public_network"
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "2048"
+  end
+end  
+</code></pre>
+
+<p>Now spin up the VM and log into it with</p>
+
+<pre><code>vagrant up --provider virtualbox  
+vagrant ssh  
+</code></pre>
+
+<p>Now inside the 64bit VM you install the Docker client, VirtualBox and Docker Machine with a patch to really disable VT-X checks. Future versions of Docker Machine will allow you to do that as pull request <a href="https://github.com/docker/machine/pull/3018">#3018</a> got merged recently.</p>
+
+<pre><code>sudo apt-get update  
+curl https://get.docker.com | sudo sh  
+sudo apt-get install -y virtualbox  
+sudo curl -L -o /usr/local/bin/docker-machine https://github.com/StefanScherer/boot2docker/releases/download/v1.9.1-386/docker-machine-Linux-x86_64  
+sudo chmod +x /usr/local/bin/docker-machine  
+</code></pre>
+
+<p>Now it is time again to create the 32bit Docker Machine VM with</p>
+
+<pre><code>docker-machine create -d virtualbox --virtualbox-no-vtx-check --virtualbox-boot2docker-url https://github.com/StefanScherer/boot2docker/releases/download/v1.10.1-386/boot2docker.iso dev  
+eval $(docker-machine env dev)  
+docker version  
+docker-machine ls  
+</code></pre>
+
+<p>This proof of concept shows that running Docker in a 32bit VM really could work. And it enables you to experiment a little more. But keep in mind that this is not officially supported and extremely experimental.</p>
+
+<p>I hope you enjoyed this little tour. As always I love to get feedback. What is your use case to run Docker on 32bit? Please leave a comment below or share it on Twitter.</p>
             <div id="disqus_thread"></div>
             <script>
             (function() { // DON'T EDIT BELOW THIS LINE
@@ -238,10 +282,10 @@ For the boot2docker the problem was to compile a 32bit kernel first, but a <code
 
     </div>
 
-    <script src="../public/jquery.js?v=f20d68de23"></script>
+    <script src="../public/jquery.js?v=1481296f98"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=f20d68de23"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=f20d68de23"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=1481296f98"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=1481296f98"></script>
 
 </body>
 </html>
