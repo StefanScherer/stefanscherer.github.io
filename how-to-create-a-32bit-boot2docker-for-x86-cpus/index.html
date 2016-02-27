@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=1230203c07" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=1117f02933" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
@@ -24,7 +24,7 @@
     <meta property="og:description" content="You normally can use Docker on 64bit Intel CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the Chocolatey package on AppVeyor CI and I thought: Wouldn&#x27;t it be cool to create eg." />
     <meta property="og:url" content="https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/" />
     <meta property="article:published_time" content="2016-02-18T23:12:05.682Z" />
-    <meta property="article:modified_time" content="2016-02-20T17:10:59.927Z" />
+    <meta property="article:modified_time" content="2016-02-27T15:13:13.581Z" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="How to create a 32bit boot2docker for x86 CPU&#x27;s" />
     <meta name="twitter:description" content="You normally can use Docker on 64bit Intel CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the Chocolatey package on AppVeyor CI and I thought: Wouldn&#x27;t it be cool to create eg." />
@@ -45,7 +45,7 @@
     "headline": "How to create a 32bit boot2docker for x86 CPU&#x27;s",
     "url": "https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/",
     "datePublished": "2016-02-18T23:12:05.682Z",
-    "dateModified": "2016-02-20T17:10:59.927Z",
+    "dateModified": "2016-02-27T15:13:13.581Z",
     "description": "You normally can use Docker on 64bit Intel CPU&#x27;s. But does Docker run on 32bit Intel CPU&#x27;s as well? Why the heck? Weeks ago when I wrote some integration tests for docker-machine to test the Chocolatey package on AppVeyor CI and I thought: Wouldn&#x27;t it be cool to create eg."
 }
     </script>
@@ -155,6 +155,8 @@ For the boot2docker the problem was to compile a 32bit kernel first, but a <code
 <p>And does it run containers? Yes, pulling the <code>32bit/ubuntu:14.04</code> Docker image and running it also works inside the AppVeyor CI server:</p>
 
 <p><img src="../content/images/2016/02/boot2docker-run-container.png" alt="boot2docker in appveyor" /></p>
+
+<p><strong>Update 2016/02/27</strong>: Setting a specific NIC type works for AppVeyor and finally proofs that <a href="https://ci.appveyor.com/project/StefanScherer/boot2docker/build/44">starting a Docker Machine VM in AppVeyor works</a>. See the <a href="https://github.com/StefanScherer/boot2docker/blob/x86/appveyor.yml">appveyor.yml</a> for details.</p>
 
 <h2 id="tryityourself">Try it yourself</h2>
 
@@ -285,8 +287,8 @@ docker run -it 32bit/ubuntu:14.04 bash
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=1230203c07"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=1230203c07"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=1117f02933"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=1117f02933"></script>
 
 </body>
 </html>
