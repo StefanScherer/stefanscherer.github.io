@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Build Docker Swarm for Windows the &quot;Docker way&quot;</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=1137c2794d" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Build Docker Swarm for Windows the &quot;Docker way&quot;" />
+    <meta property="og:description" content="In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that will be loaded from local disk. Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine" />
+    <meta property="og:url" content="https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/" />
+    <meta property="article:published_time" content="2016-03-05T20:58:38.418Z" />
+    <meta property="article:modified_time" content="2016-03-05T21:03:14.142Z" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Build Docker Swarm for Windows the &quot;Docker way&quot;" />
+    <meta name="twitter:description" content="In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that will be loaded from local disk. Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": "https://stefanscherer.github.io"
+    },
+    "headline": "Build Docker Swarm for Windows the &quot;Docker way&quot;",
+    "url": "https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/",
+    "datePublished": "2016-03-05T20:58:38.418Z",
+    "dateModified": "2016-03-05T21:03:14.142Z",
+    "description": "In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that will be loaded from local disk. Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.7" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Build Docker Swarm for Windows the &quot;Docker way&quot;</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-03-05">05 March 2016</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>In my <a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/">last blog</a> post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that will be loaded from local disk.</p>
+
+<p>Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you nowadays need nothing more than the right Dockerfiles to do this.</p>
+
+<p>So let's start writing a <code>Dockerfile.builder</code> to build Docker Swarm inside a Docker container. For the next steps open a PowerShell window and then open an editor.</p>
+
+<pre><code class="language-cmd">notepad Dockerfile.builder  
+</code></pre>
+
+<h3 id="useabaseimage">Use a base image</h3>
+
+<p>Swarm is written in Go, so we look for a useful base image. And there already is one useful base image in the <strong>Docker Hub</strong>. So we begin the Dockerfile with the following line.</p>
+
+<pre><code class="language-Dockerfile">FROM microsoft/golang  
+</code></pre>
+
+<h3 id="installgit">Install Git</h3>
+
+<p>Additionally to Go we also need Git installed inside the Container image. So we use the following lines that will download and install Git for Windows and then remove the installer again. As a further step we add Git to the <code>PATH</code> variable.</p>
+
+<pre><code class="language-Dockerfile">ENV GIT_VERSION 2.7.2
+
+RUN powershell -Command \  
+    Sleep 2 ; \
+    wget https://github.com/git-for-windows/git/releases/download/v%GIT_VERSION%.windows.1/Git-%GIT_VERSION%-64-bit.exe -outfile gitinstaller.exe ; \
+    Start-Process .\gitinstaller.exe -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /DIR=c:\git' -Wait ; \
+    rm .\gitinstaller.exe
+
+RUN setx PATH %PATH%;C:\git\cmd;C:\git\bin;C:\git\usr\bin  
+</code></pre>
+
+<h3 id="installandbuildgodepandswarm">Install and build Godep and Swarm</h3>
+
+<p>The Swarm project uses <code>Godep</code> to manage the dependencies. We also need this tool as well as the Swarm sources. So let's install both and run the <code>godep</code> tool to build the <code>swarm.exe</code>.</p>
+
+<pre><code class="language-Dockerfile">ENV SWARM_VERSION v1.1.3  
+ENV GOPATH C:/go
+
+WORKDIR /go
+
+RUN powershell -Command \  
+    Sleep 2 ; \
+    go get github.com/tools/godep ; \
+    mkdir src\github.com\docker ; \
+    cd src\github.com\docker ; \
+    git clone https://github.com/docker/swarm ; \
+    cd swarm ; \
+    git checkout %SWARM_VERSION% ; \
+    Start-Process -FilePath godep.exe -ArgumentList go, install, . -Wait
+</code></pre>
+
+<p>Now save the <code>Dockerfile.builder</code> file and close the editor.</p>
+
+<p>Back in the PowerShell build the Docker image with the name <code>swarm-builder</code> and the given Dockerfile with the following command.</p>
+
+<pre><code class="language-cmd">docker build -t swarm-builder -f Dockerfile.builder .  
+</code></pre>
+
+<p>This now creates a Docker image with multiple layers, for each <code>ENV</code> and <code>RUN</code> command in the <code>Dockerfile</code>. You can see the actions on your screen and finally the command finishes and you can list your images with</p>
+
+<pre><code>docker images  
+</code></pre>
+
+<p>You should see a image with the name <code>swarm-builder</code>:</p>
+
+<pre><code>REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE  
+swarm-builder       latest              04e557dd075a        31 minutes ago      1.219 GB  
+</code></pre>
+
+<p>The size of the Docker image is not good for deployment as we have all the development tools and source codes inside it.</p>
+
+<h3 id="testandextracttheswarmexe">Test and extract the swarm.exe</h3>
+
+<p>We only need the <code>swarm.exe</code> from this image as it is a static binary. So we just run the Docker image and have a very little test of the binary just created by showing its version.</p>
+
+<p>After that we copy the <code>swarm.exe</code> from the container back to the host.</p>
+
+<pre><code>docker run --name swarm-builder swarm-builder swarm --version  
+docker cp swarm-builder:/go/bin/swarm.exe ./swarm.exe  
+</code></pre>
+
+<h3 id="buildasmallswarmimage">Build a small Swarm image</h3>
+
+<p>The final Docker image for deployment can be produced with a much simpler <code>Dockerfile</code>. As the time of writing the Technical Preview 4 needs a small workaround to access the network inside a container. We have to add a small helper script for now.</p>
+
+<pre><code class="language-cmd">nodepad run.ps1  
+</code></pre>
+
+<p>The small PowerShell script just sleeps a little and then calls <code>swarm.exe</code> with the arguments given.</p>
+
+<pre><code>Sleep 2  
+\swarm.exe $args
+</code></pre>
+
+<p>Now it is time to write the <code>Dockerfile</code>. So open an editor with the following command. Notice the dot '.' as this helps Notepad create a <code>Dockerfile</code> without an extension.</p>
+
+<pre><code class="language-cmd">notepad Dockerfile.  
+</code></pre>
+
+<p>The <code>Dockerfile</code> now uses the <code>windowsservercore</code> base image and copies the helper script and the swarm binary into the image and sets the entrypoint.</p>
+
+<pre><code>FROM windowsservercore
+
+COPY ./swarm.exe /swarm.exe  
+COPY ./run.ps1 /run.ps1
+
+ENV SWARM_HOST :2375
+
+ENTRYPOINT ["powershell.exe", "-File", "/run.ps1"]  
+CMD ["--help"]  
+</code></pre>
+
+<p>We now build the final Docker image with</p>
+
+<pre><code>docker build -t swarm .  
+</code></pre>
+
+<p>Just check the size of the Docker images again with</p>
+
+<pre><code>docker images  
+</code></pre>
+
+<p><img src="../content/images/2016/03/docker-images.png" alt="docker images" /></p>
+
+<p>If you build a new version of the Swarm image later it is useful to tag each Docker image with its version. For this tutorial we have built Swarm 1.1.3, so we tag it with</p>
+
+<pre><code>docker tag swarm:latest swarm:1.1.3  
+</code></pre>
+
+<p>You now can run a Swarm container eg. with</p>
+
+<pre><code>docker run -it swarm:1.1.3 --version  
+</code></pre>
+
+<p>and you will see the version of the <code>swarm.exe</code>.</p>
+
+<h3 id="automateallthethings">Automate all the things</h3>
+
+<p>The both Dockerfiles and a build script can be found in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo. To download the sources you do need to install Git on your TP4 host, just download it as a ZIP and extract it:</p>
+
+<pre><code>wget -outfile src.zip https://github.com/StefanScherer/dockerfiles-windows/archive/master.zip  
+Expand-Archive .\dockerfiles-windows.zip  
+</code></pre>
+
+<p>The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands</p>
+
+<pre><code>cd src\dockerfiles-windows-master  
+.\build.bat
+</code></pre>
+
+<h3 id="tldr">TL/DR</h3>
+
+<p>Even on Windows you can put development environments into Docker images and build small images for deployment with a two step approach. No special setup is needed on your host machine, just Docker should be reachable.</p>
+
+<p>Everything is reproducable on every team members machines. And a CI build pipeline can take advantage of this dockerized setup as well.</p>
+
+<p>I hope you get a feeling what you can do with your own software project and start dockerizing as well.</p>
+
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Build%20Docker%20Swarm%20for%20Windows%20the%20%22Docker%20way%22&amp;url=https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../build-your-local-windows-docker-swarm/">
+        <section class="post">
+            <h2>Run a local Windows Docker Swarm</h2>
+            <p>At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=1137c2794d"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=1137c2794d"></script>
+
+</body>
+</html>
