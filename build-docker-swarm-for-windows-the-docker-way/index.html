@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=1137c2794d" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=a600a422de" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/" />
@@ -24,7 +24,7 @@
     <meta property="og:description" content="In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk. Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you" />
     <meta property="og:url" content="https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/" />
     <meta property="article:published_time" content="2016-03-05T20:58:38.418Z" />
-    <meta property="article:modified_time" content="2016-03-05T21:44:11.199Z" />
+    <meta property="article:modified_time" content="2016-03-07T21:38:46.067Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Swarm" />
     <meta property="article:tag" content="Windows" />
@@ -51,7 +51,7 @@
     "headline": "Build Docker Swarm binary for Windows the &quot;Docker way&quot;",
     "url": "https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/",
     "datePublished": "2016-03-05T20:58:38.418Z",
-    "dateModified": "2016-03-05T21:44:11.199Z",
+    "dateModified": "2016-03-07T21:38:46.067Z",
     "keywords": "Docker, Swarm, Windows, Golang, Git",
     "description": "In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk. Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you"
 }
@@ -244,7 +244,7 @@ Expand-Archive .\dockerfiles-windows.zip
 
 <p>The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands</p>
 
-<pre><code>cd src\dockerfiles-windows-master  
+<pre><code>cd src\dockerfiles-windows-master\swarm  
 .\build.bat
 </code></pre>
 
@@ -331,8 +331,8 @@ Expand-Archive .\dockerfiles-windows.zip
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=1137c2794d"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=1137c2794d"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=a600a422de"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=a600a422de"></script>
 
 </body>
 </html>
