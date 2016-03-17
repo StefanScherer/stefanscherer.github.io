@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Easy setup for Atom from dotfiles</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f5ddab4b91" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Easy setup for Atom from dotfiles" />
+    <meta property="og:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for VIM and Sublime Text 3. So say welcome to Atom&#x27;s" />
+    <meta property="og:url" content="https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/" />
+    <meta property="article:published_time" content="2014-10-17T19:56:06.259Z" />
+    <meta property="article:modified_time" content="2014-10-17T20:13:17.327Z" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Easy setup for Atom from dotfiles" />
+    <meta name="twitter:description" content="I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for VIM and Sublime Text 3. So say welcome to Atom&#x27;s" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404",
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": "https://stefanscherer.github.io"
+    },
+    "headline": "Easy setup for Atom from dotfiles",
+    "url": "https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/",
+    "datePublished": "2014-10-17T19:56:06.259Z",
+    "dateModified": "2014-10-17T20:13:17.327Z",
+    "description": "I am using Atom more and more, so the time has come to set up the preferences and installed plugins for it more easily. My dotfiles that I use on all MAC OS X and Linux machines are prepared for VIM and Sublime Text 3. So say welcome to Atom&#x27;s"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.7" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Easy setup for Atom from dotfiles</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2014-10-17">17 October 2014</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>I am using <a href="https://atom.io">Atom</a> more and more, so the time has come to set up the preferences and installed plugins for it more easily.</p>
+
+<p>My <a href="https://github.com/StefanScherer/dotfiles">dotfiles</a> that I use on all MAC OS X and Linux machines are prepared for <a href="http://vim.org">VIM</a> and <a href="http://sublimetext.com">Sublime Text 3</a>. So say welcome to Atom's config as well.</p>
+
+<h2 id="cloningdotfilesrepo">Cloning dotfiles repo</h2>
+
+<p>On a fresh machine, I normally install the editors I like and then clone my dotfiles repo and then call a script to do the rest of the setup.</p>
+
+<pre><code class="bash">git clone https://github.com/StefanScherer/dotfiles &amp;&amp; cd dotfiles &amp;&amp; ./sync.sh  
+</code></pre>
+
+<p>This sets up the configs for VIM, Sublime Text and now also for Atom (as well as a lot of bash aliases, functions, etc.)</p>
+
+<p>The <code>sync.sh</code> script is just copying all <code>.atom/</code> configs to <code>~/.atom/</code> directory. But this is only for key bindings and other preferences.</p>
+
+<h2 id="enterparcel">Enter Parcel</h2>
+
+<p>The difficult part was how to install a list of Atom packages and sync them between all of my machines. Atom does not create a list of installed packages. But there is a package <code>parcel</code> that does exactly what I need.</p>
+
+<p>So the <code>sync.sh</code> just assures that the <a href="https://atom.io/packages/parcel"><code>parcel</code></a> package is installed.</p>
+
+<h2 id="packagesparcelsync">Packages / Parcel / Sync</h2>
+
+<p>Now just open Atom from command line or from your Dock and click on <strong>Packages / Parcel / Sync</strong> and all other packages will be installed.</p>
+
+<p>You may have to reload or restart Atom. Then you have all your listed plugins and of course all your configs installed from your dotfiles repo.</p>
+
+<h2 id="savingconfigandinstalledplugins">Saving Config and installed Plugins</h2>
+
+<p>You can install other packages from menu or with <code>apm install</code>. If you want to save your changes in your dotfiles repo, just click on <strong>Packages / Parcel / Sync</strong> again and an updated <code>~/.atom/packages.cson</code> files will be written.</p>
+
+<p>Go back to the dotfiles repo and copy all files from <code>~/.atom/</code> back and commit and push it. I have my <code>sync-atom-prefs.sh</code> script.</p>
+
+<p>Now you can transport your favorite Atom settings to any machine.</p>
+
+<p>Tested on Mac OS X and Linux at the moment.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?d=404)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Easy%20setup%20for%20Atom%20from%20dotfiles&amp;url=https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/easy-setup-for-atom-from-dotfiles/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story no-cover" href="../how-to-work-across-github-repos/">
+        <section class="post">
+            <h2>How to work across GitHub repos</h2>
+            <p>If you are a member of a GitHub organization you sometimes have to work across all repos. Here are&hellip;</p>
+        </section>
+    </a>
+    <a class="read-next-story prev no-cover" href="../unboxing-os-x-yosemite-for-packer/">
+        <section class="post">
+            <h2>Unboxing OS X Yosemite for Packer</h2>
+            <p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=f5ddab4b91"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=f5ddab4b91"></script>
+
+</body>
+</html>
