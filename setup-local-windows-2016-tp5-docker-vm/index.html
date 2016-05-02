@@ -24,7 +24,7 @@
     <meta property="og:description" content="It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers. Very" />
     <meta property="og:url" content="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/" />
     <meta property="article:published_time" content="2016-05-01T08:43:00.000Z" />
-    <meta property="article:modified_time" content="2016-05-02T06:02:00.135Z" />
+    <meta property="article:modified_time" content="2016-05-02T06:06:56.518Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows" />
     <meta property="article:tag" content="Vagrant" />
@@ -50,7 +50,7 @@
     "headline": "Setup a local Windows 2016 TP5 Docker VM",
     "url": "https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/",
     "datePublished": "2016-05-01T08:43:00.000Z",
-    "dateModified": "2016-05-02T06:02:00.135Z",
+    "dateModified": "2016-05-02T06:06:56.518Z",
     "keywords": "Docker, Windows, Vagrant, Packer",
     "description": "It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers. Very"
 }
@@ -200,7 +200,7 @@ docker images
 
 <p>As the TP5 and relating files and images are very fresh and it is still a technical preview, there might be some obstacles here and there.</p>
 
-<p>At the moment we need this script to speed up the <code>windowsservercore</code> Docker image a little bit. The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1">patch-boot-time-for-containers.ps1</a> just fixes that for you.</p>
+<p>At the moment <a href="https://social.msdn.microsoft.com/Forums/en-US/e2751260-4494-4b60-999e-5ea27ccbe1db/workaround-to-increase-boot-time-for-windows-server-core-containers?forum=windowscontainers">we need this script</a> to speed up the <code>windowsservercore</code> Docker image a little bit. The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1">patch-boot-time-for-containers.ps1</a> just fixes that for you.</p>
 
 <h3 id="enableinsecuredockerport2375">Enable insecure Docker port 2375</h3>
 
