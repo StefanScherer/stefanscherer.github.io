@@ -24,7 +24,7 @@
     <meta property="og:description" content="It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers. Very" />
     <meta property="og:url" content="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/" />
     <meta property="article:published_time" content="2016-05-01T08:43:00.000Z" />
-    <meta property="article:modified_time" content="2016-05-02T06:06:56.518Z" />
+    <meta property="article:modified_time" content="2016-05-02T06:12:29.843Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows" />
     <meta property="article:tag" content="Vagrant" />
@@ -50,7 +50,7 @@
     "headline": "Setup a local Windows 2016 TP5 Docker VM",
     "url": "https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/",
     "datePublished": "2016-05-01T08:43:00.000Z",
-    "dateModified": "2016-05-02T06:06:56.518Z",
+    "dateModified": "2016-05-02T06:12:29.843Z",
     "keywords": "Docker, Windows, Vagrant, Packer",
     "description": "It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers. Very"
 }
@@ -216,7 +216,7 @@ You can remote control your Windows Docker engine from your host machine that is
 <p>A normal user does not have access to it, so you have to open an administrator shell to work with the Docker engine.</p>
 
 <p>The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1">add-docker-group.ps1 <br />
-</a> adds the option <code>-G docker</code> to the Docker engine so it gives access to that named pipe for the Windows group <code>docker</code>.</p>
+</a> adds the option <code>-G docker</code> to the Docker engine to give all members of the Windows group <code>docker</code> access to that named pipe.</p>
 
 <p>The script also adds the user <code>vagrant</code> to that group. So in the final Vagrant box you just open a normal PowerShell window and can use the Docker engine.</p>
 
