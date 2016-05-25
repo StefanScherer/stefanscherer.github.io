@@ -379,6 +379,17 @@ background-image: url(assets/azure_win_mac.png)
   * [vagrant up](https://github.com/StefanScherer/docker-windows-box)
   * VirtualBox, VMware
 ---
+# Resources
+
+## Learn more about Windows Containers
+  * http://aka.ms/containers
+
+## Continue providing feedback and bug reports
+
+  * http://aka.ms/containers/forum
+  * https://github.com/Microsoft/Virtualization-Documentation
+  * https://github.com/docker/docker
+---
 class: left, inverse
 
 .invisible[#
