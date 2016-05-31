@@ -24,7 +24,7 @@
     <meta property="og:description" content="Beginning with Windows 10 Insider 14352 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some" />
     <meta property="og:url" content="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" />
     <meta property="article:published_time" content="2016-05-29T18:00:53.674Z" />
-    <meta property="article:modified_time" content="2016-05-31T19:41:59.524Z" />
+    <meta property="article:modified_time" content="2016-05-31T19:42:29.784Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Nano Server" />
     <meta property="article:tag" content="Windows 10" />
@@ -50,7 +50,7 @@
     "headline": "How to build a Node.js Nano Server Docker base image",
     "url": "https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/",
     "datePublished": "2016-05-29T18:00:53.674Z",
-    "dateModified": "2016-05-31T19:41:59.524Z",
+    "dateModified": "2016-05-31T19:42:29.784Z",
     "keywords": "Docker, Nano Server, Windows 10, Node.js",
     "description": "Beginning with Windows 10 Insider 14352 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some"
 }
@@ -110,7 +110,7 @@
 
 <p>Each Docker image must use of of the two OS images: <code>windowsservercore</code> or <code>nanoserver</code>.</p>
 
-<p>A <strong>Windows Server Core</strong> image is <strong>highly compatible</strong> with previous Windows Server Core installations. You don't have a GUI, but you can install almost everything into it. But this compatibility comes with a prize, the size of the OS image is about 9 GByte as it contains about a whole server.</p>
+<p>A <strong>Windows Server Core</strong> image is <strong>highly compatible</strong> with previous Windows Server Core installations. You don't have a GUI, but you can install almost everything into it. But this compatibility comes with a prize, the size of the OS image is about 9.3 GByte as it contains about a whole server.</p>
 
 <p>A <strong>Nano Server</strong> image is <strong>highly optimized</strong> and almost everything was taken out of it to be able to deploy more of these containers in cloud servers. The size is about 817 MByte. This makes installing Docker on Windows 10 much faster than with the <code>windowsservercore</code> OS image.</p>
 
