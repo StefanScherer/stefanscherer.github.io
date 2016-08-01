@@ -12,53 +12,45 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=dc3bebd0d1" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f902ce72a7" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/docker-on-raspberry-pi/" />
-    <meta name="referrer" content="origin-when-cross-origin" />
+    <meta name="referrer" content="origin" />
     
     <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Docker on Raspberry Pi" />
     <meta property="og:description" content="The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our small team at Hypriot started in January 2015 to make using Docker as simple as possible on the Raspberry Pi. You only need a Raspberry Pi B, B+ or Pi 2" />
     <meta property="og:url" content="https://stefanscherer.github.io/docker-on-raspberry-pi/" />
-    <meta property="article:published_time" content="2015-03-22T09:34:18.000Z" />
-    <meta property="article:modified_time" content="2015-03-22T09:42:05.000Z" />
+    <meta property="article:published_time" content="2015-03-22T09:34:18.277Z" />
+    <meta property="article:modified_time" content="2015-03-22T09:42:05.521Z" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Docker on Raspberry Pi" />
     <meta name="twitter:description" content="The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our small team at Hypriot started in January 2015 to make using Docker as simple as possible on the Raspberry Pi. You only need a Raspberry Pi B, B+ or Pi 2" />
     <meta name="twitter:url" content="https://stefanscherer.github.io/docker-on-raspberry-pi/" />
-    <meta name="twitter:label1" content="Written by" />
-    <meta name="twitter:data1" content="Stefan Scherer" />
     
     <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
+    "@context": "http://schema.org",
     "@type": "Article",
-    "publisher": {
-        "@type": "Organization",
-        "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
-    },
+    "publisher": "Stefan Scherer's Blog",
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "sameAs": "https://stefanscherer.github.io"
     },
     "headline": "Docker on Raspberry Pi",
     "url": "https://stefanscherer.github.io/docker-on-raspberry-pi/",
-    "datePublished": "2015-03-22T09:34:18.000Z",
-    "dateModified": "2015-03-22T09:42:05.000Z",
+    "datePublished": "2015-03-22T09:34:18.277Z",
+    "dateModified": "2015-03-22T09:42:05.521Z",
     "description": "The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our small team at Hypriot started in January 2015 to make using Docker as simple as possible on the Raspberry Pi. You only need a Raspberry Pi B, B+ or Pi 2"
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.9" />
+    <meta name="generator" content="Ghost 0.7" />
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template nav-closed">
@@ -74,7 +66,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -112,14 +104,14 @@
 
 <p>Download the lastest Hypriot SD card image</p>
 
-<pre><code class="language-bash">curl -o hypriot-rpi-20150301-140537.img.zip http://assets.hypriot.com/hypriot-rpi-20150301-140537.img.zip  
+<pre><code class="bash">curl -o hypriot-rpi-20150301-140537.img.zip http://assets.hypriot.com/hypriot-rpi-20150301-140537.img.zip  
 </code></pre>
 
 <h3 id="downloadflashsh">Download flash.sh</h3>
 
 <p>I've written a small helper script for my Mac to make the flashing part a very easy step. I've put my <code>flash.sh</code> script into a <a href="https://gist.github.com/StefanScherer/debaf068e398df13be68#file-flash-sh">Gist</a></p>
 
-<pre><code class="language-bash">curl -o flash.sh https://gist.githubusercontent.com/StefanScherer/debaf068e398df13be68/raw/f879333854e25c2994f6f276bec6aa3c57c73758/flash.sh  
+<pre><code class="bash">curl -o flash.sh https://gist.githubusercontent.com/StefanScherer/debaf068e398df13be68/raw/f879333854e25c2994f6f276bec6aa3c57c73758/flash.sh  
 chmod +x flash.sh  
 </code></pre>
 
@@ -127,14 +119,14 @@ chmod +x flash.sh
 
 <p>One thing that I have to improve in the flash.sh script is to extract the Image automatically. At the moment you have to extract the ZIP with</p>
 
-<pre><code class="language-bash">unzip hypriot-rpi-20150301-140537.img.zip  
+<pre><code class="bash">unzip hypriot-rpi-20150301-140537.img.zip  
 </code></pre>
 
 <h3 id="flashsdimage">Flash SD image</h3>
 
 <p>Now run the script with the name of the SD card image.</p>
 
-<pre><code class="language-bash">./flash.sh hypriot-rpi-20150301-140537.img
+<pre><code class="bash">./flash.sh hypriot-rpi-20150301-140537.img
 </code></pre>
 
 <p><img src="../content/images/2015/03/Bildschirmfoto-2015-03-22-um-10-15-31.png" alt="flash.sh" /></p>
@@ -155,7 +147,7 @@ chmod +x flash.sh
 
 <p>If you have only one Raspberry Pi and don't know the IP address you may use the Adafruit Pi Finder script.</p>
 
-<pre><code class="language-bash">curl -o finder.sh https://raw.githubusercontent.com/adafruit/Adafruit-Occidentalis/master/finder.sh  
+<pre><code class="bash">curl -o finder.sh https://raw.githubusercontent.com/adafruit/Adafruit-Occidentalis/master/finder.sh  
 chmod +x finder.sh  
 ./finder.sh -t
 ipconfig  
@@ -167,7 +159,7 @@ ipconfig
 
 <p>As a first step I normally copy my SSH public key to the Pi with  </p>
 
-<pre><code class="language-bash">ssh-copy-id pi@ip-of-your-pi  
+<pre><code class="bash">ssh-copy-id pi@ip-of-your-pi  
 </code></pre>
 
 <p>Afterwards you can SSH into your Pi without a password</p>
@@ -175,6 +167,18 @@ ipconfig
 <p><img src="../content/images/2015/03/Bildschirmfoto-2015-03-22-um-10-40-20.png" alt="ssh-copy-id" /></p>
 
 <p>Docker 1.5.0 is already up and running and you can start playing with Docker on your Pi.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -197,7 +201,7 @@ ipconfig
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Docker%20on%20Raspberry%20Pi&amp;url=https://stefanscherer.github.io/docker-on-raspberry-pi/"
+                <a class="icon-twitter" href="https://twitter.com/share?text=Docker%20on%20Raspberry%20Pi&amp;url=https://stefanscherer.github.io/docker-on-raspberry-pi/"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
@@ -210,7 +214,6 @@ ipconfig
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
         </footer>
 
@@ -241,11 +244,11 @@ ipconfig
 
     </div>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=dc3bebd0d1"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=dc3bebd0d1"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=f902ce72a7"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=f902ce72a7"></script>
 
 </body>
 </html>
