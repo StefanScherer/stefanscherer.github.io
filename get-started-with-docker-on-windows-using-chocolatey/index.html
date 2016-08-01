@@ -12,19 +12,19 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6ae369f4a9" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=dc3bebd0d1" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/" />
-    <meta name="referrer" content="origin" />
+    <meta name="referrer" content="origin-when-cross-origin" />
     
     <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Get started with Docker on Windows using Chocolatey" />
     <meta property="og:description" content="The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started. If you don&#x27;t know what a shell window" />
     <meta property="og:url" content="https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/" />
-    <meta property="article:published_time" content="2016-01-16T22:31:57.520Z" />
-    <meta property="article:modified_time" content="2016-02-01T15:44:51.095Z" />
+    <meta property="article:published_time" content="2016-01-16T22:31:57.000Z" />
+    <meta property="article:modified_time" content="2016-02-01T15:44:51.000Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows" />
     <meta property="article:tag" content="Chocolatey" />
@@ -33,29 +33,39 @@
     <meta name="twitter:title" content="Get started with Docker on Windows using Chocolatey" />
     <meta name="twitter:description" content="The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started. If you don&#x27;t know what a shell window" />
     <meta name="twitter:url" content="https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Windows, Chocolatey" />
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "Get started with Docker on Windows using Chocolatey",
     "url": "https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/",
-    "datePublished": "2016-01-16T22:31:57.520Z",
-    "dateModified": "2016-02-01T15:44:51.095Z",
+    "datePublished": "2016-01-16T22:31:57.000Z",
+    "dateModified": "2016-02-01T15:44:51.000Z",
     "keywords": "Docker, Windows, Chocolatey",
     "description": "The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started. If you don&#x27;t know what a shell window"
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
+    <meta name="generator" content="Ghost 0.9" />
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-docker tag-windows tag-chocolatey nav-closed">
@@ -71,7 +81,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -251,18 +261,6 @@ Congratulations! You have started your first container.</p>
 <p><blockquote class="twitter-tweet" lang="de"><p lang="en" dir="ltr">Get the latest <a href="https://twitter.com/docker">@Docker</a> tools for <a href="https://twitter.com/hashtag/Windows?src=hash">#Windows</a>:&#10; &#10;choco install docker&#10;choco install docker-machine&#10;choco install docker-compose&#10;&#10;Done!</p>&mdash; Stefan Scherer (@stefscherer) <a href="https://twitter.com/stefscherer/status/662634469673799680">6. November 2015</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
 
 <p>If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -285,7 +283,7 @@ Congratulations! You have started your first container.</p>
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Get%20started%20with%20Docker%20on%20Windows%20using%20Chocolatey&amp;url=https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/"
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Get%20started%20with%20Docker%20on%20Windows%20using%20Chocolatey&amp;url=https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
@@ -298,6 +296,7 @@ Congratulations! You have started your first container.</p>
                     <span class="hidden">Google+</span>
                 </a>
             </section>
+
 
         </footer>
 
@@ -328,11 +327,11 @@ Congratulations! You have started your first container.</p>
 
     </div>
 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6ae369f4a9"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=6ae369f4a9"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=dc3bebd0d1"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=dc3bebd0d1"></script>
 
 </body>
 </html>

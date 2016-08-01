@@ -12,45 +12,53 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6ae369f4a9" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=dc3bebd0d1" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
-    <meta name="referrer" content="origin" />
+    <meta name="referrer" content="origin-when-cross-origin" />
     
     <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="First impressions of Docker on Windows 2016 TP5" />
     <meta property="og:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I" />
     <meta property="og:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
-    <meta property="article:published_time" content="2016-04-29T00:11:03.216Z" />
-    <meta property="article:modified_time" content="2016-05-22T21:22:28.812Z" />
+    <meta property="article:published_time" content="2016-04-29T00:11:03.000Z" />
+    <meta property="article:modified_time" content="2016-05-22T21:22:28.000Z" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="First impressions of Docker on Windows 2016 TP5" />
     <meta name="twitter:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I" />
     <meta name="twitter:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "First impressions of Docker on Windows 2016 TP5",
     "url": "https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/",
-    "datePublished": "2016-04-29T00:11:03.216Z",
-    "dateModified": "2016-05-22T21:22:28.812Z",
+    "datePublished": "2016-04-29T00:11:03.000Z",
+    "dateModified": "2016-05-22T21:22:28.000Z",
     "description": "Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I"
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
+    <meta name="generator" content="Ghost 0.9" />
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template nav-closed">
@@ -66,7 +74,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -173,18 +181,6 @@
 <p>So stay tuned of upcoming blog posts. With the TP5 the community can follow the progress of Docker on Windows much better and can check the latest improvements and pull requests of the Windows Docker Engine.</p>
 
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -207,7 +203,7 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=First%20impressions%20of%20Docker%20on%20Windows%202016%20TP5&amp;url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/"
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=First%20impressions%20of%20Docker%20on%20Windows%202016%20TP5&amp;url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/"
                     onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
@@ -220,6 +216,7 @@
                     <span class="hidden">Google+</span>
                 </a>
             </section>
+
 
         </footer>
 
@@ -250,11 +247,11 @@
 
     </div>
 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6ae369f4a9"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=6ae369f4a9"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=dc3bebd0d1"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=dc3bebd0d1"></script>
 
 </body>
 </html>
