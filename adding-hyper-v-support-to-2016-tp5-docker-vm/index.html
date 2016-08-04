@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Adding Hyper-V support to 2016 TP5 Docker VM</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=eba5bbb897" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Adding Hyper-V support to 2016 TP5 Docker VM" />
+    <meta property="og:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine.  Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond" />
+    <meta property="og:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    <meta property="article:published_time" content="2016-08-04T19:59:37.980Z" />
+    <meta property="article:modified_time" content="2016-08-04T20:28:53.180Z" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Adding Hyper-V support to 2016 TP5 Docker VM" />
+    <meta name="twitter:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine.  Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": "https://stefanscherer.github.io"
+    },
+    "headline": "Adding Hyper-V support to 2016 TP5 Docker VM",
+    "url": "https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/",
+    "datePublished": "2016-08-04T19:59:37.980Z",
+    "dateModified": "2016-08-04T20:28:53.180Z",
+    "description": "Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine.  Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.7" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post">
+
+        <header class="post-header">
+            <h1 class="post-title">Adding Hyper-V support to 2016 TP5 Docker VM</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-08-04">04 August 2016</time> 
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>Back in June I have attended the <a href="http://2016.dockercon.com">DockerCon</a> in Seattle. Beside lots of new features in Docker 1.12 we heard about <a href="https://www.youtube.com/watch?v=A7ABdUmen9s">Windows Server and Docker</a> and upcoming features in the Windows Docker engine. </p>
+
+<p>Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond to meet the Windows Container team around Taylor Brown. After a meeting and having lunch we talked about making my Packer template for a <a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_2016_docker.json">Windows Server 2016 TP5 Docker VM</a> work with Hyper-V. At that time my packer template supported only VirtualBox and VMware with a <a href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/">blog post describing how to build it</a>.</p>
+
+<p><img src="../content/images/2016/08/20160623_101541.jpg" alt="" /></p>
+
+<p>So Patrick Lang from Microsoft and I started to have a look at the pull request <a href="https://github.com/mitchellh/packer/pull/2576">mitchellh/packer#2576</a> by Taliesin Sisson that adds a Hyper-V builder to Packer. After a couple of days (already back to Germany working in different time zones) we improved the template through <a href="https://github.com/PatrickLang/packer-windows/commit/7e13d4799e28a3afb1e35b878e00394256011022">GitHub</a> and finally got it working.</p>
+
+<h2 id="packerbuildvagrantup">packer build, vagrant up</h2>
+
+<p>If you haven't heard about <a href="https://www.packer.io">Packer</a> and <a href="https://www.vagrantup.com">Vagrant</a> let me explain it with the following diagram. If you want to create a VM from an ISO file you normally click through your hypervisor UI and then follow the installation steps inside the VM.</p>
+
+<p><img src="../content/images/2016/08/packer_vagrant.png" alt="packer build, vagrant up" /></p>
+
+<p>With Packer you can automate that step building a VM from an ISO file, put all steps into a Packer template and then just share the template so others can just run</p>
+
+<pre><code>packer build template.json  
+</code></pre>
+
+<p>In our case the output is a Vagrant box. That is a compressed VM ready to be used with the next tool - Vagrant. It takes a Vagrant box, creates a copy of it to turn it on so you can work again and again with the same predefined VM that was built by Packer. You want to turn your VM on? Just type</p>
+
+<pre><code>vagrant up  
+</code></pre>
+
+<p>You want to stop the VM after work? Just type</p>
+
+<pre><code>vagrant halt  
+</code></pre>
+
+<p>You want to try something out and want to undo all that to start over with the clean state. Just destroy it and start it again.</p>
+
+<pre><code>vagrant destroy  
+vagrant up  
+</code></pre>
+
+<p>There are much more commands and even snapshots can be used. The advantage is that you don't have to know all the buttons in your hypervisor. Both Packer and Vagrant are available for <strong>Windows, Mac and Linux</strong> and also <strong>support <a href="http://www.slideshare.net/PuppetLabs/multiprovider-vagrant">multiple hypervisors</a></strong> and even cloud providers.</p>
+
+<p>So you only have to learn one or both of these tools and you're done if you have to work with VM's.</p>
+
+<h2 id="addinghypervbuilder">Adding Hyper-V builder</h2>
+
+<p>The Packer template for a VM has one or more builder sections. The Hyper-V section looks like this and contains the typical steps</p>
+
+<ul>
+<li>Adding files for a virtual floppy for the first boot</li>
+<li>Defining disk size, memory and CPU's</li>
+<li>How to login into the VM</li>
+</ul>
+
+<pre><code class="language-json">    {
+      "vm_name":"WindowsServer2016TP5Docker",
+      "type": "hyperv-iso",
+      "disk_size": 41440,
+      "boot_wait": "0s",
+      "headless": false,
+      "guest_additions_mode":"disable",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "floppy_files": [
+        "./answer_files/2016/Autounattend.xml",
+        "./floppy/WindowsPowershell.lnk",
+        "./floppy/PinTo10.exe",
+        "./scripts/disable-winrm.ps1",
+        "./scripts/docker/enable-winrm.ps1",
+        "./scripts/microsoft-updates.bat",
+        "./scripts/win-updates.ps1"
+      ],
+      "communicator":"winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout" : "4h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "ram_size_mb": 2048,
+      "cpu": 2,
+      "switch_name":"{{user `hyperv_switchname`}}",
+      "enable_secure_boot":true
+    },
+</code></pre>
+
+<p>Packer can also download ISO files from a download link to make automation very easy. </p>
+
+<p>The installation of a Windows Server 2016 VM can be automated with an <a href="https://github.com/StefanScherer/packer-windows/blob/my/answer_files/2016/Autounattend.xml"><code>Autounattend.xml</code></a> file. This file contains information to setup the Windows VM until the WinRM service is up and running and Packer can login from the host machine to run further provision scripts to setup the VM with additional installations.</p>
+
+<p>In case of the Windows Server 2016 TP5 Docker VM we additionally <a href="https://github.com/StefanScherer/packer-windows/blob/my/scripts/docker/install-docker.ps1">install Docker 1.12</a> and pull the Windows base OS docker images into the VM.</p>
+
+<p>All these steps defined in the Packer template build a good Vagrant box to have Docker preinstalled with the base docker image as it takes some time to download it the first time.</p>
+
+<p>So after a <code>vagrant destroy</code> you still have the Windows OS docker images installed and can work with a clean installation again. Only from time to time when there is a new OS docker image version you have to rebuild your Vagrant box with Packer.</p>
+
+<h2 id="buildthehypervvagrantbox">Build the Hyper-V Vagrant box</h2>
+
+<p>To build the Vagrant box locally on a Windows 10 machine you only need the <strong>Hyper-V feature</strong> activated and you need a <strong>special version of <code>packer.exe</code></strong> (notice: with <code>choco install packer</code> you only get the upstream packer where the hyperv builder is not integrated yet). The packer.exe with hyperv builder can be downloaded at <a href="https://dl.bintray.com/taliesins/Packer/">https://dl.bintray.com/taliesins/Packer/</a>.</p>
+
+<p>Clone my packer template from GitHub and build it with these commands:</p>
+
+<pre><code>git clone https://github.com/StefanScherer/packer-windows  
+cd packer-windows  
+packer build --only=hyperv-iso windows_2016_docker.json  
+</code></pre>
+
+<p>This will take some time downloading and caching the ISO file, booting, installing the software and pulling the first Docker images.</p>
+
+<h2 id="sharevagrantboxeswithatlas">Share Vagrant boxes with Atlas</h2>
+
+<p>Another advantage of Vagrant is that you can share Vagrant base boxes through Atlas, a service by HashiCorp. So only one has to run Packer and build the Vagrant box and provide it for other team members or the community.</p>
+
+<p><img src="../content/images/2016/08/packer_vagrant_atlas.png" alt="packer atlas vagrant" /></p>
+
+<p>Others can create a <code>Vagrantfile</code> with the box name of one of the provided Vagrant boxes. That name will be used at the first <code>vagrant up</code> to download the correct Vagrant box for the hypervisor to be used.</p>
+
+<p>Even Microsoft has its first <a href="https://atlas.hashicorp.com/Microsoft/boxes/EdgeOnWindows10">Vagrant box at Atlas</a> which can be used with VirtualBox only at the moment. But it is only a matter of time that more Hyper-V based Vagrant boxes will show up in Atlas, also boxes for other hypervisors.</p>
+
+<p>If you don't have a Vagrantfile you even can create a simple one to start a new test environment with two commands and a suitable Vagrant box from Atlas.</p>
+
+<pre><code>vagrant init Microsoft/EdgeOnWindows10  
+vagrant up --provider virtualbox  
+</code></pre>
+
+<p>Vagrant itself can log into the VM through WinRM and run further provision scripts to setup a good development or test environment. It is just a decision what to install in a Vagrant box with Packer and what to install with Vagrant afterwards. You decide which flexibility you want or if you prefer a faster <code>vagrant up</code> experience with a full provisioned Vagrant box that was built with a longer running Packer build once.</p>
+
+<h2 id="dockerwindowsbox">docker-windows-box</h2>
+
+<p>If you are looking for a test environment for Windows Docker containers you might have a look at my <a href="https://github.com/StefanScherer/docker-windows-box">docker-windows-box</a> GitHub repo that installs Git and some additional Docker tools to get started working on some <a href="https://github.com/StefanScherer/dockerfiles-windows">Windows Dockerfiles</a>.</p>
+
+<p><img src="../content/images/2016/08/docker-windows-box.png" alt="docker windows box" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I'm happy that there is a Hyper-V builder for Packer that really works. Vagrant already has a Hyper-V provider built in so you can have the same experience running and working with VM's as others have with VMware or VirtualBox.</p>
+
+<p>With a such a TP5 Vagrant box it is very easy to get in touch with Windows Docker Containers, regardless if you are working on Windows 10 with Hyper-V or from your Mac or Linux machine with another hypervisor.</p>
+
+<p><img src="../content/images/2016/08/packer_multiprovider.png" alt="Packer multiprovider" /></p>
+
+<p>Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Adding%20Hyper-V%20support%20to%202016%20TP5%20Docker%20VM&amp;url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../how-to-build-nodejs-nanoserver-image/">
+        <section class="post">
+            <h2>How to build a Node.js Nano Server Docker base image</h2>
+            <p>Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=eba5bbb897"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=eba5bbb897"></script>
+
+</body>
+</html>
