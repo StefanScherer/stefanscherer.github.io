@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Fri, 30 Sep 2016 12:36:26 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Run Linux and Windows Containers on Windows 10]]></title><description><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve</p>]]></description><link>https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">e2bf3024-b5bb-4393-890b-dd5b65895e78</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Linux]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve newer versions.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sat, 01 Oct 2016 07:13:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Run Linux and Windows Containers on Windows 10]]></title><description><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve</p>]]></description><link>https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">e2bf3024-b5bb-4393-890b-dd5b65895e78</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Linux]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve newer versions.</p>
 
 <p>And Microsoft has added the <strong>Containers feature</strong> in the Windows 10 Anniversary Update. With some <a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10">installation steps</a> you are able to run <strong>Windows Hyper-V Containers</strong> on your Windows 10 machine.</p>
 
@@ -62,7 +62,7 @@
 
 <p>then switch to the Windows containers with</p>
 
-<pre><code>'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon  
+<pre><code>&amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
 </code></pre>
 
 <p><img src="https://stefanscherer.github.io/content/images/2016/09/docker-run-nginx.png" alt="docker-run-nginx"></p>
@@ -108,7 +108,7 @@ server.listen(port);
 
 <p>Enter this as the <code>Dockerfile</code>. As you can see only the <code>FROM</code> line is different from a typical Linux Dockerfile. This one uses a Windows base image from the Docker Hub.</p>
 
-<pre><code class="language-Dockerfile">FROM stefanscherer/node-windows:6.5.0-nano
+<pre><code class="language-Dockerfile">FROM stefanscherer/node-windows:6.7.0-nano
 
 COPY app.js app.js
 
@@ -127,23 +127,23 @@ CMD [ "node", "app.js" ]
 
 <p><img src="https://stefanscherer.github.io/content/images/2016/09/docker-run-webserver-1.png" alt="docker-run-webserver"></p>
 
-<p>The only thing is you can't connect from your Windows 10 machine to the web server with localhost. Instead you have to contact the web server on port 81 from another machine.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10"></p>
-
-<p>And yes, the Windows container is also handling requests.</p>
-
-<p><strong>Update:</strong> Another way is to use the IP address of the container. We need the ID or name of the container, so list the containers running with</p>
+<p>At the moment you can't connect directly with 127.0.0.1 to the container. But it is possible to use the IP address of the container. We need the ID or name of the container, so list the containers running with</p>
 
 <pre><code>docker ps  
 </code></pre>
 
 <p>Then open the browser with the container's IP address:  </p>
 
-<pre><code>start http://$(docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" tiny_wiles):81  
+<pre><code>start http://$(docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" stupefied_aryabhata):81  
 </code></pre>
 
 <p><img src="https://stefanscherer.github.io/content/images/2016/09/docker-inspect.png" alt="docker-inspect"></p>
+
+<p>Additionally the port forwarding from the host to the container allows you to contact the web server on port 81 from another machine.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10"></p>
+
+<p>And yes, the Windows container is also handling requests.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
