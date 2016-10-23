@@ -1,4 +1,133 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sat, 01 Oct 2016 07:21:38 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Run Linux and Windows Containers on Windows 10]]></title><description><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve</p>]]></description><link>https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">e2bf3024-b5bb-4393-890b-dd5b65895e78</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Linux]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve newer versions.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 23 Oct 2016 22:42:58 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to protect a Windows 2016 Docker engine with TLS]]></title><description><![CDATA[<p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
+
+<p>There is a tutorial</p>]]></description><link>https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/</link><guid isPermaLink="false">3c86eb6b-cf2a-4376-97dd-d2ec54bc5d67</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><category><![CDATA[TLS]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 23 Oct 2016 22:35:19 GMT</pubDate><content:encoded><![CDATA[<p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
+
+<p>There is a tutorial <a href="https://docs.docker.com/engine/security/https/">Protect the Docker daemon socket</a> at the website of Docker which uses the <code>openssl</code> tool to create all the certificates etc. But how should we do this on Windows?</p>
+
+<h2 id="justcontainerizewhatsthere">Just containerize what's there</h2>
+
+<p>I have seen the <a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-server-container-tools/DockerTLS">DockerTLS</a> script in a GitHub repo from Microsoft. But this script installs OpenSSL on my machine which I don't want to.</p>
+
+<p>My first thought was, let's put this script + OpenSSL into a Docker image and run it in a Windows container.</p>
+
+<p>So this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/2e2a5b12252816744f5414e0621e12bb74b6f59c/dockertls/Dockerfile">Dockerfile</a> was my first attempt to just use Chocolatey to install OpenSSL, download the PowerShell script from the Microsoft GitHub repo. Done. The script can run in a safe environment and I don't have to install software on my Docker host.</p>
+
+<h2 id="dockertls">DockerTLS</h2>
+
+<p>But there is still work to do on the host to configure the Docker engine which I wanted to automate a little more. So it would be great to have a tool that can</p>
+
+<ul>
+<li>generate all TLS certs</li>
+<li>create or update the Docker <code>daemon.json</code> file</li>
+<li>Put the client certs into my home directory</li>
+</ul>
+
+<p>But still we need a program or script with OpenSSL to do that. I thought this tool should be deployed in a Docker image and shared on the Docker Hub. And here it is:</p>
+
+<h2 id="dockerrundockertls">docker run dockertls</h2>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls.png" alt="dockertls"></p>
+
+<p>The script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1">generate-certs.ps1</a> creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL installed.</p>
+
+<p>The dockertls Docker image is created with this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile">Dockerfile</a>. It installs OpenSSL from openbsd (thanks to <a href="https://twitter.com/friism">Michael Friis</a> for that optimization) and copies the PowerShell script inside the image.</p>
+
+<p>You can find the <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls">full source code</a> of the dockertls image in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo if you want to build the Docker image yourself.</p>
+
+<p>Otherwise you can just the <a href="https://hub.docker.com/r/stefanscherer/dockertls-windows/">dockertls Docker image</a> from the Docker Hub.</p>
+
+<h3 id="dryrun">Dry run</h3>
+
+<p>As you don't trust me or my Docker image you can do a dry run with some temporary folders where the container can copy files into without destroying your Docker host.</p>
+
+<p>Just create two folders:</p>
+
+<pre><code>mkdir server  
+mkdir client\.docker  
+</code></pre>
+
+<p>Now run the Windows container with the environment variables <code>SERVER_NAME</code> and <code>IP_ADDRESSES</code> as well as two volume mounts to write the certs back to the host:</p>
+
+<pre><code>docker run --rm `  
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v "$(pwd)\server:C:\ProgramData\docker" `
+  -v "$(pwd)\client\.docker:C:\Users\ContainerAdministrator\.docker" `
+  stefanscherer/dockertls-windows
+</code></pre>
+
+<p>Afterwards check the folders:</p>
+
+<pre><code>dir server\certs.d  
+dir server\config  
+dir client\.docker  
+</code></pre>
+
+<p>You will see that there are three pem files for the server, the <code>daemon.json</code> file as well as three pem files for the client.</p>
+
+<p>Of course you could manually copy the files and try them out. But this Docker image can do this for you as well.</p>
+
+<h3 id="fullrun">Full run</h3>
+
+<p>You may have to create the <code>.docker</code> folder in your home directory.</p>
+
+<pre><code>mkdir $env:USERPROFILE\.docker  
+</code></pre>
+
+<p>Now run the container with the correct paths on the host so it can copy all certs and configs to the right place. The script can read an existing <code>daemon.json</code> and update it to keep all other configuration untouched.</p>
+
+<pre><code>docker run --rm `  
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v "C:\ProgramData\docker:C:\ProgramData\docker" `
+  -v "$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker" `
+  stefanscherer/dockertls-windows
+</code></pre>
+
+<p>Now you have to restart the Docker service in an administrator Shell with</p>
+
+<pre><code>restart-service docker  
+</code></pre>
+
+<p>One last step is needed on your host. You have to open the port 2376 in your firewall so you can access the machine from the outside. But then you're done on your host.</p>
+
+<p>You can recreate the TLS certs with the same command and just restart the Docker service afterwards.</p>
+
+<h3 id="testtlsconnection">Test TLS connection</h3>
+
+<p>Now test the connection to the TLS secured Docker service with</p>
+
+<pre><code>docker --tlsverify `  
+  --tlscacert=$env:USERPROFILE\.docker\ca.pem `
+  --tlscert=$env:USERPROFILE\.docker\cert.pem `
+  --tlskey=$env:USERPROFILE\.docker\key.pem `
+  -H=tcp://127.0.0.1:2376 version
+</code></pre>
+
+<p>Or just set some environment variables</p>
+
+<pre><code>$env:DOCKER_HOST="tcp://127.0.0.1:2376"
+$env:DOCKER_TLS_VERIFY="1"
+docker version  
+</code></pre>
+
+<h3 id="azure">Azure</h3>
+
+<p>In an Azure VM you should use your DNS name for the VM in the <code>SERVER_NAME</code> environment variable and your public and local IP addresses of that machine.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-run---Kopie.png" alt="docker-run"></p>
+
+<p>You have to open the firewall port 2376 on your Windows Docker host.</p>
+
+<p>For Azure you also have to add a incoming rule for port 2376 in your network security group.</p>
+
+<p>Then you have to securely transfer the three client pem files from your Azure VM to your laptop.</p>
+
+<p>I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-1.png" alt="docker-version"></p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Run Linux and Windows Containers on Windows 10]]></title><description><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve</p>]]></description><link>https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">e2bf3024-b5bb-4393-890b-dd5b65895e78</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Linux]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded><![CDATA[<p>At DockerCon 2016 in Seattle Docker announced the public beta of <strong>Docker for Windows</strong>. With this you can work with Docker running <strong>Linux containers</strong> in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a <a href="https://docs.docker.com/docker-for-windows/">stable version and a beta channel</a> to retrieve newer versions.</p>
 
 <p>And Microsoft has added the <strong>Containers feature</strong> in the Windows 10 Anniversary Update. With some <a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10">installation steps</a> you are able to run <strong>Windows Hyper-V Containers</strong> on your Windows 10 machine.</p>
 
@@ -1646,124 +1775,4 @@ setTimeout(function () {
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>The technical preview gives us the possibility to get in touch with Docker for Windows for the first time. There may be some rough edges here and there, but I think there will be a fast progress to run Docker on Windows as smooth as with Linux containers.</p>]]></content:encoded></item><item><title><![CDATA[Git push to build Vagrant Boxes with Atlas]]></title><description><![CDATA[<p>Today I have tested the new available service <a href="https://atlas.hashicorp.com">Atlas</a> to build Vagrant Boxes with Packer in the Cloud.</p>
-
-<p>As the time of writing there is no direct GitHub integration for Atlas. So I just added another CI server as a glue between GitHub and Atlas to make it work. For</p>]]></description><link>https://stefanscherer.github.io/automate-building-vagrant-boxes-with-atlas/</link><guid isPermaLink="false">86a2be8a-e11a-4752-b7f1-36a1783d9326</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Thu, 09 Jul 2015 20:53:10 GMT</pubDate><content:encoded><![CDATA[<p>Today I have tested the new available service <a href="https://atlas.hashicorp.com">Atlas</a> to build Vagrant Boxes with Packer in the Cloud.</p>
-
-<p>As the time of writing there is no direct GitHub integration for Atlas. So I just added another CI server as a glue between GitHub and Atlas to make it work. For this example I used <a href="https://circleci.com">CircleCI</a>. And I love to receive Slack notifications of this build pipeline.</p>
-
-<p>This is my current workflow</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/github_packer_circleci_atlas_slack.png" alt="packer-atlas-workflow"></p>
-
-<h2 id="githubrepo">GitHub repo</h2>
-
-<p>For this blog post I have created an <a href="https://github.com/StefanScherer/packer-atlas-example">example repo</a> with an Ubuntu 14.04 packer template from the <a href="https://github.com/boxcutter">boxcutter Team</a>.</p>
-
-<h2 id="atlas">Atlas</h2>
-
-<p>Sign up at Atlas and create a Token for CircleCI</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/Bildschirmfoto-2015-07-09-um-23-02-49.png" alt="atlas-create-token"></p>
-
-<h2 id="circleci">CircleCI</h2>
-
-<p>Sign up at CircleCI and add the GitHub project with your packer template as a build project.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/Bildschirmfoto-2015-07-09-um-23-03-51.png" alt="circle-build-project"></p>
-
-<p>Now go to the project settings and add an environment variable <code>ATLAS_TOKEN</code> with the Token that we have generated in Atlas.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/Bildschirmfoto-2015-07-09-um-23-04-45.png" alt="circle-add-atlas-token"></p>
-
-<p>Now the connection between GitHub and CircleCI and Atlas is established.</p>
-
-<h2 id="gitpush">git push</h2>
-
-<p>After each <code>git push</code> CircleCI builds the project. It downloads and installs Packer 0.8.1 and starts <code>packer push</code></p>
-
-<p>This is the <code>circle.yml</code> used in this example.</p>
-
-<pre><code class="language-yaml">machine:  
-  timezone: Europe/Berlin
-
-  environment:
-    PACKER_VERSION: 0.8.1
-
-dependencies:  
-  pre:
-    - &gt;
-      sudo apt-get install -qq wget unzip &amp;&amp;
-      sudo mkdir /opt/packer &amp;&amp;
-      pushd /opt/packer &amp;&amp;
-      echo "Downloading packer ${PACKER_VERSION}..." &amp;&amp;
-      sudo wget --no-verbose https://dl.bintray.com/mitchellh/packer/packer_${PACKER_VERSION}_linux_amd64.zip &amp;&amp;
-      echo "Installing packer ${PACKER_VERSION}..." &amp;&amp;
-      sudo unzip packer_${PACKER_VERSION}_linux_amd64.zip &amp;&amp;
-      sudo rm packer_${PACKER_VERSION}_linux_amd64.zip &amp;&amp;
-      pushd /usr/bin &amp;&amp;
-      sudo ln -s /opt/packer/* .
-
-deployment:  
-  publish:
-    branch: master
-    commands:
-      - packer push -name=StefanScherer/packer-atlas-example packer-atlas-example.json
-</code></pre>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/Bildschirmfoto-2015-07-09-um-23-11-10.png" alt="git-push"></p>
-
-<p>This will just upload the packer template and files into Atlas. In Atlas the main work begins. A parallel build of the Vagrant Box for VMware and VirtualBox is started.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/07/Bildschirmfoto-2015-07-09-um-23-11-45.png" alt="atlas-packer-build"></p>
-
-<p>The deployment to Atlas is configured in the Packer template in the post-processor section.</p>
-
-<pre><code class="language-json">  "post-processors": [
-    [
-      {
-        "type": "vagrant",
-        "keep_input_artifact": false
-      },
-      {
-        "type": "atlas",
-        "only": ["vmware-iso"],
-        "artifact": "StefanScherer/packer-atlas-example",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "vmware_desktop",
-          "version": "{{ user `version` }}",
-          "created_at": "{{timestamp}}"
-        }
-      },
-      {
-        "type": "atlas",
-        "only": ["virtualbox-iso"],
-        "artifact": "StefanScherer/packer-atlas-example",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "virtualbox",
-          "version": "{{ user `version` }}",
-          "created_at": "{{timestamp}}"
-        }
-      }
-    ]
-</code></pre>
-
-<p>After a while the Vagrant Boxes are deployed to Atlas and are available for your <code>Vagrantfile</code>.</p>
-
-<h2 id="vagrantup">Vagrant up</h2>
-
-<p>You now can use the new Vagrant Box with</p>
-
-<pre><code class="language-bash">vagrant init StefanScherer/packer-atlas-example  
-vagrant up  
-</code></pre>
-
-<p>Thanks to Hashicorp for that great service!</p>
-
-<h2 id="seealso">See also</h2>
-
-<p><a href="https://www.hashicorp.com/blog/atlas-packer-vagrant.html">https://www.hashicorp.com/blog/atlas-packer-vagrant.html</a></p>
-
-<p>I hope you enjoyed this blog post.</p>]]></content:encoded></item></channel></rss>
+<p>The technical preview gives us the possibility to get in touch with Docker for Windows for the first time. There may be some rough edges here and there, but I think there will be a fast progress to run Docker on Windows as smooth as with Linux containers.</p>]]></content:encoded></item></channel></rss>
