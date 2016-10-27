@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=568291c56c" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ea251443fb" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/" />
@@ -24,7 +24,7 @@
     <meta property="og:description" content="Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure. There is a tutorial" />
     <meta property="og:url" content="https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/" />
     <meta property="article:published_time" content="2016-10-23T22:35:19.481Z" />
-    <meta property="article:modified_time" content="2016-10-23T22:41:42.553Z" />
+    <meta property="article:modified_time" content="2016-10-27T18:32:18.442Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows" />
     <meta property="article:tag" content="Azure" />
@@ -50,7 +50,7 @@
     "headline": "How to protect a Windows 2016 Docker engine with TLS",
     "url": "https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/",
     "datePublished": "2016-10-23T22:35:19.481Z",
-    "dateModified": "2016-10-23T22:41:42.553Z",
+    "dateModified": "2016-10-27T18:32:18.442Z",
     "keywords": "Docker, Windows, Azure, TLS",
     "description": "Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure. There is a tutorial"
 }
@@ -130,7 +130,7 @@
 
 <p>The script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1">generate-certs.ps1</a> creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL installed.</p>
 
-<p>The dockertls Docker image is created with this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile">Dockerfile</a>. It installs OpenSSL from openbsd (thanks to <a href="https://twitter.com/friism">Michael Friis</a> for that optimization) and copies the PowerShell script inside the image.</p>
+<p>The dockertls Docker image is created with this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile">Dockerfile</a>. It installs LibreSSL from OpenBSD (thanks to <a href="https://twitter.com/friism">Michael Friis</a> for that optimization) and copies the PowerShell script inside the image.</p>
 
 <p>You can find the <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls">full source code</a> of the dockertls image in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo if you want to build the Docker image yourself.</p>
 
@@ -302,8 +302,8 @@ docker version
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=568291c56c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=568291c56c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ea251443fb"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=ea251443fb"></script>
 
 </body>
 </html>
