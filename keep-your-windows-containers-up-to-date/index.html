@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Keep your Windows Containers up to date</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=a687c3411c" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+
+    <link rel="canonical" href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Keep your Windows Containers up to date" />
+    <meta property="og:description" content="Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy. How can I install Windows Updates in my container" />
+    <meta property="og:url" content="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/" />
+    <meta property="article:published_time" content="2017-01-08T09:23:21.130Z" />
+    <meta property="article:modified_time" content="2017-01-08T12:57:34.260Z" />
+    <meta property="article:tag" content="Windows" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Container" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Keep your Windows Containers up to date" />
+    <meta name="twitter:description" content="Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy. How can I install Windows Updates in my container" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Stefan Scherer's Blog",
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": "https://stefanscherer.github.io"
+    },
+    "headline": "Keep your Windows Containers up to date",
+    "url": "https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/",
+    "datePublished": "2017-01-08T09:23:21.130Z",
+    "dateModified": "2017-01-08T12:57:34.260Z",
+    "keywords": "Windows, Docker, Container",
+    "description": "Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy. How can I install Windows Updates in my container"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.7" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template tag-windows tag-docker tag-container nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-windows tag-docker tag-container">
+
+        <header class="post-header">
+            <h1 class="post-title">Keep your Windows Containers up to date</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-01-08">08 January 2017</time>  on <a href="../tag/windows/">Windows</a>, <a href="../tag/docker/">Docker</a>, <a href="../tag/container/">Container</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
+
+<p>How can I install Windows Updates in my container image?</p>
+
+<p>Working with containers is not the same as working with real servers or VM's you support for months or years. A container image is a static snapshot of the filesystem (and Windows registry and so on) at a given time.</p>
+
+<p>You won't enter a running container and run the Windows Update there. But how should we do it then?</p>
+
+<h2 id="containerimageshavelayers">Container images have layers</h2>
+
+<p>First have a look how a container image looks like. It is not just a snapshot. A container image consist of multiple layers. When you look at your <code>Dockerfile</code> you normally use a line like <code>FROM microsoft/windowsservercore</code>.</p>
+
+<p>Your container image then uses the Windows base image that contains a layer with all the files needed to run Windows containers.</p>
+
+<p>If you have some higher level application you may use other prebuilt container images like <code>FROM microsoft/iis</code> or <code>FROM microsoft/aspnet</code>. These images also re-use the <code>FROM microsoft/windowsservercore</code> as base image.</p>
+
+<p><img src="../content/images/2017/01/windows_image_layers-2.png" alt="Windows app image layers" /></p>
+
+<p>On top of that you build your own application image with your code and content needed to run the application in a self contained Windows container.</p>
+
+<p>Behind the scenes your application image now uses several layers that will be downloaded from the Docker Hub or any other container registry. Same layers can be re-used for different other images. If you build multiple ASP.NET appliations as Docker images they will re-use the same layers below.</p>
+
+<p>But now back to our first question: How to apply Windows Updates in a container image? </p>
+
+<h2 id="thewindowsbaseimages">The Windows base images</h2>
+
+<p>Let's have a closer look at the Windows base images. Microsoft provides two base images: <a href="https://hub.docker.com/r/microsoft/windowsservercore/">windowsservercore</a> and <a href="https://hub.docker.com/r/microsoft/nanoserver/">nanoserver</a>. Both base images are updated on a regular basis to roll out all security fixes and bug fixes. You might know that the base image for windowsservercore is about 4 to 5 GByte to download.</p>
+
+<p>So do we have to download the whole base image each time for each update?</p>
+
+<p>If we look closer how the base images are built we see that they contain two layers: One big base layer that will be used for a longer period of time. And there is a smaller update layer that contains only the patched and updated files for the new release.</p>
+
+<p><img src="../content/images/2017/01/windowsservercore_updates.gif" alt="Windows Server Core updates" /></p>
+
+<p>So updating to a newer Windows base image version isn't painful as only the update layer must be pulled from the Docker Hub.</p>
+
+<p>But in the long term it does not make sense to stick forever to the old base layer. Security scanners will mark them as vulnerable and also all the images that are built from them. And the update layer will increase in size for each new release. So from time to time there is a "breaking" change that replaces the base layer and a new base layer will be used for upcoming releases. We have seen that with the latest release in December.</p>
+
+<p><img src="../content/images/2017/01/windowsservercore_updates_all.gif" alt="Windows Server Core major update" /></p>
+
+<p>From time to time you will have to download the big new base layer which is about 4 GByte for windowsservercore (and only about 240 MByte for nanoserver, so try to use nanoserver whereever you can) when you want to use the latest Windows image release.</p>
+
+<h2 id="keeporupdate">Keep or update?</h2>
+
+<p>Should I avoid updating the Windows image to revision 576 to keep my downloads small? <strong>No!</strong></p>
+
+<p>My recommendation is to update all your Windows container images and rebuild them with the newest Windows image. You have to download that bigger base layer also <strong>only once</strong> and all your container images will re-use it.</p>
+
+<p>Perhaps your application code also has some updates you want to ship. It's a good time to ship it on top of the newest Windows base image. So I recommend to run</p>
+
+<pre><code>docker pull microsoft/windowsservercore  
+docker pull microsoft/nanoserver  
+</code></pre>
+
+<p>before you build new Windows container images to have the latest OS base image with all security fixes and bug fixes in it.</p>
+
+<p>If you want to keep track which version of the Windows image you use, you can use the tags provided for each release.</p>
+
+<p>Instead of using only the latest version in your <code>Dockerfile</code></p>
+
+<pre><code>FROM microsoft/windowsservercore  
+</code></pre>
+
+<p>you can append the tag</p>
+
+<pre><code>FROM microsoft/windowsservercore:10.0.14393.576  
+</code></pre>
+
+<p>But I still recommend to update the tag after a new Windows image has been published.</p>
+
+<p>You can find the tags for <a href="https://hub.docker.com/r/microsoft/windowsservercore/tags/">windowsservercore</a> and <a href="https://hub.docker.com/r/microsoft/nanoserver/tags/">nanoserver</a> on the Docker Hub.</p>
+
+<h2 id="whatabouttheframeworkimages">What about the framework images?</h2>
+
+<p>Typically you build your application on top of some kind of framework like <a href="https://hub.docker.com/r/microsoft/aspnet/tags/">ASP.NET</a>, <a href="https://hub.docker.com/r/microsoft/iis/tags/">IIS</a> or a runtime language like Node.js, <a href="https://hub.docker.com/r/library/python/">Python</a> and so on. You should have a look at the update cycles of these framework images. The maintainers have to rebuild the framework images after a new release of the Windows base image came out.</p>
+
+<p>If you see some of your framework images lag behind, encourage the maintainer to update the Windows base image and to rebuild the framework image.</p>
+
+<p>With such updated framework images - they hopefully come with a new version tag - you can rebuild your application.</p>
+
+<h1 id="tldr">TL/DR</h1>
+
+<p>So your part to get Windows Updates into your Windows Container images is to choose the newer image in your <code>Dockerfile</code> and rebuild your application image with it.</p>
+
+<p>If you haven't used version tags of the image below, do a <code>docker pull ...</code> of that image to get sure to have the updated one before you rebuild.</p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+            <div id="disqus_thread"></div>
+            <script>
+            (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+
+            s.src = '//stefanscherersblog.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/share?text=Keep%20your%20Windows%20Containers%20up%20to%20date&amp;url=https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../protecting-a-windows-2016-docker-engine-with-tls/">
+        <section class="post">
+            <h2>How to protect a Windows 2016 Docker engine with TLS</h2>
+            <p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=a687c3411c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=a687c3411c"></script>
+
+</body>
+</html>
