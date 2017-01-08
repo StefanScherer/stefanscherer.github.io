@@ -24,7 +24,7 @@
     <meta property="og:description" content="In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way" />
     <meta property="og:url" content="https://stefanscherer.github.io/winspector/" />
     <meta property="article:published_time" content="2017-01-08T14:00:00.000Z" />
-    <meta property="article:modified_time" content="2017-01-08T17:16:13.179Z" />
+    <meta property="article:modified_time" content="2017-01-08T17:24:57.143Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows" />
     <meta property="article:tag" content="Container" />
@@ -51,7 +51,7 @@
     "headline": "Winspector - a tool to inspect your and other&#x27;s Windows images",
     "url": "https://stefanscherer.github.io/winspector/",
     "datePublished": "2017-01-08T14:00:00.000Z",
-    "dateModified": "2017-01-08T17:16:13.179Z",
+    "dateModified": "2017-01-08T17:24:57.143Z",
     "keywords": "Docker, Windows, Container, Docker Hub, Python",
     "description": "In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way"
 }
@@ -126,17 +126,21 @@
 
 <p>If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.</p>
 
-<pre><code>docker run --rm stefanscherer/winspector microsoft/aspnet  
+<pre><code>docker run --rm stefanscherer/winspector microsoft/iis  
 </code></pre>
+
+<p><img src="../content/images/2017/01/winspector-wndows.png" alt="run from windows" /></p>
 
 <p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
 
-<h3 id="runitfromlinux">Run it from Linux</h3>
+<h3 id="runitfrommaclinux">Run it from Mac / Linux</h3>
 
 <p>If you have a Linux Docker engine running, just run the tool this way:</p>
 
-<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/aspnet  
+<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/iis  
 </code></pre>
+
+<p><img src="../content/images/2017/01/winspector-mac.png" alt="run from mac" /></p>
 
 <h2 id="inspectingsomeimages">Inspecting some images</h2>
 

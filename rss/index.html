@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 08 Jan 2017 17:16:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 08 Jan 2017 17:25:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
 
 <p>Is there a way</p>]]></description><link>https://stefanscherer.github.io/winspector/</link><guid isPermaLink="false">5326246a-c5c3-4a6f-b062-d9330e9d651a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Container]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Python]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
 
@@ -25,17 +25,21 @@
 
 <p>If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.</p>
 
-<pre><code>docker run --rm stefanscherer/winspector microsoft/aspnet  
+<pre><code>docker run --rm stefanscherer/winspector microsoft/iis  
 </code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/winspector-wndows.png" alt="run from windows"></p>
 
 <p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
 
-<h3 id="runitfromlinux">Run it from Linux</h3>
+<h3 id="runitfrommaclinux">Run it from Mac / Linux</h3>
 
 <p>If you have a Linux Docker engine running, just run the tool this way:</p>
 
-<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/aspnet  
+<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/iis  
 </code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/winspector-mac.png" alt="run from mac"></p>
 
 <h2 id="inspectingsomeimages">Inspecting some images</h2>
 
