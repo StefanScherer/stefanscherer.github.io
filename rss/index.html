@@ -1,4 +1,145 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 08 Jan 2017 12:58:16 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Keep your Windows Containers up to date]]></title><description><![CDATA[<p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 08 Jan 2017 17:16:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+
+<p>Is there a way</p>]]></description><link>https://stefanscherer.github.io/winspector/</link><guid isPermaLink="false">5326246a-c5c3-4a6f-b062-d9330e9d651a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Container]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Python]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+
+<p>Is there a way to look into container images without downloading them?</p>
+
+<p>There are several services like <a href="https://imagelayers.io">imagelayers.io</a>, <a href="https://microbadger.com">microbadger</a>, <a href="http://shields.io">shields.io</a> and others which provide badges and online views for existing Docker images at Docker Hub. Unfortunately not all support Windows images at the moment.</p>
+
+<h2 id="enterwinspector">Enter winspector</h2>
+
+<p>I found an <a href="https://github.com/giantswarm/inspect-docker-image">inspector tool</a> written in Python that might be useful for that task. I've enhanced it and created a tool called winspector which is available as Docker image <a href="https://hub.docker.com/r/stefanscherer/winspector/">stefanscherer/winspector</a> for Windows and Linux. With this tool you can inspect any Windows Docker images on the Docker Hub.</p>
+
+<p>Winspector will show you</p>
+
+<ul>
+<li>The creation date of the image and the Docker version and Windows version used at build time.</li>
+<li>The number of layers down to the Windows base image</li>
+<li>Which <strong>Windows base image</strong> the given image depends on. So you know whether a random Windows image uses the up to date Windows base image or not.</li>
+<li>The <strong>size of each layer</strong>. This is useful to when you try to optimize your image size.</li>
+<li>The <strong>"application size" without the Windows base layers</strong>. So you get an idea how small your Windows application image really is and what other users have to download provided that they already have the base image.</li>
+<li>The history of the image. It tries to <strong>reconstruct the <code>Dockerfile</code> commands</strong> that have been used to build the image.</li>
+</ul>
+
+<h3 id="runitfromwindows">Run it from Windows</h3>
+
+<p>If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.</p>
+
+<pre><code>docker run --rm stefanscherer/winspector microsoft/aspnet  
+</code></pre>
+
+<p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
+
+<h3 id="runitfromlinux">Run it from Linux</h3>
+
+<p>If you have a Linux Docker engine running, just run the tool this way:</p>
+
+<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/aspnet  
+</code></pre>
+
+<h2 id="inspectingsomeimages">Inspecting some images</h2>
+
+<p>Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.</p>
+
+<pre><code>$ docker run --rm stefanscherer/winspector:linux microsoft/windowsservercore
+</code></pre>
+
+<p>Even for this image it can show you some details:</p>
+
+<pre><code>Image name: microsoft/windowsservercore  
+Tag: latest  
+Number of layers: 2  
+Sizes of layers:  
+  sha256:3889bb8d808bbae6fa5a33... - 4069985900 byte
+  sha256:04ee5d718c7adc0144556d... - 854419699 byte
+Total size (including Windows base layers): 4924405599 byte  
+Application size (w/o Windows base layers): 0 byte  
+Windows base image used:  
+  microsoft/windowsservercore:10.0.14393.576 update
+  microsoft/windowsservercore:10.0.14393.576 base
+</code></pre>
+
+<p>As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.</p>
+
+<h2 id="howbigisthewinspectorimage">How big is the winspector image?</h2>
+
+<p>Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.</p>
+
+<pre><code>$ docker run --rm stefanscherer/winspector:linux stefanscherer/winspector
+</code></pre>
+
+<p>The (shortened) output looks like this:</p>
+
+<pre><code>Image name: stefanscherer/winspector  
+Tag: latest  
+Number of layers: 15  
+Schema version: 1  
+Architecture: amd64  
+Created: 2017-01-07 15:58:51 with Docker 1.13.0-rc4 on windows 10.0.14393.576  
+Sizes of layers:  
+  ...
+Total size (including Windows base layers): 5004039125 byte  
+Application size (w/o Windows base layers): 79633526 byte  
+Windows base image used:  
+  microsoft/windowsservercore:10.0.14393.576 update
+  microsoft/windowsservercore:10.0.14393.576 base
+History:  
+  SHELL [powershell -Command $ErrorActionPreference = 'Stop';]
+  ENV PYTHON_RELEASE=2.7.13
+  ENV PYTHON_PIP_VERSION=9.0.1
+  RUN ["powershell -Command $ErrorActionPreference = 'Stop'; $url = ...
+  ...
+  ENTRYPOINT ["python" "/winspector.py"]
+</code></pre>
+
+<p>So the winspector Windows image is about 79 MByte and it uses the latest windowsservercore base image.</p>
+
+<h2 id="inspectinglinuximages">Inspecting Linux images</h2>
+
+<p>And winspector is not restricted to Windows images, you can inspect Linux images as well.</p>
+
+<p>If you run</p>
+
+<pre><code>$ docker run --rm stefanscherer/winspector:linux stefanscherer/winspector:linux
+</code></pre>
+
+<p>then winspector will show you</p>
+
+<pre><code>Image name: stefanscherer/winspector  
+Tag: linux  
+Number of layers: 7  
+Schema version: 1  
+Architecture: amd64  
+Created: 2017-01-07 15:57:14 with Docker 1.12.3 on linux  
+Sizes of layers:  
+  sha256:b7f33cc0b48ea4fb2f0745... - 2313090 byte
+  sha256:8eda8bb6fee431ab65900c... - 343948 byte
+  sha256:65cd0d3dd23acbdfef00f9... - 21417016 byte
+  sha256:63d9fec00c26e60215ac90... - 1490967 byte
+  sha256:74fd9d91d426a71c2448aa... - 136 byte
+  sha256:e7cfdd5ba310a40524d41a... - 2012378 byte
+  sha256:48c296e2b968df9c043a92... - 2655 byte
+Total size (including Windows base layers): 27580190 byte  
+Application size (w/o Windows base layers): 27580190 byte  
+Windows base image used:  
+  It does not seem to be a Windows image
+History:  
+  ...
+</code></pre>
+
+<p>As you can see the Linux image is only 27 MByte. As both Docker images should only contain Python and the Python script and the dependencies needed, they should be about the same size.</p>
+
+<p>So what we can see is that the Windows image can be improved more down to 27 MByte.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>With winspector you can check any Windows container image on the Docker Hub which version of Windows it uses.</p>
+
+<p>You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.</p>
+
+<p>The tool is open source on GitHub at <a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a>. It is community driven, so feel free to send me feedback in form of issues or pull requests. </p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Keep your Windows Containers up to date]]></title><description><![CDATA[<p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
 
 <p>How can I install Windows Updates in my container</p>]]></description><link>https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/</link><guid isPermaLink="false">9d05e734-fddc-452e-a760-13dd16defde7</guid><category><![CDATA[Windows]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Container]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 09:23:21 GMT</pubDate><content:encoded><![CDATA[<p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
 
@@ -1669,20 +1810,4 @@ curl -k -v https://localhost:8080 &gt;scwvpn.ovpn
 
 <p>and Tunnelblick should start and import the file. Now you're ready to connect to your VPN server running at Scaleway!</p>
 
-<p>Please read the <a href="https://github.com/jpetazzo/dockvpn#security-discussion">security discussion</a> section and decide if you are happy with it.</p>]]></content:encoded></item><item><title><![CDATA[Kitematic meets Windows Docker]]></title><description><![CDATA[<p>I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/09/kitematic-win2016tp3-png-shadow.png" alt=""></p>
-
-<p>A closer look at the left column shows a running <strong>mongo</strong> container. Yes, I know,</p>]]></description><link>https://stefanscherer.github.io/kitematic-meets-windows-docker/</link><guid isPermaLink="false">cdaf2b6d-36bc-4c80-91f5-bc7f649825ae</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Kitematic]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 08 Sep 2015 22:03:23 GMT</pubDate><content:encoded><![CDATA[<p>I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/09/kitematic-win2016tp3-png-shadow.png" alt=""></p>
-
-<p>A closer look at the left column shows a running <strong>mongo</strong> container. Yes, I know, you cannot pull docker images with the Windows Docker Engine at the moment. But if you have created some local Docker images with the official names it looks pretty impressive right now.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/09/kitematic-mongo-png-shadow.png" alt=""></p>
-
-<p>And to show that this is no fake you can see some windows pathes in the container logs view:</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2015/09/kitematic-list-png-shadow.png" alt=""></p>
-
-<p>That's all for now.</p>]]></content:encoded></item></channel></rss>
+<p>Please read the <a href="https://github.com/jpetazzo/dockvpn#security-discussion">security discussion</a> section and decide if you are happy with it.</p>]]></content:encoded></item></channel></rss>
