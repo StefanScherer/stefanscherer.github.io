@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Sun, 08 Jan 2017 17:25:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.7</generator><lastBuildDate>Mon, 16 Jan 2017 09:02:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
 
 <p>Is there a way</p>]]></description><link>https://stefanscherer.github.io/winspector/</link><guid isPermaLink="false">5326246a-c5c3-4a6f-b062-d9330e9d651a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Container]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Python]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded><![CDATA[<p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
 
@@ -34,9 +34,9 @@
 
 <h3 id="runitfrommaclinux">Run it from Mac / Linux</h3>
 
-<p>If you have a Linux Docker engine running, just run the tool this way:</p>
+<p>If you have a Linux Docker engine running, just use the exact same command as on Windows. The Docker image <code>stefanscherer/winspector</code> is a <strong>multiarch Docker image</strong> and Docker will pull the correct OS specific image for you automatically.</p>
 
-<pre><code>docker run --rm stefanscherer/winspector:linux microsoft/iis  
+<pre><code>docker run --rm stefanscherer/winspector microsoft/iis  
 </code></pre>
 
 <p><img src="https://stefanscherer.github.io/content/images/2017/01/winspector-mac.png" alt="run from mac"></p>
@@ -45,7 +45,7 @@
 
 <p>Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.</p>
 
-<pre><code>$ docker run --rm stefanscherer/winspector:linux microsoft/windowsservercore
+<pre><code>$ docker run --rm stefanscherer/winspector microsoft/windowsservercore
 </code></pre>
 
 <p>Even for this image it can show you some details:</p>
@@ -54,13 +54,13 @@
 Tag: latest  
 Number of layers: 2  
 Sizes of layers:  
-  sha256:3889bb8d808bbae6fa5a33... - 4069985900 byte
-  sha256:04ee5d718c7adc0144556d... - 854419699 byte
-Total size (including Windows base layers): 4924405599 byte  
+  sha256:3889bb8d808bbae6fa5a33e07093e65c31371bcf9e4c38c21be6b9af52ad1548 - 4069985900 byte
+  sha256:3430754e4d171ead00cf6766797a28abf3caf236f6c92c5c346ea2ad3955a129 - 913145061 byte
+Total size (including Windows base layers): 4983130961 byte  
 Application size (w/o Windows base layers): 0 byte  
 Windows base image used:  
-  microsoft/windowsservercore:10.0.14393.576 update
-  microsoft/windowsservercore:10.0.14393.576 base
+  microsoft/windowsservercore:10.0.14393.447 full
+  microsoft/windowsservercore:10.0.14393.693 update
 </code></pre>
 
 <p>As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.</p>
@@ -69,34 +69,30 @@ Windows base image used:
 
 <p>Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.</p>
 
-<pre><code>$ docker run --rm stefanscherer/winspector:linux stefanscherer/winspector
+<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:windows-1.4.3
 </code></pre>
 
 <p>The (shortened) output looks like this:</p>
 
 <pre><code>Image name: stefanscherer/winspector  
-Tag: latest  
-Number of layers: 15  
+Tag: windows-1.4.3  
+Number of layers: 14  
 Schema version: 1  
 Architecture: amd64  
-Created: 2017-01-07 15:58:51 with Docker 1.13.0-rc4 on windows 10.0.14393.576  
+Created: 2017-01-15 21:35:22 with Docker 1.13.0-rc7 on windows 10.0.14393.693  
 Sizes of layers:  
   ...
-Total size (including Windows base layers): 5004039125 byte  
-Application size (w/o Windows base layers): 79633526 byte  
+
+Total size (including Windows base layers): 360497565 byte  
+Application size (w/o Windows base layers): 27188879 byte  
 Windows base image used:  
-  microsoft/windowsservercore:10.0.14393.576 update
-  microsoft/windowsservercore:10.0.14393.576 base
+  microsoft/nanoserver:10.0.14393.447 full
+  microsoft/nanoserver:10.0.14393.693 update
 History:  
-  SHELL [powershell -Command $ErrorActionPreference = 'Stop';]
-  ENV PYTHON_RELEASE=2.7.13
-  ENV PYTHON_PIP_VERSION=9.0.1
-  RUN ["powershell -Command $ErrorActionPreference = 'Stop'; $url = ...
   ...
-  ENTRYPOINT ["python" "/winspector.py"]
 </code></pre>
 
-<p>So the winspector Windows image is about 79 MByte and it uses the latest windowsservercore base image.</p>
+<p>So the winspector Windows image is about 27 MByte and it uses the latest nanoserver base image.</p>
 
 <h2 id="inspectinglinuximages">Inspecting Linux images</h2>
 
@@ -104,36 +100,30 @@ History:
 
 <p>If you run</p>
 
-<pre><code>$ docker run --rm stefanscherer/winspector:linux stefanscherer/winspector:linux
+<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:linux-1.4.3
 </code></pre>
 
 <p>then winspector will show you</p>
 
 <pre><code>Image name: stefanscherer/winspector  
-Tag: linux  
-Number of layers: 7  
+Tag: linux-1.4.3  
+Number of layers: 8  
 Schema version: 1  
 Architecture: amd64  
-Created: 2017-01-07 15:57:14 with Docker 1.12.3 on linux  
+Created: 2017-01-15 21:34:21 with Docker 1.12.3 on linux  
 Sizes of layers:  
-  sha256:b7f33cc0b48ea4fb2f0745... - 2313090 byte
-  sha256:8eda8bb6fee431ab65900c... - 343948 byte
-  sha256:65cd0d3dd23acbdfef00f9... - 21417016 byte
-  sha256:63d9fec00c26e60215ac90... - 1490967 byte
-  sha256:74fd9d91d426a71c2448aa... - 136 byte
-  sha256:e7cfdd5ba310a40524d41a... - 2012378 byte
-  sha256:48c296e2b968df9c043a92... - 2655 byte
-Total size (including Windows base layers): 27580190 byte  
-Application size (w/o Windows base layers): 27580190 byte  
+  ...
+Total size (including Windows base layers): 32708231 byte  
+Application size (w/o Windows base layers): 32708231 byte  
 Windows base image used:  
   It does not seem to be a Windows image
 History:  
   ...
 </code></pre>
 
-<p>As you can see the Linux image is only 27 MByte. As both Docker images should only contain Python and the Python script and the dependencies needed, they should be about the same size.</p>
+<p>As you can see the Linux image is about 32 MByte.</p>
 
-<p>So what we can see is that the Windows image can be improved more down to 27 MByte.</p>
+<p>So once you have downloaded the latest Windows base images like windowsservercore or nanoserver the download experience is the same for both platforms.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
