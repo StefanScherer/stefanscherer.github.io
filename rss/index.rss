@@ -1,4 +1,103 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 11 Feb 2017 17:40:20 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Winspector - a tool to inspect your and other's Windows images</title><description>&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 11 Feb 2017 19:01:04 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Dockerizing Ghost and Buster to run a blog on GitHub pages</title><description>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+
+&lt;p&gt;I still like this setup of hosting only the&lt;/p&gt;</description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">7e4d1fed-d14d-4cad-8f27-c30cc73e00ea</guid><category>Docker</category><category>Ghost</category><category>Buster</category><category>Docker-Compose</category><category>GitHub</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+
+&lt;p&gt;I still like this setup of hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers. &lt;/p&gt;
+
+&lt;h3 id="requirements"&gt;Requirements&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Docker for Mac&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;git&lt;/code&gt; (is already installed)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;docker-compose&lt;/code&gt; (already installed with D4M)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can find my setup and all files in my GitHub repo &lt;a href="https://github.com/StefanScherer/ghost-buster-docker"&gt;StefanScherer/ghost-buster-docker&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;As I'm upgrading from my local Ghost installation to this dockerized version I already have some content, the static files and my GitHub pages repo. Please refer to my old blog post how to create your repo. The following commands should give you an idea how to setup the two folders &lt;code&gt;content&lt;/code&gt; and &lt;code&gt;static&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/YOURNAME/ghost-buster-docker  
+cd ghost-buster-docker  
+mkdir content  
+git clone https://github.com/YOURNAME/YOURNAME.github.io static  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="dockercomposeyml"&gt;docker-compose.yml&lt;/h3&gt;
+
+&lt;p&gt;To simplify running Ghost and Buster I've created a &lt;code&gt;docker-compose.yml&lt;/code&gt; with all the published ports and volume mount points.&lt;/p&gt;
+
+&lt;p&gt;There are three services&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ghost&lt;/li&gt;
+&lt;li&gt;buster&lt;/li&gt;
+&lt;li&gt;preview&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class="language-yaml"&gt;version: '2.1'
+
+services:  
+  ghost:
+    image: ghost:0.11.4
+    volumes:
+      - ./content:/var/lib/ghost
+    ports:
+      - 2368:2368
+
+  buster:
+    image: stefanscherer/buster
+    command: /buster.sh
+    volumes:
+      - ./static:/static
+      - ./buster.sh:/buster.sh
+
+  preview:
+    image: nginx
+    volumes:
+      - ./static:/usr/share/nginx/html:ro
+    ports:
+      - 2369:80
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="editcontentwithghost"&gt;Edit content with Ghost&lt;/h3&gt;
+
+&lt;p&gt;To create new blog post or edit existing posts you spin up the &lt;code&gt;ghost&lt;/code&gt; container with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker-compose up -d ghost  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then open up your browser at &lt;code&gt;https://stefanscherer.github.io/ghost&lt;/code&gt; to login and edit content. As you can see the folder &lt;code&gt;content&lt;/code&gt; is mapped into the &lt;code&gt;ghost&lt;/code&gt; container to persist your Ghost blog data and images on your host machine.&lt;/p&gt;
+
+&lt;h3 id="generatestaticfiles"&gt;Generate static files&lt;/h3&gt;
+
+&lt;p&gt;To generate the static HTML pages we use the second service with Buster installed. This is no real service, so we do not "up" but "run" it with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker-compose run buster  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you have updated files in the &lt;code&gt;static&lt;/code&gt; folder. You may edit the local script &lt;code&gt;buster.sh&lt;/code&gt; to fix some links that Buster broke in the past in my pages.&lt;/p&gt;
+
+&lt;h2 id="previewstaticfiles"&gt;Preview static files&lt;/h2&gt;
+
+&lt;p&gt;From time to time it is useful to check the generated static HTML files before pushing them to GitHub pages. The third service is useful to run a webserver with the created static pages.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker-compose up -d preview  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Open your browser at &lt;code&gt;http://localhost:2369&lt;/code&gt; and check if everything looks good. In my setup I've added Disqus and first wanted to try out the results of modifying the &lt;code&gt;post.hbs&lt;/code&gt; file of the theme.&lt;/p&gt;
+
+&lt;h3 id="deploystaticfiles"&gt;Deploy static files&lt;/h3&gt;
+
+&lt;p&gt;If you are happy with the new static files it's time to push them. I've added a small script &lt;code&gt;deploy.sh&lt;/code&gt; to do the final steps on the host as only &lt;code&gt;git&lt;/code&gt; is used here. As I'm using GitHub with SSH and a passphrase I don't want to put that into a container. Have a look at the shell script and you will see that it's only a &lt;code&gt;git add &amp;amp;&amp;amp; git commit &amp;amp;&amp;amp; git push&lt;/code&gt; script.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./deploy.sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I think this setup will help me in the future to update Ghost more easily. &lt;/p&gt;
+
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>Winspector - a tool to inspect your and other's Windows images</title><description>&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
 
 &lt;p&gt;Is there a way&lt;/p&gt;</description><link>https://stefanscherer.github.io/winspector/</link><guid isPermaLink="false">5326246a-c5c3-4a6f-b062-d9330e9d651a</guid><category>Docker</category><category>Windows</category><category>Container</category><category>Docker Hub</category><category>Python</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded>&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
 
@@ -1739,69 +1838,4 @@ Congratulations! You have started your first container.&lt;/p&gt;
 
 &lt;p&gt;&lt;blockquote class="twitter-tweet" lang="de"&gt;&lt;p lang="en" dir="ltr"&gt;Get the latest &lt;a href="https://twitter.com/docker"&gt;@Docker&lt;/a&gt; tools for &lt;a href="https://twitter.com/hashtag/Windows?src=hash"&gt;#Windows&lt;/a&gt;:&amp;#10; &amp;#10;choco install docker&amp;#10;choco install docker-machine&amp;#10;choco install docker-compose&amp;#10;&amp;#10;Done!&lt;/p&gt;&amp;mdash; Stefan Scherer (@stefscherer) &lt;a href="https://twitter.com/stefscherer/status/662634469673799680"&gt;6. November 2015&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;&lt;/p&gt;
 
-&lt;p&gt;If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.&lt;/p&gt;</content:encoded></item><item><title>Run your own dockerized openVPN server at Scaleway</title><description>&lt;p&gt;After reading this &lt;a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html"&gt;blog post&lt;/a&gt; about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href="https://www.scaleway.com"&gt;Scaleway&lt;/a&gt; provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker&lt;/p&gt;</description><link>https://stefanscherer.github.io/run-your-own-dockerized-openvpn-server-at-scaleway/</link><guid isPermaLink="false">22734c92-a299-41c7-a464-eb5faec3bdbc</guid><category>Docker</category><category>Scaleway</category><category>ARM</category><category>openVPN</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 04 Nov 2015 12:16:00 GMT</pubDate><content:encoded>&lt;p&gt;After reading this &lt;a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html"&gt;blog post&lt;/a&gt; about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href="https://www.scaleway.com"&gt;Scaleway&lt;/a&gt; provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker container at minimal costs.&lt;/p&gt;
-
-&lt;h2 id="installlocaltools"&gt;Install local tools&lt;/h2&gt;
-
-&lt;p&gt;First install the scaleway commandline tool as well as the VPN client for Mac OSX.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;brew install scw  
-brew cask install tunnelblick  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="prepareascalewayserver"&gt;Prepare a Scaleway server&lt;/h2&gt;
-
-&lt;p&gt;If you haven't one yet, create a Scaleway server running with Docker. The commandline tool makes this is really easy.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;scw login  
-scw create --name scwdocker Docker_1_7_1  
-scw start scwdocker  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="prepareandstartyouropenvpncontainer"&gt;Prepare and start your openVPN container&lt;/h2&gt;
-
-&lt;p&gt;The next steps should be done on the Scaleway server, so login to it with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;scw exec scwdocker bash  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There already is an ARM port of the &lt;a href="https://github.com/jpetazzo/dockvpn"&gt;jpetazzo/dockvpn&lt;/a&gt; Docker image for the Raspberry Pi. We just clone the GitHub repo &lt;a href="https://github.com/dimetron/dockvpn-rpi"&gt;dimetron/dockvpn-rpi&lt;/a&gt; and build the Docker image.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/dimetron/dockvpn-rpi.git  
-cd dockvpn-rpi  
-docker build -t jpetazzo/dockvpn .  
-docker run -d --cap-add=NET_ADMIN --name=dockvpn -p 1194:1194/udp -p 443:443/tcp jpetazzo/dockvpn  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now create the ovpn file by running another container and extract it with &lt;code&gt;curl&lt;/code&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run --rm -t -i -p 8080:8080 --volumes-from dockvpn jpetazzo/dockvpn serveconfig  
-curl -k -v https://localhost:8080 &amp;gt;scwvpn.ovpn  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You now may logout from your Scaleway server.&lt;/p&gt;
-
-&lt;h2 id="backtomac"&gt;Back to Mac&lt;/h2&gt;
-
-&lt;p&gt;Copy the ovpn file back to your Mac with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;scw cp scwdocker:dockvpn-rpi/scwvpn.ovpn scwvpn.ovpn  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If the &lt;code&gt;scw cp&lt;/code&gt; command hangs, try this command instead&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;scw exec scwdocker cat dockvpn-rpi/scwvpn.ovpn &amp;gt;scwvpn.ovpn  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then double click on the ovpn file or open it with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;open scwvpn.ovpn  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and Tunnelblick should start and import the file. Now you're ready to connect to your VPN server running at Scaleway!&lt;/p&gt;
-
-&lt;p&gt;Please read the &lt;a href="https://github.com/jpetazzo/dockvpn#security-discussion"&gt;security discussion&lt;/a&gt; section and decide if you are happy with it.&lt;/p&gt;</content:encoded></item></channel></rss>
+&lt;p&gt;If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.&lt;/p&gt;</content:encoded></item></channel></rss>
