@@ -1,64 +1,83 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Winspector - a tool to inspect your and other&#x27;s Windows images</title>
-    <meta name="description" content="" />
+    <title>Winspector - a tool to inspect your and other's Windows images</title>
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=fd4a183f1c" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c92b4cdda4">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/winspector/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/winspector/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/winspector/amp/">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Winspector - a tool to inspect your and other&#x27;s Windows images" />
-    <meta property="og:description" content="In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way" />
-    <meta property="og:url" content="https://stefanscherer.github.io/winspector/" />
-    <meta property="article:published_time" content="2017-01-08T14:00:00.000Z" />
-    <meta property="article:modified_time" content="2017-01-16T09:39:30.835Z" />
-    <meta property="article:tag" content="Docker" />
-    <meta property="article:tag" content="Windows" />
-    <meta property="article:tag" content="Container" />
-    <meta property="article:tag" content="Docker Hub" />
-    <meta property="article:tag" content="Python" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Winspector - a tool to inspect your and other's Windows images">
+    <meta property="og:description" content="In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way">
+    <meta property="og:url" content="https://stefanscherer.github.io/winspector/">
+    <meta property="article:published_time" content="2017-01-08T14:00:00.000Z">
+    <meta property="article:modified_time" content="2017-01-16T09:39:30.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Windows">
+    <meta property="article:tag" content="Container">
+    <meta property="article:tag" content="Docker Hub">
+    <meta property="article:tag" content="Python">
     
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Winspector - a tool to inspect your and other&#x27;s Windows images" />
-    <meta name="twitter:description" content="In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way" />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/winspector/" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Winspector - a tool to inspect your and other's Windows images">
+    <meta name="twitter:description" content="In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/winspector/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Windows, Container, Docker Hub, Python">
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
-        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "Winspector - a tool to inspect your and other&#x27;s Windows images",
     "url": "https://stefanscherer.github.io/winspector/",
     "datePublished": "2017-01-08T14:00:00.000Z",
-    "dateModified": "2017-01-16T09:39:30.835Z",
+    "dateModified": "2017-01-16T09:39:30.000Z",
     "keywords": "Docker, Windows, Container, Docker Hub, Python",
-    "description": "In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way"
+    "description": "In my previous blog post I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the FROM line of your Dockerfile also uses the correct version of the Windows base image? Is there a way",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-container tag-docker-hub tag-python nav-closed">
 
@@ -73,7 +92,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -94,7 +113,7 @@
     <article class="post tag-docker tag-windows tag-container tag-docker-hub tag-python">
 
         <header class="post-header">
-            <h1 class="post-title">Winspector - a tool to inspect your and other&#x27;s Windows images</h1>
+            <h1 class="post-title">Winspector - a tool to inspect your and other's Windows images</h1>
             <section class="post-meta">
                 <time class="post-date" datetime="2017-01-08">08 January 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/windows/">Windows</a>, <a href="../tag/container/">Container</a>, <a href="../tag/docker-hub/">Docker Hub</a>, <a href="../tag/python/">Python</a>
             </section>
@@ -129,7 +148,7 @@
 <pre><code>docker run --rm stefanscherer/winspector microsoft/iis  
 </code></pre>
 
-<p><img src="../content/images/2017/01/winspector-wndows.png" alt="run from windows" /></p>
+<p><img src="../content/images/2017/01/winspector-wndows.png" alt="run from windows"></p>
 
 <p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
 
@@ -140,7 +159,7 @@
 <pre><code>docker run --rm stefanscherer/winspector microsoft/iis  
 </code></pre>
 
-<p><img src="../content/images/2017/01/winspector-mac.png" alt="run from mac" /></p>
+<p><img src="../content/images/2017/01/winspector-mac.png" alt="run from mac"></p>
 
 <h2 id="inspectingsomeimages">Inspecting some images</h2>
 
@@ -235,18 +254,6 @@ History:
 <p>The tool is open source on GitHub at <a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a>. It is community driven, so feel free to send me feedback in form of issues or pull requests. </p>
 
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -269,20 +276,39 @@ History:
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Winspector%20-%20a%20tool%20to%20inspect%20your%20and%20other's%20Windows%20images&amp;url=https://stefanscherer.github.io/winspector/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Winspector%20-%20a%20tool%20to%20inspect%20your%20and%20other's%20Windows%20images&amp;url=https://stefanscherer.github.io/winspector/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/winspector/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/winspector/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/winspector/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/winspector/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
 
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
         </footer>
 
     </article>
@@ -292,7 +318,7 @@ History:
     <a class="read-next-story prev no-cover" href="../keep-your-windows-containers-up-to-date/">
         <section class="post">
             <h2>Keep your Windows Containers up to date</h2>
-            <p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers.&hellip;</p>
+            <p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers.…</p>
         </section>
     </a>
 </aside>
@@ -300,17 +326,16 @@ History:
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
     </div>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=fd4a183f1c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=fd4a183f1c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c92b4cdda4"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c92b4cdda4"></script>
 
 </body>
-</html>

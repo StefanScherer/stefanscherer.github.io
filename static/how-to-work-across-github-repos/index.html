@@ -1,34 +1,32 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>How to work across GitHub repos</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f5ddab4b91" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f5ddab4b91">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/how-to-work-across-github-repos/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-work-across-github-repos/">
+    <meta name="referrer" content="origin">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="How to work across GitHub repos" />
-    <meta property="og:description" content="If you are a member of a GitHub organization you sometimes have to work across all repos. Here are some bash functions that help me doing such cross repo tasks. Clone all org&#x27;s repos If you want to clone all repos of a GitHub organization, or of a specific user," />
-    <meta property="og:url" content="https://stefanscherer.github.io/how-to-work-across-github-repos/" />
-    <meta property="article:published_time" content="2014-10-24T21:14:49.810Z" />
-    <meta property="article:modified_time" content="2014-10-24T21:14:51.866Z" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="How to work across GitHub repos" />
-    <meta name="twitter:description" content="If you are a member of a GitHub organization you sometimes have to work across all repos. Here are some bash functions that help me doing such cross repo tasks. Clone all org&#x27;s repos If you want to clone all repos of a GitHub organization, or of a specific user," />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-work-across-github-repos/" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to work across GitHub repos">
+    <meta property="og:description" content="If you are a member of a GitHub organization you sometimes have to work across all repos. Here are some bash functions that help me doing such cross repo tasks. Clone all org's repos If you want to clone all repos of a GitHub organization, or of a specific user,">
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-work-across-github-repos/">
+    <meta property="article:published_time" content="2014-10-24T21:14:49.810Z">
+    <meta property="article:modified_time" content="2014-10-24T21:14:51.866Z">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="How to work across GitHub repos">
+    <meta name="twitter:description" content="If you are a member of a GitHub organization you sometimes have to work across all repos. Here are some bash functions that help me doing such cross repo tasks. Clone all org's repos If you want to clone all repos of a GitHub organization, or of a specific user,">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-work-across-github-repos/">
     
     <script type="application/ld+json">
 {
@@ -50,8 +48,8 @@
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.7">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
 
@@ -105,7 +103,7 @@
 
 <p>The optional user name is only needed for private repos. To retrieve the list of repos we have to access the GitHub API with https + Basic Auth, so that's the user name for. If you skip the password, curl will ask you for it.</p>
 
-<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt="" /></p>
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-22-58-39.png" alt=""></p>
 
 <p>To make the command <code>gitcloneall</code> work you have to add the following function to your bash <code>~/.functions</code> file.</p>
 
@@ -147,7 +145,7 @@ gitall push
 gitall status  
 </code></pre>
 
-<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt="" /></p>
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-06-39.png" alt=""></p>
 
 <p>You have to add the <code>gitall</code> function to your bash functions.</p>
 
@@ -182,11 +180,11 @@ gitall status
 
 <p>Here is a short example. First you can see that I am in my dotfiles and in branch <strong>master</strong> without changes. The echo command changes one file in my repo. Then the prompt changes to <strong>master*</strong></p>
 
-<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt="" /></p>
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-12-48.png" alt=""></p>
 
 <p>So I have made a <code>gitls</code> function that shows me these information for all directories in the current dir.</p>
 
-<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt="" /></p>
+<p><img src="../content/images/2014/10/Bildschirmfoto-2014-10-24-um-23-07-08.png" alt=""></p>
 
 <p>And again, you have to add this to your bash functions:</p>
 
@@ -262,16 +260,13 @@ gitall status
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20work%20across%20GitHub%20repos&amp;url=https://stefanscherer.github.io/how-to-work-across-github-repos/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20work%20across%20GitHub%20repos&amp;url=https://stefanscherer.github.io/how-to-work-across-github-repos/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-work-across-github-repos/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-work-across-github-repos/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-work-across-github-repos/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-work-across-github-repos/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -285,13 +280,13 @@ gitall status
     <a class="read-next-story no-cover" href="../docker-on-raspberry-pi/">
         <section class="post">
             <h2>Docker on Raspberry Pi</h2>
-            <p>The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our&hellip;</p>
+            <p>The Raspberry Pi is for learning things. Now you also can start learning Docker on your cheap device. Our…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../easy-setup-for-atom-from-dotfiles/">
         <section class="post">
             <h2>Easy setup for Atom from dotfiles</h2>
-            <p>I am using Atom more and more, so the time has come to set up the preferences and installed&hellip;</p>
+            <p>I am using Atom more and more, so the time has come to set up the preferences and installed…</p>
         </section>
     </a>
 </aside>
@@ -299,7 +294,7 @@ gitall status
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2016</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -312,4 +307,3 @@ gitall status
     <script type="text/javascript" src="../assets/js/index.js?v=f5ddab4b91"></script>
 
 </body>
-</html>

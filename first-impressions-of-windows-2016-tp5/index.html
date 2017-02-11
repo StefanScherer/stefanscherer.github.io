@@ -1,57 +1,74 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>First impressions of Docker on Windows 2016 TP5</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=fd4a183f1c" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c92b4cdda4">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/amp/">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="First impressions of Docker on Windows 2016 TP5" />
-    <meta property="og:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I" />
-    <meta property="og:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
-    <meta property="article:published_time" content="2016-04-29T00:11:03.216Z" />
-    <meta property="article:modified_time" content="2016-05-22T21:22:28.812Z" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="First impressions of Docker on Windows 2016 TP5" />
-    <meta name="twitter:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I" />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="First impressions of Docker on Windows 2016 TP5">
+    <meta property="og:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven't found an Azure template (update: today I">
+    <meta property="og:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/">
+    <meta property="article:published_time" content="2016-04-29T00:11:03.000Z">
+    <meta property="article:modified_time" content="2016-05-22T21:22:28.000Z">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="First impressions of Docker on Windows 2016 TP5">
+    <meta name="twitter:description" content="Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven't found an Azure template (update: today I">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
-        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "First impressions of Docker on Windows 2016 TP5",
     "url": "https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/",
-    "datePublished": "2016-04-29T00:11:03.216Z",
-    "dateModified": "2016-05-22T21:22:28.812Z",
-    "description": "Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I"
+    "datePublished": "2016-04-29T00:11:03.000Z",
+    "dateModified": "2016-05-22T21:22:28.000Z",
+    "description": "Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
 
@@ -66,7 +83,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -98,7 +115,7 @@
 
 <p>As I haven't found an Azure template (<strong>update:</strong> today I found <a href="https://portal.azure.com/?feature.intlpolyfill=true#blade/Microsoft_Azure_Marketplace/GalleryFeaturedMenuItemBlade/selectedMenuItemId/home/searchQuery/Windows%20Server%202016%20Technical%20Preview%205">Windows Server 2016 Technical Preview 5</a>), I prepared my packer templates in <a href="https://github.com/stefanscherer/packer-windows/tree/tp5">a tp5 branch</a> that still need some changes to automatically build and install Docker and the Docker base images.</p>
 
-<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-21-18-51.png" alt="packer build" /></p>
+<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-21-18-51.png" alt="packer build"></p>
 
 <p>Even without a 100% solution this was a good first starting point build a first Vagrant box to start with and to do the remaining steps from <a href="https://msdn.microsoft.com/virtualization/windowscontainers/deployment/deployment?f=255&amp;MSPPError=-2147217396">Container Host Deployment - Windows Server</a> manually.</p>
 
@@ -127,7 +144,7 @@
 
 <p>Running <code>docker inspect</code> now shows the IP address of the container.</p>
 
-<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-22-33-29.png" alt="container ip address" /></p>
+<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-22-33-29.png" alt="container ip address"></p>
 
 <p>I will have to test whether the links in a <code>docker-compose.yml</code> file will work as well to set up a simple multi container app using simple host names.</p>
 
@@ -141,7 +158,7 @@
 
 <p>Running the docker client without adminstratotion rights you can't connect to it.</p>
 
-<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-01-29.png" alt="" /></p>
+<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-01-29.png" alt=""></p>
 
 <p>There is a way to allow specific users to use this named pipe just like on Linux adding users to the docker group, but I haven't found out the group name for this short test.</p>
 
@@ -164,7 +181,7 @@
 <pre><code class="language- ">notepad C:\Windows\system32\drivers\etc\hosts  
 </code></pre>
 
-<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-23-13.png" alt="kitematic-on-tp5" /></p>
+<p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-23-13.png" alt="kitematic-on-tp5"></p>
 
 <p>Now Kitematic starts up without creating a local VM and shows the local Windows containers on the left side.</p>
 
@@ -173,18 +190,6 @@
 <p>So stay tuned of upcoming blog posts. With the TP5 the community can follow the progress of Docker on Windows much better and can check the latest improvements and pull requests of the Windows Docker Engine.</p>
 
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -207,20 +212,39 @@
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=First%20impressions%20of%20Docker%20on%20Windows%202016%20TP5&amp;url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=First%20impressions%20of%20Docker%20on%20Windows%202016%20TP5&amp;url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
 
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
         </footer>
 
     </article>
@@ -230,13 +254,13 @@
     <a class="read-next-story no-cover" href="../setup-local-windows-2016-tp5-docker-vm/">
         <section class="post">
             <h2>Setup a local Windows 2016 TP5 Docker VM</h2>
-            <p>It is great to see that more and more people are starting to test Windows Docker containers. The latest&hellip;</p>
+            <p>It is great to see that more and more people are starting to test Windows Docker containers. The latest…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../build-docker-swarm-for-windows-the-docker-way/">
         <section class="post">
-            <h2>Build Docker Swarm binary for Windows the &quot;Docker way&quot;</h2>
-            <p>In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a&hellip;</p>
+            <h2>Build Docker Swarm binary for Windows the "Docker way"</h2>
+            <p>In my last blog post I showed how to run a Windows Docker Swarm. That tutorial just used a…</p>
         </section>
     </a>
 </aside>
@@ -244,17 +268,16 @@
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
     </div>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=fd4a183f1c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=fd4a183f1c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c92b4cdda4"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c92b4cdda4"></script>
 
 </body>
-</html>

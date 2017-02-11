@@ -1,62 +1,81 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Run Linux and Windows Containers on Windows 10</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=fd4a183f1c" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c92b4cdda4">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/amp/">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Run Linux and Windows Containers on Windows 10" />
-    <meta property="og:description" content="At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve" />
-    <meta property="og:url" content="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" />
-    <meta property="article:published_time" content="2016-09-24T12:55:29.249Z" />
-    <meta property="article:modified_time" content="2016-10-01T07:21:30.287Z" />
-    <meta property="article:tag" content="Docker" />
-    <meta property="article:tag" content="Windows" />
-    <meta property="article:tag" content="Linux" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Run Linux and Windows Containers on Windows 10">
+    <meta property="og:description" content="At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve">
+    <meta property="og:url" content="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/">
+    <meta property="article:published_time" content="2016-09-24T12:55:29.000Z">
+    <meta property="article:modified_time" content="2016-10-01T07:21:30.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Windows">
+    <meta property="article:tag" content="Linux">
     
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Run Linux and Windows Containers on Windows 10" />
-    <meta name="twitter:description" content="At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve" />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Run Linux and Windows Containers on Windows 10">
+    <meta name="twitter:description" content="At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Windows, Linux">
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
-        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "Run Linux and Windows Containers on Windows 10",
     "url": "https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/",
-    "datePublished": "2016-09-24T12:55:29.249Z",
-    "dateModified": "2016-10-01T07:21:30.287Z",
+    "datePublished": "2016-09-24T12:55:29.000Z",
+    "dateModified": "2016-10-01T07:21:30.000Z",
     "keywords": "Docker, Windows, Linux",
-    "description": "At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve"
+    "description": "At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work with Docker running Linux containers in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a stable version and a beta channel to retrieve",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-linux nav-closed">
 
@@ -71,7 +90,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -111,7 +130,7 @@
 
 <p>Beginning with the Docker for Windows Beta 26 there is a very easy approach to solve this confusion. You only have to install Docker for Windows with the MSI installer. There is a new menu item in the Docker tray icon to switch between Linux and Windows containers.</p>
 
-<p><img src="../content/images/2016/09/docker-for-windows-switch.gif" alt="switching" /></p>
+<p><img src="../content/images/2016/09/docker-for-windows-switch.gif" alt="switching"></p>
 
 <p>As you can see in the video you don't have to change environment variables or use the <code>-H</code> option of the Docker client to talk to the other Docker engine.</p>
 
@@ -142,7 +161,7 @@
 
 <p>The following screenshot shows the processes before and after the switch. I have switched about in the middle of the green bar.</p>
 
-<p><img src="../content/images/2016/09/switch-to-windows-dockerd.png" alt="" /></p>
+<p><img src="../content/images/2016/09/switch-to-windows-dockerd.png" alt=""></p>
 
 <p>The current <code>com.docker.proxy.exe</code> (above <code>dockerd.exe</code> in the list) that talked to the MobyLinuxVM exits as the dark green bar highlights that.</p>
 
@@ -166,7 +185,7 @@
 <pre><code>&amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
 </code></pre>
 
-<p><img src="../content/images/2016/09/docker-run-nginx.png" alt="docker-run-nginx" /></p>
+<p><img src="../content/images/2016/09/docker-run-nginx.png" alt="docker-run-nginx"></p>
 
 <p>Now let's run some Windows containers. But first we try if the Linux container is still running and reachable with</p>
 
@@ -175,7 +194,7 @@
 
 <p>With the <code>start</code> command you open Edge with the welcome page of the nginx running in a Linux container</p>
 
-<p><img src="../content/images/2016/09/nginx.png" alt="nginx" /></p>
+<p><img src="../content/images/2016/09/nginx.png" alt="nginx"></p>
 
 <p>Yes, the Linux container is still running.</p>
 
@@ -226,7 +245,7 @@ CMD [ "node", "app.js" ]
 <pre><code>docker run -p 81:81 -d webserver  
 </code></pre>
 
-<p><img src="../content/images/2016/09/docker-run-webserver-1.png" alt="docker-run-webserver" /></p>
+<p><img src="../content/images/2016/09/docker-run-webserver-1.png" alt="docker-run-webserver"></p>
 
 <p>At the moment you can't connect directly with 127.0.0.1 to the container. But it is possible to use the IP address of the container. We need the ID or name of the container, so list the containers running with</p>
 
@@ -238,11 +257,11 @@ CMD [ "node", "app.js" ]
 <pre><code>start http://$(docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" grave_thompson):81  
 </code></pre>
 
-<p><img src="../content/images/2016/09/docker-inspect.png" alt="docker-inspect" /></p>
+<p><img src="../content/images/2016/09/docker-inspect.png" alt="docker-inspect"></p>
 
 <p>Additionally the port forwarding from the host to the container allows you to contact the web server on port 81 from another machine.</p>
 
-<p><img src="../content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10" /></p>
+<p><img src="../content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10"></p>
 
 <p>And yes, the Windows container is also handling requests.</p>
 
@@ -253,18 +272,6 @@ CMD [ "node", "app.js" ]
 <p>And with a little awareness when to switch to the right Docker engine, both Linux and Windows containers can run side-by-side.</p>
 
 <p>Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -287,20 +294,39 @@ CMD [ "node", "app.js" ]
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Run%20Linux%20and%20Windows%20Containers%20on%20Windows%2010&amp;url=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Run%20Linux%20and%20Windows%20Containers%20on%20Windows%2010&amp;url=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
 
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
         </footer>
 
     </article>
@@ -310,13 +336,13 @@ CMD [ "node", "app.js" ]
     <a class="read-next-story no-cover" href="../protecting-a-windows-2016-docker-engine-with-tls/">
         <section class="post">
             <h2>How to protect a Windows 2016 Docker engine with TLS</h2>
-            <p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as&hellip;</p>
+            <p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../adding-hyper-v-support-to-2016-tp5-docker-vm/">
         <section class="post">
             <h2>Adding Hyper-V support to 2016 TP5 Docker VM</h2>
-            <p>Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12&hellip;</p>
+            <p>Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12…</p>
         </section>
     </a>
 </aside>
@@ -324,17 +350,16 @@ CMD [ "node", "app.js" ]
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
     </div>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=fd4a183f1c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=fd4a183f1c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c92b4cdda4"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c92b4cdda4"></script>
 
 </body>
-</html>

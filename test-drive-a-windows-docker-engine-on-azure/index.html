@@ -1,35 +1,33 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>How to run a Windows Docker Engine in Azure</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=53ebd2d664" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=53ebd2d664">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" />
+    <link rel="canonical" href="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/">
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="How to run a Windows Docker Engine in Azure" />
-    <meta property="og:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run..." />
-    <meta property="og:url" content="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" />
-    <meta property="article:published_time" content="2016-02-01T12:47:22.673Z" />
-    <meta property="article:modified_time" content="2016-02-01T15:35:05.256Z" />
-    <meta property="article:tag" content="scherer_stefan@icloud.com" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to run a Windows Docker Engine in Azure">
+    <meta property="og:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run...">
+    <meta property="og:url" content="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/">
+    <meta property="article:published_time" content="2016-02-01T12:47:22.673Z">
+    <meta property="article:modified_time" content="2016-02-01T15:35:05.256Z">
+    <meta property="article:tag" content="scherer_stefan@icloud.com">
     
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="How to run a Windows Docker Engine in Azure" />
-    <meta name="twitter:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run..." />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="How to run a Windows Docker Engine in Azure">
+    <meta name="twitter:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run...">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/">
     
     <script type="application/ld+json">
 {
@@ -53,8 +51,8 @@
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.6" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.6">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-scherer_stefanicloud-com nav-closed">
 
@@ -106,8 +104,8 @@
 
 <p>If you have an account for Microsoft Azure you can click on the following button to create the VM with the template. And if not, there also is a short trial period where you can test-drive Azure for some weeks.</p>
 
-<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"> <br />
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"> <br>
+    <img src="http://azuredeploy.net/deploybutton.png">
 </a></p>
 
 <h3 id="azurecli">Azure CLI</h3>
@@ -167,7 +165,7 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
 
 <p>And yes, there is the <code>windowsservercore</code> Docker image which is the base image to work with Docker on Windows.</p>
 
-<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images" /></p>
+<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images"></p>
 
 <p>Now it is time to run the first Windows Docker container. We just run an interactive container to get a cross-platform feeling if your are working on a Linux or OSX machine. </p>
 
@@ -176,7 +174,7 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
 
 <p>After the Docker container has started your OSX terminal turns into a Window command shell and you are in a cmd prompt running in a Windows Container in Azure:</p>
 
-<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd" /></p>
+<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd"></p>
 
 <p>Let's look around inside that container. Go to <code>C:\</code> and check the files there. List all processes. You won't find much processes inside it as well as there is no Docker Engine inside. You really are logged into a Windows Container.</p>
 
@@ -229,16 +227,13 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20run%20a%20Windows%20Docker%20Engine%20in%20Azure&amp;url=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20run%20a%20Windows%20Docker%20Engine%20in%20Azure&amp;url=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/test-drive-a-windows-docker-engine-on-azure/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -252,7 +247,7 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
     <a class="read-next-story prev no-cover" href="../how-to-take-screenshots-with-drop-shadow/">
         <section class="post">
             <h2>How to take Windows screenshots with drop shadow</h2>
-            <p>In my last blog post I showed the Chocolatey experience - a package manager for Windows. But some of&hellip;</p>
+            <p>In my last blog post I showed the Chocolatey experience - a package manager for Windows. But some of…</p>
         </section>
     </a>
 </aside>
@@ -260,7 +255,7 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2016</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -272,4 +267,3 @@ export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP addr
     <script type="text/javascript" src="../assets/js/index.js?v=53ebd2d664"></script>
 
 </body>
-</html>

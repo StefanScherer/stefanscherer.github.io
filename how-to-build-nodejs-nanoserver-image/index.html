@@ -1,63 +1,82 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>How to build a Node.js Nano Server Docker base image</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=fd4a183f1c" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c92b4cdda4">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/amp/">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="How to build a Node.js Nano Server Docker base image" />
-    <meta property="og:description" content="Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some" />
-    <meta property="og:url" content="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" />
-    <meta property="article:published_time" content="2016-05-29T18:00:53.674Z" />
-    <meta property="article:modified_time" content="2016-05-31T19:43:29.599Z" />
-    <meta property="article:tag" content="Docker" />
-    <meta property="article:tag" content="Nano Server" />
-    <meta property="article:tag" content="Windows 10" />
-    <meta property="article:tag" content="Node.js" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to build a Node.js Nano Server Docker base image">
+    <meta property="og:description" content="Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some">
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/">
+    <meta property="article:published_time" content="2016-05-29T18:00:53.000Z">
+    <meta property="article:modified_time" content="2016-05-31T19:43:29.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Nano Server">
+    <meta property="article:tag" content="Windows 10">
+    <meta property="article:tag" content="Node.js">
     
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="How to build a Node.js Nano Server Docker base image" />
-    <meta name="twitter:description" content="Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some" />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="How to build a Node.js Nano Server Docker base image">
+    <meta name="twitter:description" content="Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Nano Server, Windows 10, Node.js">
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
-        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "How to build a Node.js Nano Server Docker base image",
     "url": "https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/",
-    "datePublished": "2016-05-29T18:00:53.674Z",
-    "dateModified": "2016-05-31T19:43:29.599Z",
+    "datePublished": "2016-05-29T18:00:53.000Z",
+    "dateModified": "2016-05-31T19:43:29.000Z",
     "keywords": "Docker, Nano Server, Windows 10, Node.js",
-    "description": "Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some"
+    "description": "Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-nano-server tag-windows-10 tag-node-js nav-closed">
 
@@ -72,7 +91,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -102,7 +121,7 @@
         <section class="post-content">
             <p>Beginning with <strong>Windows 10 Insider</strong> 14342 you can enable the new <strong>Containers feature</strong> in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some base images.</p>
 
-<p><img src="../content/images/2016/05/windows10-containers-feature.png" alt="" /></p>
+<p><img src="../content/images/2016/05/windows10-containers-feature.png" alt=""></p>
 
 <p>In this blog post I'll show how to build small base images to deploy Node.js applications as NanoServer Docker images that you can run <a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10">in Windows 10</a> or in Windows Server 2016 TP5.</p>
 
@@ -198,7 +217,7 @@ CMD [ "node.exe" ]
 
 <p>Here is a small diagram of the three steps we just did:</p>
 
-<p><img src="../content/images/2016/05/nodejs_nanoserver-2.png" alt="" /></p>
+<p><img src="../content/images/2016/05/nodejs_nanoserver-2.png" alt=""></p>
 
 <p>I've uploaded both Docker images to the <a href="https://hub.docker.com/r/stefanscherer/node-windows/tags/">Docker Hub</a> and found out that the Windows Server Core image is about <strong>55 MByte</strong> and the Nano Server image is only <strong>9 MByte</strong>.</p>
 
@@ -289,18 +308,6 @@ CMD [ "npm.cmd", "start" ]
 <p>The Windows Server 2016 is only needed to install MSI packages and distill the software into Nano Server images.</p>
 
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -323,20 +330,39 @@ CMD [ "npm.cmd", "start" ]
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20build%20a%20Node.js%20Nano%20Server%20Docker%20base%20image&amp;url=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20build%20a%20Node.js%20Nano%20Server%20Docker%20base%20image&amp;url=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
 
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
         </footer>
 
     </article>
@@ -346,13 +372,13 @@ CMD [ "npm.cmd", "start" ]
     <a class="read-next-story no-cover" href="../adding-hyper-v-support-to-2016-tp5-docker-vm/">
         <section class="post">
             <h2>Adding Hyper-V support to 2016 TP5 Docker VM</h2>
-            <p>Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12&hellip;</p>
+            <p>Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../setup-local-windows-2016-tp5-docker-vm/">
         <section class="post">
             <h2>Setup a local Windows 2016 TP5 Docker VM</h2>
-            <p>It is great to see that more and more people are starting to test Windows Docker containers. The latest&hellip;</p>
+            <p>It is great to see that more and more people are starting to test Windows Docker containers. The latest…</p>
         </section>
     </a>
 </aside>
@@ -360,17 +386,16 @@ CMD [ "npm.cmd", "start" ]
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
     </div>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=fd4a183f1c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=fd4a183f1c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c92b4cdda4"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c92b4cdda4"></script>
 
 </body>
-</html>

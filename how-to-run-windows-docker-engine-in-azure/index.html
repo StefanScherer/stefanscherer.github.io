@@ -1,62 +1,81 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>How to run a Windows Docker Engine in Azure</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=fd4a183f1c" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c92b4cdda4">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/amp/">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="How to run a Windows Docker Engine in Azure" />
-    <meta property="og:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The" />
-    <meta property="og:url" content="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" />
-    <meta property="article:published_time" content="2016-02-01T12:47:00.000Z" />
-    <meta property="article:modified_time" content="2016-02-19T22:39:30.695Z" />
-    <meta property="article:tag" content="Docker" />
-    <meta property="article:tag" content="Windows" />
-    <meta property="article:tag" content="Azure" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to run a Windows Docker Engine in Azure">
+    <meta property="og:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The">
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/">
+    <meta property="article:published_time" content="2016-02-01T12:47:00.000Z">
+    <meta property="article:modified_time" content="2016-02-19T22:39:30.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Windows">
+    <meta property="article:tag" content="Azure">
     
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="How to run a Windows Docker Engine in Azure" />
-    <meta name="twitter:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The" />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" />
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="How to run a Windows Docker Engine in Azure">
+    <meta name="twitter:description" content="Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Windows, Azure">
     
     <script type="application/ld+json">
 {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Article",
-    "publisher": "Stefan Scherer's Blog",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
-        "image": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
         "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": "https://stefanscherer.github.io"
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
     },
     "headline": "How to run a Windows Docker Engine in Azure",
     "url": "https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/",
     "datePublished": "2016-02-01T12:47:00.000Z",
-    "dateModified": "2016-02-19T22:39:30.695Z",
+    "dateModified": "2016-02-19T22:39:30.000Z",
     "keywords": "Docker, Windows, Azure",
-    "description": "Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The"
+    "description": "Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure. The",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-azure nav-closed">
 
@@ -71,7 +90,7 @@
             <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-    <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -113,8 +132,8 @@
 
 <p>If you have an account for Microsoft Azure you can click on the following button to create the VM with this template. And if not, there also is a short trial period where you can test-drive Azure for some weeks.</p>
 
-<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"> <br />
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"> <br>
+    <img src="http://azuredeploy.net/deploybutton.png">
 </a></p>
 
 <h3 id="azurecli">Azure CLI</h3>
@@ -165,7 +184,7 @@ unset DOCKER_CERT_PATH
 export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP address" | cut -d : -f 3):2375  
 </code></pre>
 
-<p>The three <code>unset</code> commands are just for the case that you already use <code>docker-machine</code> with TLS for some other VM's or machines in the Cloud. This just turns off the TLS checks in the Docker Client for now to connect to the Windows Docker Engine. <br />
+<p>The three <code>unset</code> commands are just for the case that you already use <code>docker-machine</code> with TLS for some other VM's or machines in the Cloud. This just turns off the TLS checks in the Docker Client for now to connect to the Windows Docker Engine. <br>
 For other shells like PowerShell or CMD shell it is the same. Just delete all DOCKER_ environment variables and set the <code>DOCKER_HOST</code> environment variable to <code>tcp://ip-of-your-tp4-vm:2375</code>.</p>
 
 <p>Now we can check that the Docker Client really talks to our new Windows Docker Engine. So check which Docker images are available with this command</p>
@@ -175,7 +194,7 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 
 <p>And yes, there is the <code>windowsservercore</code> Docker image which is the base image to work with Docker on Windows.</p>
 
-<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images" /></p>
+<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images"></p>
 
 <p>Now it is time to run the first Windows Docker container. We just run an interactive container to get a cross-platform feeling if your are working on a Linux or OSX machine. </p>
 
@@ -184,7 +203,7 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 
 <p>After the Docker container has started your OSX terminal turns into a Window command shell and you are in a cmd prompt running in a Windows Container in Azure:</p>
 
-<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd" /></p>
+<p><img src="../content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd"></p>
 
 <p>Let's look around inside that container. Go to <code>C:\</code> and check the files there. List all processes. You won't find much processes inside it as well as there is no Docker Engine inside. You really are working inside a Windows Container now.</p>
 
@@ -205,18 +224,6 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 </ul>
 
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements.</p>
-            <div id="disqus_thread"></div>
-            <script>
-            (function() { // DON'T EDIT BELOW THIS LINE
-            var d = document, s = d.createElement('script');
-
-            s.src = '//stefanscherersblog.disqus.com/embed.js';
-
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-            })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="post-footer">
@@ -239,20 +246,39 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=How%20to%20run%20a%20Windows%20Docker%20Engine%20in%20Azure&amp;url=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20run%20a%20Windows%20Docker%20Engine%20in%20Azure&amp;url=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
 
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
         </footer>
 
     </article>
@@ -261,14 +287,14 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 <aside class="read-next">
     <a class="read-next-story no-cover" href="../how-to-create-a-32bit-boot2docker-for-x86-cpus/">
         <section class="post">
-            <h2>How to create a 32bit boot2docker for x86 CPU&#x27;s</h2>
-            <p>You normally can use Docker on 64bit Intel CPU's. But does Docker run on 32bit Intel CPU's as well?&hellip;</p>
+            <h2>How to create a 32bit boot2docker for x86 CPU's</h2>
+            <p>You normally can use Docker on 64bit Intel CPU's. But does Docker run on 32bit Intel CPU's as well?…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../how-to-take-screenshots-with-drop-shadow/">
         <section class="post">
             <h2>How to take Windows screenshots with drop shadow</h2>
-            <p>In my last blog post I showed the Chocolatey experience - a package manager for Windows. But some of&hellip;</p>
+            <p>In my last blog post I showed the Chocolatey experience - a package manager for Windows. But some of…</p>
         </section>
     </a>
 </aside>
@@ -276,17 +302,16 @@ For other shells like PowerShell or CMD shell it is the same. Just delete all DO
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2017</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
     </div>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=fd4a183f1c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=fd4a183f1c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c92b4cdda4"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c92b4cdda4"></script>
 
 </body>
-</html>

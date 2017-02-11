@@ -1,34 +1,32 @@
-<!DOCTYPE html>
-<html>
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Access private GitHub repos in Vagrant up</title>
-    <meta name="description" content="" />
+    <meta name="description" content="">
 
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f5ddab4b91" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=f5ddab4b91">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
-    <link rel="canonical" href="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" />
-    <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/">
+    <meta name="referrer" content="origin">
     
-    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Access private GitHub repos in Vagrant up" />
-    <meta property="og:description" content="Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box. Enable SSH agent forwarding It is very easys to use SSH agent forwarding in interactive sessions while running vagrant ssh." />
-    <meta property="og:url" content="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" />
-    <meta property="article:published_time" content="2015-06-22T13:45:09.783Z" />
-    <meta property="article:modified_time" content="2015-06-22T13:45:35.321Z" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Access private GitHub repos in Vagrant up" />
-    <meta name="twitter:description" content="Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box. Enable SSH agent forwarding It is very easys to use SSH agent forwarding in interactive sessions while running vagrant ssh." />
-    <meta name="twitter:url" content="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" />
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Access private GitHub repos in Vagrant up">
+    <meta property="og:description" content="Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box. Enable SSH agent forwarding It is very easys to use SSH agent forwarding in interactive sessions while running vagrant ssh.">
+    <meta property="og:url" content="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/">
+    <meta property="article:published_time" content="2015-06-22T13:45:09.783Z">
+    <meta property="article:modified_time" content="2015-06-22T13:45:35.321Z">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Access private GitHub repos in Vagrant up">
+    <meta name="twitter:description" content="Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box. Enable SSH agent forwarding It is very easys to use SSH agent forwarding in interactive sessions while running vagrant ssh.">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/">
     
     <script type="application/ld+json">
 {
@@ -50,8 +48,8 @@
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.7" />
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+    <meta name="generator" content="Ghost 0.7">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
 
@@ -172,16 +170,13 @@ end
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/share?text=Access%20private%20GitHub%20repos%20in%20Vagrant%20up&amp;url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
-                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/share?text=Access%20private%20GitHub%20repos%20in%20Vagrant%20up&amp;url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
-                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/"
-                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -195,13 +190,13 @@ end
     <a class="read-next-story no-cover" href="../automate-building-vagrant-boxes-with-atlas/">
         <section class="post">
             <h2>Git push to build Vagrant Boxes with Atlas</h2>
-            <p>Today I have tested the new available service Atlas to build Vagrant Boxes with Packer in the Cloud. As&hellip;</p>
+            <p>Today I have tested the new available service Atlas to build Vagrant Boxes with Packer in the Cloud. As…</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../get-started-with-docker-swarm-on-raspberry-pi/">
         <section class="post">
             <h2>Warmup for Docker swarm on Raspberry Pi</h2>
-            <p>After Matt William's Blog Swarming Raspberry Pi – Part 1 I definitely have to install Docker Swarm onto this little&hellip;</p>
+            <p>After Matt William's Blog Swarming Raspberry Pi – Part 1 I definitely have to install Docker Swarm onto this little…</p>
         </section>
     </a>
 </aside>
@@ -209,7 +204,7 @@ end
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2016</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2016</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -222,4 +217,3 @@ end
     <script type="text/javascript" src="../assets/js/index.js?v=f5ddab4b91"></script>
 
 </body>
-</html>
