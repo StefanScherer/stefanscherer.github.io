@@ -1,8 +1,166 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 11 Feb 2017 19:01:04 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Dockerizing Ghost and Buster to run a blog on GitHub pages</title><description>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Mon, 13 Feb 2017 07:51:11 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Getting started with Docker Swarm-mode on Windows 10</title><description>&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
 
-&lt;p&gt;I still like this setup of hosting only the&lt;/p&gt;</description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">7e4d1fed-d14d-4cad-8f27-c30cc73e00ea</guid><category>Docker</category><category>Ghost</category><category>Buster</category><category>Docker-Compose</category><category>GitHub</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on&lt;/p&gt;</description><link>https://stefanscherer.github.io/docker-swarm-mode-windows10/</link><guid isPermaLink="false">fcae230c-7580-49dc-a9e0-b57183dc841a</guid><category>Docker</category><category>Swarm</category><category>Windows 10</category><category>Overlay</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 13 Feb 2017 01:31:00 GMT</pubDate><content:encoded>&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
 
-&lt;p&gt;I still like this setup of hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers. &lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on Windows 10 and not Windows Server 2016. Sure it will make more sense in production running a Docker Swarm on multiple servers. The reason is that the Insider preview is the fastest channel to ship new features. Unfortunately there is no equivalent for Windows Server editions.&lt;/p&gt;
+
+&lt;p&gt;So if you need it for Windows Server you have to wait a little longer. You can indeed test Swarm-Mode on Windows Server 2016 and Docker 1.13, but only without the Overlay network.  To test Swarm-Mode with Overlay network you will need some machines running Windows 10 Insider 15031.&lt;/p&gt;
+
+&lt;h2 id="preparation"&gt;Preparation&lt;/h2&gt;
+
+&lt;p&gt;In my case I use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; to spin up Windows VM's locally on my notebook. The advantage is that you can describe some test scenarios with a &lt;code&gt;Vagrantfile&lt;/code&gt; and share it on GitHub.&lt;/p&gt;
+
+&lt;p&gt;I already have played with Docker Swarm-Mode in December and created a &lt;a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-mode"&gt;Vagrant environment with some Windows Server 2016 VM's&lt;/a&gt;. I'll re-use this scenario and just replace the underlying Vagrant box.&lt;/p&gt;
+
+&lt;p&gt;So the hardest part is to build a Windows 10 Insider 15031 VM. The &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewadvanced"&gt;latest ISO file&lt;/a&gt; with Windows 10 Insider 15025 is a good starting point. You have to switch to the Fast Ring to fetch the latest updates for Insider 15031.&lt;/p&gt;
+
+&lt;p&gt;Normally I use &lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; with my &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; templates available on GitHub to automatically create such Vagrant boxes. In this case I only have a semi-automated template. Download the ISO file, build a VM with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_insider.json"&gt;&lt;code&gt;windows_10_insider.json&lt;/code&gt;&lt;/a&gt; template and update it to Insider 15031 manually. With such a VM, build the final Vagrant box with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_docker.json"&gt;&lt;code&gt;windows_10_docker.json&lt;/code&gt;&lt;/a&gt; Packer template.&lt;/p&gt;
+
+&lt;p&gt;What we now have is a Windows 10 Insider 15031 VM with the Containers and Hyper-V features activated, Docker 1.13.1 installed and both Microsoft Docker images downloaded. All the time consuming things should be done in a Packer build to make the final &lt;code&gt;vagrant up&lt;/code&gt; a breeze.&lt;/p&gt;
+
+&lt;p&gt;In my case I had to add the Vagrant box with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_10_docker ./windows_10_insider_15031_docker_vmware.box  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Vagrant 1.9.1 is able to use linked clones for VMware Fusion, VirtualBox and Hyper-V. So you need this big Vagrant box only once on disk. For the Docker Swarm only a clone will be started for each VM to save time and disk space.&lt;/p&gt;
+
+&lt;h2 id="createtheswarm"&gt;Create the Swarm&lt;/h2&gt;
+
+&lt;p&gt;Now we use the prepared Vagrant environment and adjust it  &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box  
+cd docker-windows-box/swarm-mode  
+vi Vagrantfile  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the &lt;code&gt;Vagrantfile&lt;/code&gt; I had to change only the name of the box after &lt;code&gt;config.vm.box&lt;/code&gt; to the newly added Vagrant box. This is like changing the &lt;code&gt;FROM&lt;/code&gt; in a &lt;code&gt;Dockerfile&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/02/git-diff-swarm-mode.png" alt="git diff Vagrantfile"&gt;&lt;/p&gt;
+
+&lt;p&gt;I also adjusted the memory a little bit to spin up more Hyper-V containers.&lt;/p&gt;
+
+&lt;p&gt;But now we are ready to create the Docker Swarm with a simple&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant up  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will spin up three Windows 10 VM's and build the Docker Swarm automatically for you. But using linked clones and the well prepared Vagrant basebox it takes only some minutes to have a complete Docker Swarm up and running.&lt;/p&gt;
+
+&lt;h2 id="dockernodels"&gt;docker node ls&lt;/h2&gt;
+
+&lt;p&gt;After all three VM's are up and running, go into the first VM and open a PowerShell terminal. With&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker node ls  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you can check if your Docker Swarm is active.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/02/swarm-mode.png" alt=""&gt;&lt;/p&gt;
+
+&lt;h2 id="createanetwork"&gt;Create a network&lt;/h2&gt;
+
+&lt;p&gt;Now we create a new overlay network with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker network create --driver=overlay sample  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can list all networks with &lt;code&gt;docker network ls&lt;/code&gt; as there are already some others.&lt;/p&gt;
+
+&lt;h2 id="createawhoamiservice"&gt;Create a whoami service&lt;/h2&gt;
+
+&lt;p&gt;With this new overlay network we start a simple service. I've prepared a Windows version of the &lt;code&gt;whoami&lt;/code&gt; service. This is a simple webserver that just responds with its internal container hostname.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker service create --name=whoami --endpoint-mode dnsrr `  
+  --network=sample stefanscherer/whoami-windows:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At the moment only DNS round robin is implemented as described in the Microsoft blog post. You cannot use to publish ports externally right now. More to come in the near future.&lt;/p&gt;
+
+&lt;h2 id="runvisualizer"&gt;Run visualizer&lt;/h2&gt;
+
+&lt;p&gt;To make it more visible what happens in the next steps I recommend to run the Visualizer. On the first VM you can run the Visualizer with &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/run-portainer.ps1"&gt;this script&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\run-visualizer.ps1  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now open a browser with another &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/open-visualizer.ps1"&gt;helper script&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\open-visualizer.ps1  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now you can scale up the service to spread it over your Docker swarm.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker service scale whoami=4  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will bring up the service on all three nodes and one of the nodes is running two instances of the whoami service.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/02/visualizer.png" alt="Visualizer"&gt;&lt;/p&gt;
+
+&lt;p&gt;Just play around scaling the service up and down a little bit.&lt;/p&gt;
+
+&lt;h2 id="buildandcreateanotherservice"&gt;Build and create another service&lt;/h2&gt;
+
+&lt;p&gt;As I've mentioned above you cannot publish ports and there is no routing mesh at the moment. So the next thing is to create another service that will access the &lt;code&gt;whoami&lt;/code&gt; service inside the overlay network. On Linux you probably would use &lt;code&gt;curl&lt;/code&gt; to do that. I tried just a simple PowerShell script to do the same.&lt;/p&gt;
+
+&lt;p&gt;Two small files are needed to create a Docker image. First the simple script &lt;code&gt;askthem.ps1&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-powershell"&gt;while ($true) {  
+  (Invoke-WebRequest -UseBasicParsing http://whoami:8000).Content
+  Start-Sleep 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see the PowerShell script will access the webserver with the hostname &lt;code&gt;whoami&lt;/code&gt; on port 8000.&lt;/p&gt;
+
+&lt;p&gt;Now put this Script into a Docker image with this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver  
+COPY askthem.ps1 askthem.ps1  
+CMD ["powershell", "-file", "askthem.ps1"]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now build the Docker image with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker build -t askthem .  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We now can start the second service that consumes the whoami service.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker service create --name=askthem --network=sample askthem:latest  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You now should see one instance of the newly created &lt;code&gt;askthem&lt;/code&gt; service. Let's have a look at the logs. As this Vagrant environment enables the experimental features of Docker we are able to get the logs with this command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker service logs askthem  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In my case I had luck and the &lt;code&gt;askthem&lt;/code&gt; service got a response from one of the &lt;code&gt;whoami&lt;/code&gt; containers that is running on a different Docker node.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/02/windows10-swarm-mode.png" alt="Windows 10 Swarm-Mode"&gt;&lt;/p&gt;
+
+&lt;p&gt;I haven't figured out why all the responses are from the same container. Maybe PowerShell or the &lt;code&gt;askthem&lt;/code&gt; container itself caches the DNS requests. &lt;/p&gt;
+
+&lt;p&gt;But it still proves that overlay networking is working across multiple Windows machines.&lt;/p&gt;
+
+&lt;h2 id="moretoplaywith"&gt;More to play with&lt;/h2&gt;
+
+&lt;p&gt;The Vagrant environment has some more things prepared. You also can spin up &lt;a href="http://portainer.io"&gt;Portainer&lt;/a&gt; that gives you a nice UI to your Docker swarm. You can have a look at your Nodes, the Docker images, the containers and services running and so on.&lt;/p&gt;
+
+&lt;p&gt;I also found out that you can scale services in the Portainer UI by changing the replicas. Running Visualizer and Portainer side-by-side demonstrates that:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"&gt;&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.&lt;/p&gt;
+
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>Dockerizing Ghost and Buster to run a blog on GitHub pages</title><description>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+
+&lt;p&gt;I still like this setup hosting only the static&lt;/p&gt;</description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">7e4d1fed-d14d-4cad-8f27-c30cc73e00ea</guid><category>Docker</category><category>Ghost</category><category>Buster</category><category>Docker-Compose</category><category>GitHub</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded>&lt;p&gt;I'm running this blog for nearly three years now. One of my first posts was the description how to &lt;a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/"&gt;setup Ghost for GitHub pages&lt;/a&gt;. In the past I've installed lots of tools on my Mac to run &lt;a href="https://ghost.org"&gt;Ghost&lt;/a&gt; and &lt;a href="https://pypi.python.org/pypi/buster/0.1.3"&gt;Buster&lt;/a&gt; locally.&lt;/p&gt;
+
+&lt;p&gt;I still like this setup hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers. &lt;/p&gt;
 
 &lt;h3 id="requirements"&gt;Requirements&lt;/h3&gt;
 
@@ -1685,157 +1843,4 @@ convert "$1" -trim \( +clone -background grey25 -shadow 80x40+5+30 \) +swap -bac
 
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/01/raw-screenshot-png-shadow.png" alt="result"&gt;&lt;/p&gt;
 
-&lt;p&gt;This little script now saves me much time for upcoming blog posts. And I promise, I'll do some more Windows screenshots in the future...&lt;/p&gt;</content:encoded></item><item><title>Get started with Docker on Windows using Chocolatey</title><description>&lt;p&gt;The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.&lt;/p&gt;
-
-&lt;p&gt;If you don't know what a shell window&lt;/p&gt;</description><link>https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/</link><guid isPermaLink="false">ed286e5f-e663-48ed-ac70-8397a614f8ff</guid><category>Docker</category><category>Windows</category><category>Chocolatey</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 16 Jan 2016 22:31:57 GMT</pubDate><content:encoded>&lt;p&gt;The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.&lt;/p&gt;
-
-&lt;p&gt;If you don't know what a shell window is then you should have a look at the &lt;a href="https://www.docker.com/docker-toolbox"&gt;&lt;strong&gt;Docker Toolbox&lt;/strong&gt;&lt;/a&gt; from Docker. But if you know and use a PowerShell or CMD shell window from time to time I'll guide you through the simple steps.&lt;/p&gt;
-
-&lt;h2 id="letsgetchocolatey"&gt;Let's get Chocolatey&lt;/h2&gt;
-
-&lt;p&gt;Chocolatey is an open source project to provide a package manager for Windows as you might know it from Linux distro. You can install many of your software on your Windows machine with it.&lt;/p&gt;
-
-&lt;p&gt;Just open &lt;a href="https://chocolatey.org"&gt;chocolatey.org&lt;/a&gt; and search for eg. Chrome, Adobe Reader, or other tools you have installed manually in the past. You will find out fast that nearly everything could be installed with just the command&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install anything  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;That makes Chocolatey really cool. It's like &lt;code&gt;apt-get&lt;/code&gt;, but for Windows. And the software is downloaded from the original places, the choco packages only contains the instructions where to download it and how to install it silent.&lt;/p&gt;
-
-&lt;p&gt;If you haven't installed Chocolatey already just open the homepage &lt;a href="https://chocolatey.org"&gt;https://chocolatey.org&lt;/a&gt; and copy the simple command to your shell.&lt;/p&gt;
-
-&lt;h2 id="dockerchocolateypackages"&gt;Docker Chocolatey packages&lt;/h2&gt;
-
-&lt;p&gt;To see which Docker tools are available through Chocolatey packages, just open the &lt;a href="https://chocolatey.org/packages?q=docker"&gt;Chocolatey homepage and search for docker&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/01/Bildschirmfoto-2016-01-16-um-23-12-12.png" alt=""&gt;&lt;/p&gt;
-
-&lt;p&gt;The Chocolatey packages for the Docker tools are maintained by the community. But they are kept up-to-date, so you can update each tool soon after the official release.&lt;/p&gt;
-
-&lt;p&gt;At the moment you can install&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Docker Client&lt;/li&gt;
-&lt;li&gt;Docker Machine&lt;/li&gt;
-&lt;li&gt;Docker Compose&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;as well as a Docker Machine driver plugin for VMware Workstation.&lt;/p&gt;
-
-&lt;h2 id="dockerclient"&gt;Docker Client&lt;/h2&gt;
-
-&lt;p&gt;To begin with Docker you need the Docker Client. Install it in a PowerShell or CMD shell window with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install -y docker  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The option &lt;code&gt;-y&lt;/code&gt; just auto-answers the question to run the install script.&lt;/p&gt;
-
-&lt;p&gt;Now we have the &lt;code&gt;docker&lt;/code&gt; command installed. Try it out with &lt;code&gt;docker --version&lt;/code&gt; for the installed version or &lt;code&gt;docker --help&lt;/code&gt; to see the usage. This client will be used to build and run Docker Containers.&lt;/p&gt;
-
-&lt;h2 id="dockermachine"&gt;Docker Machine&lt;/h2&gt;
-
-&lt;p&gt;The next step is to create a VM to run the Linux containers in it. &lt;a href="https://docs.docker.com/machine/"&gt;Docker Machine&lt;/a&gt; is the right tool for that task. So we first install it with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install -y docker-machine  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="localhypervisor"&gt;Local Hypervisor&lt;/h2&gt;
-
-&lt;p&gt;Windows users can select between these three local hypervisors to run a Linux Docker Engine in it.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Hyper-V&lt;/li&gt;
-&lt;li&gt;VirtualBox&lt;/li&gt;
-&lt;li&gt;VMware Workstation&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;All three hypervisors can be controlled by Docker Machine.&lt;/p&gt;
-
-&lt;p&gt;For Hyper-V follow the official guide how to install it on your machine.&lt;/p&gt;
-
-&lt;p&gt;VirtualBox can also be installed with Chocolatey, guess how&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install virtualbox  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For VMware Workstation you also need the driver plugin and VMware Workstation if not already installed:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install docker-machine-vmwareworkstation  
-choco install vmwareworkstation  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For VMware Workstation you enter your license before using it.&lt;/p&gt;
-
-&lt;h2 id="cloud"&gt;Cloud&lt;/h2&gt;
-
-&lt;p&gt;You also can create a VM in the cloud, Docker Machine has a lot of cloud drivers built in. &lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Windows Azure&lt;/li&gt;
-&lt;li&gt;Digital Ocean&lt;/li&gt;
-&lt;li&gt;Google GCE&lt;/li&gt;
-&lt;li&gt;OpenStack&lt;/li&gt;
-&lt;li&gt;Rackspace&lt;/li&gt;
-&lt;li&gt;...&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;See the official guide &lt;a href="https://docs.docker.com/machine/get-started-cloud/"&gt;Using Docker Machine with a cloud provider&lt;/a&gt; for more details.&lt;/p&gt;
-
-&lt;h2 id="createadockermachine"&gt;Create a Docker Machine&lt;/h2&gt;
-
-&lt;p&gt;After you have set up your local hypervisor or chosen the cloud provider you want to use, create a Docker Machine VM with the name &lt;code&gt;dev&lt;/code&gt; with one of these commands:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker-machine create -d hyperv dev  
-docker-machine create -d virtualbox dev  
-docker-machine create -d vmwareworkstation dev  
-docker-machine create -d azure ... dev  
-docker-machine create -d digitalocean ... dev  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There are driver specific options to tweak the VM settings or the token to connect to your account in the cloud.&lt;/p&gt;
-
-&lt;p&gt;After a while you will have your local or remote Docker Machine up and running.&lt;/p&gt;
-
-&lt;p&gt;You can check the status of the machine(s) with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker-machine ls  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="connecttoyourdockermachine"&gt;Connect to your Docker Machine&lt;/h2&gt;
-
-&lt;p&gt;For the Docker Client you need some environment variables so that the Docker Client knows how to connect to your local or remote Docker Engine.&lt;/p&gt;
-
-&lt;p&gt;In PowerShell it is really easy to set these environments.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker-machine env --shell powershell dev | iex  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In the near future can skip the &lt;code&gt;--shell&lt;/code&gt; parameter as well to simplify this step.&lt;/p&gt;
-
-&lt;p&gt;After that you can control the Docker engine and start your first container, eg. this interactive shell&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run --rm -it ubuntu bash  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Type &lt;code&gt;exit&lt;/code&gt; to terminate the container. &lt;br&gt;
-Congratulations! You have started your first container.&lt;/p&gt;
-
-&lt;h2 id="dockercompose"&gt;Docker Compose&lt;/h2&gt;
-
-&lt;p&gt;If you want to start more than one container that should work together you can use Docker Compose. It simplifies this task to setup a multi container application.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;choco install -y docker-compose  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Please refer to the official &lt;a href="https://docs.docker.com/compose/"&gt;Overview of Docker Compose&lt;/a&gt; guide to find out more.&lt;/p&gt;
-
-&lt;p&gt;Now you are ready to work from your Windows machine and control the world of Linux containers. In the near future you also can do this with Windows containers as well.&lt;/p&gt;
-
-&lt;h2 id="tldr"&gt;TL/DR&lt;/h2&gt;
-
-&lt;p&gt;With just a few commands you get all the Docker tools installed on your Windows machine. And it fits into a single tweet:&lt;/p&gt;
-
-&lt;p&gt;&lt;blockquote class="twitter-tweet" lang="de"&gt;&lt;p lang="en" dir="ltr"&gt;Get the latest &lt;a href="https://twitter.com/docker"&gt;@Docker&lt;/a&gt; tools for &lt;a href="https://twitter.com/hashtag/Windows?src=hash"&gt;#Windows&lt;/a&gt;:&amp;#10; &amp;#10;choco install docker&amp;#10;choco install docker-machine&amp;#10;choco install docker-compose&amp;#10;&amp;#10;Done!&lt;/p&gt;&amp;mdash; Stefan Scherer (@stefscherer) &lt;a href="https://twitter.com/stefscherer/status/662634469673799680"&gt;6. November 2015&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;&lt;/p&gt;
-
-&lt;p&gt;If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.&lt;/p&gt;</content:encoded></item></channel></rss>
+&lt;p&gt;This little script now saves me much time for upcoming blog posts. And I promise, I'll do some more Windows screenshots in the future...&lt;/p&gt;</content:encoded></item></channel></rss>
