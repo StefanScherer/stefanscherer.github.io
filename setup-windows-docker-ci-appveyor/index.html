@@ -1,0 +1,331 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Setup a Windows Docker CI with AppVeyor</title>
+    <meta name="description" content="">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=9f32e8192b">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+
+    <link rel="canonical" href="https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Setup a Windows Docker CI with AppVeyor">
+    <meta property="og:description" content="I love GitHub and all the services around it. It enables you to work from anywhere or any device and still have your complete CI pipeline in your pocket. Every thing is done with a git push. You can add services like Codeship, Travis, Circle and lots of others to">
+    <meta property="og:url" content="https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/">
+    <meta property="article:published_time" content="2017-02-13T13:40:55.000Z">
+    <meta property="article:modified_time" content="2017-02-17T21:48:11.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Windows">
+    <meta property="article:tag" content="GitHub">
+    <meta property="article:tag" content="AppVeyor">
+    <meta property="article:tag" content="CI">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Setup a Windows Docker CI with AppVeyor">
+    <meta name="twitter:description" content="I love GitHub and all the services around it. It enables you to work from anywhere or any device and still have your complete CI pipeline in your pocket. Every thing is done with a git push. You can add services like Codeship, Travis, Circle and lots of others to">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Windows, GitHub, AppVeyor, CI">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
+    },
+    "headline": "Setup a Windows Docker CI with AppVeyor",
+    "url": "https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/",
+    "datePublished": "2017-02-13T13:40:55.000Z",
+    "dateModified": "2017-02-17T21:48:11.000Z",
+    "keywords": "Docker, Windows, GitHub, AppVeyor, CI",
+    "description": "I love GitHub and all the services around it. It enables you to work from anywhere or any device and still have your complete CI pipeline in your pocket. Every thing is done with a git push. You can add services like Codeship, Travis, Circle and lots of others to",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
+</head>
+<body class="post-template tag-docker tag-windows tag-github tag-appveyor tag-ci nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-windows tag-github tag-appveyor tag-ci">
+
+        <header class="post-header">
+            <h1 class="post-title">Setup a Windows Docker CI with AppVeyor</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-02-13">13 February 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/windows/">Windows</a>, <a href="../tag/github/">GitHub</a>, <a href="../tag/appveyor/">AppVeyor</a>, <a href="../tag/ci/">CI</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to build and test your code and even the pull requests you get from others.</p>
+
+<h2 id="butimonwindows">But I'm on Windows</h2>
+
+<p>To build applications for Windows there is a similar cloud based CI service, called <a href="https://www.appveyor.com">AppVeyor</a>.</p>
+
+<p>And it works pretty similar to the other well known services for Linux: </p>
+
+<ol>
+<li>Put a YAML file into your repo with the build, test and deploy steps  </li>
+<li>Connect your repo to the cloud CI service  </li>
+<li>From now on a <code>git push</code> will do a lot for you.</li>
+</ol>
+
+<p>Your CI pipeline is set up in a few clicks.</p>
+
+<h2 id="appveyoryml">appveyor.yml</h2>
+
+<p>Here is an example how such a YAML file looks like for AppVeyor. This is from a <a href="https://github.com/StefanScherer/win-getaddrinfo">small C/C++ project</a> I made long time ago during holiday without Visual Studio at hand. I just created that GitHub repo, added the <code>appveyor.yml</code> and voila - I got a compiled and statically linked <a href="https://github.com/StefanScherer/win-getaddrinfo/releases">Windows binary at GitHub releases</a>.</p>
+
+<pre><code class="language-yaml">version: 1.0.{build}  
+configuration: Release  
+platform: x64  
+build:  
+  project: myfavoriteproject.sln
+  verbosity: minimal
+test: off  
+artifacts:  
+- path: x64/Release/myfavoriteproject.exe
+  name: Release
+deploy:  
+- provider: GitHub
+  auth_token:
+    secure: xxxxx
+</code></pre>
+
+<p>The build worker in AppVeyor is fully armed with <a href="https://www.appveyor.com/docs/installed-software/">lots of development tools</a>, so you can build projects for serveral languages like Node.js, .NET, Ruby, Python, Java ...</p>
+
+<h2 id="dockerbuild">Docker build</h2>
+
+<p>AppVeyor now has released a new build worker with Windows Server 2016 and Docker 1.13.1 CS pre-installed. That instantly enables you to build, test and publish Windows Docker images in the same lightweight way.</p>
+
+<p><img src="../content/images/2017/02/github_appveyor_docker.png" alt="Docker build with AppVeyor"></p>
+
+<p>All you have to do is to select the new build worker by adding <code>image: Windows Server 2016</code> to your <code>appveyor.yml</code>. No more work to do to get a fully Windows Docker engine for your build.</p>
+
+<p>The following <code>appveyor.yml</code> gives you an idea how easy an automated Docker build for Windows can be:</p>
+
+<pre><code class="language-yaml">version: 1.0.{build}  
+image: Windows Server 2016
+
+environment:  
+  DOCKER_USER:
+    secure: xxxxxxx
+  DOCKER_PASS:
+    secure: yyyyyyy
+install:  
+  - docker version
+
+build_script:  
+  - docker build -t me/myfavoriteapp .
+
+test_script:  
+  - docker run me/myfavoriteapp
+
+deploy_script:  
+  - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+  - docker push me/myfavoriteapp
+</code></pre>
+
+<p>This is a very simple example. For the tests you can think of some more sophisticated tests like using Pester, Serverspec or Cucumber. For the deploy steps you can decide when to run these, eg. only for a tagged build to push a new release.</p>
+
+<h2 id="addprojecttobuild">Add project to build</h2>
+
+<p>Adding AppVeyor to one of your GitHub repos is very simple. Sign in to AppVeyor with your GitHub account and select your project to add.</p>
+
+<p><img src="../content/images/2017/02/appveyor-add-project.png" alt="AppVeyor add project"></p>
+
+<p>Now you can also check the pull requests you or others create on GitHub.</p>
+
+<p><img src="../content/images/2017/02/github-pr-green.png" alt="GitHub pull request checks green"></p>
+
+<p>You can click on the green checkmark to view the console output of the build.</p>
+
+<p><img src="../content/images/2017/02/appveyor-build-green.png" alt="AppVeyor pull request build green"></p>
+
+<h2 id="tellmeasecret">Tell me a secret</h2>
+
+<p>To push to the Docker Hub we need to configure some secrets in AppVeyor. After you are logged in to AppVeyor you can select the "Encrypt data" menu item from the drop down menu or use the link <a href="https://ci.appveyor.com/tools/encrypt">https://ci.appveyor.com/tools/encrypt</a></p>
+
+<p>There you can enter your cleartext secret and it creates the encrypted configuration data you can use in your <code>appveyor.yml</code>.</p>
+
+<p><img src="../content/images/2017/02/appveyor-encrypt-data.png" alt="Appveyor encrypt configuration data"></p>
+
+<p>These secret variables don't get injected in pull request builds, so nobody can fork your repo and send you an <code>ls env:</code> pull request to expose that variables in the output.</p>
+
+<h2 id="immutablebuilds">Immutable builds</h2>
+
+<p>One of the biggest advantages over self-hosting a CI pipeline is that you get immutable builds. You just do not have to care about the dirt and dust your build left on the build worker. AppVeyor - like all other cloud based CI systems - just throws away the build worker and you get another empty one for the next build.</p>
+
+<p><img src="../content/images/2017/02/appveyor-docker-build.png" alt="AppVeyor immutable build"></p>
+
+<p>Even if you build Windows Docker images you don't have to cleanup your Docker host. You can concentrate on your code, the build and your tests, and forget about maintain your CI workers.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>I have some GitHub repos that already use AppVeyor to build Windows Docker images, so you can have a look how my setup works:</p>
+
+<ul>
+<li><a href="https://github.com/StefanScherer/dockerfiles-windows">github.com/StefanScherer/dockerfiles-windows</a></li>
+<li><a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a></li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>AppVeyor is my #1 when it comes to automated Windows builds. With the Docker support built-in it becomes even more interesting.</p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Setup%20a%20Windows%20Docker%20CI%20with%20AppVeyor&amp;url=https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story no-cover" href="../is-there-a-windows-docker-image-for/">
+        <section class="post">
+            <h2>Is there a Windows Docker image for ...?</h2>
+            <p>Do you want to try out Windows containers, but don't want to start too low level? If you are…</p>
+        </section>
+    </a>
+    <a class="read-next-story prev no-cover" href="../docker-swarm-mode-windows10/">
+        <section class="post">
+            <h2>Getting started with Docker Swarm-mode on Windows 10</h2>
+            <p>Last Friday I noticed a blog post that Overlay Network Driver with Support for Docker Swarm Mode Now Available…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=9f32e8192b"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=9f32e8192b"></script>
+
+</body>
