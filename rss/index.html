@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Wed, 22 Feb 2017 00:07:43 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Is there a Windows Docker image for ...?]]></title><description><![CDATA[<p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Wed, 22 Feb 2017 00:09:46 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Is there a Windows Docker image for ...?]]></title><description><![CDATA[<p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
 
 <p>These Docker images are well maintained and you can just start and put</p>]]></description><link>https://stefanscherer.github.io/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">4b399853-01af-4bf3-a6d6-0c70c21ce821</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Golang]]></category><category><![CDATA[Python]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[Java]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded><![CDATA[<p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
 
@@ -82,124 +82,7 @@
 
 <p>The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.</p>
 
-<p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Setup a Windows Docker CI with AppVeyor]]></title><description><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to</p>]]></description><link>https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/</link><guid isPermaLink="false">f979baa4-3b39-4cf6-9d84-a74d2453e9cb</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[CI]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 13 Feb 2017 13:40:55 GMT</pubDate><content:encoded><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to build and test your code and even the pull requests you get from others.</p>
-
-<h2 id="butimonwindows">But I'm on Windows</h2>
-
-<p>To build applications for Windows there is a similar cloud based CI service, called <a href="https://www.appveyor.com">AppVeyor</a>.</p>
-
-<p>And it works pretty similar to the other well known services for Linux: </p>
-
-<ol>
-<li>Put a YAML file into your repo with the build, test and deploy steps  </li>
-<li>Connect your repo to the cloud CI service  </li>
-<li>From now on a <code>git push</code> will do a lot for you.</li>
-</ol>
-
-<p>Your CI pipeline is set up in a few clicks.</p>
-
-<h2 id="appveyoryml">appveyor.yml</h2>
-
-<p>Here is an example how such a YAML file looks like for AppVeyor. This is from a <a href="https://github.com/StefanScherer/win-getaddrinfo">small C/C++ project</a> I made long time ago during holiday without Visual Studio at hand. I just created that GitHub repo, added the <code>appveyor.yml</code> and voila - I got a compiled and statically linked <a href="https://github.com/StefanScherer/win-getaddrinfo/releases">Windows binary at GitHub releases</a>.</p>
-
-<pre><code class="language-yaml">version: 1.0.{build}  
-configuration: Release  
-platform: x64  
-build:  
-  project: myfavoriteproject.sln
-  verbosity: minimal
-test: off  
-artifacts:  
-- path: x64/Release/myfavoriteproject.exe
-  name: Release
-deploy:  
-- provider: GitHub
-  auth_token:
-    secure: xxxxx
-</code></pre>
-
-<p>The build worker in AppVeyor is fully armed with <a href="https://www.appveyor.com/docs/installed-software/">lots of development tools</a>, so you can build projects for serveral languages like Node.js, .NET, Ruby, Python, Java ...</p>
-
-<h2 id="dockerbuild">Docker build</h2>
-
-<p>AppVeyor now has released a new build worker with Windows Server 2016 and Docker 1.13.1 CS pre-installed. That instantly enables you to build, test and publish Windows Docker images in the same lightweight way.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/github_appveyor_docker.png" alt="Docker build with AppVeyor"></p>
-
-<p>All you have to do is to select the new build worker by adding <code>image: Windows Server 2016</code> to your <code>appveyor.yml</code>. No more work to do to get a fully Windows Docker engine for your build.</p>
-
-<p>The following <code>appveyor.yml</code> gives you an idea how easy an automated Docker build for Windows can be:</p>
-
-<pre><code class="language-yaml">version: 1.0.{build}  
-image: Windows Server 2016
-
-environment:  
-  DOCKER_USER:
-    secure: xxxxxxx
-  DOCKER_PASS:
-    secure: yyyyyyy
-install:  
-  - docker version
-
-build_script:  
-  - docker build -t me/myfavoriteapp .
-
-test_script:  
-  - docker run me/myfavoriteapp
-
-deploy_script:  
-  - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
-  - docker push me/myfavoriteapp
-</code></pre>
-
-<p>This is a very simple example. For the tests you can think of some more sophisticated tests like using Pester, Serverspec or Cucumber. For the deploy steps you can decide when to run these, eg. only for a tagged build to push a new release.</p>
-
-<h2 id="addprojecttobuild">Add project to build</h2>
-
-<p>Adding AppVeyor to one of your GitHub repos is very simple. Sign in to AppVeyor with your GitHub account and select your project to add.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-add-project.png" alt="AppVeyor add project"></p>
-
-<p>Now you can also check the pull requests you or others create on GitHub.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/github-pr-green.png" alt="GitHub pull request checks green"></p>
-
-<p>You can click on the green checkmark to view the console output of the build.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-build-green.png" alt="AppVeyor pull request build green"></p>
-
-<h2 id="tellmeasecret">Tell me a secret</h2>
-
-<p>To push to the Docker Hub we need to configure some secrets in AppVeyor. After you are logged in to AppVeyor you can select the "Encrypt data" menu item from the drop down menu or use the link <a href="https://ci.appveyor.com/tools/encrypt">https://ci.appveyor.com/tools/encrypt</a></p>
-
-<p>There you can enter your cleartext secret and it creates the encrypted configuration data you can use in your <code>appveyor.yml</code>.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-encrypt-data.png" alt="Appveyor encrypt configuration data"></p>
-
-<p>These secret variables don't get injected in pull request builds, so nobody can fork your repo and send you an <code>ls env:</code> pull request to expose that variables in the output.</p>
-
-<h2 id="immutablebuilds">Immutable builds</h2>
-
-<p>One of the biggest advantages over self-hosting a CI pipeline is that you get immutable builds. You just do not have to care about the dirt and dust your build left on the build worker. AppVeyor - like all other cloud based CI systems - just throws away the build worker and you get another empty one for the next build.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-docker-build.png" alt="AppVeyor immutable build"></p>
-
-<p>Even if you build Windows Docker images you don't have to cleanup your Docker host. You can concentrate on your code, the build and your tests, and forget about maintain your CI workers.</p>
-
-<h2 id="examples">Examples</h2>
-
-<p>I have some GitHub repos that already use AppVeyor to build Windows Docker images, so you can have a look how my setup works:</p>
-
-<ul>
-<li><a href="https://github.com/StefanScherer/dockerfiles-windows">github.com/StefanScherer/dockerfiles-windows</a></li>
-<li><a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a></li>
-</ul>
-
-<h2 id="conclusion">Conclusion</h2>
-
-<p>AppVeyor is my #1 when it comes to automated Windows builds. With the Docker support built-in it becomes even more interesting.</p>
-
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Getting started with Docker Swarm-mode on Windows 10]]></title><description><![CDATA[<p>Last Friday I noticed a blog post that <a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/">Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10</a>. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.</p>
+<p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Getting started with Docker Swarm-mode on Windows 10]]></title><description><![CDATA[<p>Last Friday I noticed a blog post that <a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/">Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10</a>. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.</p>
 
 <p>Well you wonder why this feature is available on</p>]]></description><link>https://stefanscherer.github.io/docker-swarm-mode-windows10/</link><guid isPermaLink="false">fcae230c-7580-49dc-a9e0-b57183dc841a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Swarm]]></category><category><![CDATA[Windows 10]]></category><category><![CDATA[Overlay]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 13 Feb 2017 01:31:00 GMT</pubDate><content:encoded><![CDATA[<p>Last Friday I noticed a blog post that <a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/">Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10</a>. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.</p>
 
@@ -1876,4 +1759,111 @@ docker run -it 32bit/ubuntu:14.04 bash
 
 <p>This proof of concept shows that running Docker in a 32bit VM really could work. And it enables you to experiment a little more. But keep in mind that this is not officially supported and extremely experimental.</p>
 
-<p>I hope you enjoyed this little tour. As always I love to get feedback. What is your use case to run Docker on 32bit? Please leave a comment below or share it on Twitter.</p>]]></content:encoded></item></channel></rss>
+<p>I hope you enjoyed this little tour. As always I love to get feedback. What is your use case to run Docker on 32bit? Please leave a comment below or share it on Twitter.</p>]]></content:encoded></item><item><title><![CDATA[How to run a Windows Docker Engine in Azure]]></title><description><![CDATA[<p>Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.</p>
+
+<p>The</p>]]></description><link>https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/</link><guid isPermaLink="false">3fd1ec46-1645-4953-8f2c-9f4320a985cf</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 01 Feb 2016 12:47:00 GMT</pubDate><content:encoded><![CDATA[<p>Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.</p>
+
+<p>The Docker Engine has an API that is compatible between all platforms. So you can even work from your Linux, Mac or Windows notebook and build and run Windows Containers in that remote VM.</p>
+
+<p>So let's get started. The Windows Docker Engine is a work in progress, but it's really worth to have a closer look at it right now. It is available with the Windows Server 2016 Technical Preview 4, or TP4 for short.</p>
+
+<p>To avoid building own VM's locally or installing it on bare metal we just use the prebuilt TP4 VM in Azure.</p>
+
+<h3 id="justwithaclick">Just with a click</h3>
+
+<p>A really nice feature is the <strong>Deploy to Azure</strong> button. I have found a good template at the <a href="https://github.com/Azure/azure-quickstart-templates">azure-quickstart-templates</a> repo and enhanced it a little bit to have more Docker tools pre-installed. For details have a look at my <a href="https://github.com/StefanScherer/docker-windows-azure">docker-windows-azure</a> repo.</p>
+
+<p>If you have an account for Microsoft Azure you can click on the following button to create the VM with this template. And if not, there also is a short trial period where you can test-drive Azure for some weeks.</p>
+
+<p><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"> <br>
+    <img src="http://azuredeploy.net/deploybutton.png">
+</a></p>
+
+<h3 id="azurecli">Azure CLI</h3>
+
+<p>If you have the <a href="https://azure.microsoft.com/documentation/articles/xplat-cli-install/">Azure CLI</a> installed you also can spin up the Windows Docker Engine VM from the command line.</p>
+
+<p>The command takes the JSON template file from the <a href="https://github.com/StefanScherer/docker-windows-azure">docker-windows-azure</a> repo and adds the parameters that are needed to customize the VM and in which region it should be started.</p>
+
+<pre><code class="language-bash">azure group deployment create Group docker-tp4 \  
+  --template-uri https://raw.githubusercontent.com/StefanScherer/docker-windows-azure/master/azuredeploy.json \
+  -p '{
+    "adminUsername": {"value": "docker"},
+    "adminPassword": {"value": "Super$ecretPass123"},
+    "dnsNameForPublicIP": {"value": "docker-tp4"},
+    "VMName": {"value": "docker-tp4"},
+    "location": {"value": "West US"}
+    }'
+</code></pre>
+
+<h2 id="connecttothewindowsdockerengine">Connect to the Windows Docker Engine</h2>
+
+<p>Now that the VM is up and running in Azure we want to use it. So we have to connect to the Windows Docker Engine.</p>
+
+<p>There are several ways to do that.</p>
+
+<ul>
+<li>Use <strong>RDP</strong> to connect to the VM and use the Command Shell there to run docker commands locally in the VM.</li>
+<li>Use <strong>WinRM</strong> to login to the VM. This connection is protected with a self-signed certifcate that is created on startup. But I had some trouble with the Go/Ruby WinRM clients for OSX, so I also added OpenSSH.</li>
+<li>Use <strong>SSH</strong> to login to the VM. Just grab the FQDN or the IP of the VM and ssh into it. Then you also can run docker commands locally in the VM. Add your public SSH key for password-less logins.</li>
+<li>Use the <strong>Docker API</strong> running at HTTP port 2375 to connect from your notebook. Then you can remote control the Windows Docker Engine from your Windows, Linux or Mac client.</li>
+</ul>
+
+<h2 id="remotedockerapi">Remote Docker API</h2>
+
+<p>I'll show you the last method of the list to connect your local Docker client to the remote Windows Docker Engine.</p>
+
+<p>Please notice that using the <strong>unsecure HTTP port 2375</strong> is not recommended. Securing the Docker port with a TLS certificate is part of a future blog post. There also is some good advice in <a href="http://blogsprajeesh.blogspot.de/2015/09/docker-for-windows-on-azure-vm-securing.html">Docker for windows on Azure VM : Securing the host and TLS</a> from Prajeesh Prathap.</p>
+
+<p>I hope that <code>docker-machine</code> can do this step for you in the near future. It can generate such certs and upload them as well can help you setting the environment variables for the Docker Client.</p>
+
+<p>But for now we just set the environment variables manually.</p>
+
+<p>You need the full qualified domain name (FQDN) of your VM in Azure or at least the public IP address. In combination with the <code>azure</code> cli you can retrieve the IP address and set all the environments in a Linux/Mac/Cygwin shell with the following commands.</p>
+
+<pre><code class="language-bash">unset DOCKER_MACHINE_NAME  
+unset DOCKER_TLS_VERIFY  
+unset DOCKER_CERT_PATH  
+export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep "Public IP address" | cut -d : -f 3):2375  
+</code></pre>
+
+<p>The three <code>unset</code> commands are just for the case that you already use <code>docker-machine</code> with TLS for some other VM's or machines in the Cloud. This just turns off the TLS checks in the Docker Client for now to connect to the Windows Docker Engine. <br>
+For other shells like PowerShell or CMD shell it is the same. Just delete all DOCKER_ environment variables and set the <code>DOCKER_HOST</code> environment variable to <code>tcp://ip-of-your-tp4-vm:2375</code>.</p>
+
+<p>Now we can check that the Docker Client really talks to our new Windows Docker Engine. So check which Docker images are available with this command</p>
+
+<pre><code>docker images  
+</code></pre>
+
+<p>And yes, there is the <code>windowsservercore</code> Docker image which is the base image to work with Docker on Windows.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images"></p>
+
+<p>Now it is time to run the first Windows Docker container. We just run an interactive container to get a cross-platform feeling if your are working on a Linux or OSX machine. </p>
+
+<pre><code>docker run -it windowsservercore cmd  
+</code></pre>
+
+<p>After the Docker container has started your OSX terminal turns into a Window command shell and you are in a cmd prompt running in a Windows Container in Azure:</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd"></p>
+
+<p>Let's look around inside that container. Go to <code>C:\</code> and check the files there. List all processes. You won't find much processes inside it as well as there is no Docker Engine inside. You really are working inside a Windows Container now.</p>
+
+<p>Just type <code>exit</code> to stop the Windows Container again and you are back in your local terminal.</p>
+
+<h2 id="nextsteps">Next steps</h2>
+
+<p>All the normal Docker commands like <code>docker build</code> and <code>docker run</code> can be used from your local Notebook.</p>
+
+<p>You also can use <code>docker search</code> and <code>docker pull</code> to pull some prebuilt Docker Images from Microsoft.</p>
+
+<p>Now it is time to build the first Windows Docker images and run them later on. As an inspiration you can have a look at some Dockerfiles for Windows at one of these places</p>
+
+<ul>
+<li><a href="https://github.com/brogersyh/Dockerfiles-for-windows">brogersyh/Dockerfiles-for-windows</a></li>
+<li><a href="https://github.com/StefanScherer/dockerfiles-windows">StefanScherer/dockerfiles-windows</a></li>
+<li><a href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/">Create a Node.js Container image for Windows</a></li>
+</ul>
+
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements.</p>]]></content:encoded></item></channel></rss>
