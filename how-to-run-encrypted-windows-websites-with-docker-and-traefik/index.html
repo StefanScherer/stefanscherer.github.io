@@ -24,7 +24,7 @@
     <meta property="og:description" content="Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like">
     <meta property="og:url" content="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/">
     <meta property="article:published_time" content="2017-03-10T22:21:00.000Z">
-    <meta property="article:modified_time" content="2017-03-11T00:06:54.000Z">
+    <meta property="article:modified_time" content="2017-03-11T00:13:41.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="Windows">
     <meta property="article:tag" content="Azure">
@@ -66,7 +66,7 @@
     "headline": "How to run encrypted Windows websites with Docker and Træfɪk",
     "url": "https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/",
     "datePublished": "2017-03-10T22:21:00.000Z",
-    "dateModified": "2017-03-11T00:06:54.000Z",
+    "dateModified": "2017-03-11T00:13:41.000Z",
     "keywords": "Docker, Windows, Azure, Traefik, Portainer",
     "description": "Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don&#x27;t run public websites on a regular basis, so I - like",
     "mainEntityOfPage": {
@@ -229,7 +229,7 @@
 
 <h4 id="addfirewallexceptionfordocker">Add firewall exception for Docker</h4>
 
-<p>This step is optional, but as we now have the Docker TLS certs you can have another nice feature. With these certs you can use the Docker client on your local machine to communicate with the Windows Docker engine in Azure. But I will start Træfɪk later on from the Docker host itself as we need some volume mount points.</p>
+<p>This step is needed to make other Windows container talk to the Docker engine at port 2376. But it also has another benefit. With these certs you can use the Docker client on your local machine to communicate with the Windows Docker engine in Azure. But I will start Træfɪk later on from the Docker host itself as we need some volume mount points.</p>
 
 <p>The Windows Server's firewall is active, so we now have to add an exception to allow inbound traffic on port 2376. The network security group for the public IP address already has an inbound rule to the VM. This firewall exception now allows the connection to the Docker engine.</p>
 
