@@ -1,4 +1,379 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Fri, 10 Mar 2017 06:00:48 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Setup a Windows Docker CI with AppVeyor]]></title><description><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to</p>]]></description><link>https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/</link><guid isPermaLink="false">f979baa4-3b39-4cf6-9d84-a74d2453e9cb</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[CI]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[Docker-Swarm]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 10 Mar 2017 05:54:00 GMT</pubDate><content:encoded><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to build and test your code and even the pull requests you get from others.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 11 Mar 2017 00:07:40 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to run encrypted Windows websites with Docker and Træfɪk]]></title><description><![CDATA[<p>Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like</p>]]></description><link>https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/</link><guid isPermaLink="false">ce3e2341-fc8d-4bca-9d3d-c9873d3c6ace</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><category><![CDATA[Traefik]]></category><category><![CDATA[Portainer]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 10 Mar 2017 22:21:00 GMT</pubDate><content:encoded><![CDATA[<p>Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like many others I guess - have heard of Let's Encrypt, but never really tried it.</p>
+
+<p>But let's learn new things and try it out. I also have promised in the <a href="https://blog.docker.com/2017/02/dockercast-interview-docker-captain-stefan-scherer-microsoft-docker/">interview in John Willis' Dockercast</a> that I will write a blog post about it. With some modern tools you will see, it's not very complicated to run your Windows website with TLS certificates.</p>
+
+<p>In this blog post I will show you how to run your website in Windows containers with Docker. You can develop your website locally in a container and push it to your server. And another Windows container runs the Træfɪk proxy, that helps us with the TLS certificate as well as with its dynamic configuration to add more than just one website.</p>
+
+<p><a href="https://traefik.io">Træfɪk</a> is a modern HTTP reverse proxy and load balancer made to deploy microservices with ease. It supports several backends like Docker to register and update its configuration for each new started container.</p>
+
+<p>This picture gives you an overview of the architecture:</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/architecture.png" alt="Traefik architecture"></p>
+
+<p>Normally Træfɪk is running inside a container and it is well known in the Linux Docker community. A few weeks ago I have seen that there also are Windows binaries available. Let's see if we can use Træfɪk in a Windows container to provide us encrypted HTTPS traffic to other Windows containers running our IIS website, or other web service.</p>
+
+<h2 id="step1createawindowsdockerhostinazure">Step 1: Create a Windows Docker host in Azure</h2>
+
+<p>First of all we need a Windows Server 2016 machine with Docker in the cloud. I will use Azure as Microsoft provides a VM template for that. This server will be our webserver later on with an own DNS name and TLS certs running our website.</p>
+
+<p>Go to the <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-server">Windows Containers quick start guide</a> at docs.microsoft.com and press the "Deploy to Azure" button.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/01-deploy-to-azure-1.png" alt="Deploy to Azure"></p>
+
+<p>This will bring you to the Azure portal where you can customize the virtual machine. Create a new resource group, choose the location where the server should be running a and public DNS name, as well as the size of the VM.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/02-customize.png" alt="Customize machine"></p>
+
+<p>After you click on "Purchase" the deployment starts which should take only a few minutes.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/03-deployment-started.png" alt="Azure starts deployment"></p>
+
+<p>In the meantime click on the cube symbol on the left. That will show you all resource groups you have.</p>
+
+<p>This Windows + Docker template already creates inbound security rules for HTTPS port 443 as well as the Docker TLS port 2376. So for our purposes we don't need to add more inbound rules.</p>
+
+<h2 id="step2buyadomainandupdatednsrecords">Step 2: Buy a domain and update DNS records</h2>
+
+<p>For Let's Encrypt you need an own domain name to get TLS certificates. For my tests I ordered a domain name at GoDaddy. But after I walked through the steps I realised that Træfɪk also can automatically update your DNS records when you use DNSimple, CloudFlare etc.</p>
+
+<p>But for first time domain name users like me I show you the manual steps. In my case I went to my domain provider and configured the DNS records.</p>
+
+<h4 id="getthepublicipaddress">Get the public IP address</h4>
+
+<p>Before we can update the DNS record we need the public IP address of the VM. This IP address is also used for the Docker TLS certificates we will create later on.</p>
+
+<p>In the Azure Portal, open the resource group and click on the public IP address.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/04-resource-group-1.png" alt="Resource group"></p>
+
+<p>Write down or copy the IP address shown here.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/08-pubip-1.png" alt="Public IP address"></p>
+
+<p>Go back to your domain provider and enter the public IP address in the A record. If you want to run multiple websites within Docker containers, add a CNAME resource record for each sub domain you need. For this tutorial I have added <code>portainer</code> and <code>whoami</code> as additional sub domains.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/09-dns-a-record-cname-1.png" alt="Update DNS records"></p>
+
+<p>After some minutes all the DNS servers should know your domain name with the new IP address of your Windows Server 2016.</p>
+
+<h2 id="step3securedockerwithtls">Step 3: Secure Docker with TLS</h2>
+
+<p>We now log into the Docker host with RDP. You can use the DNS name provided by Azure or use your domain name. But before you connect with RDP, add a shared folder to your RDP session so you can also copy back the Docker TLS client certificates to your local machine. With this you will also be able to control your Windows Docker engine directly from your local computer.</p>
+
+<p>In this example I shared my desktop folder with the Windows VM.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/10-rdp-client-add-folder.png" alt="Add folder in RDP client"></p>
+
+<p>Now login with the username and password entered at creation time.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/11-rdp-login.png" alt="Login with RDP"></p>
+
+<h4 id="createdockertlscerts">Create Docker TLS certs</h4>
+
+<p>To use Docker remotely it is recommended to use client certificates, so nobody without that certs can talk to your Docker engine. The same applies if a Windows container wants to communicate with the Docker engine. Using just the unprotected port 2375 would give every container the possibility to gain access to your Docker host.</p>
+
+<p>Open a PowerShell terminal as an administrator to run a Windows container that can be used to create TLS certificates for your Docker engine. I already have blogged about <a href="https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/">DockerTLS in more detail</a> so we just use it here as a tool.</p>
+
+<p>Retrieve all local IP addresses to allow the TLS certificate also from the host itself, but as well for other Windows containers to talk to your Docker engine.</p>
+
+<pre><code>$ips = ((Get-NetIPAddress -AddressFamily IPv4).IPAddress) -Join ','
+</code></pre>
+
+<p>Also create a local folder for the client certificates.</p>
+
+<pre><code>mkdir ~\.docker  
+</code></pre>
+
+<p>Now run the DockerTLS tool with <code>docker run</code>, just append the public IP address from above to the list of <code>IP_ADDRESSES</code>. Also adjust the <code>SERVER_NAME</code> variable to your domain name.</p>
+
+<pre><code>docker run --rm `  
+  -e SERVER_NAME=schererstefan.xyz `
+  -e IP_ADDRESSES=$ips,52.XXXXXXX.198 `
+  -v "C:\ProgramData\docker:C:\ProgramData\docker" `
+  -v "$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker" `
+  stefanscherer/dockertls-windows
+</code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/12-mkdir-and-run-dockertls.png-shadow.png" alt="Run dockertls"></p>
+
+<p>Docker will pull the Windows image from Docker Hub and create the TLS certificates in the correct folders for your Docker engine.</p>
+
+<p>Afterwards you have to restart the Docker engine to use the TLS certificates. The Docker engine now additionally listen on TCP port 2376.</p>
+
+<pre><code>restart-service docker  
+</code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/13-restart-docker.png-shadow.png" alt="Restart docker"></p>
+
+<h4 id="addfirewallexceptionfordocker">Add firewall exception for Docker</h4>
+
+<p>This step is optional, but as we now have the Docker TLS certs you can have another nice feature. With these certs you can use the Docker client on your local machine to communicate with the Windows Docker engine in Azure. But I will start Træfɪk later on from the Docker host itself as we need some volume mount points.</p>
+
+<p>The Windows Server's firewall is active, so we now have to add an exception to allow inbound traffic on port 2376. The network security group for the public IP address already has an inbound rule to the VM. This firewall exception now allows the connection to the Docker engine.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/14-inbound-rule-2376-in-vm.png-shadow.png" alt="Add firewall exception"></p>
+
+<p>From now on you can connect to the Docker engine listing on port 2376 from the internet.</p>
+
+<h4 id="copydockerclientcertstoyourlocalmachine">Copy Docker client certs to your local machine</h4>
+
+<p>To setup a working communication from your local machine, copy the Docker client certificates from the virtual machine through the RDP session back to your local machine.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/17-copy-docker-certs.png-shadow.png" alt="Copy Docker TLS certs to client"></p>
+
+<p>On your local machine try to connect with the remote Windows Docker engine with TLS encryption and the client certs.</p>
+
+<pre><code>$ DOCKER_CERT_PATH=~/Desktop/.docker DOCKER_TLS_VERIFY=1 docker -H tcp://schererstefan.xyz:2376 version
+</code></pre>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/18-mac-client.png" alt="Docker client from Mac"></p>
+
+<p>Now you are able to start and stop containers as you like.</p>
+
+<h2 id="step4runtrfkandotherservices">Step 4: Run Træfɪk and other services</h2>
+
+<p>Now comes the fun part. We use Docker and Docker Compose to describe which containers we want to run.</p>
+
+<h4 id="installdockercompose">Install Docker Compose</h4>
+
+<p>To spin up all our containers I use Docker Compose and a <code>docker-compose.yml</code> file that describes all services.</p>
+
+<p>The Windows VM does not come with Docker Compose. So we have to install Docker Compose first. If you are working remotely you can use your local installation of Compose and skip this step.</p>
+
+<pre><code>Invoke-WebRequest "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Windows-x86_64.exe" `  
+  -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
+</code></pre>
+
+<p>If you prefer Chocolatey, use <code>choco install docker-compose</code> instead.</p>
+
+<h4 id="createdatafoldersondockerhost">Create data folders on Docker host</h4>
+
+<p>You need to persist some data outside of the Docker containers, so we create some data folders. Træfɪk retrieves the TLS certs and these should be persisted outside of the container. Otherwise you run into the Let's Encrypt rate limit of 20 requests per week to obtain new certificates. This happened to me trying different things with Træfɪk and starting and killing the container lots of times.</p>
+
+<pre><code>PS C:\Users\demo&gt; mkdir sample  
+PS C:\Users\demo&gt; cd sample  
+PS C:\Users\demo\sample&gt; mkdir traefikdata  
+PS C:\Users\demo\sample&gt; mkdir portainerdata  
+</code></pre>
+
+<h4 id="dockercomposeyml">docker-compose.yml</h4>
+
+<p>For a first test we define two services, the traefik service and a example web server called whoami. This tutorial should give you just an idea and you can extend the YAML file to your needs. Run an IIS website? Put it into a container image. And another IIS website? Just run a separate container with that other website in it. You see you don't have to mix multiple sites, just leave them alone in single microservice images.</p>
+
+<p>Open up an editor and create the YAML file.</p>
+
+<pre><code>PS C:\Users\demo\sample&gt; notepad docker-compose.yml  
+</code></pre>
+
+<pre><code class="language-yaml">version: '2.1'  
+services:  
+  traefik:
+    image: stefanscherer/traefik-windows
+    ports:
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - ./traefikdata:C:/etc/traefik
+      - ${USERPROFILE}/.docker:C:/etc/ssl:ro
+
+  whoami:
+    image: stefanscherer/whoami-windows
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.backend=whoami"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.frontend.rule=Host:whoami.schererstefan.xyz"
+
+networks:  
+  default:
+    external:
+      name: nat
+</code></pre>
+
+<p>I already have built a Træfɪk Windows Docker image that you can use. There might be an official image in the future. If you don't want to use my image, just use this <code>Dockerfile</code> and replace the <code>image: stefanscherer/traefik-windows</code> with <code>build: .</code>, so Docker Compose will build the Træfɪk image for you.</p>
+
+<p>The <code>Dockerfile</code> looks very simple as we directly add the Go binary to the Nanoserver Docker image and define some volumes and labels.</p>
+
+<pre><code>FROM microsoft/nanoserver
+
+ADD https://github.com/containous/traefik/releases/download/v1.2.0-rc2/traefik_windows-amd64 /traefik.exe
+
+VOLUME C:/etc/traefik  
+VOLUME C:/etc/ssl
+
+EXPOSE 80  
+ENTRYPOINT ["/traefik", "--configfile=C:/etc/traefik/traefik.toml"]
+
+# Metadata
+LABEL org.label-schema.vendor="Containous" \  
+      org.label-schema.url="https://traefik.io" \
+      org.label-schema.name="Traefik" \
+      org.label-schema.description="A modern reverse-proxy" \
+      org.label-schema.version="v1.2.0-rc2" \
+      org.label-schema.docker.schema-version="1.0"
+</code></pre>
+
+<h4 id="traefiktoml">traefik.toml</h4>
+
+<p>Træfɪk needs a configuration file where you specify your email address for the Let's Encrypt certificate requests. You will also need the IP address of the container network so that Træfɪk can contact your Docker engine.</p>
+
+<pre><code>$ip=(Get-NetIPAddress -AddressFamily IPv4 `
+   | Where-Object -FilterScript { $_.InterfaceAlias -Eq "vEthernet (HNS Internal NIC)" } `
+   ).IPAddress
+Write-Host $ip  
+</code></pre>
+
+<p>Now open an editor to create the <code>traefik.toml</code> file.</p>
+
+<pre><code>PS C:\Users\demo\sample&gt; notepad traefikdata\traefik.toml  
+</code></pre>
+
+<p>Enter that IP address at the <code>endpoint</code> of the <code>[docker]</code> section. Also adjust the domain names</p>
+
+<pre><code class="language-toml">[web]
+address = ":8080"
+
+[docker]
+domain = "schererstefan.xyz"  
+endpoint = "tcp://172.24.128.1:2376"  
+watch = true
+
+[docker.tls]
+ca = "C:/etc/ssl/ca.pem"  
+cert = "C:/etc/ssl/cert.pem"  
+key = "C:/etc/ssl/key.pem"
+
+# Sample entrypoint configuration when using ACME
+[entryPoints]
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+[acme]
+
+# Email address used for registration
+#
+# Required
+#
+email = "you@yourmailprovider.com"
+
+storage = "c:/etc/traefik/acme.json"  
+entryPoint = "https"
+
+[[acme.domains]]
+   main = "schererstefan.xyz"
+   sans = ["whoami.schererstefan.xyz", "portainer.schererstefan.xyz", "www.schererstefan.xyz"]
+</code></pre>
+
+<h4 id="openfirewallforallcontainerportsused">Open firewall for all container ports used</h4>
+
+<p>Please notice that the Windows firewall is also active for the container network. The <code>whoami</code> service listens on port 8000 in each container. To make Træfɪk connect to the <code>whoami</code> containers you have to add a firewall exception for port 8000.</p>
+
+<p>Docker automatically adds a firewall exception for all ports mapped to the host with <code>ports:</code> in the <code>docker-compose.yml</code>. But for the exposed ports this does not happen automatically.</p>
+
+<h4 id="spinuptrfkandwhoami">Spin up Træfɪk and whoami</h4>
+
+<p>Now it's time to spin up the two containers. </p>
+
+<pre><code>docker-compose up  
+</code></pre>
+
+<p>You can see the output of each container and stop them by pressing <code>CTRL+C</code>. If you want to run them detached in the background, use</p>
+
+<pre><code>docker-compose up -d  
+</code></pre>
+
+<p>So see the output of the services you can use <code>docker-compose logs traefik</code> or <code>docker-compose logs whoami</code> at any time.</p>
+
+<p>Træfɪk now fetches TLS certificates for your domain with the given sub domains. Træfɪk listens for starting and stopping containers.</p>
+
+<h2 id="testwithabrowser">Test with a browser</h2>
+
+<p>Now open a browser on your local machine and try your TLS encrypted website with the subdomain <code>whoami</code>. You should see a text like <code>I'm 3e1f17ecbba3</code> which is the hostname of the container.</p>
+
+<p>Now let's try Træfɪk load balancing feature by scaling up the <code>whoami</code> service.</p>
+
+<pre><code>docker-compose scale whoami=3  
+</code></pre>
+
+<p>Now there are three <code>whoami</code> containers running and Træfɪk knows all three of them. Each request to the subdomain will be load balanced to one of these containers. You can <code>SHIFT</code>-reload your page in the browser and see that each request returns another hostname.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/15-browser.png" alt="Test whoami service with browser"></p>
+
+<p>So we have a secured HTTPS connection to our Windows containers.</p>
+
+<h2 id="iis">IIS</h2>
+
+<p>The power of Docker is that you can run multiple services on one machine if you have resources left. So let's add another web server, let's choose an IIS server.</p>
+
+<p>Add these lines to the <code>docker-compose.yml</code>.</p>
+
+<pre><code>  www:
+    image: microsoft/iis
+    expose:
+      - 80
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.backend=www"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.frontend.rule=Host:www.schererstefan.xyz"
+</code></pre>
+
+<p>Remember to add a firewall exception for port 80 manually. After that spin up the IIS container with</p>
+
+<pre><code>docker-compose up -d www  
+</code></pre>
+
+<p>And check the new sub domain. You will see the welcome page of IIS.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/iis-welcom.png" alt="IIS welcome page"></p>
+
+<h2 id="portainer">Portainer</h2>
+
+<p>Let's add another useful service to monitor your Docker engine. Portainer is a very good UI for that task and it is also available as a Windows Docker image.</p>
+
+<p>Add another few lines to our <code>docker-compose.yml</code>.</p>
+
+<pre><code>  portainer:
+    image: portainer/portainer
+    command: -H tcp://172.24.128.1:2376 --tlsverify
+    volumes:
+      - ./portainerdata:C:/data
+      - ${USERPROFILE}/.docker:C:/certs
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.backend=portainer"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.frontend.rule=Host:portainer.schererstefan.xyz"
+</code></pre>
+
+<p>Portainer also needs the client certs to communicate with the Docker engine. Another volume mount point is used to persist data like your admin login outside the container.</p>
+
+<p>Now run Portainer with</p>
+
+<pre><code>docker-compose up -d portainer  
+</code></pre>
+
+<p>Then open your browser on your local machine with the subdomain. When you open it the first time Portainer will ask you for an admin password. Enter a password you want to use and then login with it.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/19-portainer-login.png" alt="Portainer login"></p>
+
+<p>Now you have an UI to see all containers running, all Docker images downloaded etc.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/20-portainer-dashboard.png" alt="Portainer dashboard"></p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/21-portainer-containers.png" alt="Portainer containers"></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>What we have learned is that Træfɪk works pretty good on Windows. It helps us securing our websites with TLS certificates. In combination with Docker Compose you can add or remove new websites on the fly or even scale some services with the built-in load balancer of Træfɪk.</p>
+
+<p>Read more details in the <a href="https://docs.traefik.io">Træfɪk documentation</a> as I can give you only a short intro of its capabilities.</p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Setup a Windows Docker CI with AppVeyor]]></title><description><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to</p>]]></description><link>https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/</link><guid isPermaLink="false">f979baa4-3b39-4cf6-9d84-a74d2453e9cb</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[CI]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[Docker-Swarm]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 10 Mar 2017 05:54:00 GMT</pubDate><content:encoded><![CDATA[<p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to build and test your code and even the pull requests you get from others.</p>
 
 <h2 id="butimonwindows">But I'm on Windows</h2>
 
@@ -1766,129 +2141,4 @@ vagrant up --provider virtualbox
 
 <p>I hope you have enjoyed this tutorial. In a future blog post I probably show how to build a Windows Docker Swarm in Azure or in Hyper-V.</p>
 
-<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a></p>]]></content:encoded></item><item><title><![CDATA[How to create a 32bit boot2docker for x86 CPU's]]></title><description><![CDATA[<p>You normally can use Docker on 64bit Intel CPU's. But does Docker run on 32bit Intel CPU's as well?</p>
-
-<h2 id="whytheheck">Why the heck?</h2>
-
-<p>Weeks ago when I wrote some integration tests for <code>docker-machine</code> to test the Chocolatey package on AppVeyor CI and I thought: Wouldn't it be cool to create eg.</p>]]></description><link>https://stefanscherer.github.io/how-to-create-a-32bit-boot2docker-for-x86-cpus/</link><guid isPermaLink="false">d826f985-c5c3-4105-b631-ac3c1532d4b2</guid><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Thu, 18 Feb 2016 23:12:05 GMT</pubDate><content:encoded><![CDATA[<p>You normally can use Docker on 64bit Intel CPU's. But does Docker run on 32bit Intel CPU's as well?</p>
-
-<h2 id="whytheheck">Why the heck?</h2>
-
-<p>Weeks ago when I wrote some integration tests for <code>docker-machine</code> to test the Chocolatey package on AppVeyor CI and I thought: Wouldn't it be cool to create eg. a real VirtualBox Docker Machine on a CI server and have some real tests there? But I soon found out that most/all of the CI servers out in the cloud also are virtualized. And none really supports what's called <strong>nested hypervisor</strong> - to run a 64bit VM in a 64bit VM. I left the integration tests with some tests with the driver <code>none</code> and forgot about the idea.</p>
-
-<p>Last week I sat before my old PC running 32bit Windows and I thought if it is possible to run Docker on it as well. I normally use <code>docker-machine</code> to spin up Docker from Windows in a Linux boot2docker VM. And with Chocolatey I can install the 32bit Windows version of <code>docker-machine</code>. But spinning up a VirtualBox Docker Machine doesn't work on my PC as it can't run 64bit VM's. So the idea came back into my mind.</p>
-
-<p>So what is missing to create such a 32bit VM to have at least a running Docker Engine?</p>
-
-<ul>
-<li>a 32bit Docker Engine binary for x86 CPU</li>
-<li>a 32bit boot2docker.iso file that is used by <code>docker-machine</code></li>
-</ul>
-
-<p>So I first searched for some issues on GitHub what others said about 32bit Docker.</p>
-
-<p>I found this interesting Issue <a href="https://github.com/docker/docker/issues/136">docker/docker#136</a> with a comment by Solomon Hykes:</p>
-
-<blockquote>
-  <p>Here's what I suggest:</p>
-  
-  <p>Step 1: docker only supports amd64. It will refuse to start a container on any other architecture.This should be made clear to the user.</p>
-  
-  <p>Step 2: docker will eventually support more architectures, including i386. This will include arch-specific images, facilities to look them up etc.</p>
-  
-  <p>So, I will accept anything that makes it easier to support multiple architectures <em>in the future</em>. But for now we're sticking to amd64.</p>
-</blockquote>
-
-<p>That last sentence made me smile. Hey, aren't we doing multi architecture right now? Is the future now?</p>
-
-<p>I started a proof of concept, but didn't want to waste disk space and computing power locally. So I also tested if such a task could be done right from your web browser. Just fork the <a href="https://github.com/docker/docker">docker/docker</a> repo and start patching the <code>Dockerfile</code> to build it for 32bit. Then fork the <a href="https://github.com/boot2docker/boot2docker">boot2docker/boot2docker</a> repo as well and do the same thing here. To build the DEB package and the ISO file I used TravisCI and deployed the output as a GitHub release to the forked repo.</p>
-
-<p>So my build pipeline looks like this:</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/boot2docker_build_pipeline-png-shadow.png" alt="boot2docker build pipeline"></p>
-
-<p>I created two pull requests against the forked repos to have the TravisCI build status for each commit. And also we can diff the modified files very easily in the browser.</p>
-
-<ul>
-<li><a href="https://github.com/StefanScherer/docker/pull/1">docker/pull/1</a></li>
-<li><a href="https://github.com/StefanScherer/boot2docker/pull/1">boot2docker/pull/1</a></li>
-</ul>
-
-<p>On the afternoon my kids wanted to play some computer games, so I had to leave my MacBook and PC. But no problem with this setup, I just continued on my iPad.</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg" alt="committing from iPad"></p>
-
-<p>Porting the <code>Dockerfile</code> from amd64 to another CPU you first have to solve the <code>FROM ubuntu:trusty</code> line and find a base image. Crazy enough there already are some 32bit Docker Image, so I just could use <code>FROM 32bit/ubuntu:14.04</code> instead.</p>
-
-<p>And step by step I ported packages, filenames, directory names to fit the i386 architecture. <br>
-For the boot2docker the problem was to compile a 32bit kernel first, but a <code>make menuconfig</code> is your friend to change all the kernel switches needed to turn off 64bit.</p>
-
-<h2 id="willitwork">Will it work?</h2>
-
-<p>And after the ISO file was finished I tried it with an <code>appveyor.yml</code> to build a integration test for the Chocolatey package on a Windows CI server. There are some technical details to solve right now to install VirtualBox inside the build server without network issues.</p>
-
-<p>So I tested it manually in an AppVeyor CI server through a RDP session. I installed VirtualBox with Chocolatey and then downloaded the 32bit boot2docker.iso file from the GitHub release and started up a boot2docker VM right in AppVeyor:</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/boot2docker-in-appveyor.png" alt="boot2docker in appveyor"></p>
-
-<p>And does it run containers? Yes, pulling the <code>32bit/ubuntu:14.04</code> Docker image and running it also works inside the AppVeyor CI server:</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/boot2docker-run-container.png" alt="boot2docker in appveyor"></p>
-
-<p><strong>Update 2016/02/27</strong>: Setting a specific NIC type works for AppVeyor and finally proofs that <a href="https://ci.appveyor.com/project/StefanScherer/boot2docker/build/44">starting a Docker Machine VM in AppVeyor works</a>. See the <a href="https://github.com/StefanScherer/boot2docker/blob/x86/appveyor.yml">appveyor.yml</a> for details.</p>
-
-<h2 id="tryityourself">Try it yourself</h2>
-
-<p>You can try the 32bit version of Docker yourself on your laptop by creating a VM with <code>docker-machine</code> and adjusting some defaults:</p>
-
-<pre><code class="language-bash">docker-machine create -d virtualbox --virtualbox-boot2docker-url https://github.com/StefanScherer/boot2docker/releases/download/v1.10.1-386/boot2docker.iso dev32  
-</code></pre>
-
-<p>There is a preview of version 1.9.1 and 1.10.1. Here is the output of <code>docker version</code> running from my Mac against the 32bit Linux Docker Engine running in VirtualBox:</p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/boot2docker-version-1.png" alt="boot2docker in appveyor"></p>
-
-<h2 id="nestedvm">"Nested" VM?</h2>
-
-<p>We can do another crazy thing with it. VirtualBox is not able to run nested 64bit VM's. But with this 32bit boot2docker it is possible to run the boot2docker VM inside a VirtualBox VM: </p>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/02/container_in_virtualbox_in_virtualbox_on_mac-2.png" alt="nested-virtualbox"></p>
-
-<p>I used this <code>Vagrantfile</code> to create the 64bit VirtualBox VM</p>
-
-<pre><code class="language-ruby">Vagrant.configure(2) do |config|  
-  config.vm.box = "boxcutter/ubuntu1404"
-  config.vm.network "public_network"
-  config.vm.provider "virtualbox" do |vb|
-     vb.memory = "2048"
-  end
-end  
-</code></pre>
-
-<p>Now spin up the VM and log into it with</p>
-
-<pre><code>vagrant up --provider virtualbox  
-vagrant ssh  
-</code></pre>
-
-<p>Now inside the 64bit VM you install the Docker client, VirtualBox and Docker Machine with a patch to really disable VT-X checks. Future versions of Docker Machine will allow you to do that as pull request <a href="https://github.com/docker/machine/pull/3018">#3018</a> got merged recently.</p>
-
-<pre><code>sudo apt-get update  
-curl https://get.docker.com | sudo sh  
-sudo apt-get install -y virtualbox  
-sudo curl -L -o /usr/local/bin/docker-machine https://github.com/StefanScherer/boot2docker/releases/download/v1.9.1-386/docker-machine-Linux-x86_64  
-sudo chmod +x /usr/local/bin/docker-machine  
-</code></pre>
-
-<p>Now it is time again to create the 32bit Docker Machine VM with</p>
-
-<pre><code>docker-machine create -d virtualbox --virtualbox-no-vtx-check --virtualbox-boot2docker-url https://github.com/StefanScherer/boot2docker/releases/download/v1.10.1-386/boot2docker.iso dev  
-eval $(docker-machine env dev)  
-docker version  
-docker-machine ls  
-docker run -it 32bit/ubuntu:14.04 bash  
-</code></pre>
-
-<p>This proof of concept shows that running Docker in a 32bit VM really could work. And it enables you to experiment a little more. But keep in mind that this is not officially supported and extremely experimental.</p>
-
-<p>I hope you enjoyed this little tour. As always I love to get feedback. What is your use case to run Docker on 32bit? Please leave a comment below or share it on Twitter.</p>]]></content:encoded></item></channel></rss>
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a></p>]]></content:encoded></item></channel></rss>
