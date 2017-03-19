@@ -11,7 +11,7 @@ background-image: url(assets/mvp_docker_captain.png)
 - Hello! We are
   Stefan ([@stefscherer](https://twitter.com/stefscherer))
   &
-  Dieter ([@quintus23m](https://twitter.com/quintus23m))
+  Dieter ([@Quintus23M](https://twitter.com/Quintus23M))
 
 ---
 
@@ -141,15 +141,14 @@ You are welcome to use the method that you feel the most comfortable with.
 - Docker Compose 1.11.2
 
 .exercise[
-- Log into your Docker host through RDP <br />
-  `dog2017-win-XX.westeurope.cloudapp.azure.com`
+- Log into your Docker host through RDP (user and password is on your card)<br /><br />
+  **`dog2017-win-XX.westeurope.cloudapp.azure.com`**
 
 - Open a terminal
 
 - Check all installed versions:
   ```bash
   docker version
-  docker-compose -v
   ```
 
 ]
@@ -162,13 +161,31 @@ You are welcome to use the method that you feel the most comfortable with.
 
 - Docker Engine
 
-- Container Image
+- Docker Image
 
-- Container
+- Docker Container
 
-- Container Registry
+- Docker Registry
 
 - Dockerfile
+
+---
+background-image: url(assets/what_is_a_container.png)
+
+## What is a container?
+
+- Standarized packaging for<br/>
+  software and dependencies
+
+- Isolate apps from each other
+
+- Share the same OS kernel
+
+- Works for all major Linux<br/>
+  distributions
+
+- Containers native to<br/>
+  Windows Server 2016
 
 ---
 
@@ -253,9 +270,30 @@ https://github.com/Microsoft/Virtualization-Documentation
 
 ---
 
+## Add tab completion to PowerShell
+
+- There is a PowerShell module [`posh-docker`](https://github.com/samneirinck/posh-docker) to add tab completion for docker commands.
+
+.exercise[
+
+- Install the `posh-docker` module and edit your `$PROFILE`
+  ```powershell
+  Install-Module -Scope CurrentUser posh-docker
+  notepad $PROFILE
+  ```
+- Add the module to the `$PROFILE` and save the file
+  ```powershell
+  Import-Module posh-docker
+  ```
+- Open a new PowerShell terminal
+]
+
+
+---
+
 class: title
 
-# Container Images
+# Docker Images
 
 ---
 
@@ -269,7 +307,7 @@ background-image: url(assets/base_images.png)
 
 ## FROM microsoft/nanoserver
   * fast to boot
-  * about 700 MByte
+  * about 900 MByte
   * software may need porting
   * No 32bit, no MSI
 
@@ -281,7 +319,7 @@ background-image: url(assets/base_images.png)
 
 - Provided by Microsoft through the Docker Hub
 
-- All Windows container images are based on one of these two OS images
+- All Windows Docker images are based on one of these two OS images
 
 .exercise[
 - Pull or update to latest Windows base OS images:
@@ -318,7 +356,7 @@ class: title
 
 ---
 
-# Container Image vs. Container
+# Docker Image vs. Container
 
 ## Image
 
@@ -574,13 +612,13 @@ class: title
 
 class: title
 
-# Container Registry
+# Docker Registry
 
 ---
 
 ## Re-use the work of others
 
-- The Docker Hub is a public Container Registry for Docker images
+- The Docker Hub is a public registry for Docker images
 
 .exercise[
 
@@ -653,8 +691,8 @@ class: title
 - Or use the container IP address from the Docker Host
 
   ```powershell
-  docker container inspect -f '{{ .NetworkSettings.Networks.nat.IPAddress }}' iis
-start http://$(docker inspect -f '{{ .NetworkSettings.Networks.nat.IPAddress }}' iis)
+  docker container inspect -f '{{.NetworkSettings.Networks.nat.IPAddress}}' iis
+start http://$(docker inspect -f '{{.NetworkSettings.Networks.nat.IPAddress}}' iis)
   ```
 
  ]
@@ -678,7 +716,7 @@ start http://$(docker inspect -f '{{ .NetworkSettings.Networks.nat.IPAddress }}'
 - Execute an interactive shell inside the still running IIS container
 
   ```powershell
-  docker exec -it iis powershell
+  docker container exec -it iis powershell
   ```
 
 - Go to the default folder with the web content of IIS
@@ -910,11 +948,29 @@ https://docs.docker.com/engine/reference/builder/#/escape
 
 ---
 
+## Other useful commands
+
+- Show disk usage
+- Clean up old images and containers
+
+.exercise[
+
+- Cleanup your host system and check sizes before and afterwards
+
+  ```powershell
+  docker system df
+  docker system prune
+  docker system df
+  ```
+
+]
+
+---
+
 class: title
 
-# Secure
-# remote Docker access
-# via TLS
+# Secure remote
+# Docker access via TLS
 
 ---
 
@@ -985,7 +1041,7 @@ http://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/
 - Run the dockertls container with local and public IP address (replace `x.x.x.x`)
 
   ```powershell
-  docker run --rm `
+  docker container run --rm `
     -e SERVER_NAME=dog2017-win-XX.westeurope.cloudapp.azure.com `
     -e IP_ADDRESSES=$ips,x.x.x.x `
     -v "C:\ProgramData\docker:C:\ProgramData\docker" `
@@ -1082,18 +1138,284 @@ Local folder shared in RDP session
 
 class: title
 
-# Networking, Logging
+# Networking
 
 ---
 
-## Networking
+## Networking modes
 
-- Overlay network coming soon
+- **Network Address Translation (NAT)**
+  - each container will receive an IP address from an internal, private IP prefix
+
+- **Transparent**
+  - directly connected to the physical network
+
+- **Overlay**
+  - used to connect container endpoints across multiple container hosts
+
+- **L2 Bridge**
+  - access to physical network with MAC address translation
+
+---
+
+## Listing networks
+
+- Default network is `nat`, there is also a `none` network.
+
+.exercise[
+
+- List all networks on the host
+
+  ```powershell
+  ipconfig
+  ```
+
+- The `vEthernet (HNS Internal NIC)` ethernet adapter is used by Docker containers
+
+- List all container networks
+
+  ```powershell
+  docker network ls
+  ```
+
+]
+
+---
+
+## Networking modes
+
+.exercise[
+
+- Run a container with network
+
+  ```powershell
+  docker container run microsoft/nanoserver ipconfig
+  ```
+
+- Run a container without a network
+
+  ```powershell
+  docker container run --network none microsoft/nanoserver ipconfig
+  ```
+
+]
+
+---
+
+## DNS in Container network
+
+- Container can lookup each other with DNS
+
+.exercise[
+
+- Run IIS again, as well as an interactive container
+
+  ```powershell
+  docker container run --name iis -p 80:80 -d microsoft/iis:nanoserver
+  docker container run -it microsoft/nanoserver powershell
+  ```
+
+- Now inside the container, try to access the IIS web server by its DNS name
+
+
+  ```powershell
+  Invoke-WebRequest http://iis
+  ```
+
+]
+
+- Don't forget to kill and remove the IIS container again.
+
+---
+background-image: url(assets/compose.png)
+
+## Using Docker Compose
+
+- A tool from Docker
+- Define and run multi-container applications
+
+---
+
+## Installing Docker Compose
+
+- Docker for Mac/Docker for Windows already has Docker Compose installed
+- Installation on Windows Server 2016
+
+.exercise[
+
+- If you have [Chocolatey](https://chocolatey.org/) package manager
+
+  ```powershell
+  choco install docker-compose
+  ```
+
+- Otherwise download binary manually from https://github.com/docker/compose/releases
+
+]
+
+---
+
+## The Compose file
+
+- Docker Compose uses a `docker-compose.yml` file to define multiple services
+
+- Define services in a Compose file
+  ```
+  version: '2.1'
+  services:
+      web:
+        image: microsoft/iis:nanoserver
+        ports:
+          - 80:80
+  ```
+
+- Always append this to use the default nat network
+  ```
+  networks:
+      default:
+        external:
+          name: nat
+  ```
+
+---
+
+## Building images with Compose
+
+- Docker Compose can use a `Dockerfile` per service to build an image locally
+
+- Use `build:` instead of `image:`
+  ```
+  version: '2.1'
+  services:
+      web:
+        build: .
+        ports:
+          - 80:80
+  ```
+
+---
+
+## Networking with Compose
+
+- The service names can be used to lookup them with DNS
+  ```
+  services:
+      web:
+        image: microsoft/iis:nanoserver
+        ports:
+          - 80:80
+
+      client:
+        image: microsoft/nanoserver
+        command: powershell -Command Invoke-WebRequest http://web
+  ```
+
+---
+
+## Practice DNS lookups with Compose
+
+- We replay the manual test of IIS and a client container with Compose.
+
+.exercise[
+
+- Create a new folder
+  ```powershell
+  mkdir dnstest
+  cd dnstest
+  ```
+
+- Create a `docker-compose.yml` file to test DNS lookups
+
+  ```powershell
+  notepad docker-compose.yml
+  ```
+
+]
+
+---
+
+.exercise[
+
+- Create the `docker-compose.yml` with these two services
+
+  ```powershell
+  version: '2.1'
+  services:
+      web:
+        image: microsoft/iis:nanoserver
+        ports:
+          - 80:80
+
+      client:
+        image: microsoft/nanoserver
+        command: powershell -Command Sleep 2 ; Invoke-WebRequest http://web
+        depends_on:
+          - web
+
+  networks:
+      default:
+        external:
+          name: nat
+  ```
+
+]
+
+---
+
+## Run the first containers with Compose
+
+- Compose can run all containers defined with one command
+
+.exercise[
+
+- Check the usage of `docker-compose`
+  ```powershell
+  docker-compose --help
+  ```
+
+- Run all containers
+  ```powershell
+  docker-compose up
+  ```
+
+- Press `[CTRL] + C` to stop all containers
+- If client could not invoke the web request, try it again.
+]
+
+---
+
+## Run containers in the background
+
+- Compose can run containers in detached mode in background
+
+.exercise[
+
+- Run all containers in the background
+  ```powershell
+  docker-compose up -d
+  ```
+
+- Check which containers are running
+  ```powershell
+  docker-compose ps
+  ```
+
+- Check the output of the client in its logs
+  ```powershell
+  docker-compose logs -t client
+  ```
+
+]
+
+---
+
+## Networking resources
 
 - [Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/container-networking)
 
 - [Use Docker Compose and Service Discovery on Windows](https://blogs.technet.microsoft.com/virtualization/2016/10/18/use-docker-compose-and-service-discovery-on-windows-to-scale-out-your-multi-service-container-application/)
 
+- [Overlay Network Driver with Support for Docker Swarm Mode  on Windows 10](https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/)
 ---
 
 class: title
@@ -1102,13 +1424,238 @@ class: title
 
 ---
 
-## Dockerfile on Windows
+## Use single backslash
+
+- Use the `escape` comment
+
+  ```Dockerfile
+  # escape=`
+  FROM microsoft/iis:nanoserver
+  COPY iisstart.htm C:\inetpub\wwwroot
+  ```
+
+- The `CMD` instruction is JSON formatted. You still need double backslash there.
+
+- Alternative: Use "unix" slashes where ever you can. <br/>
+  A lot of programs can handle it.
+
+---
+
+## Use PowerShell
+
+- The default shell in Windows containers is `cmd.exe`.
+
+- Using PowerShell gives you much more features eg. porting Linux Dockerfiles to Windows
+  - Download files from the Internet
+  - Extract ZIP files
+  - Calculate checksums
+
+- Example
+  ```Dockerfile
+  # escape=`
+  FROM microsoft/windowsservercore
+  RUN powershell -Command Invoke-WebRequest 'http://foo.com/bar.zip' `
+                              -OutFile 'bar.zip' -UseBasicParsing
+  RUN powershell -Command Expand-Archive bar.zip -DestinationPath C:\
+  ```
+
+---
+
+## Switch to PowerShell
+
+- Use the `SHELL` instruction to set PowerShell as default shell.
+- So you don't have to write `powershell -Command` in each `RUN` instruction.
+
+- Use `$ErrorActionPreference = 'Stop'` to abort on first error.
+
+- Use `$ProgressPreference = 'SilentlyContinue'` to improve download speed.
+
+  ```Dockerfile
+  FROM microsoft/nanoserver
+
+  SHELL ["powershell", "-Command", `
+      "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+  ```
+
+---
+
+## Using PowerShell in Dockerfile
+
+- A full example to use PowerShell by default.
+
+  ```Dockerfile
+  # escape=`
+  FROM microsoft/windowsservercore
+
+  SHELL ["powershell", "-Command", `
+      "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+  RUN Invoke-WebRequest 'http://foo.com/bar.zip' -OutFile 'bar.zip' -UseBasicParsing
+  RUN Expand-Archive bar.zip -DestinationPath C:\
+  RUN Remove-Item bar.zip
+  ```
+
+--
+- What's wrong with it?
+
+---
+
+## Download a temporary file
+
+- Each `RUN` instruction builds one layer of your image.
+
+--
+
+- Removing a file of a previous layer does not shrink your final Docker image.
+
+--
+
+- Combine multiple commands to have an atomic build step for eg.
+  - Download - Extract - Remove
+
+  ```Dockerfile
+  # escape=`
+  FROM microsoft/windowsservercore
+
+  SHELL ["powershell", "-Command", `
+      "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+  RUN iwr 'http://foo.com/bar.zip' -OutFile 'bar.zip' -UseBasicParsing ; `
+        Expand-Archive bar.zip -DestinationPath C:\ ; `
+        Remove-Item bar.zip
+  ```
+
+---
+
+## But ...
+
+- Use multiple `RUN` instructions while developing a Docker image
+
+- You can benefit of layer caching.
+
+- Downloading 1GB ZIP and doing the extract command wrong is painful.
+
+--
+
+- Experimental feature
+  - `docker build --squash`
+
+  - Squash all layers into one.
+  - Use multiple `RUN` instructions to keep Dockerfile readable.
+
+  - Docker still caches individual layers to make subsequent builds fast.
+
+---
+
+## Resources for Dockerfile on Windows
 
 - [Best practises for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run)
 
 - [Dockerfile on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/manage-windows-dockerfile)
 
 - [Optimize Windows Dockerfiles](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/optimize-windows-dockerfile)
+
+---
+
+class: title
+
+# Persisting data using volumes
+
+---
+
+## Using volumes
+
+- A container is not able to persist data for you.
+
+- If you kill a container and run a new container it starts in a fresh environment.
+
+- Volumes can be used to persist data outside of containers.
+
+.exercise[
+
+- Write a small Dockerfile that reads and writes a file at runtime.
+  ```Dockerfile
+  FROM microsoft/nanoserver
+  CMD cmd /c dir content.txt & echo hello >content.txt
+  ```
+
+- Build and run the container. Run it again.
+  ```powershell
+  docker build -t content .
+  docker run content
+  ```
+
+]
+
+---
+
+## Prepare the image to have a volume mount point
+
+- Now we prepare the Dockerfile with a workdir to add a volume at runtime.
+
+.exercise[
+
+- Add a `WORKDIR` to have an empty folder inside the container.
+  ```Dockerfile
+  FROM microsoft/nanoserver
+  WORKDIR /data
+  CMD cmd /c dir content.txt & echo hello >content.txt
+  ```
+
+- Build and run the container. Run it again.
+  ```powershell
+  docker build -t content .
+  docker run content
+  ```
+
+]
+
+---
+
+## Adding a volume from host
+
+- The file `content.txt` is still not persisted.
+
+- Now add a volume from the host with the `-v` option.
+
+.exercise[
+
+- Run the container with a volume mount point.
+  ```powershell
+  docker run -v "$(pwd):C:\data" content
+  ```
+
+- It shows the same output, but look at the host directory. Run another container.
+  ```powershell
+  dir
+  docker run -v "$(pwd):C:\data" content
+  ```
+
+]
+
+---
+
+## Use the VOLUME instruction
+
+- There is a `VOLUME` instruction in Dockerfiles.
+
+.exercise[
+
+- Add a `VOLUME` to make it more readable.
+  ```Dockerfile
+  # escape=`
+  FROM microsoft/nanoserver
+  VOLUME C:\data
+  CMD cmd /c dir c:\data\content.txt & echo hello >c:\data\content.txt
+  ```
+
+- Build and run the container. Run it again. Does it behave different?
+  ```powershell
+  docker build -t content .
+  docker run content
+  ```
+
+]
 
 ---
 
@@ -1122,15 +1669,7 @@ class: title
 
 - https://github.com/docker/labs/tree/master/windows/modernize-traditional-apps/modernize-aspnet
 
-- https://github.com/friism/MusicStore
-
----
-
-class: title
-
-# Persisting data using volumes
-
-
+- https://github.com/aspnet/MusicStore
 
 ---
 
@@ -1141,4 +1680,4 @@ Questions?
 
 ## Stefan Scherer [@stefscherer](https://twitter.com/stefscherer)
 
-## Dieter Reuter [@quintus23m](https://twitter.com/quintus23m)
+## Dieter Reuter [@Quintus23M](https://twitter.com/Quintus23M)
