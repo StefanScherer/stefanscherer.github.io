@@ -103,7 +103,7 @@ background-image: url(assets/mvp_docker_captain.png)
 .exercise[
 
 - This is the stuff you're supposed to do!
-- Go to [stefanscherer.github.io/windows-docker-workshop](https://dstefanscherer.github.io/windows-docker-workshop/) to view these slides
+- Go to [stefanscherer.github.io/windows-docker-workshop](https://stefanscherer.github.io/windows-docker-workshop/) to view these slides
 
 - Join the chat room on
   [gitter.im/windows-docker-workshop/Lobby](https://gitter.im/windows-docker-workshop/Lobby)
@@ -1067,11 +1067,11 @@ http://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/
   dir ~\.docker
   ```
 
-- Check server certs and `daemon.cfg`
+- Check server certs and `daemon.json`
 
   ```powershell
   dir C:\ProgramData\docker\certs.d
-  cat C:\ProgramData\docker\config\daemon.cfg
+  cat C:\ProgramData\docker\config\daemon.json
   ```
 
 ]
@@ -1082,7 +1082,7 @@ http://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/
 
 .exercise[
 
-- Activate the changes in `daemon.cfg`
+- Activate the changes in `daemon.json`
 
   ```powershell
   Stop-Service docker
@@ -1700,6 +1700,12 @@ CMD ["nodemon.cmd", "--debug=5858", "app.js"]
 ```
 
 - The Node.js app is running in `G:\`, you still use `C:\code` for your volume.
+
+---
+
+## Third-party volume driver plugins
+
+- [Tech Preview: Windows Containers Docker Volume plugin from NimbleStorage](https://connect.nimblestorage.com/community/app-integration/blog/2017/03/20/tech-preview-windows-containers-docker-volume-plugin)
 
 ---
 
