@@ -1,4 +1,116 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Wed, 29 Mar 2017 23:08:17 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[7 Reasons to attend DockerCon]]></title><description><![CDATA[<p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10%</p>]]></description><link>https://stefanscherer.github.io/7-reasons-to-attend-dockercon/</link><guid isPermaLink="false">d1a87716-b338-470e-b917-186c47e064a3</guid><category><![CDATA[DockerCon]]></category><category><![CDATA[Docker]]></category><category><![CDATA[ARM]]></category><category><![CDATA[windows-containers]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 29 Mar 2017 22:43:00 GMT</pubDate><content:encoded><![CDATA[<p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10% discount with the code <strong>CaptainStefan</strong>.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Fri, 31 Mar 2017 17:04:57 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Yes, you can "Docker" on Windows 7]]></title><description><![CDATA[<p>This week I was asked to help automating to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use <a href="https://www.vagrantup.com">Vagrant</a> still very</p>]]></description><link>https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/</link><guid isPermaLink="false">6db25c32-3f03-4783-a0fb-17bb46fd6787</guid><category><![CDATA[Docker]]></category><category><![CDATA[Chocolatey]]></category><category><![CDATA[Windows 7]]></category><category><![CDATA[Docker Machine]]></category><category><![CDATA[VMware]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 31 Mar 2017 17:02:07 GMT</pubDate><content:encoded><![CDATA[<p>This week I was asked to help automating to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use <a href="https://www.vagrantup.com">Vagrant</a> still very often, it seemed to me using <a href="https://www.docker.com">Docker</a> will be easier to maintain as this could be done in a one-shot container.</p>
+
+<h2 id="thehardfactswindows7enterprise">The hard facts - Windows 7 Enterprise</h2>
+
+<p>The bigger problem was the fact that in some companies you still find Windows 7 Enterprise. It may be a delayed rollout of new notebooks that keep the employees on that old desktop platform.</p>
+
+<p>So using <a href="https://docs.docker.com/docker-for-windows/">Docker for Windows</a> was no option as it only works with Windows 10 Pro with Hyper-V. This looks like a good setup for new notebooks, but if you want to use Docker <em>now</em> you have to look for other solutions.</p>
+
+<h2 id="lockedinhypervisor">Locked-in Hypervisor</h2>
+
+<p>Next obstacle was that for Vagrant it is better to use <strong>VMware Workstation</strong> on Windows 7 instead of VirtualBox. There also may be a company policy to use one specific hypervisor as the knowledge is already there using other server products in the datacenter.</p>
+
+<p>So going down to the <a href="https://www.docker.com/products/docker-toolbox">Docker Toolbox</a> also was no option as it comes with VirtualBox to run the Linux boot2docker VM.</p>
+
+<h2 id="embraceyourenvironment">Embrace your environment</h2>
+
+<p>So we went with a manual installation of some Docker tools to get a Linux Docker VM running on the Windows 7 machine. Luckily the developers already had the <a href="https://chocolatey.org">Chocolatey</a> package manager installed.</p>
+
+<p>Let's recap what I found on the notebooks</p>
+
+<ul>
+<li>Windows 7 Enterprise</li>
+<li>VMware Workstation 9/10/11/12</li>
+</ul>
+
+<p><blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Can&#39;t Believe this..GOT THIS GIF from my Kid :) <a href="https://twitter.com/docker">@docker</a> ..Amazing ! <a href="https://t.co/f09henl5Ta">pic.twitter.com/f09henl5Ta</a></p>&mdash; Ajeet Singh Raina (@ajeetsraina) <a href="https://twitter.com/ajeetsraina/status/847737267510591488">31. März 2017</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>Well there is a tool Docker Machine to create local Docker VM's very easily, and there is a VMware Workstation plugin available. All these tools are also available as Chocolatey packages.</p>
+
+<p>So what we did on the machines was installing three packages with these simple commands in an administrator terminal.</p>
+
+<pre><code>choco install -y docker  
+choco install -y docker-machine  
+choco install -y docker-machine-vmwareworkstation  
+</code></pre>
+
+<p>Then we closed the administrator terminal as the next commands can be done in normal user mode.</p>
+
+<h2 id="myhostismycastle">My host is my castle</h2>
+
+<p>Every developer installs tools that they need for their work. Installing that on the host machine - your desktop or notebook - leads to different machines.</p>
+
+<p>Creating the Docker Machine we ran into a "works on my machine, but doesn't work on your machine" problem I hadn't seen before.</p>
+
+<p>Something while setting up the Linux VM just went wrong. It turned out that copying the Docker TLS certs with SSH just didn't work. A deeper look on what else is installed on the host we found that some implementations of SSH clients just doesn't work very well.</p>
+
+<p>Luckily there is a less known option in the <code>docker-machine</code> binary to ignore external SSH client and use the built-in implementation.</p>
+
+<p>With that knowledge we were able to create a VMware Docker Machine on that laptop with</p>
+
+<pre><code>docker machine --native-ssh create -d vmwareworkstation default  
+</code></pre>
+
+<p>Using the good old PowerShell on the Windows 7 notebook helps you to use that Linux Docker VM by setting some environment variables.</p>
+
+<pre><code>docker-machine env | iex  
+</code></pre>
+
+<p>After that you can run <code>docker version</code> for example to retrieve client and server version which are both the up-to-date community editions</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/docker-version.png" alt="docker version"></p>
+
+<p>Quite exciting to be able to use that Windows 7 notebook with the latest Docker tools installed.</p>
+
+<p>So hopefully Docker and using containers in more and more development tasks helps to keep their notebooks clean and they <strong>install less tools on the host</strong> and instead running more tools in containers.</p>
+
+<h2 id="icancaproblem">I can C: a problem</h2>
+
+<p>Using that Docker Machine VM worked really well until we faced another problem. Building some Docker images we ran out of disk space. Oh no, although the Windows 7 notebooks got improved by installing a 1 TB SSD, the C: partition hasn't been increased for some historical reasons.</p>
+
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/facepalm.jpg" alt="Face palm"></p>
+
+<p>Docker Machine creates the Linux VM's in the current users home directory. This is a good idea, but having a 120 GB partition with only 7 GB left on C: we had to fix it. Taking a deep breath and embracing that environment, we came to the following solution.</p>
+
+<p>We destroyed the Docker Machine again (because it's so easy) and also removed the <code>.docker</code> folder again to link it to a folder that resides on a bigger partition of the SSD.</p>
+
+<pre><code>docker-machine rm -f default  
+rm $env:USERPROFILE\.docker  
+mkdir D:\docker  
+cmd /c mklink /J $env:USERPROFILE\.docker D:\docker  
+</code></pre>
+
+<p>Then we recreated the Docker Machine with the command from above and set the environment variables again.</p>
+
+<pre><code>docker machine --native-ssh create -d vmwareworkstation default  
+docker-machine env | iex  
+</code></pre>
+
+<p>And hurray - it worked. The VM with its disk resides on the bigger D: drive and we don't have to set any other global environment variables.</p>
+
+<p>With that setup I made the developers happy. They could start using Docker without waiting for new hardware or asking their admins to resize or reformat their partitions.</p>
+
+<p>We soon had a small <code>Dockerfile</code> and put the already existing provision scripts into an image. So we finished the task running a Linux container that can be thrown away more easily than a whole VM.</p>
+
+<h2 id="dailywork">Daily work</h2>
+
+<p>To recap how to use this Docker Machine you normally do the following steps after booting your notebook.</p>
+
+<pre><code>docker-machine start  
+docker-machine env | iex  
+</code></pre>
+
+<p>Then you can work with this default Linux Docker VM.</p>
+
+<h2 id="planningyourhardwareupdate">Planning your hardware update</h2>
+
+<p>The story ended well, but I recommended to think ahead and plan the next hardware update. So before they just get the new notebook generation they should think about which hypervisor they should use in the future.</p>
+
+<p>Using Windows 10 Enterprise with the built-in Hyper-V would be easier. You can run <strong>native Windows containers</strong> with it and use <strong>Docker for Windows</strong> to switch between Linux and Windows containers. Using Vagrant with Hyper-V also gets better and better.</p>
+
+<p>But if company policy still restricts you to use eg. VMware then you also can use the steps above to create a Linux Docker machine. You also cannot use Windows containers directly on Windows 10 machine as Hyper-V does not work in parallel with other hypervisors. In that case you might spin up a Windows Server 2016 VM using my <a href="https://github.com/StefanScherer/windows-docker-machine">Windows Docker Machine</a> setup. With that you can easily switch between Linux and Windows containers using the <code>docker-machine env</code> command.</p>
+
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. I love to hear about your enterprise setup and how to make Docker work on your developer's machines. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[7 Reasons to attend DockerCon]]></title><description><![CDATA[<p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10%</p>]]></description><link>https://stefanscherer.github.io/7-reasons-to-attend-dockercon/</link><guid isPermaLink="false">d1a87716-b338-470e-b917-186c47e064a3</guid><category><![CDATA[DockerCon]]></category><category><![CDATA[Docker]]></category><category><![CDATA[ARM]]></category><category><![CDATA[windows-containers]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 29 Mar 2017 22:43:00 GMT</pubDate><content:encoded><![CDATA[<p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10% discount with the code <strong>CaptainStefan</strong>.</p>
 
 <h2 id="workshops">Workshops</h2>
 
@@ -1933,165 +2045,5 @@ You can remote control your Windows Docker engine from your host machine that is
 <p>There's a lot more to explore in TP5 as you now can <strong>pull and push</strong> Docker Images from and to the Docker Hub.</p>
 
 <p>So stay tuned of upcoming blog posts. With the TP5 the community can follow the progress of Docker on Windows much better and can check the latest improvements and pull requests of the Windows Docker Engine.</p>
-
-<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item><item><title><![CDATA[Build Docker Swarm binary for Windows the "Docker way"]]></title><description><![CDATA[<p>In my <a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/">last blog</a> post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.</p>
-
-<p>Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you</p>]]></description><link>https://stefanscherer.github.io/build-docker-swarm-for-windows-the-docker-way/</link><guid isPermaLink="false">5d5c817e-283f-487c-a9df-23e65d0b8bfd</guid><category><![CDATA[Docker]]></category><category><![CDATA[Swarm]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Golang]]></category><category><![CDATA[Git]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 05 Mar 2016 20:58:38 GMT</pubDate><content:encoded><![CDATA[<p>In my <a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/">last blog</a> post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.</p>
-
-<p>Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you nowadays need nothing more than the right Dockerfiles to do this.</p>
-
-<p>So let's start writing a <code>Dockerfile</code> to build Docker Swarm inside a Docker container. For the next steps open a PowerShell window and then open an editor.</p>
-
-<pre><code class="language-cmd">notepad Dockerfile.builder  
-</code></pre>
-
-<h3 id="useabaseimage">Use a base image</h3>
-
-<p>Swarm is written in Go, so we look for a useful base image. And there already is one useful base image in the <strong>Docker Hub</strong>. So we begin the Dockerfile with the following line.</p>
-
-<pre><code class="language-Dockerfile">FROM microsoft/golang  
-</code></pre>
-
-<h3 id="installgit">Install Git</h3>
-
-<p>Additionally to Go we also need Git installed inside the Container image. So we use the following lines that will download and install Git for Windows and then remove the installer again. As a further step we add Git to the <code>PATH</code> variable.</p>
-
-<pre><code class="language-Dockerfile">ENV GIT_VERSION 2.7.2
-
-RUN powershell -Command \  
-    Sleep 2 ; \
-    wget https://github.com/git-for-windows/git/releases/download/v%GIT_VERSION%.windows.1/Git-%GIT_VERSION%-64-bit.exe -outfile gitinstaller.exe ; \
-    Start-Process .\gitinstaller.exe -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /DIR=c:\git' -Wait ; \
-    rm .\gitinstaller.exe
-
-RUN setx PATH %PATH%;C:\git\cmd;C:\git\bin;C:\git\usr\bin  
-</code></pre>
-
-<h3 id="installandbuildgodepandswarm">Install and build Godep and Swarm</h3>
-
-<p>The Swarm project uses <code>Godep</code> to manage the dependencies. We also need this tool as well as the Swarm sources. So let's install both and run the <code>godep</code> tool to build the <code>swarm.exe</code>.</p>
-
-<pre><code class="language-Dockerfile">ENV SWARM_VERSION v1.1.3  
-ENV GOPATH C:/go
-
-WORKDIR /go
-
-RUN powershell -Command \  
-    Sleep 2 ; \
-    go get github.com/tools/godep ; \
-    mkdir src\github.com\docker ; \
-    cd src\github.com\docker ; \
-    git clone https://github.com/docker/swarm ; \
-    cd swarm ; \
-    git checkout %SWARM_VERSION% ; \
-    Start-Process -FilePath godep.exe -ArgumentList go, install, . -Wait
-</code></pre>
-
-<p>Now save the <code>Dockerfile.builder</code> file and close the editor.</p>
-
-<p>Back in the PowerShell build the Docker image with the name <code>swarm-builder</code> and the given Dockerfile with the following command.</p>
-
-<pre><code class="language-cmd">docker build -t swarm-builder -f Dockerfile.builder .  
-</code></pre>
-
-<p>This now creates a Docker image with multiple layers, for each <code>ENV</code> and <code>RUN</code> command in the <code>Dockerfile</code>. You can see the actions on your screen and finally the command finishes and you can list your images with</p>
-
-<pre><code>docker images  
-</code></pre>
-
-<p>You should see a image with the name <code>swarm-builder</code>:</p>
-
-<pre><code>REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE  
-swarm-builder       latest              04e557dd075a        31 minutes ago      1.219 GB  
-</code></pre>
-
-<p>The size of the Docker image is not good for deployment as we have all the development tools and source codes inside it.</p>
-
-<h3 id="testandextracttheswarmexe">Test and extract the swarm.exe</h3>
-
-<p>We only need the <code>swarm.exe</code> from this image as it is a static binary. So we just run the Docker image and have a very little test of the binary just created by showing its version.</p>
-
-<p>After that we copy the <code>swarm.exe</code> from the container back to the host.</p>
-
-<pre><code>docker run --name swarm-builder swarm-builder swarm --version  
-docker cp swarm-builder:/go/bin/swarm.exe ./swarm.exe  
-</code></pre>
-
-<h3 id="buildasmallswarmimage">Build a small Swarm image</h3>
-
-<p>The final Docker image for deployment can be produced with a much simpler <code>Dockerfile</code>. As the time of writing the Technical Preview 4 needs a small workaround to access the network inside a container. We have to add a small helper script for now.</p>
-
-<pre><code class="language-cmd">nodepad run.ps1  
-</code></pre>
-
-<p>The small PowerShell script just sleeps a little and then calls <code>swarm.exe</code> with the arguments given.</p>
-
-<pre><code>Sleep 2  
-\swarm.exe $args
-</code></pre>
-
-<p>Now it is time to write the <code>Dockerfile</code>. So open an editor with the following command. Notice the dot '.' as this helps Notepad create a <code>Dockerfile</code> without an extension.</p>
-
-<pre><code class="language-cmd">notepad Dockerfile.  
-</code></pre>
-
-<p>The <code>Dockerfile</code> now uses the <code>windowsservercore</code> base image and copies the helper script and the swarm binary into the image and sets the entrypoint.</p>
-
-<pre><code>FROM windowsservercore
-
-COPY ./swarm.exe /swarm.exe  
-COPY ./run.ps1 /run.ps1
-
-ENV SWARM_HOST :2375
-
-ENTRYPOINT ["powershell.exe", "-File", "/run.ps1"]  
-CMD ["--help"]  
-</code></pre>
-
-<p>We now build the final Docker image with</p>
-
-<pre><code>docker build -t swarm .  
-</code></pre>
-
-<p>Just check the size of the Docker images again with</p>
-
-<pre><code>docker images  
-</code></pre>
-
-<p><img src="https://stefanscherer.github.io/content/images/2016/03/docker-images.png" alt="docker images"></p>
-
-<p>If you build a new version of the Swarm image later it is useful to tag each Docker image with its version. For this tutorial we have built Swarm 1.1.3, so we tag it with</p>
-
-<pre><code>docker tag swarm:latest swarm:1.1.3  
-</code></pre>
-
-<p>You now can run a Swarm container eg. with</p>
-
-<pre><code>docker run -it swarm:1.1.3 --version  
-</code></pre>
-
-<p>and you will see the version of the <code>swarm.exe</code>.</p>
-
-<h3 id="automateallthethings">Automate all the things</h3>
-
-<p>Both the Dockerfiles and a build script can be found in my <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/swarm">dockerfiles-windows</a> GitHub repo. Even to download the sources you do not need more than a PowerShell window. Just download it as a ZIP and extract it:</p>
-
-<pre><code>wget -outfile src.zip https://github.com/StefanScherer/dockerfiles-windows/archive/master.zip  
-Expand-Archive .\dockerfiles-windows.zip  
-</code></pre>
-
-<p>The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands</p>
-
-<pre><code>cd src\dockerfiles-windows-master\swarm  
-.\build.bat
-</code></pre>
-
-<h3 id="tldr">TL/DR</h3>
-
-<p>Even on Windows you now can put development environments into Docker images and build small images for deployment with a two step approach. No special setup is needed on your host machine, just Docker should be reachable.</p>
-
-<p><strong>Everything is reproducable</strong> on every team members machines. And a CI build pipeline can take advantage of this dockerized setup as well.</p>
-
-<p>I hope you get a feeling what you can do with your own software project and <strong>start dockerizing</strong> as well.</p>
 
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>]]></content:encoded></item></channel></rss>
