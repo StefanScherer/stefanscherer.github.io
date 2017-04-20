@@ -1,0 +1,331 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Use multi-stage builds for smaller Windows images</title>
+    <meta name="description" content="">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=94e2866e61">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+
+    <link rel="canonical" href="https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Use multi-stage builds for smaller Windows images">
+    <meta property="og:description" content="I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images. On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version">
+    <meta property="og:url" content="https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/">
+    <meta property="article:published_time" content="2017-04-19T22:52:00.000Z">
+    <meta property="article:modified_time" content="2017-04-20T05:45:08.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="windows-containers">
+    <meta property="article:tag" content="multi-stage">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Use multi-stage builds for smaller Windows images">
+    <meta name="twitter:description" content="I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images. On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, windows-containers, multi-stage">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
+    },
+    "headline": "Use multi-stage builds for smaller Windows images",
+    "url": "https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/",
+    "datePublished": "2017-04-19T22:52:00.000Z",
+    "dateModified": "2017-04-20T05:45:08.000Z",
+    "keywords": "Docker, windows-containers, multi-stage",
+    "description": "I&#x27;m still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images. On Tuesday&#x27;s first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
+</head>
+<body class="post-template tag-docker tag-windows-containers tag-multi-stage nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-windows-containers tag-multi-stage">
+
+        <header class="post-header">
+            <h1 class="post-title">Use multi-stage builds for smaller Windows images</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-04-19">19 April 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/windows-containers/">windows-containers</a>, <a href="../tag/multi-stage/">multi-stage</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.</p>
+
+<p>On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version 17.05.0 of Docker: <strong>The multi-stage builds</strong></p>
+
+<p><img src="../content/images/2017/04/multi-stage-build.jpg" alt="announcement at DockerCon about multi-stage builds"></p>
+
+<p>The demo in the keynote only showed Linux images, but you can use this feature for Windows images as well.</p>
+
+<h2 id="howdidwebuildsmallerimagesinthepast">How did we build smaller images in the past?</h2>
+
+<p>As we know each instruction in a <code>Dockerfile</code> like <code>COPY</code> or <code>RUN</code> builds a new layer of the image. So everything you do in eg. a <code>RUN</code> instruction is atomic and saved into one layer. It was a common practise to use multi-line <code>RUN</code> instructions to clean up temporary files and cache folders before that instruction ends to minimize the size of that layer.</p>
+
+<p>For me it always looked like a workaround and a little too technical to know where all these temporary files have to be wiped out. So it is great to remove this noise out of your Dockerfiles.</p>
+
+<p>And another workaround that was used in addition was to create two Dockerfiles and a script to simulate such stages and copy files from the first Docker image back to the host and then into the second Docker image. This could lead to errors if you have old temp folders on your host where you copy the results from the first build in. So it will be good that we can remove this complexity and avoid such build scripts entirely.</p>
+
+<h2 id="multistagebuildonwindows">Multi-stage build on Windows</h2>
+
+<p>The idea behind multi-stage builds is that you can define two or more build stages and only the layers of the last stage gets into the final Docker image.</p>
+
+<h3 id="thefirststage">The first stage</h3>
+
+<p>As you can see in the nice slide you can start with a first stage and do what you like in there. Maybe you need a <strong>complete build environment</strong> like MSBuild, or the Golang compiler or dev dependencies to run Node.js tests with your sources.</p>
+
+<p>The <code>FROM</code> instruction now can be followed by a stage name, eg. <code>build</code>. I recommend to introduce that to your <code>Dockefile</code> as we will need this name later again. This is how your Dockerfile then could look like:</p>
+
+<pre><code class="language-Dockerfile">FROM microsoft/windowsservercore as build  
+</code></pre>
+
+<p>You do not need to use multi-line <code>RUN</code> instructions any more if you haven't liked it. Just keep your Dockerfile <strong>simple, readable and maintainable</strong> by your team colleages. The advantage that even you have is that you can use the Docker build cache much better.</p>
+
+<p>Think of a giant multi-line <code>RUN</code> instruction with three big downloads, uncompress and cleanup steps and the third download crashes due to internet connectivity. Then you have to do all the other downloads again if you start the <code>docker build</code> again.</p>
+
+<p>So relax and just download one file per <code>RUN</code> instruction, even put the uncompress into another <code>RUN</code> layer, it doesn't matter for the final image size.</p>
+
+<h3 id="thelaststage">The last stage</h3>
+
+<p>The magic comes into the <code>Dockerfile</code> as you can use more than one <code>FROM</code> instructions. Each <code>FROM</code> starts a new build stage and all lines beginning from the last <code>FROM</code> will make it into the final Docker image. The last stage does not need to have a name like the previous ones.</p>
+
+<p>In this last stage you define the <strong>minimal runtime environment</strong> for your containerised application.</p>
+
+<p>The <code>COPY</code> instruction now has a new option <code>--from</code> where you can specify from with stage you want to copy files or directories into the current stage.</p>
+
+<p>Enough theory. Let's have a look at some real use-cases I already tried out.</p>
+
+<h2 id="buildagolangprogram">Build a Golang program</h2>
+
+<p>A simple multi-stage <code>Dockerfile</code> to build a Golang binary from source could look like this:</p>
+
+<pre><code class="language-Dockerfile">FROM golang:nanoserver as gobuild  
+COPY . /code  
+WORKDIR /code  
+RUN go build webserver.go
+
+FROM microsoft/nanoserver  
+COPY --from=gobuild /code/webserver.exe /webserver.exe  
+EXPOSE 8080  
+CMD ["\\webserver.exe"]  
+</code></pre>
+
+<p>The first four lines describe the normal build. We copy the source codes into the Golang build environment and build the Windows binary with it.</p>
+
+<p>Then with the second <code>FROM</code> instruction we choose an empty NanoServer image. With this we skip about 100 MByte of compressed Golang build environment images for the production image.</p>
+
+<p>The <code>COPY --from=gobuild</code> instruction copies the final Windows binary from the gobuild stage into the final stage.</p>
+
+<p>The last two lines are just the normal things you do, expose the port on which your app is listening and describing the command that should be called when running a container with it.</p>
+
+<p>This <code>Dockerfile</code> now can be easily be built as always with</p>
+
+<pre><code>docker build -t webserver .  
+</code></pre>
+
+<p>The final Docker image only has a 2 MByte compressed layer in addition to the NanoServer base layers.</p>
+
+<p>You can find a full example for such a simple Golang webserver in my <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/webserver">dockerfiles-windows</a> repo, the final Docker Hub image is available at <a href="https://hub.docker.com/r/stefanscherer/whoami/tags/"><code>stefanscherer/whoami:windows-amd64-1.2.0</code></a>.</p>
+
+<h2 id="installmongodbmsiinnanoserver">Install MongoDB MSI in NanoServer</h2>
+
+<p>Another example for this multi-stage build is that you can use it to <strong>install MSI packages</strong> and put the installed programs and files <strong>into a NanoServer</strong> image.</p>
+
+<p>Well, you cannot install MSI packages in NanoServer directly, but you can <strong>start with the Windows Server Core</strong> image in the build stage and <strong>then switch to NanoServer</strong> in the final stage.</p>
+
+<p>If you know where the software has been installed you can <code>COPY</code> deploy them in the final stage into the image.</p>
+
+<p>The <code>Dockerfile</code> how to build a MongoDB NanoServer image is also available <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile">on GitHub</a>.</p>
+
+<p>The <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L1-L18">first stage</a> more or less looks like this:</p>
+
+<pre><code class="language-Dockerfile">FROM microsoft/windowsservercore as msi  
+RUN "download MSI page"  
+RUN "check SHA sum of download"  
+RUN "run MSI installer"  
+</code></pre>
+
+<p>and the <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L20-L32">final stage</a> looks like this:</p>
+
+<pre><code class="language-Dockerfile">FROM microsoft/nanoserver  
+COPY --from=msi C:\mongodb\ C:\mongodb\  
+...
+RUN "put MongoDB binaries into PATH"  
+VOLUME C:\data\db  
+EXPOSE 27017  
+CMD ["mongod.exe"]  
+</code></pre>
+
+<p>Another pro tip: If you really want small Windows Docker images you should also avoid <code>RUN</code> or <code>ENV</code> instructions in the last stage.</p>
+
+<p>The final MongoDB NanoServer image is available at <a href="https://hub.docker.com/r/stefanscherer/mongo-windows/tags/"><code>stefanscherer/mongo-windows:3.4.2-nano</code></a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>With multi-stage builds coming into Docker 17.05 we will be able to</p>
+
+<ul>
+<li>put all build stages into a single Dockerfile to use only one simple <code>docker build</code> command</li>
+<li>use the build cache by using single line <code>RUN</code> instructions</li>
+<li>start with ServerCore, then switch to NanoServer</li>
+<li>use latest NanoServer image with all security updates installed for the last stage even if upstream build layer may be out of date</li>
+</ul>
+
+<p>This gives you an idea what you will be able to do once you have Docker 17.05 or later installed.</p>
+
+<p>As I build all my Windows Docker images with <a href="https://www.appveyor.com">AppVeyor</a> it was very easy to upgrade to Docker 17.05.0-rc1 during the build with <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/update-docker-rc.ps1">this script</a>. For local Windows Server 2016 VM's you could adapt this script for your needs.</p>
+
+<p>Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Use%20multi-stage%20builds%20for%20smaller%20Windows%20images&amp;url=https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../yes-you-can-docker-on-windows-7/">
+        <section class="post">
+            <h2>Yes, you can "Docker" on Windows 7</h2>
+            <p>This week I was asked to help automating a task to get some Linux binaries and files packaged into…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=94e2866e61"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=94e2866e61"></script>
+
+</body>
