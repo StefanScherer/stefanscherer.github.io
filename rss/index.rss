@@ -1,4 +1,131 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 08 Apr 2017 13:12:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Yes, you can "Docker" on Windows 7</title><description>&lt;p&gt;This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt;&lt;/p&gt;</description><link>https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/</link><guid isPermaLink="false">6db25c32-3f03-4783-a0fb-17bb46fd6787</guid><category>Docker</category><category>Chocolatey</category><category>Windows 7</category><category>Docker Machine</category><category>VMware</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Fri, 31 Mar 2017 17:02:07 GMT</pubDate><content:encoded>&lt;p&gt;This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; still very often, it seemed to me using &lt;a href="https://www.docker.com"&gt;Docker&lt;/a&gt; will be easier to maintain as this could be done in a one-shot container.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Thu, 20 Apr 2017 05:45:41 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use multi-stage builds for smaller Windows images</title><description>&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
+
+&lt;p&gt;On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version&lt;/p&gt;</description><link>https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/</link><guid isPermaLink="false">5ccd5961-b320-4a2d-845b-af5e6c61894c</guid><category>Docker</category><category>windows-containers</category><category>multi-stage</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 19 Apr 2017 22:52:00 GMT</pubDate><content:encoded>&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
+
+&lt;p&gt;On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version 17.05.0 of Docker: &lt;strong&gt;The multi-stage builds&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/04/multi-stage-build.jpg" alt="announcement at DockerCon about multi-stage builds"&gt;&lt;/p&gt;
+
+&lt;p&gt;The demo in the keynote only showed Linux images, but you can use this feature for Windows images as well.&lt;/p&gt;
+
+&lt;h2 id="howdidwebuildsmallerimagesinthepast"&gt;How did we build smaller images in the past?&lt;/h2&gt;
+
+&lt;p&gt;As we know each instruction in a &lt;code&gt;Dockerfile&lt;/code&gt; like &lt;code&gt;COPY&lt;/code&gt; or &lt;code&gt;RUN&lt;/code&gt; builds a new layer of the image. So everything you do in eg. a &lt;code&gt;RUN&lt;/code&gt; instruction is atomic and saved into one layer. It was a common practise to use multi-line &lt;code&gt;RUN&lt;/code&gt; instructions to clean up temporary files and cache folders before that instruction ends to minimize the size of that layer.&lt;/p&gt;
+
+&lt;p&gt;For me it always looked like a workaround and a little too technical to know where all these temporary files have to be wiped out. So it is great to remove this noise out of your Dockerfiles.&lt;/p&gt;
+
+&lt;p&gt;And another workaround that was used in addition was to create two Dockerfiles and a script to simulate such stages and copy files from the first Docker image back to the host and then into the second Docker image. This could lead to errors if you have old temp folders on your host where you copy the results from the first build in. So it will be good that we can remove this complexity and avoid such build scripts entirely.&lt;/p&gt;
+
+&lt;h2 id="multistagebuildonwindows"&gt;Multi-stage build on Windows&lt;/h2&gt;
+
+&lt;p&gt;The idea behind multi-stage builds is that you can define two or more build stages and only the layers of the last stage gets into the final Docker image.&lt;/p&gt;
+
+&lt;h3 id="thefirststage"&gt;The first stage&lt;/h3&gt;
+
+&lt;p&gt;As you can see in the nice slide you can start with a first stage and do what you like in there. Maybe you need a &lt;strong&gt;complete build environment&lt;/strong&gt; like MSBuild, or the Golang compiler or dev dependencies to run Node.js tests with your sources.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;FROM&lt;/code&gt; instruction now can be followed by a stage name, eg. &lt;code&gt;build&lt;/code&gt;. I recommend to introduce that to your &lt;code&gt;Dockefile&lt;/code&gt; as we will need this name later again. This is how your Dockerfile then could look like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/windowsservercore as build  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You do not need to use multi-line &lt;code&gt;RUN&lt;/code&gt; instructions any more if you haven't liked it. Just keep your Dockerfile &lt;strong&gt;simple, readable and maintainable&lt;/strong&gt; by your team colleages. The advantage that even you have is that you can use the Docker build cache much better.&lt;/p&gt;
+
+&lt;p&gt;Think of a giant multi-line &lt;code&gt;RUN&lt;/code&gt; instruction with three big downloads, uncompress and cleanup steps and the third download crashes due to internet connectivity. Then you have to do all the other downloads again if you start the &lt;code&gt;docker build&lt;/code&gt; again.&lt;/p&gt;
+
+&lt;p&gt;So relax and just download one file per &lt;code&gt;RUN&lt;/code&gt; instruction, even put the uncompress into another &lt;code&gt;RUN&lt;/code&gt; layer, it doesn't matter for the final image size.&lt;/p&gt;
+
+&lt;h3 id="thelaststage"&gt;The last stage&lt;/h3&gt;
+
+&lt;p&gt;The magic comes into the &lt;code&gt;Dockerfile&lt;/code&gt; as you can use more than one &lt;code&gt;FROM&lt;/code&gt; instructions. Each &lt;code&gt;FROM&lt;/code&gt; starts a new build stage and all lines beginning from the last &lt;code&gt;FROM&lt;/code&gt; will make it into the final Docker image. The last stage does not need to have a name like the previous ones.&lt;/p&gt;
+
+&lt;p&gt;In this last stage you define the &lt;strong&gt;minimal runtime environment&lt;/strong&gt; for your containerised application.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;COPY&lt;/code&gt; instruction now has a new option &lt;code&gt;--from&lt;/code&gt; where you can specify from with stage you want to copy files or directories into the current stage.&lt;/p&gt;
+
+&lt;p&gt;Enough theory. Let's have a look at some real use-cases I already tried out.&lt;/p&gt;
+
+&lt;h2 id="buildagolangprogram"&gt;Build a Golang program&lt;/h2&gt;
+
+&lt;p&gt;A simple multi-stage &lt;code&gt;Dockerfile&lt;/code&gt; to build a Golang binary from source could look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM golang:nanoserver as gobuild  
+COPY . /code  
+WORKDIR /code  
+RUN go build webserver.go
+
+FROM microsoft/nanoserver  
+COPY --from=gobuild /code/webserver.exe /webserver.exe  
+EXPOSE 8080  
+CMD ["\\webserver.exe"]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The first four lines describe the normal build. We copy the source codes into the Golang build environment and build the Windows binary with it.&lt;/p&gt;
+
+&lt;p&gt;Then with the second &lt;code&gt;FROM&lt;/code&gt; instruction we choose an empty NanoServer image. With this we skip about 100 MByte of compressed Golang build environment images for the production image.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;COPY --from=gobuild&lt;/code&gt; instruction copies the final Windows binary from the gobuild stage into the final stage.&lt;/p&gt;
+
+&lt;p&gt;The last two lines are just the normal things you do, expose the port on which your app is listening and describing the command that should be called when running a container with it.&lt;/p&gt;
+
+&lt;p&gt;This &lt;code&gt;Dockerfile&lt;/code&gt; now can be easily be built as always with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker build -t webserver .  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The final Docker image only has a 2 MByte compressed layer in addition to the NanoServer base layers.&lt;/p&gt;
+
+&lt;p&gt;You can find a full example for such a simple Golang webserver in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/webserver"&gt;dockerfiles-windows&lt;/a&gt; repo, the final Docker Hub image is available at &lt;a href="https://hub.docker.com/r/stefanscherer/whoami/tags/"&gt;&lt;code&gt;stefanscherer/whoami:windows-amd64-1.2.0&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="installmongodbmsiinnanoserver"&gt;Install MongoDB MSI in NanoServer&lt;/h2&gt;
+
+&lt;p&gt;Another example for this multi-stage build is that you can use it to &lt;strong&gt;install MSI packages&lt;/strong&gt; and put the installed programs and files &lt;strong&gt;into a NanoServer&lt;/strong&gt; image.&lt;/p&gt;
+
+&lt;p&gt;Well, you cannot install MSI packages in NanoServer directly, but you can &lt;strong&gt;start with the Windows Server Core&lt;/strong&gt; image in the build stage and &lt;strong&gt;then switch to NanoServer&lt;/strong&gt; in the final stage.&lt;/p&gt;
+
+&lt;p&gt;If you know where the software has been installed you can &lt;code&gt;COPY&lt;/code&gt; deploy them in the final stage into the image.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; how to build a MongoDB NanoServer image is also available &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile"&gt;on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L1-L18"&gt;first stage&lt;/a&gt; more or less looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/windowsservercore as msi  
+RUN "download MSI page"  
+RUN "check SHA sum of download"  
+RUN "run MSI installer"  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L20-L32"&gt;final stage&lt;/a&gt; looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver  
+COPY --from=msi C:\mongodb\ C:\mongodb\  
+...
+RUN "put MongoDB binaries into PATH"  
+VOLUME C:\data\db  
+EXPOSE 27017  
+CMD ["mongod.exe"]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another pro tip: If you really want small Windows Docker images you should also avoid &lt;code&gt;RUN&lt;/code&gt; or &lt;code&gt;ENV&lt;/code&gt; instructions in the last stage.&lt;/p&gt;
+
+&lt;p&gt;The final MongoDB NanoServer image is available at &lt;a href="https://hub.docker.com/r/stefanscherer/mongo-windows/tags/"&gt;&lt;code&gt;stefanscherer/mongo-windows:3.4.2-nano&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;With multi-stage builds coming into Docker 17.05 we will be able to&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;put all build stages into a single Dockerfile to use only one simple &lt;code&gt;docker build&lt;/code&gt; command&lt;/li&gt;
+&lt;li&gt;use the build cache by using single line &lt;code&gt;RUN&lt;/code&gt; instructions&lt;/li&gt;
+&lt;li&gt;start with ServerCore, then switch to NanoServer&lt;/li&gt;
+&lt;li&gt;use latest NanoServer image with all security updates installed for the last stage even if upstream build layer may be out of date&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This gives you an idea what you will be able to do once you have Docker 17.05 or later installed.&lt;/p&gt;
+
+&lt;p&gt;As I build all my Windows Docker images with &lt;a href="https://www.appveyor.com"&gt;AppVeyor&lt;/a&gt; it was very easy to upgrade to Docker 17.05.0-rc1 during the build with &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/update-docker-rc.ps1"&gt;this script&lt;/a&gt;. For local Windows Server 2016 VM's you could adapt this script for your needs.&lt;/p&gt;
+
+&lt;p&gt;Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>Yes, you can "Docker" on Windows 7</title><description>&lt;p&gt;This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt;&lt;/p&gt;</description><link>https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/</link><guid isPermaLink="false">6db25c32-3f03-4783-a0fb-17bb46fd6787</guid><category>Docker</category><category>Chocolatey</category><category>Windows 7</category><category>Docker Machine</category><category>VMware</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Fri, 31 Mar 2017 17:02:07 GMT</pubDate><content:encoded>&lt;p&gt;This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; still very often, it seemed to me using &lt;a href="https://www.docker.com"&gt;Docker&lt;/a&gt; will be easier to maintain as this could be done in a one-shot container.&lt;/p&gt;
 
 &lt;h2 id="thehardfactswindows7enterprise"&gt;The hard facts - Windows 7 Enterprise&lt;/h2&gt;
 
@@ -1965,85 +2092,5 @@ You can remote control your Windows Docker engine from your host machine that is
 &lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;As there might be updates in the Docker base images and the Docker engine itself it is now very easy to reproduce the base VM with Packer and Vagrant without all the manual steps again.&lt;/p&gt;
-
-&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>First impressions of Docker on Windows 2016 TP5</title><description>&lt;p&gt;Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015.&lt;/p&gt;
-
-&lt;p&gt;As I haven't found an Azure template (&lt;strong&gt;update:&lt;/strong&gt; today I&lt;/p&gt;</description><link>https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/</link><guid isPermaLink="false">dfed9567-e981-4940-9ec5-a3e390afb2b5</guid><dc:creator>Stefan Scherer</dc:creator><pubDate>Fri, 29 Apr 2016 00:11:03 GMT</pubDate><content:encoded>&lt;p&gt;Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015.&lt;/p&gt;
-
-&lt;p&gt;As I haven't found an Azure template (&lt;strong&gt;update:&lt;/strong&gt; today I found &lt;a href="https://portal.azure.com/?feature.intlpolyfill=true#blade/Microsoft_Azure_Marketplace/GalleryFeaturedMenuItemBlade/selectedMenuItemId/home/searchQuery/Windows%20Server%202016%20Technical%20Preview%205"&gt;Windows Server 2016 Technical Preview 5&lt;/a&gt;), I prepared my packer templates in &lt;a href="https://github.com/stefanscherer/packer-windows/tree/tp5"&gt;a tp5 branch&lt;/a&gt; that still need some changes to automatically build and install Docker and the Docker base images.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/04/Bildschirmfoto-2016-04-27-um-21-18-51.png" alt="packer build"&gt;&lt;/p&gt;
-
-&lt;p&gt;Even without a 100% solution this was a good first starting point build a first Vagrant box to start with and to do the remaining steps from &lt;a href="https://msdn.microsoft.com/virtualization/windowscontainers/deployment/deployment?f=255&amp;amp;MSPPError=-2147217396"&gt;Container Host Deployment - Windows Server&lt;/a&gt; manually.&lt;/p&gt;
-
-&lt;p&gt;I'm really addicted to the automation workflow&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;packer build&lt;/code&gt;  &lt;/li&gt;
-&lt;li&gt;&lt;code&gt;vagrant box add&lt;/code&gt;  &lt;/li&gt;
-&lt;li&gt;&lt;code&gt;vagrant up&lt;/code&gt;  &lt;/li&gt;
-&lt;li&gt;&lt;code&gt;vagrant destroy -f&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;because you won't do it only once to build and have such a test environment. But setting it up is the hard way.&lt;/p&gt;
-
-&lt;p&gt;If you are impatient to wait for a complete packer template you can follow Arun Gupta's steps to build a &lt;a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016"&gt;TP5 VM in VirtualBox&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now let's see what's new in the Technical Preview 5.&lt;/p&gt;
-
-&lt;h2 id="wayfasternomoresleep"&gt;Way faster - no more sleep&lt;/h2&gt;
-
-&lt;p&gt;Building some Docker images with one of the Windows Dockerfiles I tested with TP4 are now &lt;strong&gt;much faster&lt;/strong&gt; and as well you do not need to do the workaround of sleeping some seconds in each &lt;code&gt;RUN&lt;/code&gt; command. Just remove this and forget about it.&lt;/p&gt;
-
-&lt;h2 id="ipadressescanbeinspected"&gt;IP adresses can be inspected&lt;/h2&gt;
-
-&lt;p&gt;One of the obstacles porting the &lt;a href="https://github.com/docker/docker-birthday-3/pull/165"&gt;Docker Birthday app to TP4 Windows containers&lt;/a&gt; was the missing ability to fetch the IP adress of each container.&lt;/p&gt;
-
-&lt;p&gt;Running &lt;code&gt;docker inspect&lt;/code&gt; now shows the IP address of the container.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/04/Bildschirmfoto-2016-04-27-um-22-33-29.png" alt="container ip address"&gt;&lt;/p&gt;
-
-&lt;p&gt;I will have to test whether the links in a &lt;code&gt;docker-compose.yml&lt;/code&gt; file will work as well to set up a simple multi container app using simple host names.&lt;/p&gt;
-
-&lt;p&gt;But that's a good improvement of the networking in Windows containers.&lt;/p&gt;
-
-&lt;h2 id="npipeisyourunixsocket"&gt;npipe is your unix socket&lt;/h2&gt;
-
-&lt;p&gt;Another interesting thing is that the Docker engine now listens to a Windows named pipe, just like a Unix socket on Linux.&lt;/p&gt;
-
-&lt;p&gt;This leads to a very unixish behavior that you have to be "sudo" to run docker commands:&lt;/p&gt;
-
-&lt;p&gt;Running the docker client without adminstratotion rights you can't connect to it.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-01-29.png" alt=""&gt;&lt;/p&gt;
-
-&lt;p&gt;There is a way to allow specific users to use this named pipe just like on Linux adding users to the docker group, but I haven't found out the group name for this short test.&lt;/p&gt;
-
-&lt;h2 id="kitematicmeetswindowsagain"&gt;Kitematic meets Windows (again)&lt;/h2&gt;
-
-&lt;p&gt;At this evening I also played with Docker for Windows Beta in a parallel VM and installed Kitematic there. As the Beta uses Kitematic without VirtualBox I thought this should also work well with TP5. So I took the ZIP file from the Beta download and tweaked my TP5 installation a little bit to make Kitematic talk to the Window Docker Engine.&lt;/p&gt;
-
-&lt;p&gt;My very pragmatic way to make this work was to add the local TCP port 2375 to the Docker Engine by editing the start script&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;notepad C:\ProgramData\docker\runDockerDaemon.cmd  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and change the dockerd command to &lt;code&gt;dockerd -H npipe:// -H 127.0.0.1:2375&lt;/code&gt; and then run&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;restart-service docker  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The downloaded version of Kitematic for the Beta also searches for &lt;code&gt;docker.local&lt;/code&gt;, so I added the loopback IP address to the host table with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language- "&gt;notepad C:\Windows\system32\drivers\etc\hosts  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-23-13.png" alt="kitematic-on-tp5"&gt;&lt;/p&gt;
-
-&lt;p&gt;Now Kitematic starts up without creating a local VM and shows the local Windows containers on the left side.&lt;/p&gt;
-
-&lt;p&gt;There's a lot more to explore in TP5 as you now can &lt;strong&gt;pull and push&lt;/strong&gt; Docker Images from and to the Docker Hub.&lt;/p&gt;
-
-&lt;p&gt;So stay tuned of upcoming blog posts. With the TP5 the community can follow the progress of Docker on Windows much better and can check the latest improvements and pull requests of the Windows Docker Engine.&lt;/p&gt;
 
 &lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item></channel></rss>
