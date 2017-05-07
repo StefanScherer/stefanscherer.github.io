@@ -24,7 +24,7 @@
     <meta property="og:description" content="I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images. On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version">
     <meta property="og:url" content="https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/">
     <meta property="article:published_time" content="2017-04-19T22:52:00.000Z">
-    <meta property="article:modified_time" content="2017-05-05T22:37:55.000Z">
+    <meta property="article:modified_time" content="2017-05-05T22:46:16.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="windows-containers">
     <meta property="article:tag" content="multi-stage">
@@ -64,7 +64,7 @@
     "headline": "Use multi-stage builds for smaller Windows images",
     "url": "https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/",
     "datePublished": "2017-04-19T22:52:00.000Z",
-    "dateModified": "2017-05-05T22:37:55.000Z",
+    "dateModified": "2017-05-05T22:46:16.000Z",
     "keywords": "Docker, windows-containers, multi-stage",
     "description": "I&#x27;m still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images. On Tuesday&#x27;s first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version",
     "mainEntityOfPage": {
@@ -241,7 +241,7 @@ CMD ["mongod.exe"]
 
 <p>This gives you an idea what you will be able to do once you have Docker 17.05 or later installed.</p>
 
-<p>As I build all my Windows Docker images with <a href="https://www.appveyor.com">AppVeyor</a> it is very easy to upgrade to Docker 17.05.0-ce during the build with the script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/d1c01effe957281f72a762914b7fae36bdf49c15/update-docker-ce.ps1"><code>update-docker-ce.ps1</code></a>. For local Windows Server 2016 VM's you could adapt this script for your needs.</p>
+<p>As I build all my Windows Docker images with <a href="https://www.appveyor.com">AppVeyor</a> it is very easy to upgrade to Docker 17.05.0-ce during the build with the script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/d1c01effe957281f72a762914b7fae36bdf49c15/update-docker-ce.ps1"><code>update-docker-ce.ps1</code></a>. For local Windows Server 2016 VM's you could use this script as well. Sure, at the moment we have to switch from EE to CE edition until 17.06.0-ee also will bring this feature.</p>
 
 <p>Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
         </section>
