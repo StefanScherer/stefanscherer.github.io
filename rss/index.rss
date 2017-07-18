@@ -1,4 +1,127 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Fri, 05 May 2017 22:57:25 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use multi-stage builds for smaller Windows images</title><description>&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Tue, 18 Jul 2017 09:43:13 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Exploring new NanoServer Insider images</title><description>&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is&lt;/p&gt;</description><link>https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">1f99a5ec-2825-4c1f-ba42-8bd6b881e63d</guid><category>Docker</category><category>Windows</category><category>Nano Server</category><category>Node.js</category><category>Vagrant</category><category>Packer</category><category>Docker Hub</category><category>Insider</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded>&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.&lt;/p&gt;
+
+&lt;h2 id="windowsserverinsider"&gt;Windows Server Insider&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Register at Windows Insider program &lt;a href="https://insider.windows.com"&gt;https://insider.windows.com&lt;/a&gt; and join the Windows Server Insider program.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Download the Windows Server Insider preview ISO from &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver"&gt;https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Now you can create a VM and install Docker. You can either build the VM manually and follow the docs &lt;a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/using-insider-container-images"&gt;"Using Insider Container Images"&lt;/a&gt; how to install Docker and pull the Insider container images. Or you can use my Packer template and Vagrant environment to automate these steps. The walkthrough is described at&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="https://github.com/StefanScherer/insider-docker-machine"&gt;https://github.com/StefanScherer/insider-docker-machine&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id="windowsinsiderimages"&gt;Windows Insider images&lt;/h2&gt;
+
+&lt;p&gt;There are four new Docker images available with a much smaller footprint.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/07/windows_insider_images.png" alt="Windows Insider images"&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;microsoft/windowsservercore-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-dotnet&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-powershell&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The Windows Server Core Insider image got down from 5 GB to only 2 GB which saves a lot of bandwidth and download time.&lt;/p&gt;
+
+&lt;p&gt;You may wonder why there are three Nano Server Insider images and why there is one without PowerShell.&lt;/p&gt;
+
+&lt;h2 id="aimingthesmallestwindowsbaseimage"&gt;Aiming the smallest Windows base image&lt;/h2&gt;
+
+&lt;p&gt;If we compare the image sizes of the current &lt;code&gt;microsoft/nanoserver&lt;/code&gt; image with its base layer and update layer with the new Insider images you can see the reason.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/07/nanoserver_sizes.png" alt="NanoServer sizes"&gt;&lt;/p&gt;
+
+&lt;p&gt;If you want to ship your application in a container image you don't want to ship a whole operating system, but only the parts needed to run the application.&lt;/p&gt;
+
+&lt;p&gt;And to ship faster is to ship smaller images. For many applications you do not need eg. PowerShell inside your base image at runtime which would take another 54 MByte to download from the Docker registry.&lt;/p&gt;
+
+&lt;p&gt;For example to run a Golang webserver on an empty Windows Docker host you have to pull the 2MB binary and the two NanoServer base layers with hundreds of MB to run it in a container.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/07/docker-pull-whoami.png" alt="docker pull whoami"&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course these base images have to be downloaded only once as other NanoServer container images will use the same base image. But if you work with Windows containers for a longer time you may have noticed that you still have to download different update layers from time to time that pull another 122 MB.&lt;/p&gt;
+
+&lt;p&gt;And if the NanoServer base image is much smaller then the updates also will be smaller and faster to download.&lt;/p&gt;
+
+&lt;p&gt;With the new Insider container images you can build and run containerized .NET core applications that are still smaller than the NanoServer + PowerShell base image.&lt;/p&gt;
+
+&lt;h2 id="nodejs"&gt;Node.js&lt;/h2&gt;
+
+&lt;p&gt;Another example is providing a Node.js container image based on the new NanoServer Insider image with only 92 MByte. We have just cut off "3" hundred MB.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/07/nodejs_nanoserver_sizes-3.png" alt="Node.js NanoServer sizes"&gt;&lt;/p&gt;
+
+&lt;p&gt;If we compare that with some of the Linux Node.js container images we are at about the size of the the slim images.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/07/Bildschirmfoto-2017-07-14-um-08.53.24.png" alt="Node.js slim image sizes"&gt;&lt;/p&gt;
+
+&lt;h2 id="multistagebuild"&gt;Multi-stage build&lt;/h2&gt;
+
+&lt;p&gt;To build such small Windows images comes with a cost. You have to live without PowerShell. But the new multi-stage build introduced with Docker 17.05 really helps you and you can use PowerShell before the final image layers are built.&lt;/p&gt;
+
+&lt;p&gt;If you haven't heard about multi-stage builds its concept is to have multiple &lt;code&gt;FROM&lt;/code&gt; instructions in a &lt;code&gt;Dockerfile&lt;/code&gt;. Only the last &lt;code&gt;FROM&lt;/code&gt; until the end of the file will build the final container image. This is also called the last stage. In all the other stages you don't have to optimze too much and can use the build cache much better. You can read more about &lt;a href="https://blog.docker.com/2017/07/multi-stage-builds/"&gt;multi-stage builds&lt;/a&gt; at the Docker Blog.&lt;/p&gt;
+
+&lt;p&gt;Let's have a closer look how to build a small Node.js base image. You can find the complete &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/07cedcf2cc93e669bba9c961121feda6f43dab59/node/8.1/nano/Dockerfile"&gt;Dockerfile&lt;/a&gt; on GitHub.&lt;/p&gt;
+
+&lt;p&gt;In the first stage I'm lazy and even use the &lt;code&gt;microsoft/windowsservercore-insider&lt;/code&gt; image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment. &lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;# escape=`
+FROM microsoft/windowsservercore-insider as download
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN Invoke-WebRequest ...  
+RUN Expand-Archive ...  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; has a second &lt;code&gt;FROM&lt;/code&gt; instruction which then uses the smallest Windows base image. In that stage you normally &lt;code&gt;COPY&lt;/code&gt; deploy files and folders from previous stages. In our case we copy the Node.js installation folder into the final image.&lt;/p&gt;
+
+&lt;p&gt;The one &lt;code&gt;RUN&lt;/code&gt; instruction sets the &lt;code&gt;PATH&lt;/code&gt; environment variable with the &lt;code&gt;setx&lt;/code&gt; command instead of PowerShell commands.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver-insider
+
+ENV NPM_CONFIG_LOGLEVEL info
+
+COPY --from=download /nodejs /nodejs
+
+RUN setx PATH "%PATH%;C:\nodejs;%APPDATA%\npm"
+
+CMD [ "node.exe" ]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Users of such a Node.js base image can work as usual by &lt;code&gt;COPY&lt;/code&gt; deploy their source tree and node_modules folder into that image and run the application as a small container.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM stefanscherer/node-windows:8.1.4-insider  
+WORKDIR /code  
+COPY . /code  
+CMD ["node.exe", "app.js"]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So all you have to do is change the &lt;code&gt;FROM&lt;/code&gt; instruction to the smaller insider Node.js image.&lt;/p&gt;
+
+&lt;h2 id="furtherinsiderimages"&gt;Further Insider images&lt;/h2&gt;
+
+&lt;p&gt;I have pushed some of my first Insider images to the Docker Hub so it may be easier for you to try out different languages.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;stefanscherer/node-windows:6.11.1-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/node-windows:8.1.4-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/golang-windows:1.8.3-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/dockertls-windows:insider&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Having smaller Windows container images is a huge step forward. I encourage you to try out the much smaller images. You'll learn how it feels to work with them and you can give valuable feedback to the Microsoft Containers team shaping the next version of Windows Server.&lt;/p&gt;
+
+&lt;p&gt;Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt; to stay up to date with Windows containers.&lt;/p&gt;</content:encoded></item><item><title>Use multi-stage builds for smaller Windows images</title><description>&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
 
 &lt;p&gt;On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version&lt;/p&gt;</description><link>https://stefanscherer.github.io/use-multi-stage-builds-for-smaller-windows-images/</link><guid isPermaLink="false">5ccd5961-b320-4a2d-845b-af5e6c61894c</guid><category>Docker</category><category>windows-containers</category><category>multi-stage</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 19 Apr 2017 22:52:00 GMT</pubDate><content:encoded>&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
 
@@ -1959,138 +2082,5 @@ CMD [ "npm.cmd", "start" ]
 &lt;p&gt;With such a Node.js Nano Server base image on the Docker Hub you can start developing on your Windows 10 machine. Now dockerize your Node.js apps into Nano Server containers and share them with others via the Docker Hub.&lt;/p&gt;
 
 &lt;p&gt;The Windows Server 2016 is only needed to install MSI packages and distill the software into Nano Server images.&lt;/p&gt;
-
-&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>Setup a local Windows 2016 TP5 Docker VM</title><description>&lt;p&gt;It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.&lt;/p&gt;
-
-&lt;p&gt;Very&lt;/p&gt;</description><link>https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/</link><guid isPermaLink="false">9903a0ba-2f77-4f45-950d-cef82a573854</guid><category>Docker</category><category>Windows</category><category>Vagrant</category><category>Packer</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 01 May 2016 08:43:00 GMT</pubDate><content:encoded>&lt;p&gt;It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.&lt;/p&gt;
-
-&lt;p&gt;Very soon there will be a Microsoft Azure template to get started very easily. Another simple way will be creating a Docker Machine in Azure, once a &lt;a href="https://github.com/docker/machine/pull/3329"&gt;pull request&lt;/a&gt; is merged.&lt;/p&gt;
-
-&lt;h2 id="tutorials"&gt;Tutorials&lt;/h2&gt;
-
-&lt;p&gt;But for now it takes some effort and time to set up such a local VM. There are good tutorials that guide you through all the steps needed.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016"&gt;Setup Docker on Windows Server 2016 in VirtualBox&lt;/a&gt; by Arun Gupta&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://lostechies.com/gabrielschenker/2016/04/30/windows-docker-containers/"&gt;Windows Docker Containers in Hyper-V&lt;/a&gt; by Gabriel Schenker&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id="packervagrantautomation"&gt;Packer + Vagrant = Automation&lt;/h2&gt;
-
-&lt;p&gt;If you don't want to do all these whole setup manually and wait in front of your computer to enter the next step you can use Packer and Vagrant.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; takes the ISO file and bakes a base box VM to be used with &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt;. With Vagrant you can spin up one ore more such VM's and even form a Windows Docker Swarm.&lt;/p&gt;
-
-&lt;p&gt;The Packer template to create a Windows 2016 TP5 VM including the Docker Engine is tested with VirtualBox 5.0.20 and VMware Fusion 8.1 and should also work with VMware Workstation if you are working with a Windows PC.&lt;/p&gt;
-
-&lt;h3 id="runpacker"&gt;Run Packer&lt;/h3&gt;
-
-&lt;p&gt;To build the Vagrant base box with Packer 0.10.0 you just clone the &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;GitHub repo&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows  
-cd packer-windows  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now build the Vagrant base box for VMware&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;packer build --only=vmware-iso windows_2016_docker.json  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or for VirtualBox.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;packer build --only=virtualbox-iso windows_2016_docker.json  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This takes about an hour, so you can leave your computer for a while.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/05/packer-build.png" alt="packer-build"&gt;&lt;/p&gt;
-
-&lt;p&gt;After that a box file should be created in the current directory. Now add this box to Vagrant with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;vagrant box add windows_2016_tp5_docker windows_2016_docker_vmware.box  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you have both hypervisors, you also can create both base boxes and add them. You can list all your base boxes with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ vagrant box list
-windows_2016_tp5_docker (virtualbox, 0)  
-windows_2016_tp5_docker (vmware_desktop, 0)  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="runvagrant"&gt;Run Vagrant&lt;/h2&gt;
-
-&lt;p&gt;Now you can create test and dev scenarios with this new base box. There is &lt;a href="https://github.com/StefanScherer/docker-windows-box"&gt;another GitHub&lt;/a&gt; repo for that. We just clone it with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box  
-cd docker-windows-box  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With the current Vagrant 1.8.1 it is easy to spin up a VM to have Docker running on Windows 2016 TP5.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;vagrant up  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Vagrant powers up a VM and install further Docker tools like Machine and Compose. Also Git will be installed to get in touch with &lt;a href="https://github.com/brogersyh/Dockerfiles-for-windows"&gt;some&lt;/a&gt; &lt;a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-container-samples/windowsservercore"&gt;Windows&lt;/a&gt; &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;Dockerfiles&lt;/a&gt; available on GitHub.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/05/vagrant-up-1.png" alt="vagrant-up"&gt;&lt;/p&gt;
-
-&lt;p&gt;You can open a PowerShell window and run for example&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker version  
-docker images  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/05/docker-version.png" alt="docker-version"&gt;&lt;/p&gt;
-
-&lt;p&gt;Congratulations! You can start working with a brand new Docker Engine running on Windows 2016 TP5.&lt;/p&gt;
-
-&lt;p&gt;Have fun!&lt;/p&gt;
-
-&lt;h2 id="whatpackerdoesforyou"&gt;What Packer does for you&lt;/h2&gt;
-
-&lt;p&gt;If you want to understand what Packer does building such a VM in an automated way here is a list of provision scripts that Packer runs.&lt;/p&gt;
-
-&lt;h3 id="installfeatures"&gt;Install features&lt;/h3&gt;
-
-&lt;p&gt;In the script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-winrm.ps1"&gt;enable-winrm.ps1&lt;/a&gt;, just before the WinRM port will be opened to let Packer login and do further provisioning some Windows features like Containers and Hyper-V (only VMware) will be enabled.&lt;/p&gt;
-
-&lt;h3 id="installdocker"&gt;Install Docker&lt;/h3&gt;
-
-&lt;p&gt;The next script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/install-docker.ps1"&gt;install-docker.ps1&lt;/a&gt; installs the Docker service and client and the &lt;code&gt;windowsservercore&lt;/code&gt; base Docker image. If Hyper-V is enabled, also the &lt;code&gt;nanoserver&lt;/code&gt; base Docker images will be installed.&lt;/p&gt;
-
-&lt;h3 id="patchwindowsservercoreimage"&gt;Patch windowsservercore image&lt;/h3&gt;
-
-&lt;p&gt;As the TP5 and relating files and images are very fresh and it is still a technical preview, there might be some obstacles here and there.&lt;/p&gt;
-
-&lt;p&gt;At the moment &lt;a href="https://social.msdn.microsoft.com/Forums/en-US/e2751260-4494-4b60-999e-5ea27ccbe1db/workaround-to-increase-boot-time-for-windows-server-core-containers?forum=windowscontainers"&gt;we need this script&lt;/a&gt; to speed up the &lt;code&gt;windowsservercore&lt;/code&gt; Docker image a little bit. The script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1"&gt;patch-boot-time-for-containers.ps1&lt;/a&gt; just fixes that for you.&lt;/p&gt;
-
-&lt;h3 id="enableinsecuredockerport2375"&gt;Enable insecure Docker port 2375&lt;/h3&gt;
-
-&lt;p&gt;For a local test environment we also just open the insecure Docker port 2375 with the script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-docker-insecure.ps1"&gt;enable-docker-insecure.ps1&lt;/a&gt;. &lt;br&gt;
-You can remote control your Windows Docker engine from your host machine that is running the VM. Try it out, especially if you are normally working with Linux or Mac.&lt;/p&gt;
-
-&lt;p&gt;Once there is a Docker Machine driver for local Windows VM's is available I would prefer that and have the secure TLS connection.&lt;/p&gt;
-
-&lt;h3 id="adddockergroup"&gt;Add docker group&lt;/h3&gt;
-
-&lt;p&gt;The new Windows Docker engine listens to a Windows named pipe. This is very similar to the Unix socket on Linux.&lt;/p&gt;
-
-&lt;p&gt;A normal user does not have access to it, so you have to open an administrator shell to work with the Docker engine.&lt;/p&gt;
-
-&lt;p&gt;The script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1"&gt;add-docker-group.ps1 &lt;br&gt;
-&lt;/a&gt; adds the option &lt;code&gt;-G docker&lt;/code&gt; to the Docker engine to give all members of the Windows group &lt;code&gt;docker&lt;/code&gt; access to that named pipe.&lt;/p&gt;
-
-&lt;p&gt;The script also adds the user &lt;code&gt;vagrant&lt;/code&gt; to that group. So in the final Vagrant box you just open a normal PowerShell window and can use the Docker engine.&lt;/p&gt;
-
-&lt;h3 id="removekeyjson"&gt;Remove key.json&lt;/h3&gt;
-
-&lt;p&gt;The final script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/remove-docker-key-json.ps1"&gt;remove-docker-key-json.ps1 &lt;br&gt;
-&lt;/a&gt; removes the &lt;code&gt;key.json&lt;/code&gt; file from the initial installation. This file will be created on the first start of the Docker engine in each Vagrant VM and creates different ID's for each Docker engine.&lt;/p&gt;
-
-&lt;p&gt;This is important if you want to build a Windows Docker Swarm. Each Docker engine needs a different ID.&lt;/p&gt;
-
-&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;As there might be updates in the Docker base images and the Docker engine itself it is now very easy to reproduce the base VM with Packer and Vagrant without all the manual steps again.&lt;/p&gt;
 
 &lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item></channel></rss>
