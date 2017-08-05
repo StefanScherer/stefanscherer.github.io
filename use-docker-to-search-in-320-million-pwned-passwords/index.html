@@ -1,0 +1,454 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Use Docker to Search in 320 Million Pwned Passwords</title>
+    <meta name="description" content="">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=b8f605ed91">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+
+    <link rel="canonical" href="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Use Docker to Search in 320 Million Pwned Passwords">
+    <meta property="og:description" content="This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post">
+    <meta property="og:url" content="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
+    <meta property="article:published_time" content="2017-08-05T00:55:07.000Z">
+    <meta property="article:modified_time" content="2017-08-05T01:10:07.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="multi-stage">
+    <meta property="article:tag" content="HaveIBeenPwned">
+    <meta property="article:tag" content="passwords">
+    <meta property="article:tag" content="Security">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Use Docker to Search in 320 Million Pwned Passwords">
+    <meta name="twitter:description" content="This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, multi-stage, HaveIBeenPwned, passwords, Security">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
+            "width": 256,
+            "height": 256
+        },
+        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
+        "sameAs": [
+            "https://stefanscherer.github.io"
+        ]
+    },
+    "headline": "Use Docker to Search in 320 Million Pwned Passwords",
+    "url": "https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/",
+    "datePublished": "2017-08-05T00:55:07.000Z",
+    "dateModified": "2017-08-05T01:10:07.000Z",
+    "keywords": "Docker, multi-stage, HaveIBeenPwned, passwords, Security",
+    "description": "This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
+</head>
+<body class="post-template tag-docker tag-multi-stage tag-haveibeenpwned tag-passwords tag-security nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-multi-stage tag-haveibeenpwned tag-passwords tag-security">
+
+        <header class="post-header">
+            <h1 class="post-title">Use Docker to Search in 320 Million Pwned Passwords</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-08-05">05 August 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/multi-stage/">multi-stage</a>, <a href="../tag/haveibeenpwned/">HaveIBeenPwned</a>, <a href="../tag/passwords/">passwords</a>, <a href="../tag/security/">Security</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <p>This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of <a href="https://haveibeenpwned.com">Have I Been Pwned?</a> website and service that will notify you when one of your registered email addresses have been compromised by a data breach.</p>
+
+<p>In his latest blog post he introduced <a href="https://www.troyhunt.com/introducing-306-million-freely-downloadable-pwned-passwords/">306 Million Freely Downloadable Pwned Passwords</a> with an update of another 14 Million just on the following day. He also has setup a online search at <a href="https://haveibeenpwned.com/Passwords">https://haveibeenpwned.com/Passwords</a></p>
+
+<p>You can enter passwords and check if they have been compromised. <strong>But do not enter actively used passwords here</strong>, even if Troy is a nice person living in sunny Australia.</p>
+
+<p><img src="../content/images/2017/08/pwned-passwords.png" alt="Pwned Passwords online service"></p>
+
+<p>My recommendation is</p>
+
+<ol>
+<li>If you are in doubt if your password has been pwned, just <strong>change it first</strong> and then check the old one in the online form.  </li>
+<li>Use a <strong>Password manager</strong> like 1Password to create an individual long random password <strong>for each service</strong> you use.</li>
+</ol>
+
+<p>But the huge password list is still quite interesting to work with.</p>
+
+<h2 id="letsbuildalocalsearch">Let's build a local search</h2>
+
+<p>What you can do is download the list of passwords (about 5 GByte compressed) and search locally in a safe place. You won't get the cleartext passwords, but only SHA1 sums of them. But we can create SHA1 sums of the passwords we want to search in this huge list.</p>
+
+<p>You can download the files that are compressed with 7-Zip. You also need a tool to create a SHA1 sum of a plain text. And then you need another tool, a database or algorithm to quickly search in that text file that has nearly 320 Million lines.</p>
+
+<h2 id="usedockerforthetask">Use Docker for the task</h2>
+
+<p>I immediately thought of a Container that has all these tools installed. But I didn't want to add the huge password lists into that container as it would build a Docker image of about 12 GByte or probably 5-6 GB Docker image on the Docker Hub.</p>
+
+<p>The password files should be persisted locally on your laptop and mounted into the container to search in them with the tools needed for the task.</p>
+
+<p>And I want to use some simple tools to get the work done. A first idea was born in the comments of Troys blog post where someone showed a small bash script with <code>grep</code> to search in the file.</p>
+
+<p>I first tried <code>grep</code>, but this took about 2 minutes to find the hash in the file. So I searched a little bit and found <a href="http://sgrep.sourceforge.net"><code>sgrep</code></a> - a tool to grep in sorted files. Luckily the password files are sorted by the SHA1 hash. But I found only the source code and there is no standard package to install it. So we also need a C compiler for that.</p>
+
+<p>In times before Docker you had a lot of stress installing many tools on your computer. But let's see how Docker can help us with all these steps.</p>
+
+<h2 id="buildthedockerimage">Build the Docker image</h2>
+
+<p>I found the Sources of sgrep on <a href="https://github.com/colinscape/sgrep">GitHub</a> and we will need Make and a C compiler to build the <code>sgrep</code> binary.</p>
+
+<p>I will use a <strong>multi-stage build</strong> Dockerfile and explain every single line. You can build the image line by line and see the benefits of build caches while working on the <code>Dockerfile</code>. So after adding a line to the file you can run <code>docker build -t pwned-passwords .</code> to build and update the image.</p>
+
+<p>For the beginning let's choose a small Linux base image. We will name the first stage as <code>build</code>. So the <code>Dockerfile</code> starts with</p>
+
+<pre><code>FROM alpine:3.6 AS build  
+</code></pre>
+
+<p>The next step is we have to install Git, Make and the C compiler with its header files.</p>
+
+<pre><code>RUN apk update &amp;&amp; apk add git make gcc musl-dev  
+</code></pre>
+
+<p>Now we clone the GitHub repo with the source code of sgrep.</p>
+
+<pre><code>RUN git clone https://github.com/colinscape/sgrep  
+</code></pre>
+
+<p>In the next line I'll create a bin folder that is needed for the build process. Then we go to the source directory and run the <code>make</code> command as there is a <code>Makefile</code> in that directory.</p>
+
+<pre><code>RUN mkdir sgrep/bin &amp;&amp; cd sgrep/src &amp;&amp; make  
+</code></pre>
+
+<p>After these steps we have the <code>sgrep</code> binary compiled for Alpine Linux. But we also have installed a ton of other tools.</p>
+
+<p>Now put all these instructions into a <code>Dockerfile</code> and build the Docker image.</p>
+
+<pre><code>$ docker build -t pwned-passwords .
+</code></pre>
+
+<p>Let's inspect all image layers we have created so far.</p>
+
+<pre><code>$ docker history pwned-passwords
+IMAGE               CREATED             CREATED BY                                      SIZE  
+78171a118279        12 hours ago        /bin/sh -c mkdir sgrep/bin &amp;&amp; cd sgrep/src...   24.5kB  
+2323bcb14b5f        12 hours ago        /bin/sh -c git clone https://github.com/co...   93.6kB  
+8ec1470030af        12 hours ago        /bin/sh -c apk update &amp;&amp; apk add git make ...   119MB  
+7328f6f8b418        5 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B  
+&lt;missing&gt;           5 weeks ago         /bin/sh -c #(nop) ADD file:4583e12bf5caec4...   3.97MB  
+</code></pre>
+
+<p>As you can see we now have a Docker image of more than 120 MByte, but the <code>sgrep</code> binary is only 15 KByte. Yes, this is no typo. Yes, we will grep through GByte of data with a tiny 15 KByte binary.</p>
+
+<h2 id="multistagebuildforthewin">Multi-stage build for the win</h2>
+
+<p>With Docker 17.05 and newer you can now add another <code>FROM</code> instruction and start with a new stage in your <code>Dockerfile</code>. The last stage will create the final Docker image. So every instruction after the last <code>FROM</code> defines what goes into the image you want to share eg. on Docker Hub.</p>
+
+<p>So let's start our final stage of our Docker image build with</p>
+
+<pre><code>FROM alpine:3.6  
+</code></pre>
+
+<p>The last stage does not need a name. Now we have an empty Alpine Linux again, all the 120 MByte of development environment won't make it into the final image. But if you build the Docker image more than once the temporary layers are still there and will be reused if they are unmodified. So the Docker build cache helps you speed up while working on the shell script.</p>
+
+<p>In the previous build stage we have created the much faster <code>sgrep</code> command. What we now need is a small shell script that converts a plaintext password into a SHA1 sum and runs the <code>sgrep</code> command. </p>
+
+<p>To create a SHA1 sum I'll use <code>openssl</code> command. And it would be nice if the shell script can download the huge files for us. As the files are compressed with 7-zip we also need <code>wget</code> to download and <code>7z</code> to extract them.</p>
+
+<p>In the next instruction we install OpenSSL and the 7-Zip tool.</p>
+
+<pre><code>RUN apk update &amp;&amp; apk add openssl p7zip  
+</code></pre>
+
+<p>The <code>COPY</code> instruction has an option <code>--from</code> where you can specify another named stage of your build. So we copy the compiled <code>sgrep</code> binary from the <code>build</code> stage into the local bin directory.</p>
+
+<pre><code>COPY --from=build /sgrep/bin/sgrep /usr/local/bin/sgrep  
+</code></pre>
+
+<p>The complete shell script is called <code>search</code> and can be found in <a href="https://github.com/StefanScherer/pwned-passwords">my pwned-passwords</a> GitHub repo. Just assume we have it in the current directory. The next <code>COPY</code> instruction copies it from your real machine into the image layer.</p>
+
+<pre><code>COPY search /usr/local/bin/search  
+</code></pre>
+
+<p>As the last line of the <code>Dockerfile</code> we define an entrypoint to run this shell script if we run the Docker container.</p>
+
+<pre><code>ENTRYPOINT ["/usr/local/bin/search"]  
+</code></pre>
+
+<p>Now append these lines to the <code>Dockerfile</code> and build the complete image. You will see that the first layers are already cached and only the last stage will be built.</p>
+
+<h3 id="thesearchscript">The search script</h3>
+
+<p>You can find the <a href="https://github.com/StefanScherer/pwned-passwords/blob/master/search"><code>search</code> script</a> in my GitHub repo as well as the <code>Dockerfile</code>. You only need these two tiny files to build the Docker image yourself.</p>
+
+<pre><code>#!/bin/sh
+set -e
+
+if [ ! -d /data ]; then  
+  echo "Please run this container with a volume mounted at /data."
+  echo "docker run --rm -v \ $(pwd):/data pwned-passwords $*"
+  exit 1
+fi
+
+FILES="pwned-passwords-1.0.txt pwned-passwords-update-1.txt"  
+for i in $FILES  
+do  
+  if [ ! -f "/data/$i" ]; then
+    echo "Downloading $i"
+    wget -O "/tmp/$i.7z" "https://downloads.pwnedpasswords.com/passwords/$i.7z"
+    echo "Extracting $i to /data"
+    7z x -o/data "/tmp/$i.7z"
+    rm "/tmp/$i.7z"
+  fi
+done
+
+if [[ $1 != "" ]]  
+then  
+PWD=$1  
+else  
+PWD="password"  
+echo "checking $PWD"  
+fi
+
+hash=`echo -n $PWD | openssl sha1 | awk '{print $2}' | awk 'BEGIN { getline; print toupper($0)  }'`  
+echo "Hash is $hash"  
+totalcount=0  
+for i in $(sgrep -c $hash /data/*.txt)  
+do  
+  file=$(echo "$i" | cut -f1 -d:)
+  count=$(echo "$i" | cut -f2 -d:)
+  if [[ $count -ne 0 ]]; then
+    echo "Oh no - pwned! Found $count occurences in $file"
+  fi
+  totalcount=$(( $totalcount + $count ))
+done  
+if [[ $totalcount -eq 0 ]]; then  
+  echo "Good news - no pwnage found!"
+else  
+  exit 1
+fi  
+</code></pre>
+
+<h2 id="buildthefinalimage">Build the final image</h2>
+
+<p>Now with these two files, <code>Dockerfile</code> and <code>search</code> shell script build the small Docker image.</p>
+
+<pre><code>$ docker build -t pwned-passwords .
+</code></pre>
+
+<p>Let's have a look at the final image layers with</p>
+
+<pre><code>$ docker history pwned-passwords
+IMAGE               CREATED             CREATED BY                                      SIZE  
+e63a6121fe33        3 minutes ago       /bin/sh -c #(nop)  ENTRYPOINT ["/usr/local...   0B  
+9a7db1341995        3 minutes ago       /bin/sh -c #(nop) COPY file:b098e8cba82eef...   1.08kB  
+a1f4a26a50a4        About an hour ago   /bin/sh -c #(nop) COPY file:bf96562251dbd1...   15.7kB  
+f99b3a9601ea        About an hour ago   /bin/sh -c apk update &amp;&amp; apk add openssl p...   10.7MB  
+7328f6f8b418        5 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B  
+&lt;missing&gt;           5 weeks ago         /bin/sh -c #(nop) ADD file:4583e12bf5caec4...   3.97MB  
+</code></pre>
+
+<p>As you can see, OpenSSL and 7-Zip take about 10 MByte, the 16 KByte sgrep binary and the 1 KByte shell script are sitting on top of the 4 MByte Alpine base image.</p>
+
+<p>I also have pushed this image to the <a href="https://hub.docker.com/r/stefanscherer/pwned-passwords/">Docker Hub</a> with a compressed size of about 7 MByte. If you trust me, you can use this Docker image as well. But you will learn more how multi-stage builds feel like if you build the image yourself.</p>
+
+<h2 id="searchforpwnedpasswords">Search for pwned passwords</h2>
+
+<p>We now have a small 14.7 MByte Linux Docker image to search for pwned passwords.</p>
+
+<p>Run the container with a folder mounted to <code>/data</code>. If you forgot this, the script will show you how to run it.</p>
+
+<p>Running the container for the first time it will download the two password files (5 GByte) which may take some minutes depending on your internet connectivity.</p>
+
+<p>After the script has downloaded everything two files should appear in the current folder. For me it looks like this:</p>
+
+<p><img src="../content/images/2017/08/list.png" alt="file list"></p>
+
+<p>Now search for passwords by adding a plaintext password as an argument  </p>
+
+<pre><code>$ docker run --rm -v $(pwd):/data pwned-passwords troyhunt
+Hash is 0CCE6A0DD219810B5964369F90A94BB52B056494  
+Oh no - pwned! Found 1 occurences in /data/pwned-passwords-1.0.txt  
+</code></pre>
+
+<p>If you don't trust my script or the <code>sgrep</code> command, the run the container without network connectivity</p>
+
+<pre><code>$ docker run --rm -v $(pwd):/data --network none pwned-passwords secret4949
+Hash is 6D26C5C10FF089BFE81AB22152E2C0F31C58E132  
+Good news - no pwnage found!  
+</code></pre>
+
+<p>So you have luck, you can securely check that your password <code>secure4949</code> hasn't been breached. But beware this is still no good password :-)</p>
+
+<p><img src="../content/images/2017/08/mac.png" alt="Run pwned-passwords"></p>
+
+<h2 id="worksonwindows">Works on Windows</h2>
+
+<p>If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.</p>
+
+<p>On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as <code>/data</code> into the container.</p>
+
+<pre><code>docker run -v "/c/Users/stefan.scherer/pwned:/data" stefanscherer/pwned-passwords troyhunt  
+</code></pre>
+
+<p><img src="../content/images/2017/08/win7.png" alt="Windows 7 with pwned-passwords image"></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>You now know that there are Millions of passwords out there that may be used in a brute force attack to other online services.</p>
+
+<p>So please use a password manager instead of predictable patterns how to modify passwords for different services.</p>
+
+<p>You also have learned how Docker can keep your computer clean but still compile some open source projects from source code.</p>
+
+<p>You have seen the benefits of multi-stage builds to create and share minimal Docker images without the development environment.</p>
+
+<p>And you now have the possibility to search your current passwords in a save place without leaking it to the internet. Some other online service may collect all the data entered into a form. So keep your passwords secret and change </p>
+
+<p>If you want to hear more about Docker, follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>. </p>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    <span class="author-location icon-location">Germany</span>
+                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Use%20Docker%20to%20Search%20in%20320%20Million%20Pwned%20Passwords&amp;url=https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                                
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../exploring-new-nanoserver-insider-images/">
+        <section class="post">
+            <h2>Exploring new NanoServer Insider images</h2>
+            <p>Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=b8f605ed91"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=b8f605ed91"></script>
+
+</body>
