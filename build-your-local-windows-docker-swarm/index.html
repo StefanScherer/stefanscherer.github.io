@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Run a local Windows Docker Swarm</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/amp/">
@@ -46,21 +45,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Run a local Windows Docker Swarm",
     "url": "https://stefanscherer.github.io/build-your-local-windows-docker-swarm/",
@@ -70,12 +72,19 @@
     "description": "At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM&#x27;s are running locally on my laptop.",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-swarm tag-vagrant nav-closed">
@@ -86,10 +95,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -119,115 +128,79 @@
         </header>
 
         <section class="post-content">
-            <p>At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.</p>
-
+            <div class="kg-card-markdown"><p>At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.</p>
 <p>At the time of writing there is no docker-machine driver to create the Windows Docker VM's. And my laptop at work is still running with Windows 7, so I have chosen VirtualBox as a local hypervisor instead of Hyper-V.</p>
-
 <p><img src="../content/images/2016/03/windows_swarm_demo.png" alt="Network diagram"></p>
-
 <p>As you can see in the diagram there also is a private Docker registry. I just want to show you that saving and restoring Windows Docker images is just as easy as on Linux.</p>
-
 <p>A laptop with 16GB memory is capable of running this setup. With less memory, just run only two of the Windows VM's and reduce the memory setting.</p>
-
 <h2 id="setupyourhost">Setup your host</h2>
-
 <p>If you like to follow this tutorial you need some tools on your host machine. Pleas keep in mind that VirtualBox does not work with Hyper-V on the same machine. My preferred way to setup a Windows machine is by install the software with <a href="https://chocolatey.org">Chocolatey</a>. So these are the steps needed for the host tools:</p>
-
-<pre><code>iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))  
-choco install -y virtualbox  
-choco install -y vagrant  
-choco install -y packer  
-choco install -y docker  
+<pre><code>iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install -y virtualbox
+choco install -y vagrant
+choco install -y packer
+choco install -y docker
 </code></pre>
-
 <h2 id="buildthevagrantbox">Build the Vagrant box</h2>
-
 <p>Before spinning up the swarm you have to build the Windows Server 2016 VM with Docker installed. As I'm a big fan of automation I do not click through the installers, but use <a href="https://packer.io">Packer</a> and <a href="https://vagrantup.com">Vagrant</a> to build and run local VM's.</p>
-
 <p>Before running Packer you should register to the <a href="https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-technical-preview">technical preview evaluation</a> and accept the license for the Windows Server ISO file.</p>
-
 <p>After that just clone my Packer templates and build the VirtualBox VM with</p>
-
-<pre><code>git clone https://github.com/StefanScherer/packer-windows  
-cd packer-windows  
-packer build --only=virtualbox-iso windows_2016_docker.json  
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=virtualbox-iso windows_2016_docker.json
 </code></pre>
-
 <p>Now add the Vagrant box to the local list of baseboxes with</p>
-
-<pre><code>vagrant box add windows_2016_docker windows_2016_docker_virtualbox.box  
+<pre><code>vagrant box add windows_2016_docker windows_2016_docker_virtualbox.box
 </code></pre>
-
 <h2 id="buildthedockerswarm">Build the Docker swarm</h2>
-
 <p>The next step is also very easy. We clone <a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-demo">the repo</a> with the Vagrantfile for the Docker swarm and spin up all boxes.</p>
-
-<pre><code>git clone https://github.com/StefanScherer/docker-windows-box  
-cd docker-windows-box  
-cd swarm-demo  
-vagrant up --provider virtualbox  
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd swarm-demo
+vagrant up --provider virtualbox
 </code></pre>
-
 <p>One after another the VM's are booted and provisioned with the shell scripts provided in the <code>scripts</code> folder.</p>
-
 <h4 id="registry">registry</h4>
-
 <p>The Linux box <code>registry</code> is used for the Docker Swarm manager and a Docker registry.</p>
-
 <ol>
-<li>The swarm manager is using a token in <code>config/swarm-token</code>. Edit this as you like.  </li>
+<li>The swarm manager is using a token in <code>config/swarm-token</code>. Edit this as you like.</li>
 <li>The registry is using the <code>registry-v2</code> folder on your host to store the Docker images.</li>
 </ol>
-
 <h4 id="swwin01">sw-win-01 ...</h4>
-
 <p>The Windows Server 2016 TP4 machines that spin up a Swarm container to join the Docker Swarm. The Docker Engines have a connection to the insecure registry running at <code>registry:5000</code>.</p>
-
 <h2 id="upandrunning">Up and running</h2>
-
 <p>After a while all VM's are up and running and you can see the status with <code>vagrant status</code></p>
-
 <p><img src="../content/images/2016/03/vagrant-status.png" alt="vagrant status"></p>
-
 <p>The Docker Swarm is built and all Windows VM's have joined the swarm. You can check this by connecting with the Docker Client to the Swarm Manager.</p>
-
-<pre><code>docker -H tcp://192.168.38.100:3375 info  
+<pre><code>docker -H tcp://192.168.38.100:3375 info
 </code></pre>
-
 <p><img src="../content/images/2016/03/docker-info.png" alt="docker info"></p>
-
 <h2 id="runcontainersintheswarm">Run containers in the swarm</h2>
-
 <p>For a very simple demo we now run three containers that are spread over all three Windows Docker Swarm agents.</p>
-
-<pre><code>docker -H tcp://192.168.38.100:3375 run -d windowsservercore powershell -Command sleep 60  
+<pre><code>docker -H tcp://192.168.38.100:3375 run -d windowsservercore powershell -Command sleep 60
 </code></pre>
-
 <p><img src="../content/images/2016/03/docker-run.png" alt="docker run"></p>
-
 <p>As you can see the containers are running on all different Docker nodes <code>sw-win-01</code> ... <code>sw-win-03</code>.</p>
-
 <p>With the local registry you can push and pull Windows images from it and safe your work. The registry files are stored at your host so it is safe to destroy all VM's if you do not use them.</p>
-
 <p>I hope you have enjoyed this tutorial. In a future blog post I probably show how to build a Windows Docker Swarm in Azure or in Hyper-V.</p>
-
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -244,7 +217,6 @@ vagrant up --provider virtualbox
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -267,6 +239,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -299,7 +272,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

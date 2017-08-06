@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Access private GitHub repos in Vagrant up</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/amp/">
@@ -39,21 +38,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Access private GitHub repos in Vagrant up",
     "url": "https://stefanscherer.github.io/access-private-github-repos-in-vagrant-up/",
@@ -62,12 +64,19 @@
     "description": "Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box. Enable SSH agent forwarding It is very easys to use SSH agent forwarding in interactive sessions while running vagrant ssh.",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
@@ -78,10 +87,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -111,36 +120,24 @@
         </header>
 
         <section class="post-content">
-            <p>Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box.</p>
-
+            <div class="kg-card-markdown"><p>Vagrant has the feature to use SSH agent forwarding. This can be used to access other SSH hosts without a password and without inserting SSH keys into your Vagrant box.</p>
 <h2 id="enablesshagentforwarding">Enable SSH agent forwarding</h2>
-
 <p>It is very easys to use SSH agent forwarding in interactive sessions while running <code>vagrant ssh</code>. The config setting in your <code>Vagrantfile</code> is this line</p>
-
 <pre><code>  config.ssh.forward_agent = true
 </code></pre>
-
 <h2 id="knowyourhosts">Know your hosts</h2>
-
 <p>To make SSH agent forwarding work at provisioning time we have to do an additional step. The host where we want to SSH into has to be added to the known hosts in the Vagrant box.</p>
-
 <p>For a concrete example we want to try to clone a private repo from GitHub. So we have to add the host <code>github.com</code> to the <code>known_hosts</code> file.</p>
-
 <p>The following command can be added into a shell provision script.</p>
-
-<pre><code>ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts  
+<pre><code>ssh-keyscan -H github.com &gt;&gt; ~/.ssh/known_hosts
 </code></pre>
-
 <p>After that a <code>git clone</code> can access GitHub via SSH with your SSH agent running on your host machine.</p>
-
 <h2 id="completeexample">Complete example</h2>
-
 <p>Here is a complete <code>Vagrantfile</code> that can be used to test it.</p>
-
 <pre><code># -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.configure(2) do |config|  
+Vagrant.configure(2) do |config|
   config.vm.box = "boxcutter/ubuntu1404"
   config.ssh.forward_agent = true
 
@@ -153,26 +150,26 @@ Vagrant.configure(2) do |config|
     ssh -T git@github.com
     git clone git@github.com:you/your-private-repo
   SHELL
-end  
+end
 </code></pre>
-
 <p>There may be issues on a Windows host even with an SSH agent running. Tested on a Mac.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -189,7 +186,6 @@ end
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -212,6 +208,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -244,7 +241,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

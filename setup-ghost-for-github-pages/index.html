@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Setup Ghost for GitHub Pages</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/setup-ghost-for-github-pages/amp/">
@@ -21,7 +20,7 @@
     <meta property="og:site_name" content="Stefan Scherer's Blog">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Setup Ghost for GitHub Pages">
-    <meta property="og:description" content="To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node   brew install wget   Download and Install Ghost Check for the latest version of Ghost from Ghost.org">
+    <meta property="og:description" content="To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node brew install wget Download and Install Ghost Check for the latest version of Ghost from Ghost.org">
     <meta property="og:url" content="https://stefanscherer.github.io/setup-ghost-for-github-pages/">
     <meta property="article:published_time" content="2014-07-07T19:38:59.000Z">
     <meta property="article:modified_time" content="2017-02-11T18:45:02.000Z">
@@ -31,7 +30,7 @@
     
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Setup Ghost for GitHub Pages">
-    <meta name="twitter:description" content="To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node   brew install wget   Download and Install Ghost Check for the latest version of Ghost from Ghost.org">
+    <meta name="twitter:description" content="To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node brew install wget Download and Install Ghost Check for the latest version of Ghost from Ghost.org">
     <meta name="twitter:url" content="https://stefanscherer.github.io/setup-ghost-for-github-pages/">
     <meta name="twitter:label1" content="Written by">
     <meta name="twitter:data1" content="Stefan Scherer">
@@ -45,36 +44,46 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Setup Ghost for GitHub Pages",
     "url": "https://stefanscherer.github.io/setup-ghost-for-github-pages/",
     "datePublished": "2014-07-07T19:38:59.000Z",
     "dateModified": "2017-02-11T18:45:02.000Z",
     "keywords": "Ghost, GitHub, Buster",
-    "description": "To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node   brew install wget   Download and Install Ghost Check for the latest version of Ghost from Ghost.org",
+    "description": "To build your own static GitHub Pages with Ghost, just follow these steps. Install Node.js Ghost is written in Node.js, so you will need the Node.js runtime. brew install node brew install wget Download and Install Ghost Check for the latest version of Ghost from Ghost.org",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-ghost-tag tag-github tag-buster nav-closed">
@@ -85,10 +94,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -118,126 +127,87 @@
         </header>
 
         <section class="post-content">
-            <p>To build your own static <a href="https://pages.github.com">GitHub Pages</a> with <a href="https://ghost.org">Ghost</a>, just follow these steps.</p>
-
+            <div class="kg-card-markdown"><p>To build your own static <a href="https://pages.github.com">GitHub Pages</a> with <a href="https://ghost.org">Ghost</a>, just follow these steps.</p>
 <h2 id="installnodejs">Install Node.js</h2>
-
 <p>Ghost is written in Node.js, so you will need the Node.js runtime.</p>
-
-<pre><code>brew install node  
-brew install wget  
+<pre><code>brew install node
+brew install wget
 </code></pre>
-
 <h2 id="downloadandinstallghost">Download and Install Ghost</h2>
-
 <p>Check for the latest version of Ghost from <a href="http://ghost.org/download">Ghost.org</a></p>
-
-<pre><code>mkdir ghost  
-cd ghost  
-wget --no-check-certificate https://ghost.org/zip/ghost-0.5.2.zip  
-unzip ghost-0.5.2.zip  
-npm install --production  
+<pre><code>mkdir ghost
+cd ghost
+wget --no-check-certificate https://ghost.org/zip/ghost-0.5.2.zip
+unzip ghost-0.5.2.zip
+npm install --production
 </code></pre>
-
 <h2 id="startghost">Start Ghost</h2>
-
-<pre><code>npm start  
+<pre><code>npm start
 </code></pre>
-
 <h2 id="logintoghost">Login to Ghost</h2>
-
-<pre><code>open http://localhost:2368/ghost  
+<pre><code>open http://localhost:2368/ghost
 </code></pre>
-
 <p>Create an account, read the intial blog post how to edit with Markdown etc.</p>
-
 <h2 id="createyourgithubpagesrepo">Create your GitHub Pages repo</h2>
-
 <p>See the <a href="https://help.github.com/categories/20/articles">GitHub Pages Basics Documentation</a> for details.</p>
-
 <p>You must use the <code>username/username.github.io</code> naming scheme. The repo name must be <strong>lower case</strong> even if your username has upper case letters.</p>
-
 <h2 id="installbuster">Install Buster</h2>
-
-<p>With the tool <a href="https://github.com/axitkhurana/buster">Buster</a> you can export the Ghost blogs into static pages. First we install Buster with:  </p>
-
-<pre><code>brew install python  
-sudo pip install buster  
+<p>With the tool <a href="https://github.com/axitkhurana/buster">Buster</a> you can export the Ghost blogs into static pages. First we install Buster with:</p>
+<pre><code>brew install python
+sudo pip install buster
 </code></pre>
-
 <h2 id="preparestaticfolder">Prepare static folder</h2>
-
 <p>I have placed the <code>static</code> folder for Buster inside my Ghost installation. So I just cloned my <code>username/username.github.io</code> repo with a target directory name like this:</p>
-
-<pre><code>git clone git@github.com:username/username.github.io.git static  
+<pre><code>git clone git@github.com:username/username.github.io.git static
 </code></pre>
-
 <h2 id="writeblogposts">Write Blog posts</h2>
-
 <p>Now your setup is complete and you can start writing Blog posts in Ghost.</p>
-
 <h2 id="exportghostwithbuster">Export Ghost with Buster</h2>
-
 <p>All published blog posts could be exported to the <code>static</code> folder with Buster.</p>
-
-<pre><code>buster generate --domain=http://localhost:2368  
-buster preview  
-open http://localhost:9000  
+<pre><code>buster generate --domain=http://localhost:2368
+buster preview
+open http://localhost:9000
 </code></pre>
-
 <p>The output of Buster could be previewed on port 9000.</p>
-
 <h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
-
-<pre><code>buster deploy  
+<pre><code>buster deploy
 </code></pre>
-
 <p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
-
 <p>For the initial push, please wait up to 10 minutes until GitHub deploys your subdomain.</p>
-
 <p>All upcoming pushes are much faster and you can see your static Ghost blog posts on <a href="https://username.github.io">https://username.github.io</a></p>
-
 <h2 id="writenewblogposts">Write new Blog posts</h2>
-
 <p>To write new Blog posts or update the existing ones, just start Ghost, edit, then generate and deploy the static pages.</p>
-
-<pre><code>cd ghost  
-npm start  
-buster deploy  
+<pre><code>cd ghost
+npm start
+buster deploy
 </code></pre>
-
 <p>The <code>sed</code> commands will fix the share links from localhost to your correct GitHub pages URL.</p>
-
 <p>That's it.</p>
-
 <h2 id="fixinglinks">Fixing links</h2>
-
 <p><strong>Update</strong> It seems that buster has problems fixing all hyperlinks. So I made this script that works for me:</p>
-
 <pre><code class="language-bash">#!/bin/bash
-buster generate --domain=http://127.0.0.1:2368  
-find static -name *.html -type f -exec sed -i '' 's#http://localhost:2368#https://stefanscherer.github.io#g' {} \;  
-buster deploy  
+buster generate --domain=http://127.0.0.1:2368
+find static -name *.html -type f -exec sed -i '' 's#http://localhost:2368#https://stefanscherer.github.io#g' {} \;
+buster deploy
 </code></pre>
-
 <p>This will generate the new pages, fix all links and then deploy them on GitHub.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -254,7 +224,6 @@ buster deploy
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -277,6 +246,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -309,7 +279,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

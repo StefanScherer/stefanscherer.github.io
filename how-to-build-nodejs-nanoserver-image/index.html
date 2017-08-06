@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>How to build a Node.js Nano Server Docker base image</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/amp/">
@@ -46,21 +45,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "How to build a Node.js Nano Server Docker base image",
     "url": "https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/",
@@ -70,12 +72,19 @@
     "description": "Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it&#x27;s time to get used to NanoServer and how to create some",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-nano-server tag-windows-10 tag-node-js nav-closed">
@@ -86,10 +95,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -119,211 +128,147 @@
         </header>
 
         <section class="post-content">
-            <p>Beginning with <strong>Windows 10 Insider</strong> 14342 you can enable the new <strong>Containers feature</strong> in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some base images.</p>
-
+            <div class="kg-card-markdown"><p>Beginning with <strong>Windows 10 Insider</strong> 14342 you can enable the new <strong>Containers feature</strong> in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some base images.</p>
 <p><img src="../content/images/2016/05/windows10-containers-feature.png" alt=""></p>
-
 <p>In this blog post I'll show how to build small base images to deploy Node.js applications as NanoServer Docker images that you can run <a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10">in Windows 10</a> or in Windows Server 2016 TP5.</p>
-
 <h2 id="whatisnanoserver">What is Nano Server?</h2>
-
 <p>Each Docker image must use of of the two OS images: <code>windowsservercore</code> or <code>nanoserver</code>.</p>
-
 <p>A <strong>Windows Server Core</strong> image is <strong>highly compatible</strong> with previous Windows Server Core installations. You don't have a GUI, but you can install almost everything into it. But this compatibility comes with a prize, the size of the OS image is about 9.3 GByte as it contains about a whole server.</p>
-
 <p>A <strong>Nano Server</strong> image is <strong>highly optimized</strong> and almost everything was taken out of it to be able to deploy more of these containers in cloud servers. The size is about 817 MByte. This makes installing Docker on Windows 10 much faster than with the <code>windowsservercore</code> OS image.</p>
-
 <p>So if you get asked which to choose you probably would answer to take the smaller one.</p>
-
 <h2 id="thechallengemsipackages">The challenge: MSI packages</h2>
-
 <p>But as soon as you try to write a <code>Dockerfile</code> to install some software into a Docker image you will notice that the minimized OS comes with a new challenge. <strong>You can't install MSI packages in Nano Server.</strong></p>
-
 <p>If you look at <a href="https://nodejs.org">nodejs.org</a> there are only MSI packages for Windows if you also want to have npm installed.</p>
-
 <p>So how could we build a Node.js Docker image based on Nano Server? I've tried different ways, eg. also installing tools like lessmsi while building the Nano Server image only to find out that lessmsi is only a 32 bit application. Another restriction in Nano Server: <strong>You only can run 64 bit processes in Nano Server.</strong></p>
-
 <p>Another approach would be installing Node.js on your host machine and copying the files into the Docker image. But I don't want to install more tools than needed on a Docker host.</p>
-
 <p>Therefore I show you a way to use only Docker commands and a Windows Server 2016 TP5 machine to build both Windows Server Core image as well as a Nano Server image with Node.js + npm installed.</p>
-
 <h3 id="step1installmsiintowindowsservercoreimage">Step 1 - Install MSI into Windows Server Core image</h3>
-
 <p>A much easier way is to start with a Windows Server Core image. You can download and install the Node.js MSI package with this <code>Dockerfile</code>. This is very similar to the Linux version and downloads, verifies the download, installs the package and then removes the download again.</p>
-
 <p>Now open an editor with</p>
-
-<pre><code>notepad Dockerfile.  
+<pre><code>notepad Dockerfile.
 </code></pre>
-
 <p>and enter this <code>Dockerfile</code>:</p>
-
 <pre><code class="language-Dockerfile">FROM windowsservercore
 
-ENV NPM_CONFIG_LOGLEVEL info  
-ENV NODE_VERSION 4.4.5  
+ENV NPM_CONFIG_LOGLEVEL info
+ENV NODE_VERSION 4.4.5
 ENV NODE_SHA256 7b2409605c871a40d60c187bd24f6f6ddf10590df060b7d905ef46b3b3aa7f81
 
-RUN powershell -Command \  
+RUN powershell -Command \
     wget -Uri https://nodejs.org/dist/v%NODE_VERSION%/node-v%NODE_VERSION%-x64.msi -OutFile node.msi -UseBasicParsing ; \
     if ((Get-FileHash node.msi -Algorithm sha256).Hash -ne $env:NODE_SHA256) {exit 1} ; \
     Start-Process -FilePath msiexec -ArgumentList /q, /i, node.msi -Wait ; \
     Remove-Item -Path node.msi
 
-CMD [ "node.exe" ]  
+CMD [ "node.exe" ]
 </code></pre>
-
 <p>You can build the Node.js Docker image with this command</p>
-
-<pre><code>docker build -t node:4.4.5 .  
+<pre><code>docker build -t node:4.4.5 .
 </code></pre>
-
 <p>After that you have Node.js + npm installed in this Docker image.</p>
-
 <h3 id="step2distillnodejsfolder">Step 2 - Distill Node.js folder</h3>
-
 <p>Now we want to distill the Node.js folder from the Docker image. To do that we have to run a Docker container and then we can copy the folder to a temporary folder on the host machine.</p>
-
-<pre><code>docker run --name=node-temp node:4.4.5 node --version  
-docker cp "node-temp:c:\Program Files\nodejs" nodejs  
-docker rm -vf node-temp  
+<pre><code>docker run --name=node-temp node:4.4.5 node --version
+docker cp "node-temp:c:\Program Files\nodejs" nodejs
+docker rm -vf node-temp
 </code></pre>
-
 <h3 id="step3copydeploytonanoserverimage">Step 3 - COPY deploy to Nano Server image</h3>
-
 <p>With this extracted folder we build the Nano Server image. The following <code>Dockerfile</code> copies the contents of that temporary folder into the Windows directory which is already in PATH. You may want to put the files in another directory, but then you also have to add it to the <code>PATH</code> environment.</p>
-
 <p>Create a sub folder for the Nano Dockerfile</p>
-
-<pre><code>mkdir nano  
-notepad nano\Dockerfile.  
+<pre><code>mkdir nano
+notepad nano\Dockerfile.
 </code></pre>
-
 <p>and create this <code>Dockerfile</code>:</p>
-
 <pre><code class="language-Dockerfile">FROM nanoserver
 
 COPY nodejs /windows/system32
 
-CMD [ "node.exe" ]  
+CMD [ "node.exe" ]
 </code></pre>
-
 <p>Run this command to build the Nano Server image</p>
-
-<pre><code>docker build -t node:4.4.5-nano nano  
+<pre><code>docker build -t node:4.4.5-nano nano
 </code></pre>
-
 <p>Now we have two Docker images, one for Windows Server Core and one for Nano Server.</p>
-
 <p>Here is a small diagram of the three steps we just did:</p>
-
 <p><img src="../content/images/2016/05/nodejs_nanoserver-2.png" alt=""></p>
-
 <p>I've uploaded both Docker images to the <a href="https://hub.docker.com/r/stefanscherer/node-windows/tags/">Docker Hub</a> and found out that the Windows Server Core image is about <strong>55 MByte</strong> and the Nano Server image is only <strong>9 MByte</strong>.</p>
-
 <p>Extracting all the layers of the first Docker image I found out that installing an MSI package also saves a copy of the package in the MSI cache. And running commands also leaves some changes in local databases and the registry which is also stored as difference in the layer.</p>
-
 <p>So one advice to build small Windows Docker images is to avoid installing MSI packages and prefer ZIP files or even using a COPY deployment into an image. Of course MSI packages are often more convenient to install but result in bigger image sizes.</p>
-
 <h2 id="buildappwithonbuild">Build app with ONBUILD</h2>
-
 <p>Another easy way to dockerize your Node.js application is the <code>ONBUILD</code> feature in the <code>Dockerfile</code>. At least for simple examples it is very convenient to use a prepared Docker images with that feature.</p>
-
 <p>So let's build another <code>Dockerfile</code> just like the official <code>node:onbuild</code> image which does these steps to install your application and all the dependencies:</p>
-
 <ol>
-<li>copy package.json  </li>
-<li>run npm install  </li>
+<li>copy package.json</li>
+<li>run npm install</li>
 <li>copy rest of sources</li>
 </ol>
-
 <p>So we create another folder for that <code>Dockerfile</code></p>
-
-<pre><code>mkdir nano\onbuild  
-notepad nano\onbuild\Dockerfile.  
+<pre><code>mkdir nano\onbuild
+notepad nano\onbuild\Dockerfile.
 </code></pre>
-
 <p>and the following content:</p>
-
 <pre><code class="language-Dockerfile">FROM node:4.4.5-nano
 
-RUN mkdir \app  
+RUN mkdir \app
 WORKDIR /app
 
-ONBUILD COPY package.json package.json  
-ONBUILD RUN npm install  
+ONBUILD COPY package.json package.json
+ONBUILD RUN npm install
 ONBUILD COPY . .
 
-CMD [ "npm.cmd", "start" ]  
+CMD [ "npm.cmd", "start" ]
 </code></pre>
-
 <p>Now build the Nano Server image with the ONBUILD feature:</p>
-
-<pre><code>docker build --isolation=hyperv -t node:4.4.5-nano-onbuild nano/onbuild  
+<pre><code>docker build --isolation=hyperv -t node:4.4.5-nano-onbuild nano/onbuild
 </code></pre>
-
 <p>I have tested this with a small Node.js web server that uses Express and some other dependencies.</p>
-
 <p>To build a dockerized Node.js application running in a Nano Server container you only have to go to your Node.js source code and add a single line <code>Dockerfile</code></p>
-
-<pre><code class="language-Dockerfile">FROM nano:4.4.5-nano-onbuild  
+<pre><code class="language-Dockerfile">FROM nano:4.4.5-nano-onbuild
 </code></pre>
-
 <p>and build your application Docker image with</p>
-
-<pre><code>docker build --isolation=hyperv -t mynodeapp:nano .  
+<pre><code>docker build --isolation=hyperv -t mynodeapp:nano .
 </code></pre>
-
 <h2 id="optimizations">Optimizations</h2>
-
 <p>Investigating the layers of such an application showed some other temporary folders which aren't needed inside the Docker image.</p>
-
 <ol>
-<li>A npm-cache folder  </li>
+<li>A npm-cache folder</li>
 <li>Many files in temp folder, also from npm</li>
 </ol>
-
 <p>So we can optimize that ONBUILD <code>Dockerfile</code> a little bit to remove these temp folders while building your application Docker image. There is a command <code>npm cache clean</code>, but this didn't work for me, so I have changed that to some <code>rd</code> commands. This is the final ONBUILD <code>Dockerfile</code>:</p>
-
 <pre><code class="language-Dockerfile">FROM node:4.4.5-nano
 
-RUN mkdir \app  
+RUN mkdir \app
 WORKDIR /app
 
-ONBUILD COPY package.json package.json  
-ONBUILD RUN npm install &amp; rd /s /q %APPDATA%\npm-cache &amp; for /d %G in ("%TEMP%\npm-*") do rd /s /q "%~G"  
+ONBUILD COPY package.json package.json
+ONBUILD RUN npm install &amp; rd /s /q %APPDATA%\npm-cache &amp; for /d %G in ("%TEMP%\npm-*") do rd /s /q "%~G"
 ONBUILD COPY . .
 
-CMD [ "npm.cmd", "start" ]  
+CMD [ "npm.cmd", "start" ]
 </code></pre>
-
 <p>With that optimized Docker image deploying a simple Express web server the <a href="https://hub.docker.com/r/stefanscherer/hello-dresden/tags/">final application Docker image</a> went down from <strong>24 MByte</strong> to <strong>15 MByte</strong>. In comparison with the unoptimized Windows Server Core image the same application is <strong>82 MByte</strong> on the Docker Hub.</p>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>If you don't want to build these Node.js Docker images manually you can find them on the <a href="https://hub.docker.com/r/stefanscherer/node-windows/">Docker Hub</a> with links to the Dockerfiles in the <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/node">GitHub repo</a>.</p>
-
 <p>With such a Node.js Nano Server base image on the Docker Hub you can start developing on your Windows 10 machine. Now dockerize your Node.js apps into Nano Server containers and share them with others via the Docker Hub.</p>
-
 <p>The Windows Server 2016 is only needed to install MSI packages and distill the software into Nano Server images.</p>
-
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -340,7 +285,6 @@ CMD [ "npm.cmd", "start" ]
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -363,6 +307,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -395,7 +340,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

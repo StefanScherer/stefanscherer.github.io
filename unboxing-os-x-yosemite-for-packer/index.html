@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Unboxing OS X Yosemite for Packer</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/amp/">
@@ -39,21 +38,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Unboxing OS X Yosemite for Packer",
     "url": "https://stefanscherer.github.io/unboxing-os-x-yosemite-for-packer/",
@@ -62,12 +64,19 @@
     "description": "Today OS X Yosemite is available in the Mac App Store. So it&#x27;s time to build a basebox for Packer and Vagrant. First I have to download the new image. vagrant up a Mavericks box To do that, I start a Mavericks box, that I already have. I use this",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
@@ -78,10 +87,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -111,20 +120,16 @@
         </header>
 
         <section class="post-content">
-            <p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href="http://packer.io">Packer</a> and <a href="http://vagrantup.com">Vagrant</a>.</p>
-
+            <div class="kg-card-markdown"><p>Today OS X Yosemite is available in the Mac App Store. So it's time to build a basebox for <a href="http://packer.io">Packer</a> and <a href="http://vagrantup.com">Vagrant</a>.</p>
 <p>First I have to download the new image.</p>
-
 <h2 id="vagrantupamavericksbox"><code>vagrant up</code> a Mavericks box</h2>
-
 <p>To do that, I start a Mavericks box, that I already have. I use this <code>Vagrantfile</code> with the box named <code>osx109</code>.</p>
-
 <pre><code class="language-ruby"># -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|  
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define :"osx-update" do |config|
     config.vm.box = "osx109"
     config.ssh.forward_agent = true
@@ -138,112 +143,78 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
     end
   end
-end  
+end
 </code></pre>
-
-<p>Then I just call </p>
-
-<pre><code class="language-bash">vagrant up  
+<p>Then I just call</p>
+<pre><code class="language-bash">vagrant up
 </code></pre>
-
 <p>and log into the desktop. After a while, the Mac App Store Icon shows, that there's an update.</p>
-
 <h2 id="downloadfrommacappstore">Download from Mac App Store</h2>
-
 <p>I open up the Mac App Store from that VM, and click on the Download button for the OS X Yosemite update.</p>
-
 <p><img src="../content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-01-PM.png" alt="yosemite downloaded"></p>
-
-<p>After downloading the installer starts automatically and shows </p>
-
+<p>After downloading the installer starts automatically and shows</p>
 <p><img src="../content/images/2014/Oct/Screen-Shot-2014-10-16-at-9-28-07-PM.png" alt="yosemite installer"></p>
-
 <h2 id="copyinstallesddmg">Copy InstallESD.dmg</h2>
-
 <p>Now, just <strong>don't</strong> press Continue.</p>
-
 <p>Instead, copy the downloaded InstallESD.dmg file from the VM to your host.</p>
-
-<pre><code class="language-bash">cp /Applications/Install\ OS\ X\ Yosemite.app/Contents/SharedSupport/InstallESD.dmg  /vagrant  
+<pre><code class="language-bash">cp /Applications/Install\ OS\ X\ Yosemite.app/Contents/SharedSupport/InstallESD.dmg  /vagrant
 </code></pre>
-
 <h2 id="destroyvm">Destroy VM</h2>
-
 <p>Now I destroy the VM with</p>
-
-<pre><code class="language-bash">vagrant destroy -f  
+<pre><code class="language-bash">vagrant destroy -f
 </code></pre>
-
 <h2 id="buildnewbaseboxwithboxcutter">Build new basebox with box-cutter</h2>
-
 <p>Now it's time to clone the GitHub repo from <a href="https://github.com/box-cutter/osx-vm"><strong>box-cutter/osx-vm</strong></a>.</p>
-
-<pre><code class="language-bash">git clone https://github.com/box-cutter/osx-vm  
-cd osx-vm  
+<pre><code class="language-bash">git clone https://github.com/box-cutter/osx-vm
+cd osx-vm
 </code></pre>
-
 <p>At the moment, there is my <a href="https://github.com/box-cutter/osx-vm/pull/3">PR #3</a> to add templates like <code>osx1010-desktop.json</code> file. As long as this PR isn't merged, please clone my fork as described in the next steps. After the PR is accepted and merged, just skip these steps.</p>
-
-<pre><code class="language-bash">rm -rf osx-vm  
-git clone https://github.com/StefanScherer/osx-vm  
-cd osx-vm  
-git checkout feature/yosemite  
+<pre><code class="language-bash">rm -rf osx-vm
+git clone https://github.com/StefanScherer/osx-vm
+cd osx-vm
+git checkout feature/yosemite
 </code></pre>
-
 <h3 id="copydownloadediso">Copy downloaded ISO</h3>
-
 <p>You have to copy the downloaded Yosemite ISO into the <code>iso/OS X Yosemite/</code> folder.</p>
-
-<pre><code class="language-bash">mkdir iso/OS\ X\ Yosemite  
-cp ../InstallESD.dmg iso/OS\ X\ Yosemite  
+<pre><code class="language-bash">mkdir iso/OS\ X\ Yosemite
+cp ../InstallESD.dmg iso/OS\ X\ Yosemite
 </code></pre>
-
 <h3 id="runpacker">Run Packer</h3>
-
 <p>There is a <code>Makefile</code> that will help you preparing the ISO and building the basebox with Packer.</p>
-
-<pre><code class="language-bash">make list  
-make osx1010-desktop  
+<pre><code class="language-bash">make list
+make osx1010-desktop
 </code></pre>
-
 <p>It will prepare the original DMG to make it work with packer. Then the basebox will be created. The final basebox will be placed in <strong>box/vmware/osx1010-desktop-nocm-1.0.0.box</strong>.</p>
-
 <h3 id="addvagrantbasebox">Add Vagrant basebox</h3>
-
 <p>Now it's time to add the basebox to be used with Vagrant.</p>
-
-<pre><code class="language-bash">vagrant box add osx1010-desktop box/vmware/osx1010-desktop-nocm-1.0.0.box --force  
+<pre><code class="language-bash">vagrant box add osx1010-desktop box/vmware/osx1010-desktop-nocm-1.0.0.box --force
 </code></pre>
-
 <h3 id="vagrantup">Vagrant Up</h3>
-
-<p>Now spin up your first OSX Yosemite VM with Vagrant.  </p>
-
-<pre><code class="language-bash">mkdir yosemite  
-cd yosemite  
-vagrant init osx1010-desktop  
-vagrant  
+<p>Now spin up your first OSX Yosemite VM with Vagrant.</p>
+<pre><code class="language-bash">mkdir yosemite
+cd yosemite
+vagrant init osx1010-desktop
+vagrant
 </code></pre>
-
 <p>Have fun with your new toy!</p>
-
 <p>I have built and tested the OSX Yosemite box only with VMware Fusion 6.0.5 and not with VirtualBox.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -260,7 +231,6 @@ vagrant
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -283,6 +253,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -315,7 +286,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

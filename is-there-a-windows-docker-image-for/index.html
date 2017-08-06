@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Is there a Windows Docker image for ...?</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/is-there-a-windows-docker-image-for/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/is-there-a-windows-docker-image-for/amp/">
@@ -48,21 +47,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Is there a Windows Docker image for ...?",
     "url": "https://stefanscherer.github.io/is-there-a-windows-docker-image-for/",
@@ -72,12 +74,19 @@
     "description": "Do you want to try out Windows containers, but don&#x27;t want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows. These Docker images are well maintained and you can just start and put",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-golang tag-python tag-node-js tag-java nav-closed">
@@ -88,10 +97,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -121,106 +130,75 @@
         </header>
 
         <section class="post-content">
-            <p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
-
+            <div class="kg-card-markdown"><p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
 <p>These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.</p>
-
 <p>Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.</p>
-
 <h2 id="prefernanoserver">Prefer NanoServer</h2>
-
 <p>So starting to work with NanoServer is really easy with Docker as you only choose the right image for the <code>FROM</code> instruction in your <code>Dockerfile</code>. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.</p>
-
 <p>So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.</p>
-
 <h2 id="go">Go</h2>
-
 <p>The Go programming language is available on the Docker Hub as image <a href="https://hub.docker.com/_/golang/"><code>golang</code></a>. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.</p>
-
 <ul>
 <li><code>FROM golang:windowsservercore</code></li>
 <li><code>FROM golang:nanoserver</code></li>
 </ul>
-
 <p>Have a look at the <a href="https://hub.docker.com/_/golang/">tags page</a> if you want another version or if you want to pin a specific version of Golang.</p>
-
 <h2 id="java">Java</h2>
-
 <p>When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official <a href="https://hub.docker.com/_/openjdk/"><code>openjdk</code></a> Docker images. Both Windows Server Core and NanoServer are supported.</p>
-
 <ul>
 <li><code>FROM openjdk:windowsservercore</code></li>
 <li><code>FROM openjdk:nanoserver</code></li>
 </ul>
-
 <p>If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the <a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8">oracle/docker-images</a> repository.</p>
-
 <h2 id="nodejs">Node.JS</h2>
-
 <p>For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official <a href="https://hub.docker.com/_/node/"><code>node</code></a> images.</p>
-
 <p>In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:</p>
-
 <ul>
 <li><code>FROM stefanscherer/node-windows:6</code></li>
 <li><code>FROM stefanscherer/node-windows:6-nano</code></li>
 </ul>
-
 <p>You also can find more tags and versions at the <a href="https://hub.docker.com/r/stefanscherer/node-windows/">Docker Hub</a>.</p>
-
 <h2 id="python">Python</h2>
-
 <p>The script language Python is available as Windows Server Core Docker image at the official <a href="https://hub.docker.com/_/python/"><code>python</code></a> images. Both major versions of Python are available.</p>
-
 <ul>
 <li><code>FROM python:3-windowsservercore</code></li>
 <li><code>FROM python:2-windowsservercore</code></li>
 </ul>
-
 <p>I also have a Python Docker image <a href="https://hub.docker.com/r/stefanscherer/python-windows/">for NanoServer</a> with Python 3.6 to create smaller Docker images.</p>
-
 <ul>
 <li><code>FROM stefanscherer/python-windows:nano</code></li>
 </ul>
-
 <h2 id="netcore">.NET Core</h2>
-
 <p>Microsoft provides Linux and Windows Docker images for .NET Core at <a href="https://hub.docker.com/r/microsoft/dotnet/"><code>microsoft/dotnet</code></a>. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.</p>
-
 <ul>
 <li><code>FROM microsoft/dotnet:nanoserver</code></li>
 </ul>
-
-<h2 id="aspnet">ASP.NET</h2>
-
-<p>For ASP.NET there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at <a href="https://hub.docker.com/r/microsoft/aspnet/"><code>microsoft/aspnet</code></a>.</p>
-
+<h2 id="aspnet"><a href="http://ASP.NET">ASP.NET</a></h2>
+<p>For <a href="http://ASP.NET">ASP.NET</a> there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at <a href="https://hub.docker.com/r/microsoft/aspnet/"><code>microsoft/aspnet</code></a>.</p>
 <ul>
 <li><code>FROM microsoft/aspnet:4.6.2-windowsservercore</code></li>
 <li><code>FROM microsoft/aspnet:3.5-windowsservercore</code></li>
 </ul>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.</p>
-
 <p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -237,7 +215,6 @@
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -260,6 +237,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -292,7 +270,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

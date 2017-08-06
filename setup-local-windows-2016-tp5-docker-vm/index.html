@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Setup a local Windows 2016 TP5 Docker VM</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/amp/">
@@ -46,21 +45,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Setup a local Windows 2016 TP5 Docker VM",
     "url": "https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/",
@@ -70,12 +72,19 @@
     "description": "It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers. Very",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-vagrant tag-packer nav-closed">
@@ -86,10 +95,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -119,154 +128,99 @@
         </header>
 
         <section class="post-content">
-            <p>It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.</p>
-
+            <div class="kg-card-markdown"><p>It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.</p>
 <p>Very soon there will be a Microsoft Azure template to get started very easily. Another simple way will be creating a Docker Machine in Azure, once a <a href="https://github.com/docker/machine/pull/3329">pull request</a> is merged.</p>
-
 <h2 id="tutorials">Tutorials</h2>
-
 <p>But for now it takes some effort and time to set up such a local VM. There are good tutorials that guide you through all the steps needed.</p>
-
 <ul>
 <li><a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016">Setup Docker on Windows Server 2016 in VirtualBox</a> by Arun Gupta</li>
 <li><a href="https://lostechies.com/gabrielschenker/2016/04/30/windows-docker-containers/">Windows Docker Containers in Hyper-V</a> by Gabriel Schenker</li>
 </ul>
-
 <h2 id="packervagrantautomation">Packer + Vagrant = Automation</h2>
-
 <p>If you don't want to do all these whole setup manually and wait in front of your computer to enter the next step you can use Packer and Vagrant.</p>
-
 <p><a href="https://www.packer.io">Packer</a> takes the ISO file and bakes a base box VM to be used with <a href="https://www.vagrantup.com">Vagrant</a>. With Vagrant you can spin up one ore more such VM's and even form a Windows Docker Swarm.</p>
-
 <p>The Packer template to create a Windows 2016 TP5 VM including the Docker Engine is tested with VirtualBox 5.0.20 and VMware Fusion 8.1 and should also work with VMware Workstation if you are working with a Windows PC.</p>
-
 <h3 id="runpacker">Run Packer</h3>
-
 <p>To build the Vagrant base box with Packer 0.10.0 you just clone the <a href="https://github.com/StefanScherer/packer-windows">GitHub repo</a>.</p>
-
-<pre><code>git clone https://github.com/StefanScherer/packer-windows  
-cd packer-windows  
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
 </code></pre>
-
 <p>Now build the Vagrant base box for VMware</p>
-
-<pre><code>packer build --only=vmware-iso windows_2016_docker.json  
+<pre><code>packer build --only=vmware-iso windows_2016_docker.json
 </code></pre>
-
 <p>or for VirtualBox.</p>
-
-<pre><code>packer build --only=virtualbox-iso windows_2016_docker.json  
+<pre><code>packer build --only=virtualbox-iso windows_2016_docker.json
 </code></pre>
-
 <p>This takes about an hour, so you can leave your computer for a while.</p>
-
 <p><img src="../content/images/2016/05/packer-build.png" alt="packer-build"></p>
-
 <p>After that a box file should be created in the current directory. Now add this box to Vagrant with</p>
-
-<pre><code>vagrant box add windows_2016_tp5_docker windows_2016_docker_vmware.box  
+<pre><code>vagrant box add windows_2016_tp5_docker windows_2016_docker_vmware.box
 </code></pre>
-
 <p>If you have both hypervisors, you also can create both base boxes and add them. You can list all your base boxes with</p>
-
 <pre><code>$ vagrant box list
-windows_2016_tp5_docker (virtualbox, 0)  
-windows_2016_tp5_docker (vmware_desktop, 0)  
+windows_2016_tp5_docker (virtualbox, 0)
+windows_2016_tp5_docker (vmware_desktop, 0)
 </code></pre>
-
 <h2 id="runvagrant">Run Vagrant</h2>
-
 <p>Now you can create test and dev scenarios with this new base box. There is <a href="https://github.com/StefanScherer/docker-windows-box">another GitHub</a> repo for that. We just clone it with</p>
-
-<pre><code>git clone https://github.com/StefanScherer/docker-windows-box  
-cd docker-windows-box  
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
 </code></pre>
-
 <p>With the current Vagrant 1.8.1 it is easy to spin up a VM to have Docker running on Windows 2016 TP5.</p>
-
-<pre><code>vagrant up  
+<pre><code>vagrant up
 </code></pre>
-
 <p>Vagrant powers up a VM and install further Docker tools like Machine and Compose. Also Git will be installed to get in touch with <a href="https://github.com/brogersyh/Dockerfiles-for-windows">some</a> <a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-container-samples/windowsservercore">Windows</a> <a href="https://github.com/StefanScherer/dockerfiles-windows">Dockerfiles</a> available on GitHub.</p>
-
 <p><img src="../content/images/2016/05/vagrant-up-1.png" alt="vagrant-up"></p>
-
 <p>You can open a PowerShell window and run for example</p>
-
-<pre><code>docker version  
-docker images  
+<pre><code>docker version
+docker images
 </code></pre>
-
 <p><img src="../content/images/2016/05/docker-version.png" alt="docker-version"></p>
-
 <p>Congratulations! You can start working with a brand new Docker Engine running on Windows 2016 TP5.</p>
-
 <p>Have fun!</p>
-
 <h2 id="whatpackerdoesforyou">What Packer does for you</h2>
-
 <p>If you want to understand what Packer does building such a VM in an automated way here is a list of provision scripts that Packer runs.</p>
-
 <h3 id="installfeatures">Install features</h3>
-
 <p>In the script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-winrm.ps1">enable-winrm.ps1</a>, just before the WinRM port will be opened to let Packer login and do further provisioning some Windows features like Containers and Hyper-V (only VMware) will be enabled.</p>
-
 <h3 id="installdocker">Install Docker</h3>
-
 <p>The next script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/install-docker.ps1">install-docker.ps1</a> installs the Docker service and client and the <code>windowsservercore</code> base Docker image. If Hyper-V is enabled, also the <code>nanoserver</code> base Docker images will be installed.</p>
-
 <h3 id="patchwindowsservercoreimage">Patch windowsservercore image</h3>
-
 <p>As the TP5 and relating files and images are very fresh and it is still a technical preview, there might be some obstacles here and there.</p>
-
 <p>At the moment <a href="https://social.msdn.microsoft.com/Forums/en-US/e2751260-4494-4b60-999e-5ea27ccbe1db/workaround-to-increase-boot-time-for-windows-server-core-containers?forum=windowscontainers">we need this script</a> to speed up the <code>windowsservercore</code> Docker image a little bit. The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1">patch-boot-time-for-containers.ps1</a> just fixes that for you.</p>
-
 <h3 id="enableinsecuredockerport2375">Enable insecure Docker port 2375</h3>
-
-<p>For a local test environment we also just open the insecure Docker port 2375 with the script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-docker-insecure.ps1">enable-docker-insecure.ps1</a>. <br>
+<p>For a local test environment we also just open the insecure Docker port 2375 with the script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-docker-insecure.ps1">enable-docker-insecure.ps1</a>.<br>
 You can remote control your Windows Docker engine from your host machine that is running the VM. Try it out, especially if you are normally working with Linux or Mac.</p>
-
 <p>Once there is a Docker Machine driver for local Windows VM's is available I would prefer that and have the secure TLS connection.</p>
-
 <h3 id="adddockergroup">Add docker group</h3>
-
 <p>The new Windows Docker engine listens to a Windows named pipe. This is very similar to the Unix socket on Linux.</p>
-
 <p>A normal user does not have access to it, so you have to open an administrator shell to work with the Docker engine.</p>
-
-<p>The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1">add-docker-group.ps1 <br>
+<p>The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1">add-docker-group.ps1<br>
 </a> adds the option <code>-G docker</code> to the Docker engine to give all members of the Windows group <code>docker</code> access to that named pipe.</p>
-
 <p>The script also adds the user <code>vagrant</code> to that group. So in the final Vagrant box you just open a normal PowerShell window and can use the Docker engine.</p>
-
 <h3 id="removekeyjson">Remove key.json</h3>
-
-<p>The final script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/remove-docker-key-json.ps1">remove-docker-key-json.ps1 <br>
+<p>The final script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/remove-docker-key-json.ps1">remove-docker-key-json.ps1<br>
 </a> removes the <code>key.json</code> file from the initial installation. This file will be created on the first start of the Docker engine in each Vagrant VM and creates different ID's for each Docker engine.</p>
-
 <p>This is important if you want to build a Windows Docker Swarm. Each Docker engine needs a different ID.</p>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>As there might be updates in the Docker base images and the Docker engine itself it is now very easy to reproduce the base VM with Packer and Vagrant without all the manual steps again.</p>
-
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -283,7 +237,6 @@ You can remote control your Windows Docker engine from your host machine that is
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -306,6 +259,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -338,7 +292,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

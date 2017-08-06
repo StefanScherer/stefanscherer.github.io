@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>First impressions of Docker on Windows 2016 TP5</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/amp/">
@@ -39,21 +38,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "First impressions of Docker on Windows 2016 TP5",
     "url": "https://stefanscherer.github.io/first-impressions-of-windows-2016-tp5/",
@@ -62,12 +64,19 @@
     "description": "Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015. As I haven&#x27;t found an Azure template (update: today I",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template nav-closed">
@@ -78,10 +87,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -111,101 +120,67 @@
         </header>
 
         <section class="post-content">
-            <p>Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015.</p>
-
+            <div class="kg-card-markdown"><p>Yesterday Microsoft announced the availabilty of the Windows 2016 Technical Preview 5. Sure I had to get in touch with that new toy as soon as possible to see what has changed since TP4 that was released in November 2015.</p>
 <p>As I haven't found an Azure template (<strong>update:</strong> today I found <a href="https://portal.azure.com/?feature.intlpolyfill=true#blade/Microsoft_Azure_Marketplace/GalleryFeaturedMenuItemBlade/selectedMenuItemId/home/searchQuery/Windows%20Server%202016%20Technical%20Preview%205">Windows Server 2016 Technical Preview 5</a>), I prepared my packer templates in <a href="https://github.com/stefanscherer/packer-windows/tree/tp5">a tp5 branch</a> that still need some changes to automatically build and install Docker and the Docker base images.</p>
-
 <p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-21-18-51.png" alt="packer build"></p>
-
 <p>Even without a 100% solution this was a good first starting point build a first Vagrant box to start with and to do the remaining steps from <a href="https://msdn.microsoft.com/virtualization/windowscontainers/deployment/deployment?f=255&amp;MSPPError=-2147217396">Container Host Deployment - Windows Server</a> manually.</p>
-
 <p>I'm really addicted to the automation workflow</p>
-
 <ol>
-<li><code>packer build</code>  </li>
-<li><code>vagrant box add</code>  </li>
-<li><code>vagrant up</code>  </li>
+<li><code>packer build</code></li>
+<li><code>vagrant box add</code></li>
+<li><code>vagrant up</code></li>
 <li><code>vagrant destroy -f</code></li>
 </ol>
-
 <p>because you won't do it only once to build and have such a test environment. But setting it up is the hard way.</p>
-
 <p>If you are impatient to wait for a complete packer template you can follow Arun Gupta's steps to build a <a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016">TP5 VM in VirtualBox</a>.</p>
-
 <p>Now let's see what's new in the Technical Preview 5.</p>
-
 <h2 id="wayfasternomoresleep">Way faster - no more sleep</h2>
-
 <p>Building some Docker images with one of the Windows Dockerfiles I tested with TP4 are now <strong>much faster</strong> and as well you do not need to do the workaround of sleeping some seconds in each <code>RUN</code> command. Just remove this and forget about it.</p>
-
 <h2 id="ipadressescanbeinspected">IP adresses can be inspected</h2>
-
 <p>One of the obstacles porting the <a href="https://github.com/docker/docker-birthday-3/pull/165">Docker Birthday app to TP4 Windows containers</a> was the missing ability to fetch the IP adress of each container.</p>
-
 <p>Running <code>docker inspect</code> now shows the IP address of the container.</p>
-
 <p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-27-um-22-33-29.png" alt="container ip address"></p>
-
 <p>I will have to test whether the links in a <code>docker-compose.yml</code> file will work as well to set up a simple multi container app using simple host names.</p>
-
 <p>But that's a good improvement of the networking in Windows containers.</p>
-
 <h2 id="npipeisyourunixsocket">npipe is your unix socket</h2>
-
 <p>Another interesting thing is that the Docker engine now listens to a Windows named pipe, just like a Unix socket on Linux.</p>
-
 <p>This leads to a very unixish behavior that you have to be "sudo" to run docker commands:</p>
-
 <p>Running the docker client without adminstratotion rights you can't connect to it.</p>
-
 <p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-01-29.png" alt=""></p>
-
 <p>There is a way to allow specific users to use this named pipe just like on Linux adding users to the docker group, but I haven't found out the group name for this short test.</p>
-
 <h2 id="kitematicmeetswindowsagain">Kitematic meets Windows (again)</h2>
-
 <p>At this evening I also played with Docker for Windows Beta in a parallel VM and installed Kitematic there. As the Beta uses Kitematic without VirtualBox I thought this should also work well with TP5. So I took the ZIP file from the Beta download and tweaked my TP5 installation a little bit to make Kitematic talk to the Window Docker Engine.</p>
-
 <p>My very pragmatic way to make this work was to add the local TCP port 2375 to the Docker Engine by editing the start script</p>
-
-<pre><code>notepad C:\ProgramData\docker\runDockerDaemon.cmd  
+<pre><code>notepad C:\ProgramData\docker\runDockerDaemon.cmd
 </code></pre>
-
 <p>and change the dockerd command to <code>dockerd -H npipe:// -H 127.0.0.1:2375</code> and then run</p>
-
-<pre><code>restart-service docker  
+<pre><code>restart-service docker
 </code></pre>
-
 <p>The downloaded version of Kitematic for the Beta also searches for <code>docker.local</code>, so I added the loopback IP address to the host table with</p>
-
-<pre><code class="language- ">notepad C:\Windows\system32\drivers\etc\hosts  
+<pre><code>notepad C:\Windows\system32\drivers\etc\hosts
 </code></pre>
-
 <p><img src="../content/images/2016/04/Bildschirmfoto-2016-04-28-um-00-23-13.png" alt="kitematic-on-tp5"></p>
-
 <p>Now Kitematic starts up without creating a local VM and shows the local Windows containers on the left side.</p>
-
 <p>There's a lot more to explore in TP5 as you now can <strong>pull and push</strong> Docker Images from and to the Docker Hub.</p>
-
 <p>So stay tuned of upcoming blog posts. With the TP5 the community can follow the progress of Docker on Windows much better and can check the latest improvements and pull requests of the Windows Docker Engine.</p>
-
 <p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -222,7 +197,6 @@
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -245,6 +219,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -277,7 +252,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

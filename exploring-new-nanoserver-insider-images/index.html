@@ -4,16 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Exploring new NanoServer Insider images</title>
-    <meta name="description" content="">
 
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="../favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=e41d9465fe">
 
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="canonical" href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/">
     <meta name="referrer" content="no-referrer-when-downgrade">
     <link rel="amphtml" href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/amp/">
@@ -50,21 +49,24 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "url": "https://stefanscherer.github.io/author/stefan-scherer/",
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
     },
     "headline": "Exploring new NanoServer Insider images",
     "url": "https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/",
@@ -74,12 +76,19 @@
     "description": "Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications. To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11">
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5">
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
 </head>
 <body class="post-template tag-docker tag-windows tag-nano-server tag-node-js tag-vagrant tag-packer tag-docker-hub tag-insider nav-closed">
@@ -90,10 +99,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -123,170 +132,116 @@
         </header>
 
         <section class="post-content">
-            <p>Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.</p>
-
+            <div class="kg-card-markdown"><p>Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.</p>
 <p>To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.</p>
-
 <h2 id="windowsserverinsider">Windows Server Insider</h2>
-
 <ol>
-<li><p>Register at Windows Insider program <a href="https://insider.windows.com">https://insider.windows.com</a> and join the Windows Server Insider program.</p></li>
-<li><p>Download the Windows Server Insider preview ISO from <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver">https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver</a></p></li>
+<li>
+<p>Register at Windows Insider program <a href="https://insider.windows.com">https://insider.windows.com</a> and join the Windows Server Insider program.</p>
+</li>
+<li>
+<p>Download the Windows Server Insider preview ISO from <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver">https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver</a></p>
+</li>
 </ol>
-
 <p>Now you can create a VM and install Docker. You can either build the VM manually and follow the docs <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/using-insider-container-images">"Using Insider Container Images"</a> how to install Docker and pull the Insider container images. Or you can use my Packer template and Vagrant environment to automate these steps. The walkthrough is described at</p>
-
 <p><a href="https://github.com/StefanScherer/insider-docker-machine">https://github.com/StefanScherer/insider-docker-machine</a></p>
-
 <h2 id="windowsinsiderimages">Windows Insider images</h2>
-
 <p>There are four new Docker images available with a much smaller footprint.</p>
-
 <p><img src="../content/images/2017/07/windows_insider_images.png" alt="Windows Insider images"></p>
-
 <ul>
 <li>microsoft/windowsservercore-insider</li>
 <li>microsoft/nanoserver-insider</li>
 <li>microsoft/nanoserver-insider-dotnet</li>
 <li>microsoft/nanoserver-insider-powershell</li>
 </ul>
-
 <p>The Windows Server Core Insider image got down from 5 GB to only 2 GB which saves a lot of bandwidth and download time.</p>
-
 <p>You may wonder why there are three Nano Server Insider images and why there is one without PowerShell.</p>
-
 <h2 id="aimingthesmallestwindowsbaseimage">Aiming the smallest Windows base image</h2>
-
 <p>If we compare the image sizes of the current <code>microsoft/nanoserver</code> image with its base layer and update layer with the new Insider images you can see the reason.</p>
-
 <p><img src="../content/images/2017/07/nanoserver_sizes.png" alt="NanoServer sizes"></p>
-
 <p>If you want to ship your application in a container image you don't want to ship a whole operating system, but only the parts needed to run the application.</p>
-
 <p>And to ship faster is to ship smaller images. For many applications you do not need eg. PowerShell inside your base image at runtime which would take another 54 MByte to download from the Docker registry.</p>
-
 <p>Let's have a look at current Windows Docker images available on the Docker Hub. To run a Golang webserver for example on an empty Windows Docker host you have to pull the 2MB binary and the two NanoServer base layers with hundreds of MB to run it in a container.</p>
-
 <p><img src="../content/images/2017/07/docker-pull-whoami.png" alt="docker pull whoami"></p>
-
 <p>Of course these base images have to be downloaded only once as other NanoServer container images will use the same base image. But if you work with Windows containers for a longer time you may have noticed that you still have to download different update layers from time to time that pull another 122 MB.</p>
-
 <p>And if the NanoServer base image is much smaller then the updates also will be smaller and faster to download.</p>
-
 <p>With the new Insider container images you can build and run containerized .NET core applications that are still smaller than the NanoServer + PowerShell base image.</p>
-
 <h2 id="nodejs">Node.js</h2>
-
 <p>Another example is providing a Node.js container image based on the new NanoServer Insider image with only 92 MByte. We have just cut off "3" hundred MB.</p>
-
 <p><img src="../content/images/2017/07/nodejs_nanoserver_sizes-3.png" alt="Node.js NanoServer sizes"></p>
-
 <p>If we compare that with some of the Linux Node.js container images we are at about the size of the the slim images.</p>
-
 <p><img src="../content/images/2017/07/Bildschirmfoto-2017-07-14-um-08.53.24.png" alt="Node.js slim image sizes"></p>
-
 <h2 id="multistagebuild">Multi-stage build</h2>
-
 <p>To build such small Windows images comes with a cost. You have to live without PowerShell. But the new multi-stage build introduced with Docker 17.05 really helps you and you can use PowerShell before the final image layers are built.</p>
-
 <p>If you haven't heard about multi-stage builds its concept is to have multiple <code>FROM</code> instructions in a <code>Dockerfile</code>. Only the last <code>FROM</code> until the end of the file will build the final container image. This is also called the last stage. In all the other stages you don't have to optimze too much and can use the build cache much better. You can read more about <a href="https://blog.docker.com/2017/07/multi-stage-builds/">multi-stage builds</a> at the Docker Blog.</p>
-
 <p>Let's have a closer look how to build a small Node.js base image. You can find the complete <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/07cedcf2cc93e669bba9c961121feda6f43dab59/node/8.1/nano/Dockerfile">Dockerfile</a> on GitHub.</p>
-
-<p>In the first stage I'm lazy and even use the <code>microsoft/windowsservercore-insider</code> image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment. </p>
-
+<p>In the first stage I'm lazy and even use the <code>microsoft/windowsservercore-insider</code> image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment.</p>
 <pre><code class="language-Dockerfile"># escape=`
-FROM microsoft/windowsservercore-insider as download  
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]  
-RUN Invoke-WebRequest ...  
-RUN Expand-Archive ...  
+FROM microsoft/windowsservercore-insider as download
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN Invoke-WebRequest ... 
+RUN Expand-Archive ...
 </code></pre>
-
 <p>The <code>Dockerfile</code> has a second <code>FROM</code> instruction which then uses the smallest Windows base image. In that stage you normally <code>COPY</code> deploy files and folders from previous stages. In our case we copy the Node.js installation folder into the final image.</p>
-
 <p>The one <code>RUN</code> instruction sets the <code>PATH</code> environment variable with the <code>setx</code> command instead of PowerShell commands.</p>
-
-<pre><code class="language-Dockerfile">FROM microsoft/nanoserver-insider  
-ENV NPM_CONFIG_LOGLEVEL info  
-COPY --from=download /nodejs /nodejs  
-RUN setx PATH "%PATH%;C:\nodejs;%APPDATA%\npm"  
-CMD [ "node.exe" ]  
+<pre><code class="language-Dockerfile">FROM microsoft/nanoserver-insider
+ENV NPM_CONFIG_LOGLEVEL info
+COPY --from=download /nodejs /nodejs
+RUN setx PATH "%PATH%;C:\nodejs;%APPDATA%\npm"
+CMD [ "node.exe" ]
 </code></pre>
-
 <p>Users of such a Node.js base image can work as usual by <code>COPY</code> deploy their source tree and node_modules folder into that image and run the application as a small container.</p>
-
-<pre><code class="language-Dockerfile">FROM stefanscherer/node-windows:8.1.4-insider  
-WORKDIR /code  
-COPY . /code  
-CMD ["node.exe", "app.js"]  
+<pre><code class="language-Dockerfile">FROM stefanscherer/node-windows:8.1.4-insider
+WORKDIR /code
+COPY . /code
+CMD ["node.exe", "app.js"]
 </code></pre>
-
 <p>So all you have to do is change the <code>FROM</code> instruction to the smaller insider Node.js image.</p>
-
 <h2 id="furtherinsiderimages">Further Insider images</h2>
-
 <p>I have pushed some of my first Insider images to the Docker Hub so it may be easier for you to try out different languages.</p>
-
 <ul>
 <li>stefanscherer/node-windows:6.11.1-insider</li>
 <li>stefanscherer/node-windows:8.1.4-insider</li>
 <li>stefanscherer/golang-windows:1.8.3-insider</li>
 <li>stefanscherer/dockertls-windows:insider</li>
 </ul>
-
 <p>If you want to see how these images are built, then you can find the <code>Dockerfiles</code> in the latest pull requests of my <a href="https://github.com/StefanScherer/dockerfiles-windows">https://github.com/StefanScherer/dockerfiles-windows</a> repo.</p>
-
 <h2 id="dockervolumes">Docker Volumes</h2>
-
 <p>If you have worked with Docker Volumes on Windows you may know this already. Node.js and other tools and languages have problems when they want to get the real name of a file or folder that is mapping from the Docker host into the container.</p>
-
 <p>Node.js for example thinks the file is in the folder <code>C:\ContainerMappedDirectories</code>, but cannot find the file there. There is a workaround described in Elton Stoneman's blog post <a href="https://blog.sixeyed.com/docker-volumes-on-windows-the-case-of-the-g-drive/">"Introducing the 'G' Drive"</a> to map it to another drive letter.</p>
-
 <p>With the new Insider preview I see a great improvement on that topic. Running normal Windows containers without the HyperV isolation there is no longer a symbolic link.</p>
-
 <p>If we run the Node.js container interactively and map the folder <code>C:\code</code> into the container we can list the <code>C:</code>drive and see that the <code>code</code> folder is a normal directory.</p>
-
-<pre><code>docker run -v C:\code:C:\code stefanscherer/node-windows:8.1.4-insider cmd /c dir  
+<pre><code>docker run -v C:\code:C:\code stefanscherer/node-windows:8.1.4-insider cmd /c dir
 </code></pre>
-
 <p><img src="../content/images/2017/07/docker-run-nodejs.png-shadow.png" alt="docker run volume"></p>
-
 <p>With this setup you are able to mount your source code into the Node.js container and run it eg. with <code>nodemon</code> to live reload it after changing it on the host.</p>
-
 <p>Unfortunately this is not available with the Hyper-V isolation that is the default on Windows 10 Insider machines.</p>
-
 <p>Running the same command with <code>--isolation=hyperv</code> shows the symlinked directory which Node.js cannot handle at the moment.</p>
-
-<pre><code>docker run -v C:\code:C:\code --isolation=hyperv stefanscherer/node-windows:8.1.4-insider cmd /c dir  
+<pre><code>docker run -v C:\code:C:\code --isolation=hyperv stefanscherer/node-windows:8.1.4-insider cmd /c dir
 </code></pre>
-
 <p><img src="../content/images/2017/07/docker-run-nodejs-hyperv.png-shadow.png" alt="docker run volume hyperv"></p>
-
 <p>But this improvement in native Windows containers looks very promising to solve a lot of headache for all the maintainers of Git for Windows, Golang, Node.js and so on.</p>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>Having smaller Windows container images is a huge step forward. I encourage you to try out the much smaller images. You'll learn how it feels to work with them and you can give valuable feedback to the Microsoft Containers team shaping the next version of Windows Server.</p>
-
 <p>Can we make even smaller images? I don't know, but let's find it out. How about naming the new images? Please make suggestions at the Microsoft Tech Community <a href="https://techcommunity.microsoft.com">https://techcommunity.microsoft.com</a>.</p>
-
 <p>Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay up to date with Windows containers.</p>
+</div>
         </section>
 
         <footer class="post-footer">
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan-scherer/" style="background-image: url(../content/images/2016/03/Stefan-256-1.jpg)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="../author/stefan-scherer/">Stefan Scherer</a></h4>
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
 
-                    <p>Read <a href="../author/stefan-scherer/">more posts</a> by this author.</p>
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    <span class="author-location icon-location">Germany</span>
-                    <span class="author-link icon-link"><a href="https://stefanscherer.github.io">https://stefanscherer.github.io</a></span>
+                    
+                    
                 </div>
             </section>
 
@@ -303,7 +258,6 @@ CMD ["node.exe", "app.js"]
                     <span class="hidden">Google+</span>
                 </a>
             </section>
-
 
 <div id="disqus_thread"></div>
 <script>
@@ -326,6 +280,7 @@ s.setAttribute('data-timestamp', +new Date());
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                                 
+
         </footer>
 
     </article>
@@ -358,7 +313,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=e41d9465fe"></script>
 
 </body>

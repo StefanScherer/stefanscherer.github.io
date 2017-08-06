@@ -5,16 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>Talks</title>
-    <meta name="description" content="" />
 
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="shortcut icon" href="/favicon.ico">
-
-    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css?v=ed40fbff53" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css?v=e41d9465fe" />
 
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="canonical" href="https://stefanscherer.github.io/talks/" />
     <meta name="referrer" content="no-referrer-when-downgrade" />
     
@@ -37,35 +36,45 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/ghost/img/ghosticon.jpg"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
         "name": "Stefan Scherer",
         "image": {
             "@type": "ImageObject",
-            "url": "https://stefanscherer.github.io/content/images/2016/03/Stefan-256-1.jpg",
-            "width": 256,
-            "height": 256
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
         },
-        "sameAs": [
-            "https://stefanscherer.github.io"
-        ]
+        "sameAs": []
     },
     "headline": "Talks",
     "url": "https://stefanscherer.github.io/talks/",
     "description": "Current status of Docker on Windows - Docker Meetup Bamberg, 2016-02-25 Docker on ARM - IoT Meetup Franken, 2016-03-15 Docker for Windows Beta - Docker Meetup Bamberg, 2016-04-28 Docker on Windows Server 2016 TP5 - Docker Meetup Dresden, 2016-05-26 DockerCon 2016 Recap - Docker Meetup Bamberg, 2016-07-14 Docker on Windows",
     "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "https://stefanscherer.github.io"
+        "@id": "https://stefanscherer.github.io/"
     }
 }
     </script>
 
-    <meta name="generator" content="Ghost 0.11" />
+    <script type="text/javascript" src="/public/ghost-sdk.min.js?v=e41d9465fe"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.5" />
     <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
-<body class="post-template page-template page nav-closed">
+<body class="page-template page-talks nav-closed">
 
     <div class="nav">
     <h3 class="nav-title">Menu</h3>
@@ -73,10 +82,10 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-            <li class="nav-home" role="presentation"><a href="https://stefanscherer.github.io/">Home</a></li>
-            <li class="nav-talks nav-current" role="presentation"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
-            <li class="nav-twitter" role="presentation"><a href="https://twitter.com/stefscherer">Twitter</a></li>
-            <li class="nav-github" role="presentation"><a href="https://github.com/StefanScherer">GitHub</a></li>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks nav-current"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
         <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
@@ -103,15 +112,29 @@
         </header>
 
         <section class="post-content">
-            <ul>
+            <div class="kg-card-markdown"><ul>
 <li><a href="http://stefanscherer.github.io/talks/20160225_DockerMeetupBamberg_DockerOnWindows/">Current status of Docker on Windows</a> - Docker Meetup Bamberg, 2016-02-25</li>
 <li><a href="http://stefanscherer.github.io/talks/20160315_IoTMeetupFranken_DockerOnARM/">Docker on ARM</a> - IoT Meetup Franken, 2016-03-15</li>
 <li><a href="http://stefanscherer.github.io/talks/20160428_DockerMeetupBamberg_DockerForWindowsBeta/">Docker for Windows Beta</a> - Docker Meetup Bamberg, 2016-04-28</li>
 <li><a href="http://stefanscherer.github.io/talks/20160526_DockerMeetupDresden_DockerOnWindows/">Docker on Windows Server 2016 TP5</a> - Docker Meetup Dresden, 2016-05-26</li>
 <li><a href="http://www.slideshare.net/stefscherer/dockercon-2016-recap-64023351">DockerCon 2016 Recap</a> - Docker Meetup Bamberg, 2016-07-14</li>
-<li><a href="http://stefanscherer.github.io/talks/20161117_DockerMeetupBamberg_DockerOnWindows/">Docker on Windows - Windows Server 2016 and Windows 10</a> - Docker Meetup Bamberg, 2016-11-17 </li>
+<li><a href="http://stefanscherer.github.io/talks/20161117_DockerMeetupBamberg_DockerOnWindows/">Docker on Windows - Windows Server 2016 and Windows 10</a> - Docker Meetup Bamberg, 2016-11-17</li>
 <li><a href="https://channel9.msdn.com/Events/microsoft-techncial-summit/Technical-Summit-2016/Channel-9-live-Interview-with-Stefan-Scherer">Channel 9 live: Interview about Docker on Windows</a> - Technical Summit 2016, Darmstadt, 2016-12-06</li>
+<li><a href="https://www.youtube.com/watch?v=kvJkKhkAnCM">Video: Build and deploy multiarch Linux and Windows images</a> - Devops Gathering 2017, Bochum, 2017-03-24
+<ul>
+<li><a href="https://www.slideshare.net/stefscherer/build-and-deploy-multiarch-linux-and-windows-container-images">Slides</a></li>
 </ul>
+</li>
+<li><a href="https://www.youtube.com/watch?v=UiJP-368BLA&amp;list=PLkA60AVN3hh_nihZ1mh6cO3n-uMdF7UlV&amp;index=61">DockerCon: Swarm 2 Go</a> - DockerCon, Austin, 2017-04-19
+<ul>
+<li><a href="https://www.slideshare.net/stefscherer/swarm-2-go-build-a-portable-multiarch-data-center-with-pi-and-up-nodes">Slides</a></li>
+</ul>
+</li>
+<li><a href="https://www.slideshare.net/stefscherer/docker-meetup-mannheim-multiarch-docker-images-for-crossplatform-apps">Build and deploy multiarch Linux and Windows images</a> - Docker Meetup Mannheim, 2017-06-21</li>
+<li><a href="https://www.slideshare.net/stefscherer/azure-saturday-build-and-deploy-multiarch-docker-images">Azure Saturday: Build and deploy multiarch images</a> - Azure Saturday 2017, Munich, 2017-06-24</li>
+<li><a href="https://www.slideshare.net/stefscherer/latest-status-on-docker-on-windows">Latest status on Docker on Windows</a> - Docker Meetup Bamberg, 2017-07-06</li>
+</ul>
+</div>
         </section>
 
     </article>
@@ -128,8 +151,8 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
-    <script type="text/javascript" src="/assets/js/index.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js?v=e41d9465fe"></script>
+    <script type="text/javascript" src="/assets/js/index.js?v=e41d9465fe"></script>
 
 </body>
 </html>
