@@ -1,4 +1,4 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 05 Aug 2017 01:12:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use Docker to Search in 320 Million Pwned Passwords</title><description>&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sun, 06 Aug 2017 07:17:20 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use Docker to Search in 320 Million Pwned Passwords</title><description>&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
 
 &lt;p&gt;In his latest blog post&lt;/p&gt;</description><link>https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/</link><guid isPermaLink="false">782eaeb6-6c8e-4321-a860-432ab5d32030</guid><category>Docker</category><category>multi-stage</category><category>HaveIBeenPwned</category><category>passwords</category><category>Security</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Aug 2017 00:55:07 GMT</pubDate><content:encoded>&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
 
@@ -226,6 +226,22 @@ Good news - no pwnage found!
 &lt;h2 id="worksonwindows"&gt;Works on Windows&lt;/h2&gt;
 
 &lt;p&gt;If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.&lt;/p&gt;
+
+&lt;p&gt;With Docker 4 Windows it only depends on the shell you use.&lt;/p&gt;
+
+&lt;p&gt;For PowerShell the command to run the image is&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run --rm -v "$(pwd):/data" pwned-passwords yourpass  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/ps1.png" alt="PowerShell"&gt;&lt;/p&gt;
+
+&lt;p&gt;And if you prefer the classic CMD shell use this command&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run --rm -v "%cd%:/data" pwned-passwords yourpass  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/cmd.png" alt="CMD shell"&gt;&lt;/p&gt;
 
 &lt;p&gt;On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as &lt;code&gt;/data&lt;/code&gt; into the container.&lt;/p&gt;
 

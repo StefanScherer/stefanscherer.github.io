@@ -24,7 +24,7 @@
     <meta property="og:description" content="This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post">
     <meta property="og:url" content="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
     <meta property="article:published_time" content="2017-08-05T00:55:07.000Z">
-    <meta property="article:modified_time" content="2017-08-06T07:16:51.000Z">
+    <meta property="article:modified_time" content="2017-08-06T07:20:57.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="multi-stage">
     <meta property="article:tag" content="HaveIBeenPwned">
@@ -66,7 +66,7 @@
     "headline": "Use Docker to Search in 320 Million Pwned Passwords",
     "url": "https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/",
     "datePublished": "2017-08-05T00:55:07.000Z",
-    "dateModified": "2017-08-06T07:16:51.000Z",
+    "dateModified": "2017-08-06T07:20:57.000Z",
     "keywords": "Docker, multi-stage, HaveIBeenPwned, passwords, Security",
     "description": "This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post",
     "mainEntityOfPage": {
@@ -365,7 +365,7 @@ Good news - no pwnage found!
 
 <p>On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as <code>/data</code> into the container.</p>
 
-<pre><code>docker run -v "/c/Users/stefan.scherer/pwned:/data" stefanscherer/pwned-passwords troyhunt  
+<pre><code>docker run --rm -v "/c/Users/stefan.scherer/pwned:/data" stefanscherer/pwned-passwords troyhunt  
 </code></pre>
 
 <p><img src="../content/images/2017/08/win7.png" alt="Windows 7 with pwned-passwords image"></p>
