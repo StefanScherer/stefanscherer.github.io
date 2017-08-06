@@ -1,4 +1,252 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Tue, 25 Jul 2017 12:09:56 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Exploring new NanoServer Insider images</title><description>&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><generator>Ghost 0.11</generator><lastBuildDate>Sat, 05 Aug 2017 01:12:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use Docker to Search in 320 Million Pwned Passwords</title><description>&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
+
+&lt;p&gt;In his latest blog post&lt;/p&gt;</description><link>https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/</link><guid isPermaLink="false">782eaeb6-6c8e-4321-a860-432ab5d32030</guid><category>Docker</category><category>multi-stage</category><category>HaveIBeenPwned</category><category>passwords</category><category>Security</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Aug 2017 00:55:07 GMT</pubDate><content:encoded>&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
+
+&lt;p&gt;In his latest blog post he introduced &lt;a href="https://www.troyhunt.com/introducing-306-million-freely-downloadable-pwned-passwords/"&gt;306 Million Freely Downloadable Pwned Passwords&lt;/a&gt; with an update of another 14 Million just on the following day. He also has setup a online search at &lt;a href="https://haveibeenpwned.com/Passwords"&gt;https://haveibeenpwned.com/Passwords&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;You can enter passwords and check if they have been compromised. &lt;strong&gt;But do not enter actively used passwords here&lt;/strong&gt;, even if Troy is a nice person living in sunny Australia.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/pwned-passwords.png" alt="Pwned Passwords online service"&gt;&lt;/p&gt;
+
+&lt;p&gt;My recommendation is&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;If you are in doubt if your password has been pwned, just &lt;strong&gt;change it first&lt;/strong&gt; and then check the old one in the online form.  &lt;/li&gt;
+&lt;li&gt;Use a &lt;strong&gt;Password manager&lt;/strong&gt; like 1Password to create an individual long random password &lt;strong&gt;for each service&lt;/strong&gt; you use.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;But the huge password list is still quite interesting to work with.&lt;/p&gt;
+
+&lt;h2 id="letsbuildalocalsearch"&gt;Let's build a local search&lt;/h2&gt;
+
+&lt;p&gt;What you can do is download the list of passwords (about 5 GByte compressed) and search locally in a safe place. You won't get the cleartext passwords, but only SHA1 sums of them. But we can create SHA1 sums of the passwords we want to search in this huge list.&lt;/p&gt;
+
+&lt;p&gt;You can download the files that are compressed with 7-Zip. You also need a tool to create a SHA1 sum of a plain text. And then you need another tool, a database or algorithm to quickly search in that text file that has nearly 320 Million lines.&lt;/p&gt;
+
+&lt;h2 id="usedockerforthetask"&gt;Use Docker for the task&lt;/h2&gt;
+
+&lt;p&gt;I immediately thought of a Container that has all these tools installed. But I didn't want to add the huge password lists into that container as it would build a Docker image of about 12 GByte or probably 5-6 GB Docker image on the Docker Hub.&lt;/p&gt;
+
+&lt;p&gt;The password files should be persisted locally on your laptop and mounted into the container to search in them with the tools needed for the task.&lt;/p&gt;
+
+&lt;p&gt;And I want to use some simple tools to get the work done. A first idea was born in the comments of Troys blog post where someone showed a small bash script with &lt;code&gt;grep&lt;/code&gt; to search in the file.&lt;/p&gt;
+
+&lt;p&gt;I first tried &lt;code&gt;grep&lt;/code&gt;, but this took about 2 minutes to find the hash in the file. So I searched a little bit and found &lt;a href="http://sgrep.sourceforge.net"&gt;&lt;code&gt;sgrep&lt;/code&gt;&lt;/a&gt; - a tool to grep in sorted files. Luckily the password files are sorted by the SHA1 hash. But I found only the source code and there is no standard package to install it. So we also need a C compiler for that.&lt;/p&gt;
+
+&lt;p&gt;In times before Docker you had a lot of stress installing many tools on your computer. But let's see how Docker can help us with all these steps.&lt;/p&gt;
+
+&lt;h2 id="buildthedockerimage"&gt;Build the Docker image&lt;/h2&gt;
+
+&lt;p&gt;I found the Sources of sgrep on &lt;a href="https://github.com/colinscape/sgrep"&gt;GitHub&lt;/a&gt; and we will need Make and a C compiler to build the &lt;code&gt;sgrep&lt;/code&gt; binary.&lt;/p&gt;
+
+&lt;p&gt;I will use a &lt;strong&gt;multi-stage build&lt;/strong&gt; Dockerfile and explain every single line. You can build the image line by line and see the benefits of build caches while working on the &lt;code&gt;Dockerfile&lt;/code&gt;. So after adding a line to the file you can run &lt;code&gt;docker build -t pwned-passwords .&lt;/code&gt; to build and update the image.&lt;/p&gt;
+
+&lt;p&gt;For the beginning let's choose a small Linux base image. We will name the first stage as &lt;code&gt;build&lt;/code&gt;. So the &lt;code&gt;Dockerfile&lt;/code&gt; starts with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM alpine:3.6 AS build  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The next step is we have to install Git, Make and the C compiler with its header files.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RUN apk update &amp;amp;&amp;amp; apk add git make gcc musl-dev  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we clone the GitHub repo with the source code of sgrep.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RUN git clone https://github.com/colinscape/sgrep  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the next line I'll create a bin folder that is needed for the build process. Then we go to the source directory and run the &lt;code&gt;make&lt;/code&gt; command as there is a &lt;code&gt;Makefile&lt;/code&gt; in that directory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RUN mkdir sgrep/bin &amp;amp;&amp;amp; cd sgrep/src &amp;amp;&amp;amp; make  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After these steps we have the &lt;code&gt;sgrep&lt;/code&gt; binary compiled for Alpine Linux. But we also have installed a ton of other tools.&lt;/p&gt;
+
+&lt;p&gt;Now put all these instructions into a &lt;code&gt;Dockerfile&lt;/code&gt; and build the Docker image.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker build -t pwned-passwords .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let's inspect all image layers we have created so far.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker history pwned-passwords
+IMAGE               CREATED             CREATED BY                                      SIZE  
+78171a118279        12 hours ago        /bin/sh -c mkdir sgrep/bin &amp;amp;&amp;amp; cd sgrep/src...   24.5kB  
+2323bcb14b5f        12 hours ago        /bin/sh -c git clone https://github.com/co...   93.6kB  
+8ec1470030af        12 hours ago        /bin/sh -c apk update &amp;amp;&amp;amp; apk add git make ...   119MB  
+7328f6f8b418        5 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B  
+&amp;lt;missing&amp;gt;           5 weeks ago         /bin/sh -c #(nop) ADD file:4583e12bf5caec4...   3.97MB  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see we now have a Docker image of more than 120 MByte, but the &lt;code&gt;sgrep&lt;/code&gt; binary is only 15 KByte. Yes, this is no typo. Yes, we will grep through GByte of data with a tiny 15 KByte binary.&lt;/p&gt;
+
+&lt;h2 id="multistagebuildforthewin"&gt;Multi-stage build for the win&lt;/h2&gt;
+
+&lt;p&gt;With Docker 17.05 and newer you can now add another &lt;code&gt;FROM&lt;/code&gt; instruction and start with a new stage in your &lt;code&gt;Dockerfile&lt;/code&gt;. The last stage will create the final Docker image. So every instruction after the last &lt;code&gt;FROM&lt;/code&gt; defines what goes into the image you want to share eg. on Docker Hub.&lt;/p&gt;
+
+&lt;p&gt;So let's start our final stage of our Docker image build with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM alpine:3.6  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The last stage does not need a name. Now we have an empty Alpine Linux again, all the 120 MByte of development environment won't make it into the final image. But if you build the Docker image more than once the temporary layers are still there and will be reused if they are unmodified. So the Docker build cache helps you speed up while working on the shell script.&lt;/p&gt;
+
+&lt;p&gt;In the previous build stage we have created the much faster &lt;code&gt;sgrep&lt;/code&gt; command. What we now need is a small shell script that converts a plaintext password into a SHA1 sum and runs the &lt;code&gt;sgrep&lt;/code&gt; command. &lt;/p&gt;
+
+&lt;p&gt;To create a SHA1 sum I'll use &lt;code&gt;openssl&lt;/code&gt; command. And it would be nice if the shell script can download the huge files for us. As the files are compressed with 7-zip we also need &lt;code&gt;wget&lt;/code&gt; to download and &lt;code&gt;7z&lt;/code&gt; to extract them.&lt;/p&gt;
+
+&lt;p&gt;In the next instruction we install OpenSSL and the 7-Zip tool.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RUN apk update &amp;amp;&amp;amp; apk add openssl p7zip  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;COPY&lt;/code&gt; instruction has an option &lt;code&gt;--from&lt;/code&gt; where you can specify another named stage of your build. So we copy the compiled &lt;code&gt;sgrep&lt;/code&gt; binary from the &lt;code&gt;build&lt;/code&gt; stage into the local bin directory.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;COPY --from=build /sgrep/bin/sgrep /usr/local/bin/sgrep  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The complete shell script is called &lt;code&gt;search&lt;/code&gt; and can be found in &lt;a href="https://github.com/StefanScherer/pwned-passwords"&gt;my pwned-passwords&lt;/a&gt; GitHub repo. Just assume we have it in the current directory. The next &lt;code&gt;COPY&lt;/code&gt; instruction copies it from your real machine into the image layer.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;COPY search /usr/local/bin/search  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As the last line of the &lt;code&gt;Dockerfile&lt;/code&gt; we define an entrypoint to run this shell script if we run the Docker container.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ENTRYPOINT ["/usr/local/bin/search"]  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now append these lines to the &lt;code&gt;Dockerfile&lt;/code&gt; and build the complete image. You will see that the first layers are already cached and only the last stage will be built.&lt;/p&gt;
+
+&lt;h3 id="thesearchscript"&gt;The search script&lt;/h3&gt;
+
+&lt;p&gt;You can find the &lt;a href="https://github.com/StefanScherer/pwned-passwords/blob/master/search"&gt;&lt;code&gt;search&lt;/code&gt; script&lt;/a&gt; in my GitHub repo as well as the &lt;code&gt;Dockerfile&lt;/code&gt;. You only need these two tiny files to build the Docker image yourself.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/bin/sh
+set -e
+
+if [ ! -d /data ]; then  
+  echo "Please run this container with a volume mounted at /data."
+  echo "docker run --rm -v \ $(pwd):/data pwned-passwords $*"
+  exit 1
+fi
+
+FILES="pwned-passwords-1.0.txt pwned-passwords-update-1.txt"  
+for i in $FILES  
+do  
+  if [ ! -f "/data/$i" ]; then
+    echo "Downloading $i"
+    wget -O "/tmp/$i.7z" "https://downloads.pwnedpasswords.com/passwords/$i.7z"
+    echo "Extracting $i to /data"
+    7z x -o/data "/tmp/$i.7z"
+    rm "/tmp/$i.7z"
+  fi
+done
+
+if [[ $1 != "" ]]  
+then  
+PWD=$1  
+else  
+PWD="password"  
+echo "checking $PWD"  
+fi
+
+hash=`echo -n $PWD | openssl sha1 | awk '{print $2}' | awk 'BEGIN { getline; print toupper($0)  }'`  
+echo "Hash is $hash"  
+totalcount=0  
+for i in $(sgrep -c $hash /data/*.txt)  
+do  
+  file=$(echo "$i" | cut -f1 -d:)
+  count=$(echo "$i" | cut -f2 -d:)
+  if [[ $count -ne 0 ]]; then
+    echo "Oh no - pwned! Found $count occurences in $file"
+  fi
+  totalcount=$(( $totalcount + $count ))
+done  
+if [[ $totalcount -eq 0 ]]; then  
+  echo "Good news - no pwnage found!"
+else  
+  exit 1
+fi  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="buildthefinalimage"&gt;Build the final image&lt;/h2&gt;
+
+&lt;p&gt;Now with these two files, &lt;code&gt;Dockerfile&lt;/code&gt; and &lt;code&gt;search&lt;/code&gt; shell script build the small Docker image.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker build -t pwned-passwords .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let's have a look at the final image layers with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker history pwned-passwords
+IMAGE               CREATED             CREATED BY                                      SIZE  
+e63a6121fe33        3 minutes ago       /bin/sh -c #(nop)  ENTRYPOINT ["/usr/local...   0B  
+9a7db1341995        3 minutes ago       /bin/sh -c #(nop) COPY file:b098e8cba82eef...   1.08kB  
+a1f4a26a50a4        About an hour ago   /bin/sh -c #(nop) COPY file:bf96562251dbd1...   15.7kB  
+f99b3a9601ea        About an hour ago   /bin/sh -c apk update &amp;amp;&amp;amp; apk add openssl p...   10.7MB  
+7328f6f8b418        5 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B  
+&amp;lt;missing&amp;gt;           5 weeks ago         /bin/sh -c #(nop) ADD file:4583e12bf5caec4...   3.97MB  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, OpenSSL and 7-Zip take about 10 MByte, the 16 KByte sgrep binary and the 1 KByte shell script are sitting on top of the 4 MByte Alpine base image.&lt;/p&gt;
+
+&lt;p&gt;I also have pushed this image to the &lt;a href="https://hub.docker.com/r/stefanscherer/pwned-passwords/"&gt;Docker Hub&lt;/a&gt; with a compressed size of about 7 MByte. If you trust me, you can use this Docker image as well. But you will learn more how multi-stage builds feel like if you build the image yourself.&lt;/p&gt;
+
+&lt;h2 id="searchforpwnedpasswords"&gt;Search for pwned passwords&lt;/h2&gt;
+
+&lt;p&gt;We now have a small 14.7 MByte Linux Docker image to search for pwned passwords.&lt;/p&gt;
+
+&lt;p&gt;Run the container with a folder mounted to &lt;code&gt;/data&lt;/code&gt;. If you forgot this, the script will show you how to run it.&lt;/p&gt;
+
+&lt;p&gt;Running the container for the first time it will download the two password files (5 GByte) which may take some minutes depending on your internet connectivity.&lt;/p&gt;
+
+&lt;p&gt;After the script has downloaded everything two files should appear in the current folder. For me it looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/list.png" alt="file list"&gt;&lt;/p&gt;
+
+&lt;p&gt;Now search for passwords by adding a plaintext password as an argument  &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker run --rm -v $(pwd):/data pwned-passwords troyhunt
+Hash is 0CCE6A0DD219810B5964369F90A94BB52B056494  
+Oh no - pwned! Found 1 occurences in /data/pwned-passwords-1.0.txt  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you don't trust my script or the &lt;code&gt;sgrep&lt;/code&gt; command, the run the container without network connectivity&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ docker run --rm -v $(pwd):/data --network none pwned-passwords secret4949
+Hash is 6D26C5C10FF089BFE81AB22152E2C0F31C58E132  
+Good news - no pwnage found!  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So you have luck, you can securely check that your password &lt;code&gt;secure4949&lt;/code&gt; hasn't been breached. But beware this is still no good password :-)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/mac.png" alt="Run pwned-passwords"&gt;&lt;/p&gt;
+
+&lt;h2 id="worksonwindows"&gt;Works on Windows&lt;/h2&gt;
+
+&lt;p&gt;If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.&lt;/p&gt;
+
+&lt;p&gt;On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as &lt;code&gt;/data&lt;/code&gt; into the container.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run -v "/c/Users/stefan.scherer/pwned:/data" stefanscherer/pwned-passwords troyhunt  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/08/win7.png" alt="Windows 7 with pwned-passwords image"&gt;&lt;/p&gt;
+
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;You now know that there are Millions of passwords out there that may be used in a brute force attack to other online services.&lt;/p&gt;
+
+&lt;p&gt;So please use a password manager instead of predictable patterns how to modify passwords for different services.&lt;/p&gt;
+
+&lt;p&gt;You also have learned how Docker can keep your computer clean but still compile some open source projects from source code.&lt;/p&gt;
+
+&lt;p&gt;You have seen the benefits of multi-stage builds to create and share minimal Docker images without the development environment.&lt;/p&gt;
+
+&lt;p&gt;And you now have the possibility to search your current passwords in a save place without leaking it to the internet. Some other online service may collect all the data entered into a form. So keep your passwords secret and change &lt;/p&gt;
+
+&lt;p&gt;If you want to hear more about Docker, follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;. &lt;/p&gt;</content:encoded></item><item><title>Exploring new NanoServer Insider images</title><description>&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
 
 &lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is&lt;/p&gt;</description><link>https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">1f99a5ec-2825-4c1f-ba42-8bd6b881e63d</guid><category>Docker</category><category>Windows</category><category>Nano Server</category><category>Node.js</category><category>Vagrant</category><category>Packer</category><category>Docker Hub</category><category>Insider</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded>&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
 
@@ -1921,192 +2169,4 @@ vagrant up --provider virtualbox
 
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/08/packer_multiprovider.png" alt="Packer multiprovider"&gt;&lt;/p&gt;
 
-&lt;p&gt;Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item><item><title>How to build a Node.js Nano Server Docker base image</title><description>&lt;p&gt;Beginning with &lt;strong&gt;Windows 10 Insider&lt;/strong&gt; 14342 you can enable the new &lt;strong&gt;Containers feature&lt;/strong&gt; in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some&lt;/p&gt;</description><link>https://stefanscherer.github.io/how-to-build-nodejs-nanoserver-image/</link><guid isPermaLink="false">a41f8283-bde8-4e84-ad0f-79de76a1f022</guid><category>Docker</category><category>Nano Server</category><category>Windows 10</category><category>Node.js</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 29 May 2016 18:00:53 GMT</pubDate><content:encoded>&lt;p&gt;Beginning with &lt;strong&gt;Windows 10 Insider&lt;/strong&gt; 14342 you can enable the new &lt;strong&gt;Containers feature&lt;/strong&gt; in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some base images.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/05/windows10-containers-feature.png" alt=""&gt;&lt;/p&gt;
-
-&lt;p&gt;In this blog post I'll show how to build small base images to deploy Node.js applications as NanoServer Docker images that you can run &lt;a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10"&gt;in Windows 10&lt;/a&gt; or in Windows Server 2016 TP5.&lt;/p&gt;
-
-&lt;h2 id="whatisnanoserver"&gt;What is Nano Server?&lt;/h2&gt;
-
-&lt;p&gt;Each Docker image must use of of the two OS images: &lt;code&gt;windowsservercore&lt;/code&gt; or &lt;code&gt;nanoserver&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;A &lt;strong&gt;Windows Server Core&lt;/strong&gt; image is &lt;strong&gt;highly compatible&lt;/strong&gt; with previous Windows Server Core installations. You don't have a GUI, but you can install almost everything into it. But this compatibility comes with a prize, the size of the OS image is about 9.3 GByte as it contains about a whole server.&lt;/p&gt;
-
-&lt;p&gt;A &lt;strong&gt;Nano Server&lt;/strong&gt; image is &lt;strong&gt;highly optimized&lt;/strong&gt; and almost everything was taken out of it to be able to deploy more of these containers in cloud servers. The size is about 817 MByte. This makes installing Docker on Windows 10 much faster than with the &lt;code&gt;windowsservercore&lt;/code&gt; OS image.&lt;/p&gt;
-
-&lt;p&gt;So if you get asked which to choose you probably would answer to take the smaller one.&lt;/p&gt;
-
-&lt;h2 id="thechallengemsipackages"&gt;The challenge: MSI packages&lt;/h2&gt;
-
-&lt;p&gt;But as soon as you try to write a &lt;code&gt;Dockerfile&lt;/code&gt; to install some software into a Docker image you will notice that the minimized OS comes with a new challenge. &lt;strong&gt;You can't install MSI packages in Nano Server.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;If you look at &lt;a href="https://nodejs.org"&gt;nodejs.org&lt;/a&gt; there are only MSI packages for Windows if you also want to have npm installed.&lt;/p&gt;
-
-&lt;p&gt;So how could we build a Node.js Docker image based on Nano Server? I've tried different ways, eg. also installing tools like lessmsi while building the Nano Server image only to find out that lessmsi is only a 32 bit application. Another restriction in Nano Server: &lt;strong&gt;You only can run 64 bit processes in Nano Server.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Another approach would be installing Node.js on your host machine and copying the files into the Docker image. But I don't want to install more tools than needed on a Docker host.&lt;/p&gt;
-
-&lt;p&gt;Therefore I show you a way to use only Docker commands and a Windows Server 2016 TP5 machine to build both Windows Server Core image as well as a Nano Server image with Node.js + npm installed.&lt;/p&gt;
-
-&lt;h3 id="step1installmsiintowindowsservercoreimage"&gt;Step 1 - Install MSI into Windows Server Core image&lt;/h3&gt;
-
-&lt;p&gt;A much easier way is to start with a Windows Server Core image. You can download and install the Node.js MSI package with this &lt;code&gt;Dockerfile&lt;/code&gt;. This is very similar to the Linux version and downloads, verifies the download, installs the package and then removes the download again.&lt;/p&gt;
-
-&lt;p&gt;Now open an editor with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;notepad Dockerfile.  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and enter this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM windowsservercore
-
-ENV NPM_CONFIG_LOGLEVEL info  
-ENV NODE_VERSION 4.4.5  
-ENV NODE_SHA256 7b2409605c871a40d60c187bd24f6f6ddf10590df060b7d905ef46b3b3aa7f81
-
-RUN powershell -Command \  
-    wget -Uri https://nodejs.org/dist/v%NODE_VERSION%/node-v%NODE_VERSION%-x64.msi -OutFile node.msi -UseBasicParsing ; \
-    if ((Get-FileHash node.msi -Algorithm sha256).Hash -ne $env:NODE_SHA256) {exit 1} ; \
-    Start-Process -FilePath msiexec -ArgumentList /q, /i, node.msi -Wait ; \
-    Remove-Item -Path node.msi
-
-CMD [ "node.exe" ]  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can build the Node.js Docker image with this command&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker build -t node:4.4.5 .  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;After that you have Node.js + npm installed in this Docker image.&lt;/p&gt;
-
-&lt;h3 id="step2distillnodejsfolder"&gt;Step 2 - Distill Node.js folder&lt;/h3&gt;
-
-&lt;p&gt;Now we want to distill the Node.js folder from the Docker image. To do that we have to run a Docker container and then we can copy the folder to a temporary folder on the host machine.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run --name=node-temp node:4.4.5 node --version  
-docker cp "node-temp:c:\Program Files\nodejs" nodejs  
-docker rm -vf node-temp  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id="step3copydeploytonanoserverimage"&gt;Step 3 - COPY deploy to Nano Server image&lt;/h3&gt;
-
-&lt;p&gt;With this extracted folder we build the Nano Server image. The following &lt;code&gt;Dockerfile&lt;/code&gt; copies the contents of that temporary folder into the Windows directory which is already in PATH. You may want to put the files in another directory, but then you also have to add it to the &lt;code&gt;PATH&lt;/code&gt; environment.&lt;/p&gt;
-
-&lt;p&gt;Create a sub folder for the Nano Dockerfile&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir nano  
-notepad nano\Dockerfile.  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and create this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM nanoserver
-
-COPY nodejs /windows/system32
-
-CMD [ "node.exe" ]  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Run this command to build the Nano Server image&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker build -t node:4.4.5-nano nano  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now we have two Docker images, one for Windows Server Core and one for Nano Server.&lt;/p&gt;
-
-&lt;p&gt;Here is a small diagram of the three steps we just did:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/05/nodejs_nanoserver-2.png" alt=""&gt;&lt;/p&gt;
-
-&lt;p&gt;I've uploaded both Docker images to the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/tags/"&gt;Docker Hub&lt;/a&gt; and found out that the Windows Server Core image is about &lt;strong&gt;55 MByte&lt;/strong&gt; and the Nano Server image is only &lt;strong&gt;9 MByte&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;Extracting all the layers of the first Docker image I found out that installing an MSI package also saves a copy of the package in the MSI cache. And running commands also leaves some changes in local databases and the registry which is also stored as difference in the layer.&lt;/p&gt;
-
-&lt;p&gt;So one advice to build small Windows Docker images is to avoid installing MSI packages and prefer ZIP files or even using a COPY deployment into an image. Of course MSI packages are often more convenient to install but result in bigger image sizes.&lt;/p&gt;
-
-&lt;h2 id="buildappwithonbuild"&gt;Build app with ONBUILD&lt;/h2&gt;
-
-&lt;p&gt;Another easy way to dockerize your Node.js application is the &lt;code&gt;ONBUILD&lt;/code&gt; feature in the &lt;code&gt;Dockerfile&lt;/code&gt;. At least for simple examples it is very convenient to use a prepared Docker images with that feature.&lt;/p&gt;
-
-&lt;p&gt;So let's build another &lt;code&gt;Dockerfile&lt;/code&gt; just like the official &lt;code&gt;node:onbuild&lt;/code&gt; image which does these steps to install your application and all the dependencies:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;copy package.json  &lt;/li&gt;
-&lt;li&gt;run npm install  &lt;/li&gt;
-&lt;li&gt;copy rest of sources&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;So we create another folder for that &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir nano\onbuild  
-notepad nano\onbuild\Dockerfile.  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and the following content:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM node:4.4.5-nano
-
-RUN mkdir \app  
-WORKDIR /app
-
-ONBUILD COPY package.json package.json  
-ONBUILD RUN npm install  
-ONBUILD COPY . .
-
-CMD [ "npm.cmd", "start" ]  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now build the Nano Server image with the ONBUILD feature:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker build --isolation=hyperv -t node:4.4.5-nano-onbuild nano/onbuild  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I have tested this with a small Node.js web server that uses Express and some other dependencies.&lt;/p&gt;
-
-&lt;p&gt;To build a dockerized Node.js application running in a Nano Server container you only have to go to your Node.js source code and add a single line &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM nano:4.4.5-nano-onbuild  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;and build your application Docker image with&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker build --isolation=hyperv -t mynodeapp:nano .  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id="optimizations"&gt;Optimizations&lt;/h2&gt;
-
-&lt;p&gt;Investigating the layers of such an application showed some other temporary folders which aren't needed inside the Docker image.&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;A npm-cache folder  &lt;/li&gt;
-&lt;li&gt;Many files in temp folder, also from npm&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;So we can optimize that ONBUILD &lt;code&gt;Dockerfile&lt;/code&gt; a little bit to remove these temp folders while building your application Docker image. There is a command &lt;code&gt;npm cache clean&lt;/code&gt;, but this didn't work for me, so I have changed that to some &lt;code&gt;rd&lt;/code&gt; commands. This is the final ONBUILD &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM node:4.4.5-nano
-
-RUN mkdir \app  
-WORKDIR /app
-
-ONBUILD COPY package.json package.json  
-ONBUILD RUN npm install &amp;amp; rd /s /q %APPDATA%\npm-cache &amp;amp; for /d %G in ("%TEMP%\npm-*") do rd /s /q "%~G"  
-ONBUILD COPY . .
-
-CMD [ "npm.cmd", "start" ]  
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With that optimized Docker image deploying a simple Express web server the &lt;a href="https://hub.docker.com/r/stefanscherer/hello-dresden/tags/"&gt;final application Docker image&lt;/a&gt; went down from &lt;strong&gt;24 MByte&lt;/strong&gt; to &lt;strong&gt;15 MByte&lt;/strong&gt;. In comparison with the unoptimized Windows Server Core image the same application is &lt;strong&gt;82 MByte&lt;/strong&gt; on the Docker Hub.&lt;/p&gt;
-
-&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;If you don't want to build these Node.js Docker images manually you can find them on the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/"&gt;Docker Hub&lt;/a&gt; with links to the Dockerfiles in the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/node"&gt;GitHub repo&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;With such a Node.js Nano Server base image on the Docker Hub you can start developing on your Windows 10 machine. Now dockerize your Node.js apps into Nano Server containers and share them with others via the Docker Hub.&lt;/p&gt;
-
-&lt;p&gt;The Windows Server 2016 is only needed to install MSI packages and distill the software into Nano Server images.&lt;/p&gt;
-
-&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item></channel></rss>
+&lt;p&gt;Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;</content:encoded></item></channel></rss>

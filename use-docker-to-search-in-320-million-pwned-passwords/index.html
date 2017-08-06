@@ -11,7 +11,7 @@
 
     <link rel="shortcut icon" href="../favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=b8f605ed91">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=ed40fbff53">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
 
     <link rel="canonical" href="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
@@ -24,7 +24,7 @@
     <meta property="og:description" content="This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post">
     <meta property="og:url" content="https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/">
     <meta property="article:published_time" content="2017-08-05T00:55:07.000Z">
-    <meta property="article:modified_time" content="2017-08-05T01:10:07.000Z">
+    <meta property="article:modified_time" content="2017-08-06T07:16:51.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="multi-stage">
     <meta property="article:tag" content="HaveIBeenPwned">
@@ -66,7 +66,7 @@
     "headline": "Use Docker to Search in 320 Million Pwned Passwords",
     "url": "https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/",
     "datePublished": "2017-08-05T00:55:07.000Z",
-    "dateModified": "2017-08-05T01:10:07.000Z",
+    "dateModified": "2017-08-06T07:16:51.000Z",
     "keywords": "Docker, multi-stage, HaveIBeenPwned, passwords, Security",
     "description": "This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of Have I Been Pwned? website and service that will notify you when one of your registered email addresses have been compromised by a data breach. In his latest blog post",
     "mainEntityOfPage": {
@@ -347,6 +347,22 @@ Good news - no pwnage found!
 
 <p>If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.</p>
 
+<p>With Docker 4 Windows it only depends on the shell you use.</p>
+
+<p>For PowerShell the command to run the image is</p>
+
+<pre><code>docker run --rm -v "$(pwd):/data" pwned-passwords yourpass  
+</code></pre>
+
+<p><img src="../content/images/2017/08/ps1.png" alt="PowerShell"></p>
+
+<p>And if you prefer the classic CMD shell use this command</p>
+
+<pre><code>docker run --rm -v "%cd%:/data" pwned-passwords yourpass  
+</code></pre>
+
+<p><img src="../content/images/2017/08/cmd.png" alt="CMD shell"></p>
+
 <p>On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as <code>/data</code> into the container.</p>
 
 <pre><code>docker run -v "/c/Users/stefan.scherer/pwned:/data" stefanscherer/pwned-passwords troyhunt  
@@ -448,7 +464,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=b8f605ed91"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=b8f605ed91"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=ed40fbff53"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=ed40fbff53"></script>
 
 </body>
