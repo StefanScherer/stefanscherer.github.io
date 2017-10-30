@@ -1,4 +1,164 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 28 Oct 2017 00:23:56 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>DockerCon: LCOW and Windows Server 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 30 Oct 2017 22:37:34 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Cross-build a Node.js app with Docker and deploy to IBM Cloud</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects we're all working on we also had time to work together on some ideas.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;&amp;quot;Put all Captains available into a room, feed them&lt;/em&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/div&gt;</description><link>https://stefanscherer.github.io/cross-build-node-js-app-for/</link><guid isPermaLink="false">59f7701f71f6240001940592</guid><category>Docker</category><category>Node.js</category><category>multi-arch</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 30 Oct 2017 22:37:03 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects we're all working on we also had time to work together on some ideas.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;&amp;quot;Put all Captains available into a room, feed them well and see what's happening.&amp;quot;&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="modernizingswarmvisualizer"&gt;Modernizing Swarm Visualizer&lt;/h2&gt;
+&lt;p&gt;One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with that idea, to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.&lt;/p&gt;
+&lt;p&gt;The old one uses a dark theme and shows lots of details for the services with small fonts.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.47.10.png" alt="old swarm visualizer"&gt;&lt;/p&gt;
+&lt;p&gt;Here's a screenshot if an early version of the new UI. Witch a click on one of the services you get more details about that service. All information are updated immediatelly when you eg. add or remove labels to a service.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.50.18.png" alt="new swarm visualizer"&gt;&lt;/p&gt;
+&lt;p&gt;You can try this new Swarm visualizer yourself with the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker container run \
+  --name swarm-viz \
+  -p 3000:3000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  mikesir87/swarm-viz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I joined Michaels table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.&lt;/p&gt;
+&lt;p&gt;In this blog post I focus on how to build a Node.js app with Docker and don't look into the details of the app itself. I'll show how to improve the Dockerfile to build for multiple platforms and finally how to build a CI pipeline for that.&lt;/p&gt;
+&lt;h2 id="initialdockerfile"&gt;Initial Dockerfile&lt;/h2&gt;
+&lt;p&gt;The application is built inside a Docker container. So you even can build it without any developer tools installed, you only need Docker.&lt;/p&gt;
+&lt;p&gt;Let's have a look at the first Dockerfile for the Linux image. It is a multi-stage build with three stages:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;# Build frontend
+FROM node:8.7-alpine as frontend
+WORKDIR /app
+COPY client/package.json .
+RUN npm install
+COPY client/ .
+RUN npm run build
+
+# Build backend
+FROM node:8.7-alpine as backend
+WORKDIR /app
+COPY api/package.json .
+RUN npm install
+COPY api/ .
+RUN npm run build
+
+# Put them together
+FROM node:8.7-alpine
+EXPOSE 3000
+WORKDIR /app
+COPY api/package.json .
+RUN npm install --production
+COPY --from=backend /app/dist /app/dist
+COPY --from=frontend /app/build /app/build
+CMD node /app/dist/index.js
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The first stage uses &lt;code&gt;FROM node:8.7-alpine&lt;/code&gt; to build the frontend in a container.&lt;/p&gt;
+&lt;p&gt;The second stage builds the backend in another Alpine container. During that build you also need some development dependencies that aren't needed for the final image.&lt;/p&gt;
+&lt;p&gt;In the third stage only the depencies that are relevant at runtime are installed with &lt;code&gt;npm install --production&lt;/code&gt;. All artifacts needed from the other stages are also copied into the final image.&lt;/p&gt;
+&lt;h2 id="makefrommoreflexibleforwindows"&gt;Make FROM more flexible for Windows&lt;/h2&gt;
+&lt;p&gt;I tried to build the app for Windows Server 1709 and had to create a second Dockerfile as I have to use another &lt;code&gt;FROM&lt;/code&gt; as node does not have a Windows variant in the official images. And Windows Server 1709 just came out so I had to create a Node.js base image for Windows myself.&lt;/p&gt;
+&lt;p&gt;So what I did was copying the Dockerfile to Dockerfile.1709 and changed all the&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM node:8.7-alpine
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;lines into&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM stefanscherer/node-windows:1709
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But now we have duplicated the Dockerfile &amp;quot;code&amp;quot; for only this little difference.&lt;/p&gt;
+&lt;p&gt;Fortunately you now can use build arguments for the &lt;code&gt;FROM&lt;/code&gt; instruction. So with only a little change we can have &lt;strong&gt;ONE&lt;/strong&gt; Dockerfile for Linux and Windows.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ARG node=node:8.7-alpine
+FROM $node as frontend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/add-arg.png" alt="add-arg"&gt;&lt;/p&gt;
+&lt;p&gt;On Linux you still can build the image as before without any change.&lt;/p&gt;
+&lt;p&gt;On Windows I now was able to use this Dockerfile with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t mikesir87/swarm-viz `
+  --build-args node=stefanscherer/node-windows:1709 .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and use a Windows Node.js base image for all stages. &lt;a href="https://github.com/mikesir87/swarm-viz/pull/2"&gt;First pull request&lt;/a&gt; done. Check! 😊&lt;/p&gt;
+&lt;h2 id="goingmultiarch"&gt;Going multi-arch&lt;/h2&gt;
+&lt;p&gt;We showed the Windows Swarm visualizer other Captains and we discussed how to go multi-platform. Phil Estes, a very active member of the Docker community pushing the multi-architecture support in Docker forward and the maintainer of the manifest-tool, commented:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;With Golang it is easy to build multi-arch images, just cross-build a static binary with &lt;code&gt;GOARCH=bar go build app.go&lt;/code&gt; and copy the binary in an empty &lt;code&gt;FROM scratch&lt;/code&gt; image.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Hm, we use Node.js here, so what has to be done instead?&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/captain-hack-day-1.jpg" alt="captain-hack-day-1"&gt;&lt;/p&gt;
+&lt;p&gt;Well, instead of the &lt;code&gt;scratch&lt;/code&gt; image we need the &lt;code&gt;node&lt;/code&gt; image for the Node.js runtime. But we have to &lt;strong&gt;choose the desired architecture&lt;/strong&gt; and then copy all sources and dependencies into that image.&lt;/p&gt;
+&lt;p&gt;Our Node.js application uses Express, Dockerode and some other dependencies, that are platform independent. So this simple copy approach should do it, we thought.&lt;/p&gt;
+&lt;p&gt;We added another build stage in the Dockerfile where we switch to the desired platform. You may know, the &lt;code&gt;node&lt;/code&gt; image on Docker Hub is already a multi-arch image. But in this case we want to build - let's say on Linux/amd64 - for another platform like the IBM s390 mainframe.&lt;/p&gt;
+&lt;p&gt;So we added another build argument to specify the target platform for the final stage:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ARG node=node:8.7-alpine
+ARG target=node:8.7-alpine
+
+FROM $node as frontend
+...
+
+FROM $target
+EXPOSE 3000
+COPY --from=proddeps /app /app
+CMD node /app/dist/index.js
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/add-target.png" alt="add-target"&gt;&lt;/p&gt;
+&lt;p&gt;As Phil works for IBM he easily could verify our approach. We have built an IBM version of the Swarm visualizer with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t mikesir87/swarm-viz:s390x \
+  --build-arg target=s390x/node:8.7 .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and pushed it to the Docker Hub. Phil then has pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"&gt;&lt;/p&gt;
+&lt;p&gt;Now we needed some more automation to build and push the Docker images.&lt;/p&gt;
+&lt;h2 id="addingamultiarchcipipeline"&gt;Adding a multi-arch CI pipeline&lt;/h2&gt;
+&lt;p&gt;I've done that several times for my Raspberry Pi projects, so cherry-picked the relevant parts from other repos. For the CI pipeline we choose Travis CI, but any other CI cloud service could be used that allows multi-stage builds.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/mikesir87/swarm-viz/blob/master/.travis.yml"&gt;.travis.yml&lt;/a&gt; uses a matrix build for all architectures. Currently we're building it for only two platforms:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-yaml"&gt;sudo: required
+
+services:
+ - docker
+
+env:
+  matrix:
+    - ARCH=amd64
+    - ARCH=s390x
+
+script:
+  - ./travis-build.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="build"&gt;build&lt;/h3&gt;
+&lt;p&gt;The &lt;a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-build.sh"&gt;travis-build.sh&lt;/a&gt; then is called for each architecture of that matrix and we run the corresponding build.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t mikesir87/swarm-viz \
+    --build-arg target=$ARCH/node:8.7 .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="deploy"&gt;deploy&lt;/h3&gt;
+&lt;p&gt;As a final step in the .travis.yml we push every image to the Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-deploy.sh"&gt;travis-deploy.sh&lt;/a&gt; pushes the Docker image for each architecture to the Docker Hub with a different tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker push &amp;quot;$image:linux-$ARCH-$TRAVIS_COMMIT&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the amd64 architecture we then download and use the manifest-tool to push a manifest list with the final tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;manifest-tool push from-args \
+    --platforms linux/amd64,linux/s390x \
+    --template &amp;quot;$image:OS-ARCH-$TRAVIS_COMMIT&amp;quot; \
+    --target &amp;quot;$image:latest&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can verify that the &lt;code&gt;latest&lt;/code&gt; tag is already a manifest list with another Docker image provided by Phil&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm mplatform/mquery mikesir87/swarm-viz
+Image: mikesir87/swarm-viz:latest
+ * Manifest List: Yes
+ * Supported platforms:
+   - amd64/linux
+   - s390x/linux
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="futureimprovements"&gt;Future improvements&lt;/h2&gt;
+&lt;p&gt;In the near future we will also add a Windows build using AppVeyor CI to provide Windows images and also put them into the manifest list. This step would also be needed for Golang projects as you cannot use the empty &lt;code&gt;scratch&lt;/code&gt; image on Windows.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/ci-pipeline-1.png" alt="ci-pipeline-1"&gt;&lt;/p&gt;
+&lt;p&gt;If you watch closely we have used &lt;code&gt;node:8.7&lt;/code&gt; for the final stage. There is no multi-arch Alpine version, so there also is no &lt;code&gt;node:8.7-alpine&lt;/code&gt; as multi-arch image. But the maintainers of the official Docker images are working hard to add this missing piece to have small images for all architectures.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm mplatform/mquery node:8.7-alpine
+Image: node:8.7-alpine
+ * Manifest List: Yes
+ * Supported platforms:
+   - amd64/linux
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="conculsion"&gt;Conculsion&lt;/h2&gt;
+&lt;p&gt;So we were really excited how far we came in only a few hours and that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.&lt;/p&gt;
+&lt;p&gt;And the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;So give multi-arch a try in your next Node.js project to run your app on any platform!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Thanks &lt;a href="https://twitter.com/mikesir87"&gt;Michael&lt;/a&gt; coming up with that idea, thanks &lt;a href="https://twitter.com/estesp"&gt;Phil&lt;/a&gt; for the manifest-tool and testing the visualizer. Thanks &lt;a href="https://twitter.com/quintus23m"&gt;Dieter&lt;/a&gt; for the photos. You can follow us on Twitter to see what these Captains are doing next.&lt;/p&gt;
+&lt;p&gt;Stefan&lt;br&gt;
+&lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>DockerCon: LCOW and Windows Server 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;
 &lt;h2 id="dockeronwindowsworkshop"&gt;Docker on Windows Workshop&lt;/h2&gt;
 &lt;p&gt;On Monday&lt;/p&gt;&lt;/div&gt;</description><link>https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/</link><guid isPermaLink="false">59f3b65cdd4c1b0001e301e7</guid><category>DockerCon</category><category>windows-containers</category><category>LCOW</category><category>Windows Server 1709</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 28 Oct 2017 00:18:11 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;
 &lt;h2 id="dockeronwindowsworkshop"&gt;Docker on Windows Workshop&lt;/h2&gt;
@@ -16,7 +176,7 @@
 &lt;p&gt;When you see this the first time working and know what technical details had to be solved make make it look so simple and easy - awesome!&lt;/p&gt;
 &lt;p&gt;The next day I found the Windows Server 1709 ISO in my MSDN subscription. So I could start working on a Packer template in my &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; GitHub repo to automate the creation of such Windows VM's. But DockerCon is to meet people and learn new things: &lt;a href="https://twitter.com/NicholasDille"&gt;Nicholas Dille&lt;/a&gt; went another very interesting way to &lt;a href="http://dille.name/blog/2017/10/25/building-a-windowscontainer-docker-host-without-running-windows-setup/"&gt;build a VM with Docker without running Windows Setup&lt;/a&gt;.&lt;/p&gt;
 &lt;h2 id="smallerwindowsimages"&gt;Smaller Windows images&lt;/h2&gt;
-&lt;p&gt;In the last months we could follow the progress of the Windows Server in several Insier builds. I blogged about the &lt;a href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/"&gt;smaller NanoServer Insider images&lt;/a&gt; in July going down to 80-90 MByte. Now with the new release of Windows Server 1709 and Windows 10 version 1709 we now can use official images.&lt;/p&gt;
+&lt;p&gt;In the last months we could follow the progress of the Windows Server in several Insider builds. I blogged about the &lt;a href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/"&gt;smaller NanoServer Insider images&lt;/a&gt; in July going down to 80-90 MByte. Now with the new release of Windows Server 1709 and Windows 10 version 1709 we now can use official images.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;microsoft/windowsservercore:1709&lt;/li&gt;
 &lt;li&gt;microsoft/nanoserver:1709&lt;/li&gt;
@@ -1251,94 +1411,4 @@ docker version
 &lt;p&gt;I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-1.png" alt="docker-version"&gt;&lt;/p&gt;
 &lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;</content:encoded></item><item><title>Run Linux and Windows Containers on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve&lt;/p&gt;&lt;/div&gt;</description><link>https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">5986d4ec688a490001540968</guid><category>Docker</category><category>Windows</category><category>Linux</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve newer versions.&lt;/p&gt;
-&lt;p&gt;And Microsoft has added the &lt;strong&gt;Containers feature&lt;/strong&gt; in the Windows 10 Anniversary Update. With some &lt;a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10"&gt;installation steps&lt;/a&gt; you are able to run &lt;strong&gt;Windows Hyper-V Containers&lt;/strong&gt; on your Windows 10 machine.&lt;/p&gt;
-&lt;p&gt;But there is a little bit of confusion which sort of containers can be started with each of the two installations. And you can't run both Docker Engines side-by-side without some adjustments.&lt;/p&gt;
-&lt;p&gt;This is because each of the installations use the same default named pipe &lt;code&gt;//./pipe/docker_engine&lt;/code&gt; causing one of the engines to fail to start.&lt;/p&gt;
-&lt;h2 id="beta26torulethemall"&gt;Beta 26 to rule them all&lt;/h2&gt;
-&lt;p&gt;Beginning with the Docker for Windows Beta 26 there is a very easy approach to solve this confusion. You only have to install Docker for Windows with the MSI installer. There is a new menu item in the Docker tray icon to switch between Linux and Windows containers.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/docker-for-windows-switch.gif" alt="switching"&gt;&lt;/p&gt;
-&lt;p&gt;As you can see in the video you don't have to change environment variables or use the &lt;code&gt;-H&lt;/code&gt; option of the Docker client to talk to the other Docker engine.&lt;/p&gt;
-&lt;p&gt;So if you download &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;Docker for Windows beta&lt;/a&gt; or switch to the beta channel in your installation you can try this out yourself.&lt;/p&gt;
-&lt;p&gt;The installer will activate the &lt;strong&gt;Containers&lt;/strong&gt; feature if you haven't done that yet. A reboot is required for this to add this feature.&lt;/p&gt;
-&lt;p&gt;From now on you can easily switch with the menu item in the tray icon.&lt;/p&gt;
-&lt;p&gt;There also is a command line tool to switch the engine. In a PowerShell windows you can type&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and it switches from Linux to Windows or vice versa. Take care and type the option as shown here as the option is case sensitive.&lt;/p&gt;
-&lt;h2 id="proxyfortherescue"&gt;Proxy for the rescue&lt;/h2&gt;
-&lt;p&gt;But how does the switching work without the need to use another named pipe or socket from the Docker client?&lt;/p&gt;
-&lt;p&gt;The answer is that there is running a Proxy process &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; which listens on the default named pipe &lt;code&gt;//./pipe/docker_engine&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;If you switch from Linux to Windows the Windows Docker engine &lt;code&gt;dockerd.exe&lt;/code&gt; will be started for you which is listening on another named pipe &lt;code&gt;//./pipe/docker_engine_windows&lt;/code&gt; and a new started Proxy process redirects to this.&lt;/p&gt;
-&lt;h3 id="underthehood"&gt;Under the hood&lt;/h3&gt;
-&lt;p&gt;I have installed the &lt;a href="https://technet.microsoft.com/sysinternals/bb896645"&gt;Sysinternals Process Monitor&lt;/a&gt; tool to learn what happens while switching from Linux to Windows containers. With the Process Tree function you can see a timeline with green bars when each process has started or exited.&lt;/p&gt;
-&lt;p&gt;The following screenshot shows the processes before and after the switch. I have switched about in the middle of the green bar.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/switch-to-windows-dockerd.png" alt=""&gt;&lt;/p&gt;
-&lt;p&gt;The current &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; (above &lt;code&gt;dockerd.exe&lt;/code&gt; in the list) that talked to the MobyLinuxVM exits as the dark green bar highlights that.&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;dockerd.exe&lt;/code&gt; Windows Docker engine is started, as well as a new &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; (below &lt;code&gt;dockerd.exe&lt;/code&gt;) which talks to the Windows Docker engine.&lt;/p&gt;
-&lt;p&gt;So just after the switch you still can use the &lt;code&gt;docker.exe&lt;/code&gt; Client or your Docker integration in your favorite editor or IDE without any environment changes.&lt;/p&gt;
-&lt;h2 id="runningbothcontainerworldsinparallel"&gt;Running both container worlds in parallel&lt;/h2&gt;
-&lt;p&gt;The proxy process just switches the connection to the Docker engine. After such a switch both the Linux and Windows Docker engine are running.&lt;/p&gt;
-&lt;h3 id="runalinuxwebserver"&gt;Run a Linux web server&lt;/h3&gt;
-&lt;p&gt;To try this out we first switch back to the Linux containers. Now we run the default nginx web server on port 80&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker run -p 80:80 -d nginx
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;then switch to the Windows containers with&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/docker-run-nginx.png" alt="docker-run-nginx"&gt;&lt;/p&gt;
-&lt;p&gt;Now let's run some Windows containers. But first we try if the Linux container is still running and reachable with&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;start http://localhost
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;With the &lt;code&gt;start&lt;/code&gt; command you open Edge with the welcome page of the nginx running in a Linux container&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/nginx.png" alt="nginx"&gt;&lt;/p&gt;
-&lt;p&gt;Yes, the Linux container is still running.&lt;/p&gt;
-&lt;h2 id="buildawindowswebserver"&gt;Build a Windows web server&lt;/h2&gt;
-&lt;p&gt;On Windows 10 you &lt;s&gt;only can run Nanoserver containers. There is no IIS docker image for Nanoserver&lt;/s&gt;. &lt;strong&gt;Ignite update&lt;/strong&gt;: You can run Nanoserver &lt;strong&gt;AND&lt;/strong&gt; windowsservercore containers on Windows 10.&lt;/p&gt;
-&lt;p&gt;But to demo how simple nanoserver containers could be I'll keep the following sample as it is. So we create our own small Node.js web server. First we write the simple web server app&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;notepad app.js
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Enter this code as the mini web server in the file &lt;code&gt;app.js&lt;/code&gt; and save the file.&lt;/p&gt;
-&lt;pre&gt;&lt;code class="language-javascript"&gt;var http = require('http');
-var port = 81;
-
-function handleRequest(req, res) {
-  res.end('Hello from Windows container, path = ' + req.url);
-}
-
-var server = http.createServer(handleRequest);
-
-server.listen(port);
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now we build a Windows Docker image with that application. We open another editor to create the &lt;code&gt;Dockerfile&lt;/code&gt; with this command&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;notepad Dockerfile.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Enter this as the &lt;code&gt;Dockerfile&lt;/code&gt;. As you can see only the &lt;code&gt;FROM&lt;/code&gt; line is different from a typical Linux Dockerfile. This one uses a Windows base image from the Docker Hub.&lt;/p&gt;
-&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM stefanscherer/node-windows:6.7.0-nano
-
-COPY app.js app.js
-
-CMD [ &amp;quot;node&amp;quot;, &amp;quot;app.js&amp;quot; ]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Save the file and build the Docker image with the usual command&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker build -t webserver .
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Run the Windows web server as a Docker container with&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker run -p 81:81 -d webserver
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/docker-run-webserver-1.png" alt="docker-run-webserver"&gt;&lt;/p&gt;
-&lt;p&gt;At the moment you can't connect directly with 127.0.0.1 to the container. But it is possible to use the IP address of the container. We need the ID or name of the container, so list the containers running with&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker ps
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Then open the browser with the container's IP address:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;start http://$(docker inspect -f &amp;quot;{{ .NetworkSettings.Networks.nat.IPAddress }}&amp;quot; grave_thompson):81
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/docker-inspect.png" alt="docker-inspect"&gt;&lt;/p&gt;
-&lt;p&gt;Additionally the port forwarding from the host to the container allows you to contact the web server on port 81 from another machine.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10"&gt;&lt;/p&gt;
-&lt;p&gt;And yes, the Windows container is also handling requests.&lt;/p&gt;
-&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;The new Docker for Windows beta combines the two container worlds and simplifies building Docker images for both Linux and Windows, making a Windows 10 machine a good development platform for both.&lt;/p&gt;
-&lt;p&gt;And with a little awareness when to switch to the right Docker engine, both Linux and Windows containers can run side-by-side.&lt;/p&gt;
-&lt;p&gt;Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
 &lt;/div&gt;</content:encoded></item></channel></rss>

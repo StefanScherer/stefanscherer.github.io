@@ -1,0 +1,383 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Cross-build a Node.js app with Docker and deploy to IBM Cloud</title>
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=de6472453c">
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://stefanscherer.github.io/cross-build-node-js-app-for/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/cross-build-node-js-app-for/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud">
+    <meta property="og:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
+    <meta property="og:url" content="https://stefanscherer.github.io/cross-build-node-js-app-for/">
+    <meta property="article:published_time" content="2017-10-30T22:37:03.000Z">
+    <meta property="article:modified_time" content="2017-10-30T23:12:52.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Node.js">
+    <meta property="article:tag" content="multi-arch">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud">
+    <meta name="twitter:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/cross-build-node-js-app-for/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Node.js, multi-arch">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "Cross-build a Node.js app with Docker and deploy to IBM Cloud",
+    "url": "https://stefanscherer.github.io/cross-build-node-js-app-for/",
+    "datePublished": "2017-10-30T22:37:03.000Z",
+    "dateModified": "2017-10-30T23:12:52.000Z",
+    "keywords": "Docker, Node.js, multi-arch",
+    "description": "After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain&#x27;s Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=de6472453c"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
+</head>
+<body class="post-template tag-docker tag-node-js tag-multi-arch nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-node-js tag-multi-arch">
+
+        <header class="post-header">
+            <h1 class="post-title">Cross-build a Node.js app with Docker and deploy to IBM Cloud</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-10-30">30 October 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/node-js/">Node.js</a>, <a href="../tag/multi-arch/">multi-arch</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
+<blockquote>
+<p><em>"Put all Captains available into a room, feed them well and see what's happening."</em></p>
+</blockquote>
+<p><img src="../content/images/2017/10/captains-hack-day.jpg" alt="captains-hack-day"></p>
+<h2 id="modernizingswarmvisualizer">Modernizing Swarm Visualizer</h2>
+<p>One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with that idea, to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.</p>
+<p>The old one uses a dark theme and shows lots of details for the services with small fonts.</p>
+<p><img src="../content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.47.10.png" alt="old swarm visualizer"></p>
+<p>Here's a screenshot if an early version of the new UI. Witch a click on one of the services you get more details about that service. All information are updated immediatelly when you eg. add or remove labels to a service.</p>
+<p><img src="../content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.50.18.png" alt="new swarm visualizer"></p>
+<p>You can try this new Swarm visualizer yourself with the following command:</p>
+<pre><code>docker container run \
+  --name swarm-viz \
+  -p 3000:3000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  mikesir87/swarm-viz
+</code></pre>
+<p>I joined Michaels table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.</p>
+<p>In this blog post I focus on how to build a Node.js app with Docker and don't look into the details of the app itself. I'll show how to improve the Dockerfile to build for multiple platforms and finally how to build a CI pipeline for that. You can find the project on <a href="https://github.com/mikesir87/swarm-viz">github.com/mikesir87/swarm-viz</a>.</p>
+<h2 id="initialdockerfile">Initial Dockerfile</h2>
+<p>The application is built inside a Docker container. So you even can build it without any developer tools installed, you only need Docker.</p>
+<p>Let's have a look at the first version of the Dockerfile for the Linux image. It is a multi-stage build with three stages:</p>
+<pre><code class="language-Dockerfile"># Build frontend
+FROM node:8.7-alpine as frontend
+WORKDIR /app
+COPY client/package.json .
+RUN npm install
+COPY client/ .
+RUN npm run build
+
+# Build backend
+FROM node:8.7-alpine as backend
+WORKDIR /app
+COPY api/package.json .
+RUN npm install
+COPY api/ .
+RUN npm run build
+
+# Put them together
+FROM node:8.7-alpine
+EXPOSE 3000
+WORKDIR /app
+COPY api/package.json .
+RUN npm install --production
+COPY --from=backend /app/dist /app/dist
+COPY --from=frontend /app/build /app/build
+CMD node /app/dist/index.js
+</code></pre>
+<p>The first stage uses <code>FROM node:8.7-alpine</code> to build the frontend in a container.</p>
+<p>The second stage builds the backend in another Alpine container. During that build you also need some development dependencies that aren't needed for the final image.</p>
+<p>In the third stage only the depencies that are relevant at runtime are installed with <code>npm install --production</code>. All artifacts needed from the other stages are also copied into the final image.</p>
+<h2 id="makefrommoreflexibleforwindows">Make FROM more flexible for Windows</h2>
+<p>I tried to build the app for Windows Server 1709 and had to create a second Dockerfile as I have to use another <code>FROM</code> as node does not have a Windows variant in the official images. And Windows Server 1709 just came out so I had to create a Node.js base image for Windows myself.</p>
+<p>So what I did was copying the Dockerfile to Dockerfile.1709 and changed all the</p>
+<pre><code>FROM node:8.7-alpine
+</code></pre>
+<p>lines into</p>
+<pre><code>FROM stefanscherer/node-windows:1709
+</code></pre>
+<p>But now we have duplicated the Dockerfile "code" for only this little difference.</p>
+<p>Fortunately you now can use build arguments for the <code>FROM</code> instruction. So with only a little change we can have <strong>ONE</strong> Dockerfile for Linux and Windows.</p>
+<pre><code>ARG node=node:8.7-alpine
+FROM $node as frontend
+</code></pre>
+<p><img src="../content/images/2017/10/add-arg.png" alt="add-arg"></p>
+<p>On Linux you still can build the image as before without any change.</p>
+<p>On Windows I now was able to use this Dockerfile with</p>
+<pre><code>docker image build -t viz `
+  --build-args node=stefanscherer/node-windows:1709 .
+</code></pre>
+<p>and use a Windows Node.js base image for all stages. <a href="https://github.com/mikesir87/swarm-viz/pull/2">First pull request</a> done. Check! 😊</p>
+<p>And running the manually built image in Windows Server 1709 looks very similar to Linux:</p>
+<pre><code>docker container run `
+  -p 3000:3000 `
+  -u ContainerAdministrator `
+  -v //./pipe/docker_engine://./pipe/docker_engine `
+  viz
+</code></pre>
+<h2 id="goingmultiarch">Going multi-arch</h2>
+<p>We showed the Windows Swarm visualizer other Captains and we discussed how to go more platforms. Phil Estes, a very active member of the Docker community pushing the multi-architecture support in Docker forward and the maintainer of the <a href="https://github.com/estesp/manifest-tool">manifest-tool</a>, commented:</p>
+<p><em>With Golang it is easy to build multi-arch images, just cross-build a static binary with <code>GOARCH=bar go build app.go</code> and copy the binary in an empty <code>FROM scratch</code> image.</em></p>
+<p>Hm, we use Node.js here, so what has to be done instead?</p>
+<p><img src="../content/images/2017/10/captain-hack-day-1.jpg" alt="captain-hack-day-1"></p>
+<p>Well, instead of the <code>scratch</code> image we need the <code>node</code> image for the Node.js runtime. So we had to <strong>choose the desired architecture</strong> and then copy all sources and dependencies into that image.</p>
+<p>Our Node.js application uses Express, Dockerode and some other dependencies, that are platform independent. So this simple copy approach should do it, we thought.</p>
+<p>We added another build stage in the Dockerfile where we switch to the desired platform. You may know, the <code>node</code> image on Docker Hub is already a multi-arch image. But in this case we want to build - let's say on Linux/amd64 - for another platform like the IBM s390 mainframe.</p>
+<p>With another build argument to specify the target platform for the final stage we came up with this:</p>
+<pre><code class="language-Dockerfile">ARG node=node:8.7-alpine
+ARG target=node:8.7-alpine
+
+FROM $node as frontend
+...
+
+FROM $target
+EXPOSE 3000
+COPY --from=proddeps /app /app
+CMD node /app/dist/index.js
+</code></pre>
+<p><img src="../content/images/2017/10/add-target.png" alt="add-target"></p>
+<p>As Phil works for IBM he easily could verify our approach. We have built an IBM version of the Swarm visualizer with</p>
+<pre><code>docker image build -t mikesir87/swarm-viz \
+  --build-arg target=s390x/node:8.7 .
+</code></pre>
+<p>and pushed it to the Docker Hub. Phil then has pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!</p>
+<p><img src="../content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"></p>
+<p>Now we needed some more automation to build and push the Docker images.</p>
+<h2 id="addingamultiarchcipipeline">Adding a multi-arch CI pipeline</h2>
+<p>I've done that several times for my Raspberry Pi projects, so cherry-picked the relevant parts from other repos. For the CI pipeline we choose Travis CI, but any other CI cloud service could be used that allows multi-stage builds.</p>
+<p>The <a href="https://github.com/mikesir87/swarm-viz/blob/master/.travis.yml">.travis.yml</a> uses a matrix build for all architectures. Currently we're building it for only two platforms:</p>
+<pre><code class="language-yaml">sudo: required
+
+services:
+ - docker
+
+env:
+  matrix:
+    - ARCH=amd64
+    - ARCH=s390x
+
+script:
+  - ./travis-build.sh
+</code></pre>
+<h3 id="build">build</h3>
+<p>The <a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-build.sh">travis-build.sh</a> then is called for each architecture of that matrix and we run the corresponding build.</p>
+<pre><code>docker image build -t mikesir87/swarm-viz \
+    --build-arg target=$ARCH/node:8.7 .
+</code></pre>
+<h3 id="deploy">deploy</h3>
+<p>As a final step in the .travis.yml we push every image to the Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.</p>
+<p>The <a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-deploy.sh">travis-deploy.sh</a> pushes the Docker image for each architecture to the Docker Hub with a different tag using the <code>$ARCH</code> variable we get from the matrix build.</p>
+<pre><code>docker image push "$image:linux-$ARCH-$TRAVIS_COMMIT"
+</code></pre>
+<p>In the amd64 build we additionally download and use the manifest-tool to push a manifest list with the final tag.</p>
+<pre><code>manifest-tool push from-args \
+    --platforms linux/amd64,linux/s390x \
+    --template "$image:OS-ARCH-$TRAVIS_COMMIT" \
+    --target "$image:latest"
+</code></pre>
+<p>You can verify that the <code>latest</code> tag is already a manifest list with another Docker image provided by Phil</p>
+<pre><code>$ docker container run --rm mplatform/mquery mikesir87/swarm-viz
+Image: mikesir87/swarm-viz:latest
+ * Manifest List: Yes
+ * Supported platforms:
+   - amd64/linux
+   - s390x/linux
+</code></pre>
+<h2 id="futureimprovements">Future improvements</h2>
+<p>In the near future we will also add a Windows build using AppVeyor CI to provide Windows images and also put them into the manifest list. This step would also be needed for Golang projects as you cannot use the empty <code>scratch</code> image on Windows.</p>
+<p><img src="../content/images/2017/10/ci-pipeline-1.png" alt="ci-pipeline-1"></p>
+<p>If you watch closely we have used <code>node:8.7</code> for the final stage. There is no multi-arch <code>alpine</code> image, so there also is no <code>node:8.7-alpine</code> as multi-arch image. But the maintainers of the official Docker images are working hard to add this missing piece to have small images for all architectures.</p>
+<pre><code>$ docker container run --rm mplatform/mquery node:8.7-alpine
+Image: node:8.7-alpine
+ * Manifest List: Yes
+ * Supported platforms:
+   - amd64/linux
+</code></pre>
+<h2 id="conculsion">Conculsion</h2>
+<p>At the end of the Hack day we were really excited how far we came in only a few hours and that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.</p>
+<p>And the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.</p>
+<blockquote>
+<p>So give multi-arch a try in your next Node.js project to run your app on any platform!</p>
+</blockquote>
+<p>If you want to learn more about multi-arch (and you want to see Phil with a bow tie) then I can recommend the <a href="https://dockercon.docker.com/watch/Q2LpoYRL3drmxzWc8yDmn9">Docker Multi-arch All the Things</a> talk from DockerCon EU with Phil Estes and Michael Friis.</p>
+<p>In my lastest <a href="https://www.slideshare.net/stefscherer/bauen-und-verteilen-von-multiarch-docker-images-fr-linux-und-windows">multi-arch slidedeck</a> there are also more details about the upcoming <code>docker manifest</code> command that will replace the manifest-tool in the future.</p>
+<p>Thanks <a href="https://twitter.com/mikesir87">Michael</a> coming up with that idea, thanks <a href="https://twitter.com/estesp">Phil</a> for the manifest-tool and testing the visualizer. Thanks <a href="https://twitter.com/quintus23m">Dieter</a> and <a href="https://twitter.com/bretfisher">Bret</a> for the photos. You can follow us on Twitter to see what these Captains are doing next.</p>
+<p>Stefan<br>
+<a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Cross-build%20a%20Node.js%20app%20with%20Docker%20and%20deploy%20to%20IBM%20Cloud&amp;url=https://stefanscherer.github.io/cross-build-node-js-app-for/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/cross-build-node-js-app-for/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/cross-build-node-js-app-for/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../dockercon-lcow-and-windows-server-1709/">
+        <section class="post">
+            <h2>DockerCon: LCOW and Windows Server 1709</h2>
+            <p>Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=de6472453c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=de6472453c"></script>
+
+</body>
