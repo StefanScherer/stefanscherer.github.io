@@ -1,4 +1,4 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 00:31:07 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Cross-build a Node.js app with Docker and deploy to IBM Cloud</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.&lt;/p&gt;
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 07:51:01 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Cross-build a Node.js app with Docker and deploy to IBM Cloud</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;em&gt;&amp;quot;Put all Captains available into a room, feed them&lt;/em&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/div&gt;</description><link>https://stefanscherer.github.io/cross-build-nodejs-with-docker/</link><guid isPermaLink="false">59f7701f71f6240001940592</guid><category>Docker</category><category>Node.js</category><category>multi-arch</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 30 Oct 2017 22:37:03 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.&lt;/p&gt;
 &lt;blockquote&gt;
@@ -6,10 +6,10 @@
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/captains-hack-day.jpg" alt="captains-hack-day"&gt;&lt;/p&gt;
 &lt;h2 id="modernizingswarmvisualizer"&gt;Modernizing Swarm Visualizer&lt;/h2&gt;
-&lt;p&gt;One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with that idea, to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.&lt;/p&gt;
+&lt;p&gt;One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with the idea to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.&lt;/p&gt;
 &lt;p&gt;The old one uses a dark theme and shows lots of details for the services with small fonts.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.47.10.png" alt="old swarm visualizer"&gt;&lt;/p&gt;
-&lt;p&gt;Here's a screenshot if an early version of the new UI. Witch a click on one of the services you get more details about that service. All information are updated immediatelly when you eg. add or remove labels to a service.&lt;/p&gt;
+&lt;p&gt;Here's a screenshot of an early version of the new UI. With a click on one of the tasks you get more details about that task and its service. All information is updated immediately when you update the service (eg. add or remove labels).&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.50.18.png" alt="new swarm visualizer"&gt;&lt;/p&gt;
 &lt;p&gt;You can try this new Swarm visualizer yourself with the following command:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;docker container run \
@@ -18,7 +18,7 @@
   -v /var/run/docker.sock:/var/run/docker.sock \
   mikesir87/swarm-viz
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I joined Michaels table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.&lt;/p&gt;
+&lt;p&gt;I joined Michael's table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.&lt;/p&gt;
 &lt;p&gt;In this blog post I focus on how to build a Node.js app with Docker and don't look into the details of the app itself. I'll show how to improve the Dockerfile to build for multiple platforms and finally how to build a CI pipeline for that. You can find the project on &lt;a href="https://github.com/mikesir87/swarm-viz"&gt;github.com/mikesir87/swarm-viz&lt;/a&gt;.&lt;/p&gt;
 &lt;h2 id="initialdockerfile"&gt;Initial Dockerfile&lt;/h2&gt;
 &lt;p&gt;The application is built inside a Docker container. So you even can build it without any developer tools installed, you only need Docker.&lt;/p&gt;
@@ -51,7 +51,7 @@ CMD node /app/dist/index.js
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The first stage uses &lt;code&gt;FROM node:8.7-alpine&lt;/code&gt; to build the frontend in a container.&lt;/p&gt;
 &lt;p&gt;The second stage builds the backend in another Alpine container. During that build you also need some development dependencies that aren't needed for the final image.&lt;/p&gt;
-&lt;p&gt;In the third stage only the depencies that are relevant at runtime are installed with &lt;code&gt;npm install --production&lt;/code&gt;. All artifacts needed from the other stages are also copied into the final image.&lt;/p&gt;
+&lt;p&gt;In the third stage only the dependencies that are relevant at runtime are installed with &lt;code&gt;npm install --production&lt;/code&gt;. All artifacts needed from the other stages are also copied into the final image.&lt;/p&gt;
 &lt;h2 id="makefrommoreflexibleforwindows"&gt;Make FROM more flexible for Windows&lt;/h2&gt;
 &lt;p&gt;I tried to build the app for Windows Server 1709 and had to create a second Dockerfile as I have to use another &lt;code&gt;FROM&lt;/code&gt; as node does not have a Windows variant in the official images. And Windows Server 1709 just came out so I had to create a Node.js base image for Windows myself.&lt;/p&gt;
 &lt;p&gt;So what I did was copying the Dockerfile to Dockerfile.1709 and changed all the&lt;/p&gt;
@@ -80,7 +80,7 @@ FROM $node as frontend
   viz
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id="goingmultiarch"&gt;Going multi-arch&lt;/h2&gt;
-&lt;p&gt;We showed the Windows Swarm visualizer other Captains and we discussed how to go more platforms. Phil Estes, a very active member of the Docker community pushing the multi-architecture support in Docker forward and the maintainer of the &lt;a href="https://github.com/estesp/manifest-tool"&gt;manifest-tool&lt;/a&gt;, commented:&lt;/p&gt;
+&lt;p&gt;We showed the Windows Swarm visualizer to other Captains and we discussed how to go to more platforms. Phil Estes, a very active member of the Docker community who's helping push the multi-architecture support in Docker forward and the maintainer of the &lt;a href="https://github.com/estesp/manifest-tool"&gt;manifest-tool&lt;/a&gt;, commented:&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;With Golang it is easy to build multi-arch images, just cross-build a static binary with &lt;code&gt;GOARCH=bar go build app.go&lt;/code&gt; and copy the binary in an empty &lt;code&gt;FROM scratch&lt;/code&gt; image.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Hm, we use Node.js here, so what has to be done instead?&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/captain-hack-day-1.jpg" alt="captain-hack-day-1"&gt;&lt;/p&gt;
@@ -100,11 +100,11 @@ COPY --from=proddeps /app /app
 CMD node /app/dist/index.js
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/add-target.png" alt="add-target"&gt;&lt;/p&gt;
-&lt;p&gt;As Phil works for IBM he easily could verify our approach. We have built an IBM version of the Swarm visualizer with&lt;/p&gt;
+&lt;p&gt;As Phil works for IBM he could easily verify our approach. We built an IBM version of the Swarm visualizer with&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;docker image build -t mikesir87/swarm-viz \
   --build-arg target=s390x/node:8.7 .
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and pushed it to the Docker Hub. Phil then has pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!&lt;/p&gt;
+&lt;p&gt;and pushed it to the Docker Hub. Phil then pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://stefanscherer.github.io/content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"&gt;&lt;/p&gt;
 &lt;p&gt;Now we needed some more automation to build and push the Docker images.&lt;/p&gt;
 &lt;h2 id="addingamultiarchcipipeline"&gt;Adding a multi-arch CI pipeline&lt;/h2&gt;
@@ -129,7 +129,7 @@ script:
     --build-arg target=$ARCH/node:8.7 .
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h3 id="deploy"&gt;deploy&lt;/h3&gt;
-&lt;p&gt;As a final step in the .travis.yml we push every image to the Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.&lt;/p&gt;
+&lt;p&gt;As a final step in the .travis.yml we push every image to Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.&lt;/p&gt;
 &lt;p&gt;The &lt;a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-deploy.sh"&gt;travis-deploy.sh&lt;/a&gt; pushes the Docker image for each architecture to the Docker Hub with a different tag using the &lt;code&gt;$ARCH&lt;/code&gt; variable we get from the matrix build.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;docker image push &amp;quot;$image:linux-$ARCH-$TRAVIS_COMMIT&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
@@ -158,14 +158,14 @@ Image: node:8.7-alpine
    - amd64/linux
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id="conculsion"&gt;Conculsion&lt;/h2&gt;
-&lt;p&gt;At the end of the Hack day we were really excited how far we came in only a few hours and that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.&lt;/p&gt;
-&lt;p&gt;And the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.&lt;/p&gt;
+&lt;p&gt;At the end of the Hack day we were really excited how far we came in only a few hours and learned that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.&lt;/p&gt;
+&lt;p&gt;Best of all, the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;So give multi-arch a try in your next Node.js project to run your app on any platform!&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;If you want to learn more about multi-arch (and you want to see Phil with a bow tie) then I can recommend the &lt;a href="https://dockercon.docker.com/watch/Q2LpoYRL3drmxzWc8yDmn9"&gt;Docker Multi-arch All the Things&lt;/a&gt; talk from DockerCon EU with Phil Estes and Michael Friis.&lt;/p&gt;
 &lt;p&gt;In my lastest &lt;a href="https://www.slideshare.net/stefscherer/bauen-und-verteilen-von-multiarch-docker-images-fr-linux-und-windows"&gt;multi-arch slidedeck&lt;/a&gt; there are also more details about the upcoming &lt;code&gt;docker manifest&lt;/code&gt; command that will replace the manifest-tool in the future.&lt;/p&gt;
-&lt;p&gt;Thanks &lt;a href="https://twitter.com/mikesir87"&gt;Michael&lt;/a&gt; coming up with that idea, thanks &lt;a href="https://twitter.com/estesp"&gt;Phil&lt;/a&gt; for the manifest-tool and testing the visualizer. Thanks &lt;a href="https://twitter.com/quintus23m"&gt;Dieter&lt;/a&gt; and &lt;a href="https://twitter.com/bretfisher"&gt;Bret&lt;/a&gt; for the photos. You can follow us on Twitter to see what these Captains are doing next.&lt;/p&gt;
+&lt;p&gt;Thanks &lt;a href="https://twitter.com/mikesir87"&gt;Michael&lt;/a&gt; for coming up with that idea, thanks &lt;a href="https://twitter.com/estesp"&gt;Phil&lt;/a&gt; for the manifest-tool and testing the visualizer. Thanks &lt;a href="https://twitter.com/quintus23m"&gt;Dieter&lt;/a&gt; and &lt;a href="https://twitter.com/bretfisher"&gt;Bret&lt;/a&gt; for the photos. You can follow us on Twitter to see what these Captains are doing next.&lt;/p&gt;
 &lt;p&gt;Stefan&lt;br&gt;
 &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;</content:encoded></item><item><title>DockerCon: LCOW and Windows Server 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;

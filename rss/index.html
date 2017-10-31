@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 07:51:01 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Cross-build a Node.js app with Docker and deploy to IBM Cloud]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 08:05:26 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Cross-build a Node.js app with Docker and deploy to IBM Cloud]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
 <blockquote>
 <p><em>&quot;Put all Captains available into a room, feed them</em></p></blockquote></div>]]></description><link>https://stefanscherer.github.io/cross-build-nodejs-with-docker/</link><guid isPermaLink="false">59f7701f71f6240001940592</guid><category><![CDATA[Docker]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[multi-arch]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 30 Oct 2017 22:37:03 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
 <blockquote>
@@ -106,6 +106,7 @@ CMD node /app/dist/index.js
 </code></pre>
 <p>and pushed it to the Docker Hub. Phil then pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!</p>
 <p><img src="https://stefanscherer.github.io/content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"></p>
+<p>The <a href="https://github.com/mikesir87/swarm-viz/pull/2">second pull request</a> was accepted. Check! 🎉</p>
 <p>Now we needed some more automation to build and push the Docker images.</p>
 <h2 id="addingamultiarchcipipeline">Adding a multi-arch CI pipeline</h2>
 <p>I've done that several times for my Raspberry Pi projects, so cherry-picked the relevant parts from other repos. For the CI pipeline we choose Travis CI, but any other CI cloud service could be used that allows multi-stage builds.</p>
@@ -157,7 +158,7 @@ Image: node:8.7-alpine
  * Supported platforms:
    - amd64/linux
 </code></pre>
-<h2 id="conculsion">Conculsion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>At the end of the Hack day we were really excited how far we came in only a few hours and learned that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.</p>
 <p>Best of all, the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.</p>
 <blockquote>
