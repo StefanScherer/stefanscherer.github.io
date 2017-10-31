@@ -1,4 +1,69 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 08:05:26 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Cross-build a Node.js app with Docker and deploy to IBM Cloud]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Tue, 31 Oct 2017 23:33:26 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[A closer look at Docker on Windows Server 1709]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people.</p>
+<p>So let's go to Azure and create a new machine. The interesting VM for me</p></div>]]></description><link>https://stefanscherer.github.io/docker-on-windows-server-1709/</link><guid isPermaLink="false">59f8a705f830c70001a9b8ee</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows Server 1709]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 31 Oct 2017 23:18:14 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people.</p>
+<p>So let's go to Azure and create a new machine. The interesting VM for me is &quot;Windows Server, version 1709 with Containers&quot; as it comes with Docker preinstalled.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-31-um-22.22.35.png" alt="azure search for 1709"></p>
+<p>After a few minutes you can RDP into the machine. But watch out, it is only a Windows Server Core, so there is no full desktop. But for a Docker host this is good enough.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker1709-01.png-shadow.png" alt="Docker 17.06.1 EE preinstalled"></p>
+<p>As you can see the VM comes with the latest Docker 17.06.1 EE and the new 1709 base images installed.</p>
+<h2 id="smaller1709baseimages">Smaller &quot;1709&quot; base images</h2>
+<p>On great news is that the base images got smaller. For comparison here are the images of a Windows Server 2016:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker2016-01.png-shadow.png" alt="Windows Server 2016 images"></p>
+<p>So with Windows Server 1709 the WindowsServerCore image is only 1/2 the size of the original. And for the NanoServer image is about 1/4 with only 93 MB on the Docker Hub.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker-hub-nanoserver.png" alt="docker-hub-nanoserver"></p>
+<p>That makes the NanoServer image really attractive to deploy modern microservices with it. As you can see, the &quot;latest&quot; tag is still pointing to the old image. As the 1709 release is a semi-annual release supported for the next 18 months and the current Windows Server 2016 is the LTS version, the latest tags still remain to the older, thicker images.</p>
+<p>So when you want to go small, then use the &quot;1709&quot; tags:</p>
+<ul>
+<li>microsoft/windowsservercore:1709</li>
+<li>microsoft/nanoserver:1709</li>
+</ul>
+<h2 id="whereispowershell">Where is PowerShell?</h2>
+<p>The small size of the NanoServer image comes with a cost: There is no PowerShell installed inside the NanoServer image.</p>
+<p>So is that really a problem?</p>
+<p>Yes and no. Some people have started to write Dockerfiles and installed software using PowerShell in the <code>RUN</code> instructions. This will be a breaking change.</p>
+<p>The good news is that there will be a PowerShell Docker image based on the small nanoserver:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker-hub-powershell.png" alt="docker-hub-powershell"></p>
+<p>Currently there is PowerShell 6.0.0 Beta 9 available and you can run it with</p>
+<pre><code>docker run -it microsoft/powershell:nanoserver
+</code></pre>
+<p>As you can see PowerShell takes 53 MB on top of the 93 MB nanoserver.</p>
+<p>So if you really want to deploy your software with PowerShell, then you might use this base image in your <code>FROM</code> instruction.</p>
+<p>But if you deploy a Golang, Node.js, .NET Core application you probably don't need PowerShell.</p>
+<p>My experience with Windows Dockerfiles is that the common tasks are</p>
+<ul>
+<li>downloading a file, zip, tarball from the internet</li>
+<li>extracting the archive</li>
+<li>Setting an environment variable like PATH</li>
+</ul>
+<p>These steps could be done with tools like curl (yes, I think of the real one and not the curl alias in PowerShell :-) and some other tools like unzip, tar, ... that are way smaller than the complete PowerShell runtime.</p>
+<p>I did a small proof of concept to put some of the tools mentioned into a NanoServer image. You can find the Dockerfile an others in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker-hub-busybox-windows.png" alt="docker-hub-busybox-windows"></p>
+<p>As you can see it only takes about 2 MB to have download and extracting tools. The remaining <code>cmd.exe</code> in the NanoServer image is still good enough to run these tools in the <code>RUN</code> instructions of a Dockerfile.</p>
+<h2 id="multistagebuilds">Multi-stage builds</h2>
+<p>Another approach to build small images based on NanoServer comes with Docker 17.06. You can use multi-stage builds which brings you so much power and flexibility into a Dockerfile.</p>
+<p>You can start with a bigger image, for example the PowerShell image or even the much bigger WindowServerCore image. In that stage of the Dockerfile you have all scripting languages or even build tools or MSI support.</p>
+<p>The final stage then uses the smallest NanoServer use <code>COPY</code> deploy instructions for your production image.</p>
+<h2 id="caniusemyoldimagesonserver1709">Can I use my old images on Server 1709?</h2>
+<p>Well, it depends. Let's test this with a popular application from <a href="http://portainer.io">portainer.io</a>. When we try to run the application on a Windows Server 1709 we get the following error message: <em>The operating system of the container does not match the operating sytem of the host.</em></p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/portainer-on-1709.png-shadow.png" alt="portainer-on-1709.png-shadow"></p>
+<p>We can make it work when we run the old container with Hyper-V isolation:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/portainer-hyperv.png-shadow.png" alt="portainer-hyperv.png-shadow"></p>
+<p>For the Hyper-V isolation we need Hyper-V installed. This works in Azure with the v3 machines that allows nested virtualization. If you are using Windows 10 1709 with Hyper-V then you also can run old images in Docker 4 Windows.</p>
+<p>But there are many other situations where you are out of luck:</p>
+<ul>
+<li>other cloud providers that does not have nested virtualization</li>
+<li>VirtualBox</li>
+</ul>
+<p>So my recommendation is to create new Docker images based on 1709 that can be used with Windows 10 1709, or Windows Server 1709 even without Hyper-V. Another advantage is that your users have much smaller downloads and can run your apps much faster.</p>
+<h2 id="caniusethe1709imagesonserver2016">Can I use the 1709 images on Server 2016?</h2>
+<p><strong>No.</strong> If you try to run one of the 1709 based images on a Windows Server 2016 you see the following error message. Even running it with <code>--isolation=hyperv</code> does not help here as the underlying VM compute of your host does not have all the new features needed.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/nano1709-on-2016.png-shadow.png" alt="nano1709-on-2016.png-shadow"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>With Docker on Windows Server 1709 the container images get much smaller. Your downloads are faster and smaller, the containers start faster. If you're interested in Windows Containers then you should switch over to the new server version. The upcoming Linux Containers on Windows feature will run only on Windows 10 1709/Windows Server 1709 and above.</p>
+<p>As a software vendor providing Windows Docker images you should provide both variants as people still use Windows 10 and Windows Server 2016 LTS. In a following blog post I'll show a way that makes it easy for your users to just run your container image regardless the host operating system they have.</p>
+<p>I hope you are as excited as I am about the new features of the new Windows Server 1709. If you have questions feel free to drop a comment below.</p>
+<p>Stefan<br>
+<a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>]]></content:encoded></item><item><title><![CDATA[Cross-build a Node.js app with Docker and deploy to IBM Cloud]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
 <blockquote>
 <p><em>&quot;Put all Captains available into a room, feed them</em></p></blockquote></div>]]></description><link>https://stefanscherer.github.io/cross-build-nodejs-with-docker/</link><guid isPermaLink="false">59f7701f71f6240001940592</guid><category><![CDATA[Docker]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[multi-arch]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 30 Oct 2017 22:37:03 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
 <blockquote>
@@ -1340,86 +1405,5 @@ docker pull microsoft/nanoserver
 <h1 id="tldr">TL/DR</h1>
 <p>So your part to get Windows Updates into your Windows Container images is to choose the newer image in your <code>Dockerfile</code> and rebuild your application image with it.</p>
 <p>If you haven't used version tags of the image below, do a <code>docker pull ...</code> of that image to get sure to have the updated one before you rebuild.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[How to protect a Windows 2016 Docker engine with TLS]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
-<p>There is a tutorial</p></div>]]></description><link>https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/</link><guid isPermaLink="false">5986d4ec688a49000154096a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><category><![CDATA[TLS]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 23 Oct 2016 22:35:19 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
-<p>There is a tutorial <a href="https://docs.docker.com/engine/security/https/">Protect the Docker daemon socket</a> at the website of Docker which uses the <code>openssl</code> tool to create all the certificates etc. But how should we do this on Windows?</p>
-<h2 id="justcontainerizewhatsthere">Just containerize what's there</h2>
-<p>I have seen the <a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-server-container-tools/DockerTLS">DockerTLS</a> script in a GitHub repo from Microsoft. But this script installs OpenSSL on my machine which I don't want to.</p>
-<p>My first thought was, let's put this script + OpenSSL into a Docker image and run it in a Windows container.</p>
-<p>So this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/2e2a5b12252816744f5414e0621e12bb74b6f59c/dockertls/Dockerfile">Dockerfile</a> was my first attempt to just use Chocolatey to install OpenSSL, download the PowerShell script from the Microsoft GitHub repo. Done. The script can run in a safe environment and I don't have to install software on my Docker host.</p>
-<h2 id="dockertls">DockerTLS</h2>
-<p>But there is still work to do on the host to configure the Docker engine which I wanted to automate a little more. So it would be great to have a tool that can</p>
-<ul>
-<li>generate all TLS certs</li>
-<li>create or update the Docker <code>daemon.json</code> file</li>
-<li>Put the client certs into my home directory</li>
-</ul>
-<p>But still we need a program or script with OpenSSL to do that. I thought this tool should be deployed in a Docker image and shared on the Docker Hub. And here it is:</p>
-<h2 id="dockerrundockertls">docker run dockertls</h2>
-<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls.png" alt="dockertls"></p>
-<p>The script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1">generate-certs.ps1</a> creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL/LibreSSL installed.</p>
-<p>The dockertls Docker image is created with this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile">Dockerfile</a>. It installs LibreSSL from OpenBSD (thanks to <a href="https://twitter.com/friism">Michael Friis</a> for that optimization) and copies the PowerShell script inside the image.</p>
-<p>You can find the <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls">full source code</a> of the dockertls image in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo if you want to build the Docker image yourself.</p>
-<p>Otherwise you can just the <a href="https://hub.docker.com/r/stefanscherer/dockertls-windows/">dockertls Docker image</a> from the Docker Hub.</p>
-<h3 id="dryrun">Dry run</h3>
-<p>As you don't trust me or my Docker image you can do a dry run with some temporary folders where the container can copy files into without destroying your Docker host.</p>
-<p>Just create two folders:</p>
-<pre><code>mkdir server
-mkdir client\.docker
-</code></pre>
-<p>Now run the Windows container with the environment variables <code>SERVER_NAME</code> and <code>IP_ADDRESSES</code> as well as two volume mounts to write the certs back to the host:</p>
-<pre><code>docker run --rm `
-  -e SERVER_NAME=$(hostname) `
-  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
-  -v &quot;$(pwd)\server:C:\ProgramData\docker&quot; `
-  -v &quot;$(pwd)\client\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
-  stefanscherer/dockertls-windows
-</code></pre>
-<p>Afterwards check the folders:</p>
-<pre><code>dir server\certs.d
-dir server\config
-dir client\.docker
-</code></pre>
-<p>You will see that there are three pem files for the server, the <code>daemon.json</code> file as well as three pem files for the client.</p>
-<p>Of course you could manually copy the files and try them out. But this Docker image can do this for you as well.</p>
-<h3 id="fullrun">Full run</h3>
-<p>You may have to create the <code>.docker</code> folder in your home directory.</p>
-<pre><code>mkdir $env:USERPROFILE\.docker
-</code></pre>
-<p>Now run the container with the correct paths on the host so it can copy all certs and configs to the right place. The script can read an existing <code>daemon.json</code> and update it to keep all other configuration untouched.</p>
-<pre><code>docker run --rm `
-  -e SERVER_NAME=$(hostname) `
-  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
-  -v &quot;C:\ProgramData\docker:C:\ProgramData\docker&quot; `
-  -v &quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
-  stefanscherer/dockertls-windows
-</code></pre>
-<p>Now you have to restart the Docker service in an administrator Shell with</p>
-<pre><code>restart-service docker
-</code></pre>
-<p>One last step is needed on your host. You have to open the port 2376 in your firewall so you can access the machine from the outside. But then you're done on your host.</p>
-<p>You can recreate the TLS certs with the same command and just restart the Docker service afterwards.</p>
-<h3 id="testtlsconnection">Test TLS connection</h3>
-<p>Now test the connection to the TLS secured Docker service with</p>
-<pre><code>docker --tlsverify `
-  --tlscacert=$env:USERPROFILE\.docker\ca.pem `
-  --tlscert=$env:USERPROFILE\.docker\cert.pem `
-  --tlskey=$env:USERPROFILE\.docker\key.pem `
-  -H=tcp://127.0.0.1:2376 version
-</code></pre>
-<p>Or just set some environment variables</p>
-<pre><code>$env:DOCKER_HOST=&quot;tcp://127.0.0.1:2376&quot;
-$env:DOCKER_TLS_VERIFY=&quot;1&quot;
-docker version
-</code></pre>
-<h3 id="azure">Azure</h3>
-<p>In an Azure VM you should use your DNS name for the VM in the <code>SERVER_NAME</code> environment variable and your public and local IP addresses of that machine.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-run---Kopie.png" alt="docker-run"></p>
-<p>You have to open the firewall port 2376 on your Windows Docker host.</p>
-<p>For Azure you also have to add a incoming rule for port 2376 in your network security group.</p>
-<p>Then you have to securely transfer the three client pem files from your Azure VM to your laptop.</p>
-<p>I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-1.png" alt="docker-version"></p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>
