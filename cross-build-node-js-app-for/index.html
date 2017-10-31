@@ -1,3 +1,4 @@
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,7 +23,7 @@
     <meta property="og:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
     <meta property="og:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">
     <meta property="article:published_time" content="2017-10-30T22:37:03.000Z">
-    <meta property="article:modified_time" content="2017-10-31T07:50:25.000Z">
+    <meta property="article:modified_time" content="2017-10-31T08:04:52.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="Node.js">
     <meta property="article:tag" content="multi-arch">
@@ -65,7 +66,7 @@
     "headline": "Cross-build a Node.js app with Docker and deploy to IBM Cloud",
     "url": "https://stefanscherer.github.io/cross-build-nodejs-with-docker/",
     "datePublished": "2017-10-30T22:37:03.000Z",
-    "dateModified": "2017-10-31T07:50:25.000Z",
+    "dateModified": "2017-10-31T08:04:52.000Z",
     "keywords": "Docker, Node.js, multi-arch",
     "description": "After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain&#x27;s Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them",
     "mainEntityOfPage": {
@@ -232,6 +233,7 @@ CMD node /app/dist/index.js
 </code></pre>
 <p>and pushed it to the Docker Hub. Phil then pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!</p>
 <p><img src="../content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"></p>
+<p>The <a href="https://github.com/mikesir87/swarm-viz/pull/2">second pull request</a> was accepted. Check! 🎉</p>
 <p>Now we needed some more automation to build and push the Docker images.</p>
 <h2 id="addingamultiarchcipipeline">Adding a multi-arch CI pipeline</h2>
 <p>I've done that several times for my Raspberry Pi projects, so cherry-picked the relevant parts from other repos. For the CI pipeline we choose Travis CI, but any other CI cloud service could be used that allows multi-stage builds.</p>
@@ -283,7 +285,7 @@ Image: node:8.7-alpine
  * Supported platforms:
    - amd64/linux
 </code></pre>
-<h2 id="conculsion">Conculsion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>At the end of the Hack day we were really excited how far we came in only a few hours and learned that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.</p>
 <p>Best of all, the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.</p>
 <blockquote>
