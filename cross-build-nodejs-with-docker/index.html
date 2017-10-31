@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=de6472453c">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6818c8a031">
 
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
@@ -23,7 +23,7 @@
     <meta property="og:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
     <meta property="og:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">
     <meta property="article:published_time" content="2017-10-30T22:37:03.000Z">
-    <meta property="article:modified_time" content="2017-10-31T00:30:30.000Z">
+    <meta property="article:modified_time" content="2017-10-31T07:50:25.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="Node.js">
     <meta property="article:tag" content="multi-arch">
@@ -66,7 +66,7 @@
     "headline": "Cross-build a Node.js app with Docker and deploy to IBM Cloud",
     "url": "https://stefanscherer.github.io/cross-build-nodejs-with-docker/",
     "datePublished": "2017-10-30T22:37:03.000Z",
-    "dateModified": "2017-10-31T00:30:30.000Z",
+    "dateModified": "2017-10-31T07:50:25.000Z",
     "keywords": "Docker, Node.js, multi-arch",
     "description": "After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain&#x27;s Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them",
     "mainEntityOfPage": {
@@ -76,7 +76,7 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=de6472453c"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=6818c8a031"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
@@ -133,10 +133,10 @@ ghost.init({
 </blockquote>
 <p><img src="../content/images/2017/10/captains-hack-day.jpg" alt="captains-hack-day"></p>
 <h2 id="modernizingswarmvisualizer">Modernizing Swarm Visualizer</h2>
-<p>One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with that idea, to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.</p>
+<p>One of the ideas was Swarm Visualizer 2.0. Michael Irwin came up with the idea to rewrite the current Visualizer to be event driven, use a modern React framework and cleanup the code base.</p>
 <p>The old one uses a dark theme and shows lots of details for the services with small fonts.</p>
 <p><img src="../content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.47.10.png" alt="old swarm visualizer"></p>
-<p>Here's a screenshot if an early version of the new UI. Witch a click on one of the services you get more details about that service. All information are updated immediatelly when you eg. add or remove labels to a service.</p>
+<p>Here's a screenshot of an early version of the new UI. With a click on one of the tasks you get more details about that task and its service. All information is updated immediately when you update the service (eg. add or remove labels).</p>
 <p><img src="../content/images/2017/10/Bildschirmfoto-2017-10-30-um-19.50.18.png" alt="new swarm visualizer"></p>
 <p>You can try this new Swarm visualizer yourself with the following command:</p>
 <pre><code>docker container run \
@@ -145,7 +145,7 @@ ghost.init({
   -v /var/run/docker.sock:/var/run/docker.sock \
   mikesir87/swarm-viz
 </code></pre>
-<p>I joined Michaels table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.</p>
+<p>I joined Michael's table as I was curious if we can have this visualizer for Windows, too. Especially the new Windows Server 1709 that makes mapping the Docker API into a Windows container as easy as on Linux.</p>
 <p>In this blog post I focus on how to build a Node.js app with Docker and don't look into the details of the app itself. I'll show how to improve the Dockerfile to build for multiple platforms and finally how to build a CI pipeline for that. You can find the project on <a href="https://github.com/mikesir87/swarm-viz">github.com/mikesir87/swarm-viz</a>.</p>
 <h2 id="initialdockerfile">Initial Dockerfile</h2>
 <p>The application is built inside a Docker container. So you even can build it without any developer tools installed, you only need Docker.</p>
@@ -178,7 +178,7 @@ CMD node /app/dist/index.js
 </code></pre>
 <p>The first stage uses <code>FROM node:8.7-alpine</code> to build the frontend in a container.</p>
 <p>The second stage builds the backend in another Alpine container. During that build you also need some development dependencies that aren't needed for the final image.</p>
-<p>In the third stage only the depencies that are relevant at runtime are installed with <code>npm install --production</code>. All artifacts needed from the other stages are also copied into the final image.</p>
+<p>In the third stage only the dependencies that are relevant at runtime are installed with <code>npm install --production</code>. All artifacts needed from the other stages are also copied into the final image.</p>
 <h2 id="makefrommoreflexibleforwindows">Make FROM more flexible for Windows</h2>
 <p>I tried to build the app for Windows Server 1709 and had to create a second Dockerfile as I have to use another <code>FROM</code> as node does not have a Windows variant in the official images. And Windows Server 1709 just came out so I had to create a Node.js base image for Windows myself.</p>
 <p>So what I did was copying the Dockerfile to Dockerfile.1709 and changed all the</p>
@@ -207,7 +207,7 @@ FROM $node as frontend
   viz
 </code></pre>
 <h2 id="goingmultiarch">Going multi-arch</h2>
-<p>We showed the Windows Swarm visualizer other Captains and we discussed how to go more platforms. Phil Estes, a very active member of the Docker community pushing the multi-architecture support in Docker forward and the maintainer of the <a href="https://github.com/estesp/manifest-tool">manifest-tool</a>, commented:</p>
+<p>We showed the Windows Swarm visualizer to other Captains and we discussed how to go to more platforms. Phil Estes, a very active member of the Docker community who's helping push the multi-architecture support in Docker forward and the maintainer of the <a href="https://github.com/estesp/manifest-tool">manifest-tool</a>, commented:</p>
 <p><em>With Golang it is easy to build multi-arch images, just cross-build a static binary with <code>GOARCH=bar go build app.go</code> and copy the binary in an empty <code>FROM scratch</code> image.</em></p>
 <p>Hm, we use Node.js here, so what has to be done instead?</p>
 <p><img src="../content/images/2017/10/captain-hack-day-1.jpg" alt="captain-hack-day-1"></p>
@@ -227,11 +227,11 @@ COPY --from=proddeps /app /app
 CMD node /app/dist/index.js
 </code></pre>
 <p><img src="../content/images/2017/10/add-target.png" alt="add-target"></p>
-<p>As Phil works for IBM he easily could verify our approach. We have built an IBM version of the Swarm visualizer with</p>
+<p>As Phil works for IBM he could easily verify our approach. We built an IBM version of the Swarm visualizer with</p>
 <pre><code>docker image build -t mikesir87/swarm-viz \
   --build-arg target=s390x/node:8.7 .
 </code></pre>
-<p>and pushed it to the Docker Hub. Phil then has pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!</p>
+<p>and pushed it to the Docker Hub. Phil then pulled and started the container in IBM Cloud and showed us the visualizer UI. Hurray!</p>
 <p><img src="../content/images/2017/10/deploy-to-ibm.jpg" alt="deploy-to-ibm"></p>
 <p>Now we needed some more automation to build and push the Docker images.</p>
 <h2 id="addingamultiarchcipipeline">Adding a multi-arch CI pipeline</h2>
@@ -256,7 +256,7 @@ script:
     --build-arg target=$ARCH/node:8.7 .
 </code></pre>
 <h3 id="deploy">deploy</h3>
-<p>As a final step in the .travis.yml we push every image to the Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.</p>
+<p>As a final step in the .travis.yml we push every image to Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.</p>
 <p>The <a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-deploy.sh">travis-deploy.sh</a> pushes the Docker image for each architecture to the Docker Hub with a different tag using the <code>$ARCH</code> variable we get from the matrix build.</p>
 <pre><code>docker image push "$image:linux-$ARCH-$TRAVIS_COMMIT"
 </code></pre>
@@ -285,14 +285,14 @@ Image: node:8.7-alpine
    - amd64/linux
 </code></pre>
 <h2 id="conculsion">Conculsion</h2>
-<p>At the end of the Hack day we were really excited how far we came in only a few hours and that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.</p>
-<p>And the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.</p>
+<p>At the end of the Hack day we were really excited how far we came in only a few hours and learned that cross-building Node.js apps with Docker and deploying them as multi-arch Docker images isn't that hard.</p>
+<p>Best of all, the users of your Docker images don't have to think about these details. They just can run your image on any platform. Just use the command I showed at the beginning as this already uses the multi-arch variant of the next Swarm visualizer app.</p>
 <blockquote>
 <p>So give multi-arch a try in your next Node.js project to run your app on any platform!</p>
 </blockquote>
 <p>If you want to learn more about multi-arch (and you want to see Phil with a bow tie) then I can recommend the <a href="https://dockercon.docker.com/watch/Q2LpoYRL3drmxzWc8yDmn9">Docker Multi-arch All the Things</a> talk from DockerCon EU with Phil Estes and Michael Friis.</p>
 <p>In my lastest <a href="https://www.slideshare.net/stefscherer/bauen-und-verteilen-von-multiarch-docker-images-fr-linux-und-windows">multi-arch slidedeck</a> there are also more details about the upcoming <code>docker manifest</code> command that will replace the manifest-tool in the future.</p>
-<p>Thanks <a href="https://twitter.com/mikesir87">Michael</a> coming up with that idea, thanks <a href="https://twitter.com/estesp">Phil</a> for the manifest-tool and testing the visualizer. Thanks <a href="https://twitter.com/quintus23m">Dieter</a> and <a href="https://twitter.com/bretfisher">Bret</a> for the photos. You can follow us on Twitter to see what these Captains are doing next.</p>
+<p>Thanks <a href="https://twitter.com/mikesir87">Michael</a> for coming up with that idea, thanks <a href="https://twitter.com/estesp">Phil</a> for the manifest-tool and testing the visualizer. Thanks <a href="https://twitter.com/quintus23m">Dieter</a> and <a href="https://twitter.com/bretfisher">Bret</a> for the photos. You can follow us on Twitter to see what these Captains are doing next.</p>
 <p>Stefan<br>
 <a href="https://twitter.com/stefscherer">@stefscherer</a></p>
 </div>
@@ -377,7 +377,7 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=de6472453c"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=de6472453c"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6818c8a031"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=6818c8a031"></script>
 
 </body>
