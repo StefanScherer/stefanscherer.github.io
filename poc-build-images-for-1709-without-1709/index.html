@@ -1,0 +1,333 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>PoC: How to build images for 1709 without 1709</title>
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=6818c8a031">
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="PoC: How to build images for 1709 without 1709">
+    <meta property="og:description" content="First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Nethertheless I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird? Disclaimer: The tools and described workflow to build such images on">
+    <meta property="og:url" content="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/">
+    <meta property="article:published_time" content="2017-10-31T23:55:00.000Z">
+    <meta property="article:modified_time" content="2017-11-01T02:05:50.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="Windows Server 1709">
+    <meta property="article:tag" content="windows-containers">
+    <meta property="article:tag" content="AppVeyor">
+    <meta property="article:tag" content="multi-arch">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="PoC: How to build images for 1709 without 1709">
+    <meta name="twitter:description" content="First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Nethertheless I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird? Disclaimer: The tools and described workflow to build such images on">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, Windows Server 1709, windows-containers, AppVeyor, multi-arch">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "PoC: How to build images for 1709 without 1709",
+    "url": "https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/",
+    "datePublished": "2017-10-31T23:55:00.000Z",
+    "dateModified": "2017-11-01T02:05:50.000Z",
+    "keywords": "Docker, Windows Server 1709, windows-containers, AppVeyor, multi-arch",
+    "description": "First of all: Happy Halloween! In this blog post you&#x27;ll see some spooky things - or magic? Nethertheless I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird? Disclaimer: The tools and described workflow to build such images on",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=6818c8a031"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/">
+</head>
+<body class="post-template tag-docker tag-windows-server-1709 tag-windows-containers tag-appveyor tag-multi-arch nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-windows-server-1709 tag-windows-containers tag-appveyor tag-multi-arch">
+
+        <header class="post-header">
+            <h1 class="post-title">PoC: How to build images for 1709 without 1709</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2017-10-31">31 October 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/windows-server-1709/">Windows Server 1709</a>, <a href="../tag/windows-containers/">windows-containers</a>, <a href="../tag/appveyor/">AppVeyor</a>, <a href="../tag/multi-arch/">multi-arch</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Nethertheless I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?</p>
+<blockquote>
+<p><strong>Disclaimer:</strong> The tools and described workflow to build such images on old Windows Server versions may break at any time. It works for me and some special cases, but it does not mean it works for any other use-case.</p>
+</blockquote>
+<h2 id="the20161709gap">The 2016 &lt;-&gt; 1709 gap</h2>
+<p>As you might know from my <a href="https://stefanscherer.github.io/docker-on-windows-server-1709/">previous blog post</a> there is a gap between the old and new Windows images. You cannot pull the new 1709 Docker images on current Windows Server 2016. This means you also cannot build images without updating your build machines to Windows Server 1709.</p>
+<h2 id="appveyor">AppVeyor</h2>
+<p>My favorite CI service for Windows is AppVeyor. They provide a Windows Server 2016 build agent with Docker and the latest base images installed. So it is very simple and convenient to build your Windows Docker images there. For example all my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> Dockerfiles are built there and the images are pushed to Docker Hub.</p>
+<p>I guess it will take a while until we can choose another build agent to start building for 1709 there.</p>
+<p>But what should I do in the meantime?</p>
+<ul>
+<li>Should I build all 1709 images manually on a local VM?</li>
+<li>Or spin up a VM in Azure? It is possible since today.</li>
+</ul>
+<p>But then I don't have the nice GitHub integration. And I have to do all the maintenance of a CI server (cleaning up disk space and so on) myself. Oh I don't want to go that way.</p>
+<h2 id="dockerimageshavelayers">Docker images have layers</h2>
+<p>Let's have a closer look at how a Docker image looks like. Each Docker image contains of one or more layers. Each layer is read-only. Any change will be done in a new layer on top of the underlying ones.</p>
+<p>For example the Windows Docker image of a Node.js application looks more or less like this:</p>
+<p><img src="../content/images/2017/11/windows_image_layers-2.png" alt="windows_image_layers-2"></p>
+<p>At the bottom you find the Windows base image, then we add the Node.js runtime. Then we can add our application code on top of that. This is how a Dockerfile works. Every FROM, RUN, ... is an extra layer.</p>
+<p>Technically all layers are just tarballs with files and directories in it. So when the application and framework layer are independent from the OS system layer it should be possible to rearrange them with a new OS layer.</p>
+<h2 id="rebasedockerimage">Rebase Docker image</h2>
+<p>That is what I have tried to find out. I studied the Docker Hub API and wrote a proof of concept to "rebase" a given Windows Docker image to swap the old Windows OS layers with another one.</p>
+<p>The tool works only with information from Docker Hub so it only retrieves metadata and pushes a new manifest back to the Docker Hub. This avoids downloading hundreds of megabytes for the old nanoserver images.</p>
+<h3 id="usecases">Use cases</h3>
+<ul>
+<li>Easily apply Windows Updates to an existing Windows app in seconds. Only the update layer will be swapped.</li>
+<li>Provide your app for all available Windows Update layers to avoid download.</li>
+<li>Sync multiple images based on different Windows Update layers to the current to avoid downloading several different udpate layers for a multi-container application.</li>
+<li>Create images for Server 1709 without having a machine for it.</li>
+</ul>
+<h3 id="limits">Limits</h3>
+<ul>
+<li>You cannot move an app from a windowsservercore image to the nanoserver image.</li>
+<li>You also cannot move PowerShell scripts into the 1709 nanoserver image as there is no PowerShell installed.</li>
+<li>Your framework or application layer may has modified the Windows registry at build time. It then carries the old registry that may not fit to new base layer.</li>
+<li>Moving such old application layers on top of new base layers is some kind of time travel. Be warned that this tool may create corrupt images.</li>
+</ul>
+<p>You can find the <a href="https://github.com/StefanScherer/rebase-docker-image">rebase-docker-image</a> tool on GitHub. It is a Node.js command line tool which is also available on NPM.</p>
+<p>The usage looks like this:</p>
+<pre><code>$ rebase-docker-image \
+    stefanscherer/hello-freiburg:windows \
+    -t stefanscherer/hello-freiburg:1709 \
+    -b microsoft/nanoserver:1709
+</code></pre>
+<p>You specify the existing image, eg. "stefanscherer/hello-freiburg:windows" which is based on nanoserver 10.0.14393.x.</p>
+<p>With the <code>-t</code> option you specify the target image name that where the final manifest should be pushed.</p>
+<p>The <code>-b</code> option specifies the base image you want to use, so most of the time the "microsoft/nanoserver:1709" image.</p>
+<p><img src="../content/images/2017/11/rebase_docker_image.png" alt="rebase_docker_image"></p>
+<p>When we run the tool it does its job in only a few seconds:</p>
+<pre><code>Retrieving information about source image stefanscherer/hello-freiburg:windows
+Retrieving information about source base image microsoft/nanoserver:10.0.14393.1715
+Retrieving information about target base image microsoft/nanoserver:1709
+Rebasing image
+Pushing target image stefanscherer/hello-freiburg:1709
+Done.
+</code></pre>
+<p>Now on a Windows Server 1709 we can run the application.</p>
+<p><img src="../content/images/2017/11/hello-freiburg-1709.png-shadow.png" alt="hello-freiburg-1709.png-shadow"></p>
+<p>I tried this tool with some other Windows Docker images and was able to rebase the golang:1.9-nanoserver image to have a Golang build environment for 1709 without rebuilding the Golang image by myself.</p>
+<p>But I also found situations where the rebase didn't work, so don't expect it to work everywhere.</p>
+<h2 id="appveyorcipipeline">AppVeyor CI pipeline</h2>
+<p>I also want to show you a small CI pipeline using AppVeyor to build a Windows image with <code>curl.exe</code> installed and provide two variants of that Docker image, one for the old nanoserver and one with the nanoserver:1709 image.</p>
+<p>The <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/Dockerfile">Dockerfile</a> uses a multi-stage build. In the first stage we download and extract curl and its DLL's. The second stage starts again with the empty nanoserver (the fat one for Windows Server 2016) and then we just COPY deploy the binary into the fresh image. An ENTRYOINT finishes the final image.</p>
+<pre><code class="language-Dockerfile">FROM microsoft/nanoserver AS download
+ENV CURL_VERSION 7.56.1
+WORKDIR /curl
+ADD https://skanthak.homepage.t-online.de/download/curl-$CURL_VERSION.cab curl.cab
+RUN expand /R curl.cab /F:* .
+
+FROM microsoft/nanoserver
+COPY --from=download /curl/AMD64/ /
+COPY --from=download /curl/CURL.LIC /
+ENTRYPOINT ["curl.exe"]
+</code></pre>
+<p>This image can be built on AppVeyor and pushed to the Docker Hub.</p>
+<p>The <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/push.ps1">push.ps1</a> script pushes this image to Docker Hub.</p>
+<pre><code>docker push stefanscherer/curl-windows:$version-2016
+</code></pre>
+<p>Then the rebase tool will be installed and the 1709 variant will be pushed as well to Docker Hub.</p>
+<pre><code>npm install -g rebase-docker-image
+rebase-docker-image `
+  stefanscherer/curl-windows:$version-2016 `
+  -t stefanscherer/curl-windows:$version-1709 `
+  -b microsoft/nanoserver:1709
+</code></pre>
+<p>To provide my users the best experience I also draft a manifest list, just like we did for multi-arch images at the <a href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">Captains Hack day</a>. The final "tag" then contains both Windows OS variants.</p>
+<p>On Windows you can use Chocolatey to install the manifest-tool. In the future this feature will be integrated into the Docker CLI as "docker manifest" command.</p>
+<pre><code>choco install -y manifest-tool
+manifest-tool push from-spec manifest.yml
+</code></pre>
+<p>The <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/manifest.yml">manifest.yml</a> lists both images and joins them together to the final <code>stefanscherer/curl-windows</code> image.</p>
+<pre><code class="language-yaml">image: stefanscherer/curl-windows:7.56.1
+tags: ['7.56', '7', 'latest']
+manifests:
+  -
+    image: stefanscherer/curl-windows:7.56.1-2016
+    platform:
+      architecture: amd64
+      os: windows
+  -
+    image: stefanscherer/curl-windows:7.56.1-1709
+    platform:
+      architecture: amd64
+      os: windows
+</code></pre>
+<p>So on both Windows Server 2016 and Windows Server 1709 the users can run the same image and it will work.</p>
+<pre><code>PS C:\Users\demo&gt; docker run stefanscherer/curl-windows
+curl: try 'curl --help' or 'curl --manual' for more information
+</code></pre>
+<p>This requires the next Docker 17.10 EE version to work correctly, but it should be available soon. With older Docker engines it may pick the wrong version of the list of Docker images and fail running it.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This way to "rebase" Docker images works astonishingly good, but keep in mind that this is not a general purpose solution. It is always better to use the correct version on the host to rebuild your Docker images the official way.</p>
+<p>Please use the comment below if you have further questions or share what you think about that idea.</p>
+<p>Stefan<br>
+<a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=PoC%3A%20How%20to%20build%20images%20for%201709%20without%201709&amp;url=https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../docker-on-windows-server-1709/">
+        <section class="post">
+            <h2>A closer look at Docker on Windows Server 1709</h2>
+            <p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2017</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=6818c8a031"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=6818c8a031"></script>
+
+</body>
