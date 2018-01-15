@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Windows Server 1709 - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Windows Server 1709 - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/windows-server-1709/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>PoC: How to build images for 1709 without 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; The tools and described workflow to build such images on&lt;/p&gt;&lt;/blockquote&gt;&lt;/div&gt;</description><link>http://localhost:2368/poc-build-images-for-1709-without-1709/</link><guid isPermaLink="false">59f90ee4f830c70001a9b8f1</guid><category>Docker</category><category>Windows Server 1709</category><category>windows-containers</category><category>AppVeyor</category><category>multi-arch</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 31 Oct 2017 23:55:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; The tools and described workflow to build such images on old Windows Server versions may break at any time. It works for me and some special cases, but it does not mean it works for any other use-case.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="the20161709gap"&gt;The 2016 &amp;lt;-&amp;gt; 1709 gap&lt;/h2&gt;
+&lt;p&gt;As you might know from my &lt;a href="https://stefanscherer.github.io/docker-on-windows-server-1709/"&gt;previous blog post&lt;/a&gt; there is a gap between the old and new Windows images. You cannot pull the new 1709 Docker images on current Windows Server 2016. This means you also cannot build images without updating your build machines to Windows Server 1709.&lt;/p&gt;
+&lt;h2 id="appveyor"&gt;AppVeyor&lt;/h2&gt;
+&lt;p&gt;My favorite CI service for Windows is AppVeyor. They provide a Windows Server 2016 build agent with Docker and the latest base images installed. So it is very simple and convenient to build your Windows Docker images there. For example all my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;dockerfiles-windows&lt;/a&gt; Dockerfiles are built there and the images are pushed to Docker Hub.&lt;/p&gt;
+&lt;p&gt;I guess it will take a while until we can choose another build agent to start building for 1709 there.&lt;/p&gt;
+&lt;p&gt;But what should I do in the meantime?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Should I build all 1709 images manually on a local VM?&lt;/li&gt;
+&lt;li&gt;Or spin up a VM in Azure? It is possible since today.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But then I don't have the nice GitHub integration. And I have to do all the maintenance of a CI server (cleaning up disk space and so on) myself. Oh I don't want to go that way.&lt;/p&gt;
+&lt;h2 id="dockerimageshavelayers"&gt;Docker images have layers&lt;/h2&gt;
+&lt;p&gt;Let's have a closer look at how a Docker image looks like. Each Docker image contains of one or more layers. Each layer is read-only. Any change will be done in a new layer on top of the underlying ones.&lt;/p&gt;
+&lt;p&gt;For example the Windows Docker image of a Node.js application looks more or less like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/11/windows_image_layers-2.png" alt="windows_image_layers-2"&gt;&lt;/p&gt;
+&lt;p&gt;At the bottom you find the Windows base image, then we add the Node.js runtime. Then we can add our application code on top of that. This is how a Dockerfile works. Every FROM, RUN, ... is an extra layer.&lt;/p&gt;
+&lt;p&gt;Technically all layers are just tarballs with files and directories in it. So when the application and framework layer are independent from the OS system layer it should be possible to rearrange them with a new OS layer.&lt;/p&gt;
+&lt;h2 id="rebasedockerimage"&gt;Rebase Docker image&lt;/h2&gt;
+&lt;p&gt;That is what I have tried to find out. I studied the Docker Hub API and wrote a proof of concept to &amp;quot;rebase&amp;quot; a given Windows Docker image to swap the old Windows OS layers with another one.&lt;/p&gt;
+&lt;p&gt;The tool works only with information from Docker Hub so it only retrieves metadata and pushes a new manifest back to the Docker Hub. This avoids downloading hundreds of megabytes for the old nanoserver images.&lt;/p&gt;
+&lt;h3 id="usecases"&gt;Use cases&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Easily apply Windows Updates to an existing Windows app in seconds. Only the update layer will be swapped.&lt;/li&gt;
+&lt;li&gt;Provide your app for all available Windows Update layers to avoid download.&lt;/li&gt;
+&lt;li&gt;Sync multiple images based on different Windows Update layers to the current to avoid downloading several different udpate layers for a multi-container application.&lt;/li&gt;
+&lt;li&gt;Create images for Server 1709 without having a machine for it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="limits"&gt;Limits&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;You cannot move an app from a windowsservercore image to the nanoserver image.&lt;/li&gt;
+&lt;li&gt;You also cannot move PowerShell scripts into the 1709 nanoserver image as there is no PowerShell installed.&lt;/li&gt;
+&lt;li&gt;Your framework or application layer may has modified the Windows registry at build time. It then carries the old registry that may not fit to new base layer.&lt;/li&gt;
+&lt;li&gt;Moving such old application layers on top of new base layers is some kind of time travel. Be warned that this tool may create corrupt images.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can find the &lt;a href="https://github.com/StefanScherer/rebase-docker-image"&gt;rebase-docker-image&lt;/a&gt; tool on GitHub. It is a Node.js command line tool which is also available on NPM.&lt;/p&gt;
+&lt;p&gt;The usage looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ rebase-docker-image \
+    stefanscherer/hello-freiburg:windows \
+    -t stefanscherer/hello-freiburg:1709 \
+    -b microsoft/nanoserver:1709
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You specify the existing image, eg. &amp;quot;stefanscherer/hello-freiburg:windows&amp;quot; which is based on nanoserver 10.0.14393.x.&lt;/p&gt;
+&lt;p&gt;With the &lt;code&gt;-t&lt;/code&gt; option you specify the target image name that where the final manifest should be pushed.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;-b&lt;/code&gt; option specifies the base image you want to use, so most of the time the &amp;quot;microsoft/nanoserver:1709&amp;quot; image.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/11/rebase_docker_image.png" alt="rebase_docker_image"&gt;&lt;/p&gt;
+&lt;p&gt;When we run the tool it does its job in only a few seconds:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Retrieving information about source image stefanscherer/hello-freiburg:windows
+Retrieving information about source base image microsoft/nanoserver:10.0.14393.1715
+Retrieving information about target base image microsoft/nanoserver:1709
+Rebasing image
+Pushing target image stefanscherer/hello-freiburg:1709
+Done.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now on a Windows Server 1709 we can run the application.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/11/hello-freiburg-1709.png-shadow.png" alt="hello-freiburg-1709.png-shadow"&gt;&lt;/p&gt;
+&lt;p&gt;I tried this tool with some other Windows Docker images and was able to rebase the golang:1.9-nanoserver image to have a Golang build environment for 1709 without rebuilding the Golang image by myself.&lt;/p&gt;
+&lt;p&gt;But I also found situations where the rebase didn't work, so don't expect it to work everywhere.&lt;/p&gt;
+&lt;h2 id="appveyorcipipeline"&gt;AppVeyor CI pipeline&lt;/h2&gt;
+&lt;p&gt;I also want to show you a small CI pipeline using AppVeyor to build a Windows image with &lt;code&gt;curl.exe&lt;/code&gt; installed and provide two variants of that Docker image, one for the old nanoserver and one with the nanoserver:1709 image.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/Dockerfile"&gt;Dockerfile&lt;/a&gt; uses a multi-stage build. In the first stage we download and extract curl and its DLL's. The second stage starts again with the empty nanoserver (the fat one for Windows Server 2016) and then we just COPY deploy the binary into the fresh image. An ENTRYOINT finishes the final image.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver AS download
+ENV CURL_VERSION 7.56.1
+WORKDIR /curl
+ADD https://skanthak.homepage.t-online.de/download/curl-$CURL_VERSION.cab curl.cab
+RUN expand /R curl.cab /F:* .
+
+FROM microsoft/nanoserver
+COPY --from=download /curl/AMD64/ /
+COPY --from=download /curl/CURL.LIC /
+ENTRYPOINT [&amp;quot;curl.exe&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This image can be built on AppVeyor and pushed to the Docker Hub.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/push.ps1"&gt;push.ps1&lt;/a&gt; script pushes this image to Docker Hub.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker push stefanscherer/curl-windows:$version-2016
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then the rebase tool will be installed and the 1709 variant will be pushed as well to Docker Hub.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g rebase-docker-image
+rebase-docker-image `
+  stefanscherer/curl-windows:$version-2016 `
+  -t stefanscherer/curl-windows:$version-1709 `
+  -b microsoft/nanoserver:1709
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To provide my users the best experience I also draft a manifest list, just like we did for multi-arch images at the &lt;a href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/"&gt;Captains Hack day&lt;/a&gt;. The final &amp;quot;tag&amp;quot; then contains both Windows OS variants.&lt;/p&gt;
+&lt;p&gt;On Windows you can use Chocolatey to install the manifest-tool. In the future this feature will be integrated into the Docker CLI as &amp;quot;docker manifest&amp;quot; command.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install -y manifest-tool
+manifest-tool push from-spec manifest.yml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/curl/manifest.yml"&gt;manifest.yml&lt;/a&gt; lists both images and joins them together to the final &lt;code&gt;stefanscherer/curl-windows&lt;/code&gt; image.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-yaml"&gt;image: stefanscherer/curl-windows:7.56.1
+tags: ['7.56', '7', 'latest']
+manifests:
+  -
+    image: stefanscherer/curl-windows:7.56.1-2016
+    platform:
+      architecture: amd64
+      os: windows
+  -
+    image: stefanscherer/curl-windows:7.56.1-1709
+    platform:
+      architecture: amd64
+      os: windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So on both Windows Server 2016 and Windows Server 1709 the users can run the same image and it will work.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\Users\demo&amp;gt; docker run stefanscherer/curl-windows
+curl: try 'curl --help' or 'curl --manual' for more information
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This requires the next Docker 17.10 EE version to work correctly, but it should be available soon. With older Docker engines it may pick the wrong version of the list of Docker images and fail running it.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;This way to &amp;quot;rebase&amp;quot; Docker images works astonishingly good, but keep in mind that this is not a general purpose solution. It is always better to use the correct version on the host to rebuild your Docker images the official way.&lt;/p&gt;
+&lt;p&gt;Please use the comment below if you have further questions or share what you think about that idea.&lt;/p&gt;
+&lt;p&gt;Stefan&lt;br&gt;
+&lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>A closer look at Docker on Windows Server 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people.&lt;/p&gt;
+&lt;p&gt;So let's go to Azure and create a new machine. The interesting VM for me&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/docker-on-windows-server-1709/</link><guid isPermaLink="false">59f8a705f830c70001a9b8ee</guid><category>Docker</category><category>Windows Server 1709</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 31 Oct 2017 23:18:14 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people.&lt;/p&gt;
+&lt;p&gt;So let's go to Azure and create a new machine. The interesting VM for me is &amp;quot;Windows Server, version 1709 with Containers&amp;quot; as it comes with Docker preinstalled.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/Bildschirmfoto-2017-10-31-um-22.22.35.png" alt="azure search for 1709"&gt;&lt;/p&gt;
+&lt;p&gt;After a few minutes you can RDP into the machine. But watch out, it is only a Windows Server Core, so there is no full desktop. But for a Docker host this is good enough.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker1709-01.png-shadow.png" alt="Docker 17.06.1 EE preinstalled"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see the VM comes with the latest Docker 17.06.1 EE and the new 1709 base images installed.&lt;/p&gt;
+&lt;h2 id="smaller1709baseimages"&gt;Smaller &amp;quot;1709&amp;quot; base images&lt;/h2&gt;
+&lt;p&gt;On great news is that the base images got smaller. For comparison here are the images of a Windows Server 2016:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker2016-01.png-shadow.png" alt="Windows Server 2016 images"&gt;&lt;/p&gt;
+&lt;p&gt;So with Windows Server 1709 the WindowsServerCore image is only 1/2 the size of the original. And for the NanoServer image is about 1/4 with only 93 MB on the Docker Hub.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker-hub-nanoserver.png" alt="docker-hub-nanoserver"&gt;&lt;/p&gt;
+&lt;p&gt;That makes the NanoServer image really attractive to deploy modern microservices with it. As you can see, the &amp;quot;latest&amp;quot; tag is still pointing to the old image. As the 1709 release is a semi-annual release supported for the next 18 months and the current Windows Server 2016 is the LTS version, the latest tags still remain to the older, thicker images.&lt;/p&gt;
+&lt;p&gt;So when you want to go small, then use the &amp;quot;1709&amp;quot; tags:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;microsoft/windowsservercore:1709&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver:1709&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="whereispowershell"&gt;Where is PowerShell?&lt;/h2&gt;
+&lt;p&gt;The small size of the NanoServer image comes with a cost: There is no PowerShell installed inside the NanoServer image.&lt;/p&gt;
+&lt;p&gt;So is that really a problem?&lt;/p&gt;
+&lt;p&gt;Yes and no. Some people have started to write Dockerfiles and installed software using PowerShell in the &lt;code&gt;RUN&lt;/code&gt; instructions. This will be a breaking change.&lt;/p&gt;
+&lt;p&gt;The good news is that there will be a PowerShell Docker image based on the small nanoserver:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker-hub-powershell.png" alt="docker-hub-powershell"&gt;&lt;/p&gt;
+&lt;p&gt;Currently there is PowerShell 6.0.0 Beta 9 available and you can run it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it microsoft/powershell:nanoserver
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see PowerShell takes 53 MB on top of the 93 MB nanoserver.&lt;/p&gt;
+&lt;p&gt;So if you really want to deploy your software with PowerShell, then you might use this base image in your &lt;code&gt;FROM&lt;/code&gt; instruction.&lt;/p&gt;
+&lt;p&gt;But if you deploy a Golang, Node.js, .NET Core application you probably don't need PowerShell.&lt;/p&gt;
+&lt;p&gt;My experience with Windows Dockerfiles is that the common tasks are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;downloading a file, zip, tarball from the internet&lt;/li&gt;
+&lt;li&gt;extracting the archive&lt;/li&gt;
+&lt;li&gt;Setting an environment variable like PATH&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These steps could be done with tools like curl (yes, I think of the real one and not the curl alias in PowerShell :-) and some other tools like unzip, tar, ... that are way smaller than the complete PowerShell runtime.&lt;/p&gt;
+&lt;p&gt;I did a small proof of concept to put some of the tools mentioned into a NanoServer image. You can find the Dockerfile an others in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker-hub-busybox-windows.png" alt="docker-hub-busybox-windows"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see it only takes about 2 MB to have download and extracting tools. The remaining &lt;code&gt;cmd.exe&lt;/code&gt; in the NanoServer image is still good enough to run these tools in the &lt;code&gt;RUN&lt;/code&gt; instructions of a Dockerfile.&lt;/p&gt;
+&lt;h2 id="multistagebuilds"&gt;Multi-stage builds&lt;/h2&gt;
+&lt;p&gt;Another approach to build small images based on NanoServer comes with Docker 17.06. You can use multi-stage builds which brings you so much power and flexibility into a Dockerfile.&lt;/p&gt;
+&lt;p&gt;You can start with a bigger image, for example the PowerShell image or even the much bigger WindowServerCore image. In that stage of the Dockerfile you have all scripting languages or even build tools or MSI support.&lt;/p&gt;
+&lt;p&gt;The final stage then uses the smallest NanoServer use &lt;code&gt;COPY&lt;/code&gt; deploy instructions for your production image.&lt;/p&gt;
+&lt;h2 id="caniusemyoldimagesonserver1709"&gt;Can I use my old images on Server 1709?&lt;/h2&gt;
+&lt;p&gt;Well, it depends. Let's test this with a popular application from &lt;a href="http://portainer.io"&gt;portainer.io&lt;/a&gt;. When we try to run the application on a Windows Server 1709 we get the following error message: &lt;em&gt;The operating system of the container does not match the operating sytem of the host.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/portainer-on-1709.png-shadow.png" alt="portainer-on-1709.png-shadow"&gt;&lt;/p&gt;
+&lt;p&gt;We can make it work when we run the old container with Hyper-V isolation:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/portainer-hyperv.png-shadow.png" alt="portainer-hyperv.png-shadow"&gt;&lt;/p&gt;
+&lt;p&gt;For the Hyper-V isolation we need Hyper-V installed. This works in Azure with the v3 machines that allows nested virtualization. If you are using Windows 10 1709 with Hyper-V then you also can run old images in Docker 4 Windows.&lt;/p&gt;
+&lt;p&gt;But there are many other situations where you are out of luck:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;other cloud providers that does not have nested virtualization&lt;/li&gt;
+&lt;li&gt;VirtualBox&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So my recommendation is to create new Docker images based on 1709 that can be used with Windows 10 1709, or Windows Server 1709 even without Hyper-V. Another advantage is that your users have much smaller downloads and can run your apps much faster.&lt;/p&gt;
+&lt;h2 id="caniusethe1709imagesonserver2016"&gt;Can I use the 1709 images on Server 2016?&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;No.&lt;/strong&gt; If you try to run one of the 1709 based images on a Windows Server 2016 you see the following error message. Even running it with &lt;code&gt;--isolation=hyperv&lt;/code&gt; does not help here as the underlying VM compute of your host does not have all the new features needed.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/nano1709-on-2016.png-shadow.png" alt="nano1709-on-2016.png-shadow"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;With Docker on Windows Server 1709 the container images get much smaller. Your downloads are faster and smaller, the containers start faster. If you're interested in Windows Containers then you should switch over to the new server version. The upcoming Linux Containers on Windows feature will run only on Windows 10 1709/Windows Server 1709 and above.&lt;/p&gt;
+&lt;p&gt;As a software vendor providing Windows Docker images you should provide both variants as people still use Windows 10 and Windows Server 2016 LTS. In a &lt;a href="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/"&gt;following blog post&lt;/a&gt; I'll show a way that makes it easy for your users to just run your container image regardless the host operating system they have.&lt;/p&gt;
+&lt;p&gt;I hope you are as excited as I am about the new features of the new Windows Server 1709. If you have questions feel free to drop a comment below.&lt;/p&gt;
+&lt;p&gt;Stefan&lt;br&gt;
+&lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>DockerCon: LCOW and Windows Server 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;
+&lt;h2 id="dockeronwindowsworkshop"&gt;Docker on Windows Workshop&lt;/h2&gt;
+&lt;p&gt;On Monday&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/dockercon-lcow-and-windows-server-1709/</link><guid isPermaLink="false">59f3b65cdd4c1b0001e301e7</guid><category>DockerCon</category><category>windows-containers</category><category>LCOW</category><category>Windows Server 1709</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 28 Oct 2017 00:18:11 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.&lt;/p&gt;
+&lt;h2 id="dockeronwindowsworkshop"&gt;Docker on Windows Workshop&lt;/h2&gt;
+&lt;p&gt;On Monday I helped &lt;a href="https://twitter.com/EltonStoneman"&gt;Elton Stoneman&lt;/a&gt; in his Docker on Windows Workshop. This time it was a full-day workshop and it was fully packed with 50 people.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/dowws.jpg" alt="Docker on Windows Workshop"&gt;&lt;/p&gt;
+&lt;p&gt;Elton is always running the workshop at a rapic pace, but don't worry the workshop material is all public &lt;a href="https://github.com/sixeyed/docker-windows-workshop"&gt;available on GitHub&lt;/a&gt;. So we went through dockerizing &lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt; apps, adding Prometheus, Grafana and an ELK stack for monitoring, building a Jenkins CI pipeline and finally running a Docker Swarm. There is lots of things to look up in the material. If you prefer a book, I can recommend his &lt;a href="https://www.amazon.de/Docker-Windows-Elt%E2%80%A6"&gt;Docker on Windows&lt;/a&gt; book which is also fully packed with many tips and tricks.&lt;/p&gt;
+&lt;h2 id="lcowtheinsidestory"&gt;LCOW - The Inside Story&lt;/h2&gt;
+&lt;p&gt;One of my favorite talks was by &lt;a href="https://twitter.com/gigastarks"&gt;John Starks&lt;/a&gt; from Microsoft about Linux Container on Windows - The Inside Story. He explained how LinuxKit is used to run a small HyperV VM for the Linux containers to provide the Linux kernel. On his Windows 10 1709 machine he also gave pretty good live demos. The &lt;a href="https://dockercon.docker.com/watch/U7Bxp66uKmemZssjCTyXkm"&gt;video is online&lt;/a&gt; and is worth watching.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/dcon-lcow.jpg" alt="Linux and Windows containers side-by-side"&gt;&lt;/p&gt;
+&lt;p&gt;In the photo you can see an alpine and nanoserver container running side-by-side. So you will no longer need to switch between Linux and Windows containers, it just works. He also showed that volumes work between Linux and Windows containers. This demo was done with a special Docker engine as not all pull requests haven't been merged. But still challenging for me to try this on a own machine ...&lt;/p&gt;
+&lt;h2 id="windowsserver1709"&gt;Windows Server 1709&lt;/h2&gt;
+&lt;p&gt;During the DockerCon week Microsoft has announced the availability of Windows Server Version 1709 for download. I first looked at the Azure Portal, but found nothing yet. I also couldn't find the downloads.&lt;/p&gt;
+&lt;p&gt;So after the LCOW talk I used a Windows 10 VM in Azure and installed the Fall Creators Update to have 1709 on that desktop machine. I found the missing pull request and compiled a Docker engine from source and then I had my LCOW moment:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/docker-run-lcow.gif" alt="docker-run-lcow"&gt;&lt;/p&gt;
+&lt;p&gt;When you see this the first time working and know what technical details had to be solved make make it look so simple and easy - awesome!&lt;/p&gt;
+&lt;p&gt;The next day I found the Windows Server 1709 ISO in my MSDN subscription. So I could start working on a Packer template in my &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; GitHub repo to automate the creation of such Windows VM's. But DockerCon is to meet people and learn new things: &lt;a href="https://twitter.com/NicholasDille"&gt;Nicholas Dille&lt;/a&gt; went another very interesting way to &lt;a href="http://dille.name/blog/2017/10/25/building-a-windowscontainer-docker-host-without-running-windows-setup/"&gt;build a VM with Docker without running Windows Setup&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="smallerwindowsimages"&gt;Smaller Windows images&lt;/h2&gt;
+&lt;p&gt;In the last months we could follow the progress of the Windows Server in several Insider builds. I blogged about the &lt;a href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/"&gt;smaller NanoServer Insider images&lt;/a&gt; in July going down to 80-90 MByte. Now with the new release of Windows Server 1709 and Windows 10 version 1709 we now can use official images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;microsoft/windowsservercore:1709&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver:1709&lt;/li&gt;
+&lt;li&gt;microsoft/dotnet:2.0.0-*-nanoserver-1709&lt;/li&gt;
+&lt;li&gt;microsoft/aspnet:4.7.1-windowsservercore-1709&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The biggest discussion is about having no PowerShell in the small nanoserver image. For me it's a nice fit to just &lt;code&gt;COPY&lt;/code&gt; deploy microservices into the Windows image.&lt;/p&gt;
+&lt;p&gt;I haven't seen an official PowerShell base image based on nanoserver, but there is at least the beta version&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;microsoft/powershell:6.0.0-beta.9-nanoserver-1709&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I also have pushed some images to the Docker Hub to get started with other languages and tools.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/Bildschirmfoto-2017-10-19-um-11.14.43.png" alt="Bildschirmfoto-2017-10-19-um-11.14.43"&gt;&lt;/p&gt;
+&lt;p&gt;If you don't have HyperV installed in Windows Server 1709 (maybe you are running a VM in the Cloud) then you cannot run older Windows Docker image on the new server. All images have to be built based on the new 1709 base images.&lt;/p&gt;
+&lt;p&gt;Windows 10 users always use HyperV to run Linux or Windows containers, so you don't feel that hard constraint on your developer machine.&lt;/p&gt;
+&lt;p&gt;It will be interesting to see how the multiple Windows versions evolve and when the next Insider program is giving us early access to the upcoming features.&lt;/p&gt;
+&lt;h2 id="captainshackday"&gt;Captains Hack Day&lt;/h2&gt;
+&lt;p&gt;On our Docker Captains Hack Day &lt;a href="https://twitter.com/mikesir87"&gt;Michael Irwin&lt;/a&gt; has started a better &lt;a href="https://github.com/mikesir87/swarm-viz"&gt;Swarm Visualizer 2.0&lt;/a&gt;. During the day we have added a first CI pipeline and - of course - Windows support. But not only Windows! With some magic multi-stage multi-arch builds we also managed to cross-build the visualizer on an Intel machine and create a Docker image for IBM z390 mainframes. &lt;a href="https://twitter.com/estesp"&gt;Phil Estes&lt;/a&gt; tested the image in the IBM cloud. I'll write a more detailed blog post about how to cross-build Node.js apps with Docker.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/10/captain-hack-day.jpg" alt="captain-hack-day"&gt;&lt;/p&gt;
+&lt;p&gt;That was a fascinating week at DockerCon. Thanks to Jenny, Ashlinn, Victor, Mano ... for making this event so wonderful. I had a lot of hallway tracks to talk with many people about Windows Containers in devolpment and production. Share and learn!&lt;/p&gt;
+&lt;p&gt;Stefan&lt;br&gt;
+&lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

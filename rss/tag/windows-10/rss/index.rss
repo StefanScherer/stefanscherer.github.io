@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Windows 10 - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Windows 10 - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:09 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/windows-10/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Getting started with Docker Swarm-mode on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/docker-swarm-mode-windows10/</link><guid isPermaLink="false">5986d4ec688a49000154096d</guid><category>Docker</category><category>Swarm</category><category>Windows 10</category><category>Overlay</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 13 Feb 2017 01:31:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on Windows 10 and not Windows Server 2016. Sure it will make more sense in production running a Docker Swarm on multiple servers. The reason is that the Insider preview is the fastest channel to ship new features. Unfortunately there is no equivalent for Windows Server editions.&lt;/p&gt;
+&lt;p&gt;So if you need it for Windows Server you have to wait a little longer. You can indeed test Swarm-Mode on Windows Server 2016 and Docker 1.13, but only without the Overlay network.  To test Swarm-Mode with Overlay network you will need some machines running Windows 10 Insider 15031.&lt;/p&gt;
+&lt;h2 id="preparation"&gt;Preparation&lt;/h2&gt;
+&lt;p&gt;In my case I use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; to spin up Windows VM's locally on my notebook. The advantage is that you can describe some test scenarios with a &lt;code&gt;Vagrantfile&lt;/code&gt; and share it on GitHub.&lt;/p&gt;
+&lt;p&gt;I already have played with Docker Swarm-Mode in December and created a &lt;a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-mode"&gt;Vagrant environment with some Windows Server 2016 VM's&lt;/a&gt;. I'll re-use this scenario and just replace the underlying Vagrant box.&lt;/p&gt;
+&lt;p&gt;So the hardest part is to build a Windows 10 Insider 15031 VM. The &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewadvanced"&gt;latest ISO file&lt;/a&gt; with Windows 10 Insider 15025 is a good starting point. You have to switch to the Fast Ring to fetch the latest updates for Insider 15031.&lt;/p&gt;
+&lt;p&gt;Normally I use &lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; with my &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; templates available on GitHub to automatically create such Vagrant boxes. In this case I only have a semi-automated template. Download the ISO file, build a VM with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_insider.json"&gt;&lt;code&gt;windows_10_insider.json&lt;/code&gt;&lt;/a&gt; template and update it to Insider 15031 manually. With such a VM, build the final Vagrant box with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_docker.json"&gt;&lt;code&gt;windows_10_docker.json&lt;/code&gt;&lt;/a&gt; Packer template.&lt;/p&gt;
+&lt;p&gt;What we now have is a Windows 10 Insider 15031 VM with the Containers and Hyper-V features activated, Docker 1.13.1 installed and both Microsoft Docker images downloaded. All the time consuming things should be done in a Packer build to make the final &lt;code&gt;vagrant up&lt;/code&gt; a breeze.&lt;/p&gt;
+&lt;p&gt;In my case I had to add the Vagrant box with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_10_docker ./windows_10_insider_15031_docker_vmware.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Vagrant 1.9.1 is able to use linked clones for VMware Fusion, VirtualBox and Hyper-V. So you need this big Vagrant box only once on disk. For the Docker Swarm only a clone will be started for each VM to save time and disk space.&lt;/p&gt;
+&lt;h2 id="createtheswarm"&gt;Create the Swarm&lt;/h2&gt;
+&lt;p&gt;Now we use the prepared Vagrant environment and adjust it&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box/swarm-mode
+vi Vagrantfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the &lt;code&gt;Vagrantfile&lt;/code&gt; I had to change only the name of the box after &lt;code&gt;config.vm.box&lt;/code&gt; to the newly added Vagrant box. This is like changing the &lt;code&gt;FROM&lt;/code&gt; in a &lt;code&gt;Dockerfile&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/git-diff-swarm-mode.png" alt="git diff Vagrantfile"&gt;&lt;/p&gt;
+&lt;p&gt;I also adjusted the memory a little bit to spin up more Hyper-V containers.&lt;/p&gt;
+&lt;p&gt;But now we are ready to create the Docker Swarm with a simple&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will spin up three Windows 10 VM's and build the Docker Swarm automatically for you. But using linked clones and the well prepared Vagrant basebox it takes only some minutes to have a complete Docker Swarm up and running.&lt;/p&gt;
+&lt;h2 id="dockernodels"&gt;docker node ls&lt;/h2&gt;
+&lt;p&gt;After all three VM's are up and running, go into the first VM and open a PowerShell terminal. With&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker node ls
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;you can check if your Docker Swarm is active.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/swarm-mode.png" alt=""&gt;&lt;/p&gt;
+&lt;h2 id="createanetwork"&gt;Create a network&lt;/h2&gt;
+&lt;p&gt;Now we create a new overlay network with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker network create --driver=overlay sample
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can list all networks with &lt;code&gt;docker network ls&lt;/code&gt; as there are already some others.&lt;/p&gt;
+&lt;h2 id="createawhoamiservice"&gt;Create a whoami service&lt;/h2&gt;
+&lt;p&gt;With this new overlay network we start a simple service. I've prepared a Windows version of the &lt;code&gt;whoami&lt;/code&gt; service. This is a simple webserver that just responds with its internal container hostname.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service create --name=whoami --endpoint-mode dnsrr `
+  --network=sample stefanscherer/whoami-windows:latest
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;At the moment only DNS round robin is implemented as described in the Microsoft blog post. You cannot use to publish ports externally right now. More to come in the near future.&lt;/p&gt;
+&lt;h2 id="runvisualizer"&gt;Run visualizer&lt;/h2&gt;
+&lt;p&gt;To make it more visible what happens in the next steps I recommend to run the Visualizer. On the first VM you can run the Visualizer with &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/run-portainer.ps1"&gt;this script&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\run-visualizer.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now open a browser with another &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/open-visualizer.ps1"&gt;helper script&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\open-visualizer.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now you can scale up the service to spread it over your Docker swarm.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service scale whoami=4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will bring up the service on all three nodes and one of the nodes is running two instances of the whoami service.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/visualizer.png" alt="Visualizer"&gt;&lt;/p&gt;
+&lt;p&gt;Just play around scaling the service up and down a little bit.&lt;/p&gt;
+&lt;h2 id="buildandcreateanotherservice"&gt;Build and create another service&lt;/h2&gt;
+&lt;p&gt;As I've mentioned above you cannot publish ports and there is no routing mesh at the moment. So the next thing is to create another service that will access the &lt;code&gt;whoami&lt;/code&gt; service inside the overlay network. On Linux you probably would use &lt;code&gt;curl&lt;/code&gt; to do that. I tried just a simple PowerShell script to do the same.&lt;/p&gt;
+&lt;p&gt;Two small files are needed to create a Docker image. First the simple script &lt;code&gt;askthem.ps1&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;while ($true) {
+  (Invoke-WebRequest -UseBasicParsing http://whoami:8080).Content
+  Start-Sleep 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the PowerShell script will access the webserver with the hostname &lt;code&gt;whoami&lt;/code&gt; on port 8080.&lt;/p&gt;
+&lt;p&gt;Now put this Script into a Docker image with this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver
+COPY askthem.ps1 askthem.ps1
+CMD [&amp;quot;powershell&amp;quot;, &amp;quot;-file&amp;quot;, &amp;quot;askthem.ps1&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build the Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t askthem .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now can start the second service that consumes the whoami service.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service create --name=askthem --network=sample askthem:latest
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now should see one instance of the newly created &lt;code&gt;askthem&lt;/code&gt; service. Let's have a look at the logs. As this Vagrant environment enables the experimental features of Docker we are able to get the logs with this command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service logs askthem
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In my case I had luck and the &lt;code&gt;askthem&lt;/code&gt; service got a response from one of the &lt;code&gt;whoami&lt;/code&gt; containers that is running on a different Docker node.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/windows10-swarm-mode.png" alt="Windows 10 Swarm-Mode"&gt;&lt;/p&gt;
+&lt;p&gt;I haven't figured out why all the responses are from the same container. Maybe PowerShell or the &lt;code&gt;askthem&lt;/code&gt; container itself caches the DNS requests.&lt;/p&gt;
+&lt;p&gt;But it still proves that overlay networking is working across multiple Windows machines.&lt;/p&gt;
+&lt;h2 id="moretoplaywith"&gt;More to play with&lt;/h2&gt;
+&lt;p&gt;The Vagrant environment has some more things prepared. You also can spin up &lt;a href="http://portainer.io"&gt;Portainer&lt;/a&gt; that gives you a nice UI to your Docker swarm. You can have a look at your Nodes, the Docker images, the containers and services running and so on.&lt;/p&gt;
+&lt;p&gt;I also found out that you can scale services in the Portainer UI by changing the replicas. Running Visualizer and Portainer side-by-side demonstrates that:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>How to build a Node.js Nano Server Docker base image</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Beginning with &lt;strong&gt;Windows 10 Insider&lt;/strong&gt; 14342 you can enable the new &lt;strong&gt;Containers feature&lt;/strong&gt; in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/how-to-build-nodejs-nanoserver-image/</link><guid isPermaLink="false">5986d4ec688a490001540967</guid><category>Docker</category><category>Nano Server</category><category>Windows 10</category><category>Node.js</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 29 May 2016 18:00:53 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Beginning with &lt;strong&gt;Windows 10 Insider&lt;/strong&gt; 14342 you can enable the new &lt;strong&gt;Containers feature&lt;/strong&gt; in Windows. This allows you to run Windows Containers directly in Windows 10 as Hyper-V containers. At the moment only NanoServer containers are supported. So it's time to get used to NanoServer and how to create some base images.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/05/windows10-containers-feature.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;In this blog post I'll show how to build small base images to deploy Node.js applications as NanoServer Docker images that you can run &lt;a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10"&gt;in Windows 10&lt;/a&gt; or in Windows Server 2016 TP5.&lt;/p&gt;
+&lt;h2 id="whatisnanoserver"&gt;What is Nano Server?&lt;/h2&gt;
+&lt;p&gt;Each Docker image must use of of the two OS images: &lt;code&gt;windowsservercore&lt;/code&gt; or &lt;code&gt;nanoserver&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;Windows Server Core&lt;/strong&gt; image is &lt;strong&gt;highly compatible&lt;/strong&gt; with previous Windows Server Core installations. You don't have a GUI, but you can install almost everything into it. But this compatibility comes with a prize, the size of the OS image is about 9.3 GByte as it contains about a whole server.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;Nano Server&lt;/strong&gt; image is &lt;strong&gt;highly optimized&lt;/strong&gt; and almost everything was taken out of it to be able to deploy more of these containers in cloud servers. The size is about 817 MByte. This makes installing Docker on Windows 10 much faster than with the &lt;code&gt;windowsservercore&lt;/code&gt; OS image.&lt;/p&gt;
+&lt;p&gt;So if you get asked which to choose you probably would answer to take the smaller one.&lt;/p&gt;
+&lt;h2 id="thechallengemsipackages"&gt;The challenge: MSI packages&lt;/h2&gt;
+&lt;p&gt;But as soon as you try to write a &lt;code&gt;Dockerfile&lt;/code&gt; to install some software into a Docker image you will notice that the minimized OS comes with a new challenge. &lt;strong&gt;You can't install MSI packages in Nano Server.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you look at &lt;a href="https://nodejs.org"&gt;nodejs.org&lt;/a&gt; there are only MSI packages for Windows if you also want to have npm installed.&lt;/p&gt;
+&lt;p&gt;So how could we build a Node.js Docker image based on Nano Server? I've tried different ways, eg. also installing tools like lessmsi while building the Nano Server image only to find out that lessmsi is only a 32 bit application. Another restriction in Nano Server: &lt;strong&gt;You only can run 64 bit processes in Nano Server.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Another approach would be installing Node.js on your host machine and copying the files into the Docker image. But I don't want to install more tools than needed on a Docker host.&lt;/p&gt;
+&lt;p&gt;Therefore I show you a way to use only Docker commands and a Windows Server 2016 TP5 machine to build both Windows Server Core image as well as a Nano Server image with Node.js + npm installed.&lt;/p&gt;
+&lt;h3 id="step1installmsiintowindowsservercoreimage"&gt;Step 1 - Install MSI into Windows Server Core image&lt;/h3&gt;
+&lt;p&gt;A much easier way is to start with a Windows Server Core image. You can download and install the Node.js MSI package with this &lt;code&gt;Dockerfile&lt;/code&gt;. This is very similar to the Linux version and downloads, verifies the download, installs the package and then removes the download again.&lt;/p&gt;
+&lt;p&gt;Now open an editor with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;notepad Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and enter this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM windowsservercore
+
+ENV NPM_CONFIG_LOGLEVEL info
+ENV NODE_VERSION 4.4.5
+ENV NODE_SHA256 7b2409605c871a40d60c187bd24f6f6ddf10590df060b7d905ef46b3b3aa7f81
+
+RUN powershell -Command \
+    wget -Uri https://nodejs.org/dist/v%NODE_VERSION%/node-v%NODE_VERSION%-x64.msi -OutFile node.msi -UseBasicParsing ; \
+    if ((Get-FileHash node.msi -Algorithm sha256).Hash -ne $env:NODE_SHA256) {exit 1} ; \
+    Start-Process -FilePath msiexec -ArgumentList /q, /i, node.msi -Wait ; \
+    Remove-Item -Path node.msi
+
+CMD [ &amp;quot;node.exe&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can build the Node.js Docker image with this command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t node:4.4.5 .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After that you have Node.js + npm installed in this Docker image.&lt;/p&gt;
+&lt;h3 id="step2distillnodejsfolder"&gt;Step 2 - Distill Node.js folder&lt;/h3&gt;
+&lt;p&gt;Now we want to distill the Node.js folder from the Docker image. To do that we have to run a Docker container and then we can copy the folder to a temporary folder on the host machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --name=node-temp node:4.4.5 node --version
+docker cp &amp;quot;node-temp:c:\Program Files\nodejs&amp;quot; nodejs
+docker rm -vf node-temp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="step3copydeploytonanoserverimage"&gt;Step 3 - COPY deploy to Nano Server image&lt;/h3&gt;
+&lt;p&gt;With this extracted folder we build the Nano Server image. The following &lt;code&gt;Dockerfile&lt;/code&gt; copies the contents of that temporary folder into the Windows directory which is already in PATH. You may want to put the files in another directory, but then you also have to add it to the &lt;code&gt;PATH&lt;/code&gt; environment.&lt;/p&gt;
+&lt;p&gt;Create a sub folder for the Nano Dockerfile&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir nano
+notepad nano\Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and create this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM nanoserver
+
+COPY nodejs /windows/system32
+
+CMD [ &amp;quot;node.exe&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Run this command to build the Nano Server image&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t node:4.4.5-nano nano
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we have two Docker images, one for Windows Server Core and one for Nano Server.&lt;/p&gt;
+&lt;p&gt;Here is a small diagram of the three steps we just did:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/05/nodejs_nanoserver-2.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;I've uploaded both Docker images to the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/tags/"&gt;Docker Hub&lt;/a&gt; and found out that the Windows Server Core image is about &lt;strong&gt;55 MByte&lt;/strong&gt; and the Nano Server image is only &lt;strong&gt;9 MByte&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Extracting all the layers of the first Docker image I found out that installing an MSI package also saves a copy of the package in the MSI cache. And running commands also leaves some changes in local databases and the registry which is also stored as difference in the layer.&lt;/p&gt;
+&lt;p&gt;So one advice to build small Windows Docker images is to avoid installing MSI packages and prefer ZIP files or even using a COPY deployment into an image. Of course MSI packages are often more convenient to install but result in bigger image sizes.&lt;/p&gt;
+&lt;h2 id="buildappwithonbuild"&gt;Build app with ONBUILD&lt;/h2&gt;
+&lt;p&gt;Another easy way to dockerize your Node.js application is the &lt;code&gt;ONBUILD&lt;/code&gt; feature in the &lt;code&gt;Dockerfile&lt;/code&gt;. At least for simple examples it is very convenient to use a prepared Docker images with that feature.&lt;/p&gt;
+&lt;p&gt;So let's build another &lt;code&gt;Dockerfile&lt;/code&gt; just like the official &lt;code&gt;node:onbuild&lt;/code&gt; image which does these steps to install your application and all the dependencies:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;copy package.json&lt;/li&gt;
+&lt;li&gt;run npm install&lt;/li&gt;
+&lt;li&gt;copy rest of sources&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So we create another folder for that &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir nano\onbuild
+notepad nano\onbuild\Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and the following content:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM node:4.4.5-nano
+
+RUN mkdir \app
+WORKDIR /app
+
+ONBUILD COPY package.json package.json
+ONBUILD RUN npm install
+ONBUILD COPY . .
+
+CMD [ &amp;quot;npm.cmd&amp;quot;, &amp;quot;start&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build the Nano Server image with the ONBUILD feature:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build --isolation=hyperv -t node:4.4.5-nano-onbuild nano/onbuild
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I have tested this with a small Node.js web server that uses Express and some other dependencies.&lt;/p&gt;
+&lt;p&gt;To build a dockerized Node.js application running in a Nano Server container you only have to go to your Node.js source code and add a single line &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM nano:4.4.5-nano-onbuild
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and build your application Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build --isolation=hyperv -t mynodeapp:nano .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="optimizations"&gt;Optimizations&lt;/h2&gt;
+&lt;p&gt;Investigating the layers of such an application showed some other temporary folders which aren't needed inside the Docker image.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A npm-cache folder&lt;/li&gt;
+&lt;li&gt;Many files in temp folder, also from npm&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So we can optimize that ONBUILD &lt;code&gt;Dockerfile&lt;/code&gt; a little bit to remove these temp folders while building your application Docker image. There is a command &lt;code&gt;npm cache clean&lt;/code&gt;, but this didn't work for me, so I have changed that to some &lt;code&gt;rd&lt;/code&gt; commands. This is the final ONBUILD &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM node:4.4.5-nano
+
+RUN mkdir \app
+WORKDIR /app
+
+ONBUILD COPY package.json package.json
+ONBUILD RUN npm install &amp;amp; rd /s /q %APPDATA%\npm-cache &amp;amp; for /d %G in (&amp;quot;%TEMP%\npm-*&amp;quot;) do rd /s /q &amp;quot;%~G&amp;quot;
+ONBUILD COPY . .
+
+CMD [ &amp;quot;npm.cmd&amp;quot;, &amp;quot;start&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With that optimized Docker image deploying a simple Express web server the &lt;a href="https://hub.docker.com/r/stefanscherer/hello-dresden/tags/"&gt;final application Docker image&lt;/a&gt; went down from &lt;strong&gt;24 MByte&lt;/strong&gt; to &lt;strong&gt;15 MByte&lt;/strong&gt;. In comparison with the unoptimized Windows Server Core image the same application is &lt;strong&gt;82 MByte&lt;/strong&gt; on the Docker Hub.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;If you don't want to build these Node.js Docker images manually you can find them on the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/"&gt;Docker Hub&lt;/a&gt; with links to the Dockerfiles in the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/node"&gt;GitHub repo&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;With such a Node.js Nano Server base image on the Docker Hub you can start developing on your Windows 10 machine. Now dockerize your Node.js apps into Nano Server containers and share them with others via the Docker Hub.&lt;/p&gt;
+&lt;p&gt;The Windows Server 2016 is only needed to install MSI packages and distill the software into Nano Server images.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

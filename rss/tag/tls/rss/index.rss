@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>TLS - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>TLS - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/tls/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>How to protect a Windows 2016 Docker engine with TLS</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;There is a tutorial&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/protecting-a-windows-2016-docker-engine-with-tls/</link><guid isPermaLink="false">5986d4ec688a49000154096a</guid><category>Docker</category><category>Windows</category><category>Azure</category><category>TLS</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 23 Oct 2016 22:35:19 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;There is a tutorial &lt;a href="https://docs.docker.com/engine/security/https/"&gt;Protect the Docker daemon socket&lt;/a&gt; at the website of Docker which uses the &lt;code&gt;openssl&lt;/code&gt; tool to create all the certificates etc. But how should we do this on Windows?&lt;/p&gt;
+&lt;h2 id="justcontainerizewhatsthere"&gt;Just containerize what's there&lt;/h2&gt;
+&lt;p&gt;I have seen the &lt;a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-server-container-tools/DockerTLS"&gt;DockerTLS&lt;/a&gt; script in a GitHub repo from Microsoft. But this script installs OpenSSL on my machine which I don't want to.&lt;/p&gt;
+&lt;p&gt;My first thought was, let's put this script + OpenSSL into a Docker image and run it in a Windows container.&lt;/p&gt;
+&lt;p&gt;So this &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/2e2a5b12252816744f5414e0621e12bb74b6f59c/dockertls/Dockerfile"&gt;Dockerfile&lt;/a&gt; was my first attempt to just use Chocolatey to install OpenSSL, download the PowerShell script from the Microsoft GitHub repo. Done. The script can run in a safe environment and I don't have to install software on my Docker host.&lt;/p&gt;
+&lt;h2 id="dockertls"&gt;DockerTLS&lt;/h2&gt;
+&lt;p&gt;But there is still work to do on the host to configure the Docker engine which I wanted to automate a little more. So it would be great to have a tool that can&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;generate all TLS certs&lt;/li&gt;
+&lt;li&gt;create or update the Docker &lt;code&gt;daemon.json&lt;/code&gt; file&lt;/li&gt;
+&lt;li&gt;Put the client certs into my home directory&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But still we need a program or script with OpenSSL to do that. I thought this tool should be deployed in a Docker image and shared on the Docker Hub. And here it is:&lt;/p&gt;
+&lt;h2 id="dockerrundockertls"&gt;docker run dockertls&lt;/h2&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls.png" alt="dockertls"&gt;&lt;/p&gt;
+&lt;p&gt;The script &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1"&gt;generate-certs.ps1&lt;/a&gt; creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL/LibreSSL installed.&lt;/p&gt;
+&lt;p&gt;The dockertls Docker image is created with this &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile"&gt;Dockerfile&lt;/a&gt;. It installs LibreSSL from OpenBSD (thanks to &lt;a href="https://twitter.com/friism"&gt;Michael Friis&lt;/a&gt; for that optimization) and copies the PowerShell script inside the image.&lt;/p&gt;
+&lt;p&gt;You can find the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls"&gt;full source code&lt;/a&gt; of the dockertls image in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo if you want to build the Docker image yourself.&lt;/p&gt;
+&lt;p&gt;Otherwise you can just the &lt;a href="https://hub.docker.com/r/stefanscherer/dockertls-windows/"&gt;dockertls Docker image&lt;/a&gt; from the Docker Hub.&lt;/p&gt;
+&lt;h3 id="dryrun"&gt;Dry run&lt;/h3&gt;
+&lt;p&gt;As you don't trust me or my Docker image you can do a dry run with some temporary folders where the container can copy files into without destroying your Docker host.&lt;/p&gt;
+&lt;p&gt;Just create two folders:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir server
+mkdir client\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the Windows container with the environment variables &lt;code&gt;SERVER_NAME&lt;/code&gt; and &lt;code&gt;IP_ADDRESSES&lt;/code&gt; as well as two volume mounts to write the certs back to the host:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &amp;quot;$(pwd)\server:C:\ProgramData\docker&amp;quot; `
+  -v &amp;quot;$(pwd)\client\.docker:C:\Users\ContainerAdministrator\.docker&amp;quot; `
+  stefanscherer/dockertls-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Afterwards check the folders:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dir server\certs.d
+dir server\config
+dir client\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You will see that there are three pem files for the server, the &lt;code&gt;daemon.json&lt;/code&gt; file as well as three pem files for the client.&lt;/p&gt;
+&lt;p&gt;Of course you could manually copy the files and try them out. But this Docker image can do this for you as well.&lt;/p&gt;
+&lt;h3 id="fullrun"&gt;Full run&lt;/h3&gt;
+&lt;p&gt;You may have to create the &lt;code&gt;.docker&lt;/code&gt; folder in your home directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir $env:USERPROFILE\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the container with the correct paths on the host so it can copy all certs and configs to the right place. The script can read an existing &lt;code&gt;daemon.json&lt;/code&gt; and update it to keep all other configuration untouched.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &amp;quot;C:\ProgramData\docker:C:\ProgramData\docker&amp;quot; `
+  -v &amp;quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&amp;quot; `
+  stefanscherer/dockertls-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now you have to restart the Docker service in an administrator Shell with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;restart-service docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One last step is needed on your host. You have to open the port 2376 in your firewall so you can access the machine from the outside. But then you're done on your host.&lt;/p&gt;
+&lt;p&gt;You can recreate the TLS certs with the same command and just restart the Docker service afterwards.&lt;/p&gt;
+&lt;h3 id="testtlsconnection"&gt;Test TLS connection&lt;/h3&gt;
+&lt;p&gt;Now test the connection to the TLS secured Docker service with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker --tlsverify `
+  --tlscacert=$env:USERPROFILE\.docker\ca.pem `
+  --tlscert=$env:USERPROFILE\.docker\cert.pem `
+  --tlskey=$env:USERPROFILE\.docker\key.pem `
+  -H=tcp://127.0.0.1:2376 version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or just set some environment variables&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$env:DOCKER_HOST=&amp;quot;tcp://127.0.0.1:2376&amp;quot;
+$env:DOCKER_TLS_VERIFY=&amp;quot;1&amp;quot;
+docker version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="azure"&gt;Azure&lt;/h3&gt;
+&lt;p&gt;In an Azure VM you should use your DNS name for the VM in the &lt;code&gt;SERVER_NAME&lt;/code&gt; environment variable and your public and local IP addresses of that machine.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls-run---Kopie.png" alt="docker-run"&gt;&lt;/p&gt;
+&lt;p&gt;You have to open the firewall port 2376 on your Windows Docker host.&lt;/p&gt;
+&lt;p&gt;For Azure you also have to add a incoming rule for port 2376 in your network security group.&lt;/p&gt;
+&lt;p&gt;Then you have to securely transfer the three client pem files from your Azure VM to your laptop.&lt;/p&gt;
+&lt;p&gt;I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls-1.png" alt="docker-version"&gt;&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

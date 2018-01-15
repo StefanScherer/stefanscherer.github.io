@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Container - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Container - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/container/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<div class="kg-card-markdown"><p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+<p>Is there a way</p></div>]]></description><link>https://stefanscherer.github.io/winspector/</link><guid isPermaLink="false">5986d4ec688a49000154096c</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Container]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Python]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
+<p>Is there a way to look into container images without downloading them?</p>
+<p>There are several services like <a href="https://imagelayers.io">imagelayers.io</a>, <a href="https://microbadger.com">microbadger</a>, <a href="http://shields.io">shields.io</a> and others which provide badges and online views for existing Docker images at Docker Hub. Unfortunately not all support Windows images at the moment.</p>
+<h2 id="enterwinspector">Enter winspector</h2>
+<p>I found an <a href="https://github.com/giantswarm/inspect-docker-image">inspector tool</a> written in Python that might be useful for that task. I've enhanced it and created a tool called winspector which is available as Docker image <a href="https://hub.docker.com/r/stefanscherer/winspector/">stefanscherer/winspector</a> for Windows and Linux. With this tool you can inspect any Windows Docker images on the Docker Hub.</p>
+<p>Winspector will show you</p>
+<ul>
+<li>The creation date of the image and the Docker version and Windows version used at build time.</li>
+<li>The number of layers down to the Windows base image</li>
+<li>Which <strong>Windows base image</strong> the given image depends on. So you know whether a random Windows image uses the up to date Windows base image or not.</li>
+<li>The <strong>size of each layer</strong>. This is useful to when you try to optimize your image size.</li>
+<li>The <strong>&quot;application size&quot; without the Windows base layers</strong>. So you get an idea how small your Windows application image really is and what other users have to download provided that they already have the base image.</li>
+<li>The history of the image. It tries to <strong>reconstruct the <code>Dockerfile</code> commands</strong> that have been used to build the image.</li>
+</ul>
+<h3 id="runitfromwindows">Run it from Windows</h3>
+<p>If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.</p>
+<pre><code>docker run --rm stefanscherer/winspector microsoft/iis
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/winspector-wndows.png" alt="run from windows"></p>
+<p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
+<h3 id="runitfrommaclinux">Run it from Mac / Linux</h3>
+<p>If you have a Linux Docker engine running, just use the exact same command as on Windows. The Docker image <code>stefanscherer/winspector</code> is a <strong>multiarch Docker image</strong> and Docker will pull the correct OS specific image for you automatically.</p>
+<pre><code>docker run --rm stefanscherer/winspector microsoft/iis
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/winspector-mac.png" alt="run from mac"></p>
+<h2 id="inspectingsomeimages">Inspecting some images</h2>
+<p>Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.</p>
+<pre><code>$ docker run --rm stefanscherer/winspector microsoft/windowsservercore
+</code></pre>
+<p>Even for this image it can show you some details:</p>
+<pre><code>Image name: microsoft/windowsservercore
+Tag: latest
+Number of layers: 2
+Sizes of layers:
+  sha256:3889bb8d808bbae6fa5a33e07... - 4069985900 byte
+  sha256:3430754e4d171ead00cf67667... - 913145061 byte
+Total size (including Windows base layers): 4983130961 byte
+Application size (w/o Windows base layers): 0 byte
+Windows base image used:
+  microsoft/windowsservercore:10.0.14393.447 full
+  microsoft/windowsservercore:10.0.14393.693 update
+</code></pre>
+<p>As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.</p>
+<h2 id="howbigisthewinspectorimage">How big is the winspector image?</h2>
+<p>Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.</p>
+<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:windows-1.4.3
+</code></pre>
+<p>The (shortened) output looks like this:</p>
+<pre><code>Image name: stefanscherer/winspector
+Tag: windows-1.4.3
+Number of layers: 14
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:35:22 with Docker 1.13.0-rc7 on windows 10.0.14393.693
+Sizes of layers:
+  ...
+
+Total size (including Windows base layers): 360497565 byte
+Application size (w/o Windows base layers): 27188879 byte
+Windows base image used:
+  microsoft/nanoserver:10.0.14393.447 full
+  microsoft/nanoserver:10.0.14393.693 update
+History:
+  ...
+</code></pre>
+<p>So the winspector Windows image is about 27 MByte and it uses the latest nanoserver base image.</p>
+<h2 id="inspectinglinuximages">Inspecting Linux images</h2>
+<p>And winspector is not restricted to Windows images, you can inspect Linux images as well.</p>
+<p>If you run</p>
+<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:linux-1.4.3
+</code></pre>
+<p>then winspector will show you</p>
+<pre><code>Image name: stefanscherer/winspector
+Tag: linux-1.4.3
+Number of layers: 8
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:34:21 with Docker 1.12.3 on linux 
+Sizes of layers:
+  ...
+Total size (including Windows base layers): 32708231 byte
+Application size (w/o Windows base layers): 32708231 byte
+Windows base image used:
+  It does not seem to be a Windows image
+History:
+  ...
+</code></pre>
+<p>As you can see the Linux image is about 32 MByte.</p>
+<p>So once you have downloaded the latest Windows base images like windowsservercore or nanoserver the download experience is the same for both platforms.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>With winspector you can check any Windows container image on the Docker Hub which version of Windows it uses.</p>
+<p>You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.</p>
+<p>The tool is open source on GitHub at <a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a>. It is community driven, so feel free to send me feedback in form of issues or pull requests.</p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Keep your Windows Containers up to date]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
+<p>How can I install Windows Updates in my container</p></div>]]></description><link>https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/</link><guid isPermaLink="false">5986d4ec688a49000154096b</guid><category><![CDATA[Windows]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Container]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 09:23:21 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.</p>
+<p>How can I install Windows Updates in my container image?</p>
+<p>Working with containers is not the same as working with real servers or VM's you support for months or years. A container image is a static snapshot of the filesystem (and Windows registry and so on) at a given time.</p>
+<p>You won't enter a running container and run the Windows Update there. But how should we do it then?</p>
+<h2 id="containerimageshavelayers">Container images have layers</h2>
+<p>First have a look how a container image looks like. It is not just a snapshot. A container image consist of multiple layers. When you look at your <code>Dockerfile</code> you normally use a line like <code>FROM microsoft/windowsservercore</code>.</p>
+<p>Your container image then uses the Windows base image that contains a layer with all the files needed to run Windows containers.</p>
+<p>If you have some higher level application you may use other prebuilt container images like <code>FROM microsoft/iis</code> or <code>FROM microsoft/aspnet</code>. These images also re-use the <code>FROM microsoft/windowsservercore</code> as base image.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/windows_image_layers-2.png" alt="Windows app image layers"></p>
+<p>On top of that you build your own application image with your code and content needed to run the application in a self contained Windows container.</p>
+<p>Behind the scenes your application image now uses several layers that will be downloaded from the Docker Hub or any other container registry. Same layers can be re-used for different other images. If you build multiple <a href="http://ASP.NET">ASP.NET</a> appliations as Docker images they will re-use the same layers below.</p>
+<p>But now back to our first question: How to apply Windows Updates in a container image?</p>
+<h2 id="thewindowsbaseimages">The Windows base images</h2>
+<p>Let's have a closer look at the Windows base images. Microsoft provides two base images: <a href="https://hub.docker.com/r/microsoft/windowsservercore/">windowsservercore</a> and <a href="https://hub.docker.com/r/microsoft/nanoserver/">nanoserver</a>. Both base images are updated on a regular basis to roll out all security fixes and bug fixes. You might know that the base image for windowsservercore is about 4 to 5 GByte to download.</p>
+<p>So do we have to download the whole base image each time for each update?</p>
+<p>If we look closer how the base images are built we see that they contain two layers: One big base layer that will be used for a longer period of time. And there is a smaller update layer that contains only the patched and updated files for the new release.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/windowsservercore_updates.gif" alt="Windows Server Core updates"></p>
+<p>So updating to a newer Windows base image version isn't painful as only the update layer must be pulled from the Docker Hub.</p>
+<p>But in the long term it does not make sense to stick forever to the old base layer. Security scanners will mark them as vulnerable and also all the images that are built from them. And the update layer will increase in size for each new release. So from time to time there is a &quot;breaking&quot; change that replaces the base layer and a new base layer will be used for upcoming releases. We have seen that with the latest release in December.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/01/windowsservercore_updates_all.gif" alt="Windows Server Core major update"></p>
+<p>From time to time you will have to download the big new base layer which is about 4 GByte for windowsservercore (and only about 240 MByte for nanoserver, so try to use nanoserver whereever you can) when you want to use the latest Windows image release.</p>
+<h2 id="keeporupdate">Keep or update?</h2>
+<p>Should I avoid updating the Windows image to revision 576 to keep my downloads small? <strong>No!</strong></p>
+<p>My recommendation is to update all your Windows container images and rebuild them with the newest Windows image. You have to download that bigger base layer also <strong>only once</strong> and all your container images will re-use it.</p>
+<p>Perhaps your application code also has some updates you want to ship. It's a good time to ship it on top of the newest Windows base image. So I recommend to run</p>
+<pre><code>docker pull microsoft/windowsservercore
+docker pull microsoft/nanoserver
+</code></pre>
+<p>before you build new Windows container images to have the latest OS base image with all security fixes and bug fixes in it.</p>
+<p>If you want to keep track which version of the Windows image you use, you can use the tags provided for each release.</p>
+<p>Instead of using only the latest version in your <code>Dockerfile</code></p>
+<pre><code>FROM microsoft/windowsservercore
+</code></pre>
+<p>you can append the tag</p>
+<pre><code>FROM microsoft/windowsservercore:10.0.14393.576
+</code></pre>
+<p>But I still recommend to update the tag after a new Windows image has been published.</p>
+<p>You can find the tags for <a href="https://hub.docker.com/r/microsoft/windowsservercore/tags/">windowsservercore</a> and <a href="https://hub.docker.com/r/microsoft/nanoserver/tags/">nanoserver</a> on the Docker Hub.</p>
+<h2 id="whatabouttheframeworkimages">What about the framework images?</h2>
+<p>Typically you build your application on top of some kind of framework like <a href="https://hub.docker.com/r/microsoft/aspnet/tags/">ASP.NET</a>, <a href="https://hub.docker.com/r/microsoft/iis/tags/">IIS</a> or a runtime language like Node.js, <a href="https://hub.docker.com/r/library/python/">Python</a> and so on. You should have a look at the update cycles of these framework images. The maintainers have to rebuild the framework images after a new release of the Windows base image came out.</p>
+<p>If you see some of your framework images lag behind, encourage the maintainer to update the Windows base image and to rebuild the framework image.</p>
+<p>With such updated framework images - they hopefully come with a new version tag - you can rebuild your application.</p>
+<h1 id="tldr">TL/DR</h1>
+<p>So your part to get Windows Updates into your Windows Container images is to choose the newer image in your <code>Dockerfile</code> and rebuild your application image with it.</p>
+<p>If you haven't used version tags of the image below, do a <code>docker pull ...</code> of that image to get sure to have the updated one before you rebuild.</p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item></channel></rss>

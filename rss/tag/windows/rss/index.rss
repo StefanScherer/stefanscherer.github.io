@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Windows - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Windows - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:09 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/windows/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Exploring new NanoServer Insider images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">5986d4ec688a490001540975</guid><category>Docker</category><category>Windows</category><category>Nano Server</category><category>Node.js</category><category>Vagrant</category><category>Packer</category><category>Docker Hub</category><category>Insider</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.&lt;/p&gt;
+&lt;h2 id="windowsserverinsider"&gt;Windows Server Insider&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Register at Windows Insider program &lt;a href="https://insider.windows.com"&gt;https://insider.windows.com&lt;/a&gt; and join the Windows Server Insider program.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download the Windows Server Insider preview ISO from &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver"&gt;https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Now you can create a VM and install Docker. You can either build the VM manually and follow the docs &lt;a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/using-insider-container-images"&gt;&amp;quot;Using Insider Container Images&amp;quot;&lt;/a&gt; how to install Docker and pull the Insider container images. Or you can use my Packer template and Vagrant environment to automate these steps. The walkthrough is described at&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/StefanScherer/insider-docker-machine"&gt;https://github.com/StefanScherer/insider-docker-machine&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id="windowsinsiderimages"&gt;Windows Insider images&lt;/h2&gt;
+&lt;p&gt;There are four new Docker images available with a much smaller footprint.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/windows_insider_images.png" alt="Windows Insider images"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;microsoft/windowsservercore-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-dotnet&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-powershell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Windows Server Core Insider image got down from 5 GB to only 2 GB which saves a lot of bandwidth and download time.&lt;/p&gt;
+&lt;p&gt;You may wonder why there are three Nano Server Insider images and why there is one without PowerShell.&lt;/p&gt;
+&lt;h2 id="aimingthesmallestwindowsbaseimage"&gt;Aiming the smallest Windows base image&lt;/h2&gt;
+&lt;p&gt;If we compare the image sizes of the current &lt;code&gt;microsoft/nanoserver&lt;/code&gt; image with its base layer and update layer with the new Insider images you can see the reason.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/nanoserver_sizes.png" alt="NanoServer sizes"&gt;&lt;/p&gt;
+&lt;p&gt;If you want to ship your application in a container image you don't want to ship a whole operating system, but only the parts needed to run the application.&lt;/p&gt;
+&lt;p&gt;And to ship faster is to ship smaller images. For many applications you do not need eg. PowerShell inside your base image at runtime which would take another 54 MByte to download from the Docker registry.&lt;/p&gt;
+&lt;p&gt;Let's have a look at current Windows Docker images available on the Docker Hub. To run a Golang webserver for example on an empty Windows Docker host you have to pull the 2MB binary and the two NanoServer base layers with hundreds of MB to run it in a container.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-pull-whoami.png" alt="docker pull whoami"&gt;&lt;/p&gt;
+&lt;p&gt;Of course these base images have to be downloaded only once as other NanoServer container images will use the same base image. But if you work with Windows containers for a longer time you may have noticed that you still have to download different update layers from time to time that pull another 122 MB.&lt;/p&gt;
+&lt;p&gt;And if the NanoServer base image is much smaller then the updates also will be smaller and faster to download.&lt;/p&gt;
+&lt;p&gt;With the new Insider container images you can build and run containerized .NET core applications that are still smaller than the NanoServer + PowerShell base image.&lt;/p&gt;
+&lt;h2 id="nodejs"&gt;Node.js&lt;/h2&gt;
+&lt;p&gt;Another example is providing a Node.js container image based on the new NanoServer Insider image with only 92 MByte. We have just cut off &amp;quot;3&amp;quot; hundred MB.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/nodejs_nanoserver_sizes-3.png" alt="Node.js NanoServer sizes"&gt;&lt;/p&gt;
+&lt;p&gt;If we compare that with some of the Linux Node.js container images we are at about the size of the the slim images.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/Bildschirmfoto-2017-07-14-um-08.53.24.png" alt="Node.js slim image sizes"&gt;&lt;/p&gt;
+&lt;h2 id="multistagebuild"&gt;Multi-stage build&lt;/h2&gt;
+&lt;p&gt;To build such small Windows images comes with a cost. You have to live without PowerShell. But the new multi-stage build introduced with Docker 17.05 really helps you and you can use PowerShell before the final image layers are built.&lt;/p&gt;
+&lt;p&gt;If you haven't heard about multi-stage builds its concept is to have multiple &lt;code&gt;FROM&lt;/code&gt; instructions in a &lt;code&gt;Dockerfile&lt;/code&gt;. Only the last &lt;code&gt;FROM&lt;/code&gt; until the end of the file will build the final container image. This is also called the last stage. In all the other stages you don't have to optimze too much and can use the build cache much better. You can read more about &lt;a href="https://blog.docker.com/2017/07/multi-stage-builds/"&gt;multi-stage builds&lt;/a&gt; at the Docker Blog.&lt;/p&gt;
+&lt;p&gt;Let's have a closer look how to build a small Node.js base image. You can find the complete &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/07cedcf2cc93e669bba9c961121feda6f43dab59/node/8.1/nano/Dockerfile"&gt;Dockerfile&lt;/a&gt; on GitHub.&lt;/p&gt;
+&lt;p&gt;In the first stage I'm lazy and even use the &lt;code&gt;microsoft/windowsservercore-insider&lt;/code&gt; image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;# escape=`
+FROM microsoft/windowsservercore-insider as download
+SHELL [&amp;quot;powershell&amp;quot;, &amp;quot;-Command&amp;quot;, &amp;quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&amp;quot;]
+RUN Invoke-WebRequest ... 
+RUN Expand-Archive ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; has a second &lt;code&gt;FROM&lt;/code&gt; instruction which then uses the smallest Windows base image. In that stage you normally &lt;code&gt;COPY&lt;/code&gt; deploy files and folders from previous stages. In our case we copy the Node.js installation folder into the final image.&lt;/p&gt;
+&lt;p&gt;The one &lt;code&gt;RUN&lt;/code&gt; instruction sets the &lt;code&gt;PATH&lt;/code&gt; environment variable with the &lt;code&gt;setx&lt;/code&gt; command instead of PowerShell commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver-insider
+ENV NPM_CONFIG_LOGLEVEL info
+COPY --from=download /nodejs /nodejs
+RUN setx PATH &amp;quot;%PATH%;C:\nodejs;%APPDATA%\npm&amp;quot;
+CMD [ &amp;quot;node.exe&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Users of such a Node.js base image can work as usual by &lt;code&gt;COPY&lt;/code&gt; deploy their source tree and node_modules folder into that image and run the application as a small container.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM stefanscherer/node-windows:8.1.4-insider
+WORKDIR /code
+COPY . /code
+CMD [&amp;quot;node.exe&amp;quot;, &amp;quot;app.js&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So all you have to do is change the &lt;code&gt;FROM&lt;/code&gt; instruction to the smaller insider Node.js image.&lt;/p&gt;
+&lt;h2 id="furtherinsiderimages"&gt;Further Insider images&lt;/h2&gt;
+&lt;p&gt;I have pushed some of my first Insider images to the Docker Hub so it may be easier for you to try out different languages.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;stefanscherer/node-windows:6.11.1-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/node-windows:8.1.4-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/golang-windows:1.8.3-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/dockertls-windows:insider&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you want to see how these images are built, then you can find the &lt;code&gt;Dockerfiles&lt;/code&gt; in the latest pull requests of my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;https://github.com/StefanScherer/dockerfiles-windows&lt;/a&gt; repo.&lt;/p&gt;
+&lt;h2 id="dockervolumes"&gt;Docker Volumes&lt;/h2&gt;
+&lt;p&gt;If you have worked with Docker Volumes on Windows you may know this already. Node.js and other tools and languages have problems when they want to get the real name of a file or folder that is mapping from the Docker host into the container.&lt;/p&gt;
+&lt;p&gt;Node.js for example thinks the file is in the folder &lt;code&gt;C:\ContainerMappedDirectories&lt;/code&gt;, but cannot find the file there. There is a workaround described in Elton Stoneman's blog post &lt;a href="https://blog.sixeyed.com/docker-volumes-on-windows-the-case-of-the-g-drive/"&gt;&amp;quot;Introducing the 'G' Drive&amp;quot;&lt;/a&gt; to map it to another drive letter.&lt;/p&gt;
+&lt;p&gt;With the new Insider preview I see a great improvement on that topic. Running normal Windows containers without the HyperV isolation there is no longer a symbolic link.&lt;/p&gt;
+&lt;p&gt;If we run the Node.js container interactively and map the folder &lt;code&gt;C:\code&lt;/code&gt; into the container we can list the &lt;code&gt;C:&lt;/code&gt;drive and see that the &lt;code&gt;code&lt;/code&gt; folder is a normal directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -v C:\code:C:\code stefanscherer/node-windows:8.1.4-insider cmd /c dir
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-run-nodejs.png-shadow.png" alt="docker run volume"&gt;&lt;/p&gt;
+&lt;p&gt;With this setup you are able to mount your source code into the Node.js container and run it eg. with &lt;code&gt;nodemon&lt;/code&gt; to live reload it after changing it on the host.&lt;/p&gt;
+&lt;p&gt;Unfortunately this is not available with the Hyper-V isolation that is the default on Windows 10 Insider machines.&lt;/p&gt;
+&lt;p&gt;Running the same command with &lt;code&gt;--isolation=hyperv&lt;/code&gt; shows the symlinked directory which Node.js cannot handle at the moment.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -v C:\code:C:\code --isolation=hyperv stefanscherer/node-windows:8.1.4-insider cmd /c dir
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-run-nodejs-hyperv.png-shadow.png" alt="docker run volume hyperv"&gt;&lt;/p&gt;
+&lt;p&gt;But this improvement in native Windows containers looks very promising to solve a lot of headache for all the maintainers of Git for Windows, Golang, Node.js and so on.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Having smaller Windows container images is a huge step forward. I encourage you to try out the much smaller images. You'll learn how it feels to work with them and you can give valuable feedback to the Microsoft Containers team shaping the next version of Windows Server.&lt;/p&gt;
+&lt;p&gt;Can we make even smaller images? I don't know, but let's find it out. How about naming the new images? Please make suggestions at the Microsoft Tech Community &lt;a href="https://techcommunity.microsoft.com"&gt;https://techcommunity.microsoft.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt; to stay up to date with Windows containers.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>How to run encrypted Windows websites with Docker and Træfɪk</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/how-to-run-encrypted-windows-websites-with-docker-and-traefik/</link><guid isPermaLink="false">5986d4ec688a490001540971</guid><category>Docker</category><category>Windows</category><category>Azure</category><category>Traefik</category><category>Portainer</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Fri, 10 Mar 2017 22:21:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like many others I guess - have heard of Let's Encrypt, but never really tried it.&lt;/p&gt;
+&lt;p&gt;But let's learn new things and try it out. I also have promised in the &lt;a href="https://blog.docker.com/2017/02/dockercast-interview-docker-captain-stefan-scherer-microsoft-docker/"&gt;interview in John Willis' Dockercast&lt;/a&gt; that I will write a blog post about it. With some modern tools you will see, it's not very complicated to run your Windows website with TLS certificates.&lt;/p&gt;
+&lt;p&gt;In this blog post I will show you how to run your website in Windows containers with Docker. You can develop your website locally in a container and push it to your server. And another Windows container runs the Træfɪk proxy, that helps us with the TLS certificate as well as with its dynamic configuration to add more than just one website.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://traefik.io"&gt;Træfɪk&lt;/a&gt; is a modern HTTP reverse proxy and load balancer made to deploy microservices with ease. It supports several backends like Docker to register and update its configuration for each new started container.&lt;/p&gt;
+&lt;p&gt;This picture gives you an overview of the architecture:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/architecture.png" alt="Traefik architecture"&gt;&lt;/p&gt;
+&lt;p&gt;Normally Træfɪk is running inside a container and it is well known in the Linux Docker community. A few weeks ago I have seen that there also are Windows binaries available. Let's see if we can use Træfɪk in a Windows container to provide us encrypted HTTPS traffic to other Windows containers running our IIS website, or other web service.&lt;/p&gt;
+&lt;h2 id="step1createawindowsdockerhostinazure"&gt;Step 1: Create a Windows Docker host in Azure&lt;/h2&gt;
+&lt;p&gt;First of all we need a Windows Server 2016 machine with Docker in the cloud. I will use Azure as Microsoft provides a VM template for that. This server will be our webserver later on with an own DNS name and TLS certs running our website.&lt;/p&gt;
+&lt;p&gt;Go to the &lt;a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-server"&gt;Windows Containers quick start guide&lt;/a&gt; at &lt;a href="http://docs.microsoft.com"&gt;docs.microsoft.com&lt;/a&gt; and press the &amp;quot;Deploy to Azure&amp;quot; button.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/01-deploy-to-azure-1.png" alt="Deploy to Azure"&gt;&lt;/p&gt;
+&lt;p&gt;This will bring you to the Azure portal where you can customize the virtual machine. Create a new resource group, choose the location where the server should be running a and public DNS name, as well as the size of the VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/02-customize.png" alt="Customize machine"&gt;&lt;/p&gt;
+&lt;p&gt;After you click on &amp;quot;Purchase&amp;quot; the deployment starts which should take only a few minutes.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/03-deployment-started.png" alt="Azure starts deployment"&gt;&lt;/p&gt;
+&lt;p&gt;In the meantime click on the cube symbol on the left. That will show you all resource groups you have.&lt;/p&gt;
+&lt;p&gt;This Windows + Docker template already creates inbound security rules for HTTPS port 443 as well as the Docker TLS port 2376. So for our purposes we don't need to add more inbound rules.&lt;/p&gt;
+&lt;h2 id="step2buyadomainandupdatednsrecords"&gt;Step 2: Buy a domain and update DNS records&lt;/h2&gt;
+&lt;p&gt;For Let's Encrypt you need an own domain name to get TLS certificates. For my tests I ordered a domain name at GoDaddy. But after I walked through the steps I realised that Træfɪk also can automatically update your DNS records when you use DNSimple, CloudFlare etc.&lt;/p&gt;
+&lt;p&gt;But for first time domain name users like me I show you the manual steps. In my case I went to my domain provider and configured the DNS records.&lt;/p&gt;
+&lt;h4 id="getthepublicipaddress"&gt;Get the public IP address&lt;/h4&gt;
+&lt;p&gt;Before we can update the DNS record we need the public IP address of the VM. This IP address is also used for the Docker TLS certificates we will create later on.&lt;/p&gt;
+&lt;p&gt;In the Azure Portal, open the resource group and click on the public IP address.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/04-resource-group-1.png" alt="Resource group"&gt;&lt;/p&gt;
+&lt;p&gt;Write down or copy the IP address shown here.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/08-pubip-1.png" alt="Public IP address"&gt;&lt;/p&gt;
+&lt;p&gt;Go back to your domain provider and enter the public IP address in the A record. If you want to run multiple websites within Docker containers, add a CNAME resource record for each sub domain you need. For this tutorial I have added &lt;code&gt;portainer&lt;/code&gt; and &lt;code&gt;whoami&lt;/code&gt; as additional sub domains.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/09-dns-a-record-cname-1.png" alt="Update DNS records"&gt;&lt;/p&gt;
+&lt;p&gt;After some minutes all the DNS servers should know your domain name with the new IP address of your Windows Server 2016.&lt;/p&gt;
+&lt;h2 id="step3securedockerwithtls"&gt;Step 3: Secure Docker with TLS&lt;/h2&gt;
+&lt;p&gt;We now log into the Docker host with RDP. You can use the DNS name provided by Azure or use your domain name. But before you connect with RDP, add a shared folder to your RDP session so you can also copy back the Docker TLS client certificates to your local machine. With this you will also be able to control your Windows Docker engine directly from your local computer.&lt;/p&gt;
+&lt;p&gt;In this example I shared my desktop folder with the Windows VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/10-rdp-client-add-folder.png" alt="Add folder in RDP client"&gt;&lt;/p&gt;
+&lt;p&gt;Now login with the username and password entered at creation time.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/11-rdp-login.png" alt="Login with RDP"&gt;&lt;/p&gt;
+&lt;h4 id="createdockertlscerts"&gt;Create Docker TLS certs&lt;/h4&gt;
+&lt;p&gt;To use Docker remotely it is recommended to use client certificates, so nobody without that certs can talk to your Docker engine. The same applies if a Windows container wants to communicate with the Docker engine. Using just the unprotected port 2375 would give every container the possibility to gain access to your Docker host.&lt;/p&gt;
+&lt;p&gt;Open a PowerShell terminal as an administrator to run a Windows container that can be used to create TLS certificates for your Docker engine. I already have blogged about &lt;a href="https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/"&gt;DockerTLS in more detail&lt;/a&gt; so we just use it here as a tool.&lt;/p&gt;
+&lt;p&gt;Retrieve all local IP addresses to allow the TLS certificate also from the host itself, but as well for other Windows containers to talk to your Docker engine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ips = ((Get-NetIPAddress -AddressFamily IPv4).IPAddress) -Join ','
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Also create a local folder for the client certificates.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir ~\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the DockerTLS tool with &lt;code&gt;docker run&lt;/code&gt;, just append the public IP address from above to the list of &lt;code&gt;IP_ADDRESSES&lt;/code&gt;. Also adjust the &lt;code&gt;SERVER_NAME&lt;/code&gt; variable to your domain name.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm `
+  -e SERVER_NAME=schererstefan.xyz `
+  -e IP_ADDRESSES=$ips,52.XXXXXXX.198 `
+  -v &amp;quot;C:\ProgramData\docker:C:\ProgramData\docker&amp;quot; `
+  -v &amp;quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&amp;quot; `
+  stefanscherer/dockertls-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/12-mkdir-and-run-dockertls.png-shadow.png" alt="Run dockertls"&gt;&lt;/p&gt;
+&lt;p&gt;Docker will pull the Windows image from Docker Hub and create the TLS certificates in the correct folders for your Docker engine.&lt;/p&gt;
+&lt;p&gt;Afterwards you have to restart the Docker engine to use the TLS certificates. The Docker engine now additionally listen on TCP port 2376.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;restart-service docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/13-restart-docker.png-shadow.png" alt="Restart docker"&gt;&lt;/p&gt;
+&lt;h4 id="addfirewallexceptionfordocker"&gt;Add firewall exception for Docker&lt;/h4&gt;
+&lt;p&gt;This step is needed to make other Windows container talk to the Docker engine at port 2376. But it also has another benefit. With these certs you can use the Docker client on your local machine to communicate with the Windows Docker engine in Azure. But I will start Træfɪk later on from the Docker host itself as we need some volume mount points.&lt;/p&gt;
+&lt;p&gt;The Windows Server's firewall is active, so we now have to add an exception to allow inbound traffic on port 2376. The network security group for the public IP address already has an inbound rule to the VM. This firewall exception now allows the connection to the Docker engine.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/14-inbound-rule-2376-in-vm.png-shadow.png" alt="Add firewall exception"&gt;&lt;/p&gt;
+&lt;p&gt;From now on you can connect to the Docker engine listing on port 2376 from the internet.&lt;/p&gt;
+&lt;h4 id="copydockerclientcertstoyourlocalmachine"&gt;Copy Docker client certs to your local machine&lt;/h4&gt;
+&lt;p&gt;To setup a working communication from your local machine, copy the Docker client certificates from the virtual machine through the RDP session back to your local machine.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/17-copy-docker-certs.png-shadow.png" alt="Copy Docker TLS certs to client"&gt;&lt;/p&gt;
+&lt;p&gt;On your local machine try to connect with the remote Windows Docker engine with TLS encryption and the client certs.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ DOCKER_CERT_PATH=~/Desktop/.docker DOCKER_TLS_VERIFY=1 docker -H tcp://schererstefan.xyz:2376 version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/18-mac-client.png" alt="Docker client from Mac"&gt;&lt;/p&gt;
+&lt;p&gt;Now you are able to start and stop containers as you like.&lt;/p&gt;
+&lt;h2 id="step4runtrfkandotherservices"&gt;Step 4: Run Træfɪk and other services&lt;/h2&gt;
+&lt;p&gt;Now comes the fun part. We use Docker and Docker Compose to describe which containers we want to run.&lt;/p&gt;
+&lt;h4 id="installdockercompose"&gt;Install Docker Compose&lt;/h4&gt;
+&lt;p&gt;To spin up all our containers I use Docker Compose and a &lt;code&gt;docker-compose.yml&lt;/code&gt; file that describes all services.&lt;/p&gt;
+&lt;p&gt;The Windows VM does not come with Docker Compose. So we have to install Docker Compose first. If you are working remotely you can use your local installation of Compose and skip this step.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Invoke-WebRequest &amp;quot;https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Windows-x86_64.exe&amp;quot; `
+  -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you prefer Chocolatey, use &lt;code&gt;choco install docker-compose&lt;/code&gt; instead.&lt;/p&gt;
+&lt;h4 id="createdatafoldersondockerhost"&gt;Create data folders on Docker host&lt;/h4&gt;
+&lt;p&gt;You need to persist some data outside of the Docker containers, so we create some data folders. Træfɪk retrieves the TLS certs and these should be persisted outside of the container. Otherwise you run into the Let's Encrypt rate limit of 20 requests per week to obtain new certificates. This happened to me trying different things with Træfɪk and starting and killing the container lots of times.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\Users\demo&amp;gt; mkdir sample
+PS C:\Users\demo&amp;gt; cd sample
+PS C:\Users\demo\sample&amp;gt; mkdir traefikdata
+PS C:\Users\demo\sample&amp;gt; mkdir portainerdata
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id="dockercomposeyml"&gt;docker-compose.yml&lt;/h4&gt;
+&lt;p&gt;For a first test we define two services, the traefik service and a example web server called whoami. This tutorial should give you just an idea and you can extend the YAML file to your needs. Run an IIS website? Put it into a container image. And another IIS website? Just run a separate container with that other website in it. You see you don't have to mix multiple sites, just leave them alone in single microservice images.&lt;/p&gt;
+&lt;p&gt;Open up an editor and create the YAML file.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\Users\demo\sample&amp;gt; notepad docker-compose.yml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class="language-yaml"&gt;version: '2.1'
+services:
+  traefik:
+    image: stefanscherer/traefik-windows
+    ports:
+      - &amp;quot;8080:8080&amp;quot;
+      - &amp;quot;443:443&amp;quot;
+    volumes:
+      - ./traefikdata:C:/etc/traefik
+      - ${USERPROFILE}/.docker:C:/etc/ssl:ro
+
+  whoami:
+    image: stefanscherer/whoami-windows
+    depends_on:
+      - traefik
+    labels:
+      - &amp;quot;traefik.backend=whoami&amp;quot;
+      - &amp;quot;traefik.frontend.entryPoints=https&amp;quot;
+      - &amp;quot;traefik.frontend.rule=Host:whoami.schererstefan.xyz&amp;quot;
+
+networks:
+  default:
+    external:
+      name: nat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I already have built a Træfɪk Windows Docker image that you can use. There might be an official image in the future. If you don't want to use my image, just use this &lt;code&gt;Dockerfile&lt;/code&gt; and replace the &lt;code&gt;image: stefanscherer/traefik-windows&lt;/code&gt; with &lt;code&gt;build: .&lt;/code&gt;, so Docker Compose will build the Træfɪk image for you.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; looks very simple as we directly add the Go binary to the Nanoserver Docker image and define some volumes and labels.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM microsoft/nanoserver
+
+ADD https://github.com/containous/traefik/releases/download/v1.2.0-rc2/traefik_windows-amd64 /traefik.exe
+
+VOLUME C:/etc/traefik
+VOLUME C:/etc/ssl
+
+EXPOSE 80
+ENTRYPOINT [&amp;quot;/traefik&amp;quot;, &amp;quot;--configfile=C:/etc/traefik/traefik.toml&amp;quot;]
+
+# Metadata
+LABEL org.label-schema.vendor=&amp;quot;Containous&amp;quot; \
+      org.label-schema.url=&amp;quot;https://traefik.io&amp;quot; \
+      org.label-schema.name=&amp;quot;Traefik&amp;quot; \
+      org.label-schema.description=&amp;quot;A modern reverse-proxy&amp;quot; \
+      org.label-schema.version=&amp;quot;v1.2.0-rc2&amp;quot; \
+      org.label-schema.docker.schema-version=&amp;quot;1.0&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id="traefiktoml"&gt;traefik.toml&lt;/h4&gt;
+&lt;p&gt;Træfɪk needs a configuration file where you specify your email address for the Let's Encrypt certificate requests. You will also need the IP address of the container network so that Træfɪk can contact your Docker engine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ip=(Get-NetIPAddress -AddressFamily IPv4 `
+   | Where-Object -FilterScript { $_.InterfaceAlias -Eq &amp;quot;vEthernet (HNS Internal NIC)&amp;quot; } `
+   ).IPAddress
+Write-Host $ip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now open an editor to create the &lt;code&gt;traefik.toml&lt;/code&gt; file.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\Users\demo\sample&amp;gt; notepad traefikdata\traefik.toml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Enter that IP address at the &lt;code&gt;endpoint&lt;/code&gt; of the &lt;code&gt;[docker]&lt;/code&gt; section. Also adjust the domain names&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-toml"&gt;[web]
+address = &amp;quot;:8080&amp;quot;
+
+[docker]
+domain = &amp;quot;schererstefan.xyz&amp;quot;
+endpoint = &amp;quot;tcp://172.24.128.1:2376&amp;quot;
+watch = true
+
+[docker.tls]
+ca = &amp;quot;C:/etc/ssl/ca.pem&amp;quot;
+cert = &amp;quot;C:/etc/ssl/cert.pem&amp;quot;
+key = &amp;quot;C:/etc/ssl/key.pem&amp;quot;
+
+# Sample entrypoint configuration when using ACME
+[entryPoints]
+  [entryPoints.https]
+  address = &amp;quot;:443&amp;quot;
+    [entryPoints.https.tls]
+
+[acme]
+
+# Email address used for registration
+#
+# Required
+#
+email = &amp;quot;you@yourmailprovider.com&amp;quot;
+
+storage = &amp;quot;c:/etc/traefik/acme.json&amp;quot;
+entryPoint = &amp;quot;https&amp;quot;
+
+[[acme.domains]]
+   main = &amp;quot;schererstefan.xyz&amp;quot;
+   sans = [&amp;quot;whoami.schererstefan.xyz&amp;quot;, &amp;quot;portainer.schererstefan.xyz&amp;quot;, &amp;quot;www.schererstefan.xyz&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id="openfirewallforallcontainerportsused"&gt;Open firewall for all container ports used&lt;/h4&gt;
+&lt;p&gt;Please notice that the Windows firewall is also active for the container network. The &lt;code&gt;whoami&lt;/code&gt; service listens on port 8000 in each container. To make Træfɪk connect to the &lt;code&gt;whoami&lt;/code&gt; containers you have to add a firewall exception for port 8000.&lt;/p&gt;
+&lt;p&gt;Docker automatically adds a firewall exception for all ports mapped to the host with &lt;code&gt;ports:&lt;/code&gt; in the &lt;code&gt;docker-compose.yml&lt;/code&gt;. But for the exposed ports this does not happen automatically.&lt;/p&gt;
+&lt;h4 id="spinuptrfkandwhoami"&gt;Spin up Træfɪk and whoami&lt;/h4&gt;
+&lt;p&gt;Now it's time to spin up the two containers.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-compose up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can see the output of each container and stop them by pressing &lt;code&gt;CTRL+C&lt;/code&gt;. If you want to run them detached in the background, use&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-compose up -d
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So see the output of the services you can use &lt;code&gt;docker-compose logs traefik&lt;/code&gt; or &lt;code&gt;docker-compose logs whoami&lt;/code&gt; at any time.&lt;/p&gt;
+&lt;p&gt;Træfɪk now fetches TLS certificates for your domain with the given sub domains. Træfɪk listens for starting and stopping containers.&lt;/p&gt;
+&lt;h2 id="testwithabrowser"&gt;Test with a browser&lt;/h2&gt;
+&lt;p&gt;Now open a browser on your local machine and try your TLS encrypted website with the subdomain &lt;code&gt;whoami&lt;/code&gt;. You should see a text like &lt;code&gt;I'm 3e1f17ecbba3&lt;/code&gt; which is the hostname of the container.&lt;/p&gt;
+&lt;p&gt;Now let's try Træfɪk load balancing feature by scaling up the &lt;code&gt;whoami&lt;/code&gt; service.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-compose scale whoami=3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now there are three &lt;code&gt;whoami&lt;/code&gt; containers running and Træfɪk knows all three of them. Each request to the subdomain will be load balanced to one of these containers. You can &lt;code&gt;SHIFT&lt;/code&gt;-reload your page in the browser and see that each request returns another hostname.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/15-browser.png" alt="Test whoami service with browser"&gt;&lt;/p&gt;
+&lt;p&gt;So we have a secured HTTPS connection to our Windows containers.&lt;/p&gt;
+&lt;h2 id="iis"&gt;IIS&lt;/h2&gt;
+&lt;p&gt;The power of Docker is that you can run multiple services on one machine if you have resources left. So let's add another web server, let's choose an IIS server.&lt;/p&gt;
+&lt;p&gt;Add these lines to the &lt;code&gt;docker-compose.yml&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  www:
+    image: microsoft/iis
+    expose:
+      - 80
+    depends_on:
+      - traefik
+    labels:
+      - &amp;quot;traefik.backend=www&amp;quot;
+      - &amp;quot;traefik.frontend.entryPoints=https&amp;quot;
+      - &amp;quot;traefik.frontend.rule=Host:www.schererstefan.xyz&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Remember to add a firewall exception for port 80 manually. After that spin up the IIS container with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-compose up -d www
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And check the new sub domain. You will see the welcome page of IIS.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/iis-welcom.png" alt="IIS welcome page"&gt;&lt;/p&gt;
+&lt;h2 id="portainer"&gt;Portainer&lt;/h2&gt;
+&lt;p&gt;Let's add another useful service to monitor your Docker engine. Portainer is a very good UI for that task and it is also available as a Windows Docker image.&lt;/p&gt;
+&lt;p&gt;Add another few lines to our &lt;code&gt;docker-compose.yml&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  portainer:
+    image: portainer/portainer
+    command: -H tcp://172.24.128.1:2376 --tlsverify
+    volumes:
+      - ./portainerdata:C:/data
+      - ${USERPROFILE}/.docker:C:/certs
+    depends_on:
+      - traefik
+    labels:
+      - &amp;quot;traefik.backend=portainer&amp;quot;
+      - &amp;quot;traefik.frontend.entryPoints=https&amp;quot;
+      - &amp;quot;traefik.frontend.rule=Host:portainer.schererstefan.xyz&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Portainer also needs the client certs to communicate with the Docker engine. Another volume mount point is used to persist data like your admin login outside the container.&lt;/p&gt;
+&lt;p&gt;Now run Portainer with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-compose up -d portainer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then open your browser on your local machine with the subdomain. When you open it the first time Portainer will ask you for an admin password. Enter a password you want to use and then login with it.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/19-portainer-login.png" alt="Portainer login"&gt;&lt;/p&gt;
+&lt;p&gt;Now you have an UI to see all containers running, all Docker images downloaded etc.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/20-portainer-dashboard.png" alt="Portainer dashboard"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/03/21-portainer-containers.png" alt="Portainer containers"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;What we have learned is that Træfɪk works pretty good on Windows. It helps us securing our websites with TLS certificates. In combination with Docker Compose you can add or remove new websites on the fly or even scale some services with the built-in load balancer of Træfɪk.&lt;/p&gt;
+&lt;p&gt;Read more details in the &lt;a href="https://docs.traefik.io"&gt;Træfɪk documentation&lt;/a&gt; as I can give you only a short intro of its capabilities.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Setup a Windows Docker CI with AppVeyor</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I love GitHub and all the services around it. It enables you to work from anywhere or &lt;a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg"&gt;any device&lt;/a&gt; and still have your complete CI pipeline in your pocket. Every thing is done with a &lt;code&gt;git push&lt;/code&gt;. You can add services like &lt;a href="https://codeship.com"&gt;Codeship&lt;/a&gt;, &lt;a href="https://travis-ci.org"&gt;Travis&lt;/a&gt;, &lt;a href="https://circleci.com"&gt;Circle&lt;/a&gt; and lots of others to&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/setup-windows-docker-ci-appveyor/</link><guid isPermaLink="false">5986d4ec688a49000154096f</guid><category>Docker</category><category>Windows</category><category>GitHub</category><category>AppVeyor</category><category>CI</category><category>Docker-Compose</category><category>Docker-Swarm</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Fri, 10 Mar 2017 05:54:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I love GitHub and all the services around it. It enables you to work from anywhere or &lt;a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg"&gt;any device&lt;/a&gt; and still have your complete CI pipeline in your pocket. Every thing is done with a &lt;code&gt;git push&lt;/code&gt;. You can add services like &lt;a href="https://codeship.com"&gt;Codeship&lt;/a&gt;, &lt;a href="https://travis-ci.org"&gt;Travis&lt;/a&gt;, &lt;a href="https://circleci.com"&gt;Circle&lt;/a&gt; and lots of others to build and test your code and even the pull requests you get from others.&lt;/p&gt;
+&lt;h2 id="butimonwindows"&gt;But I'm on Windows&lt;/h2&gt;
+&lt;p&gt;To build applications for Windows there is a similar cloud based CI service, called &lt;a href="https://www.appveyor.com"&gt;AppVeyor&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;And it works pretty similar to the other well known services for Linux:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Put a YAML file into your repo with the build, test and deploy steps&lt;/li&gt;
+&lt;li&gt;Connect your repo to the cloud CI service&lt;/li&gt;
+&lt;li&gt;From now on a &lt;code&gt;git push&lt;/code&gt; will do a lot for you.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Your CI pipeline is set up in a few clicks.&lt;/p&gt;
+&lt;h2 id="appveyoryml"&gt;appveyor.yml&lt;/h2&gt;
+&lt;p&gt;Here is an example how such a YAML file looks like for AppVeyor. This is from a &lt;a href="https://github.com/StefanScherer/win-getaddrinfo"&gt;small C/C++ project&lt;/a&gt; I made long time ago during holiday without Visual Studio at hand. I just created that GitHub repo, added the &lt;code&gt;appveyor.yml&lt;/code&gt; and voila - I got a compiled and statically linked &lt;a href="https://github.com/StefanScherer/win-getaddrinfo/releases"&gt;Windows binary at GitHub releases&lt;/a&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-yaml"&gt;version: 1.0.{build}
+configuration: Release
+platform: x64
+build:
+  project: myfavoriteproject.sln
+  verbosity: minimal
+test: off
+artifacts:
+- path: x64/Release/myfavoriteproject.exe
+  name: Release
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: xxxxx
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The build worker in AppVeyor is fully armed with &lt;a href="https://www.appveyor.com/docs/installed-software/"&gt;lots of development tools&lt;/a&gt;, so you can build projects for serveral languages like Node.js, .NET, Ruby, Python, Java ...&lt;/p&gt;
+&lt;h2 id="dockerbuild"&gt;Docker build&lt;/h2&gt;
+&lt;p&gt;AppVeyor now has released a new build worker with Windows Server 2016 and &lt;strong&gt;Docker Enterprise Edition&lt;/strong&gt; 17.03.0-ee-1 pre-installed. That instantly enables you to build, test and publish Windows Docker images in the same lightweight way.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/github_appveyor_docker.png" alt="Docker build with AppVeyor"&gt;&lt;/p&gt;
+&lt;p&gt;All you have to do is to select the new build worker by adding &lt;code&gt;image: Visual Studio 2017&lt;/code&gt; to your &lt;code&gt;appveyor.yml&lt;/code&gt;. No more work to do to get a fully Windows Docker engine for your build.&lt;/p&gt;
+&lt;p&gt;The following &lt;code&gt;appveyor.yml&lt;/code&gt; gives you an idea how easy an automated Docker build for Windows can be:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-yaml"&gt;version: 1.0.{build}
+image: Visual Studio 2017
+
+environment:
+  DOCKER_USER:
+    secure: xxxxxxx
+  DOCKER_PASS:
+    secure: yyyyyyy
+install:
+  - docker version
+
+build_script:
+  - docker build -t me/myfavoriteapp .
+
+test_script:
+  - docker run me/myfavoriteapp
+
+deploy_script:
+  - docker login -u=&amp;quot;$env:DOCKER_USER&amp;quot; -p=&amp;quot;$env:DOCKER_PASS&amp;quot;
+  - docker push me/myfavoriteapp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is a very simple example. For the tests you can think of some more sophisticated tests like using Pester, Serverspec or Cucumber. For the deploy steps you can decide when to run these, eg. only for a tagged build to push a new release.&lt;/p&gt;
+&lt;h2 id="dockercompose"&gt;Docker Compose&lt;/h2&gt;
+&lt;p&gt;You are not limited to build a single Docker image and run one container. Your build agent is a full Windows Docker host, so you also can install Docker Compose and spin up a multi-container application. The nice thing about AppVeyor is that the builders also have &lt;a href="https://chocolatey.org"&gt;Chocolatey&lt;/a&gt; preinstalled. So you only have to add a short single command to your &lt;code&gt;appveyor.yml&lt;/code&gt; to download and install Docker Compose.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;choco install docker-compose
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="dockerswarm"&gt;Docker Swarm&lt;/h2&gt;
+&lt;p&gt;You also might turn the Docker engine into a single node Docker swarm manager to work with the new commands &lt;code&gt;docker stack deploy&lt;/code&gt;. You can create a Docker Swarm with this command&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;docker swarm init
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="addprojecttobuild"&gt;Add project to build&lt;/h2&gt;
+&lt;p&gt;Adding AppVeyor to one of your GitHub repos is very simple. Sign in to AppVeyor with your GitHub account and select your project to add.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/appveyor-add-project.png" alt="AppVeyor add project"&gt;&lt;/p&gt;
+&lt;p&gt;Now you can also check the pull requests you or others create on GitHub.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/github-pr-green.png" alt="GitHub pull request checks green"&gt;&lt;/p&gt;
+&lt;p&gt;You can click on the green checkmark to view the console output of the build.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/appveyor-build-green.png" alt="AppVeyor pull request build green"&gt;&lt;/p&gt;
+&lt;h2 id="tellmeasecret"&gt;Tell me a secret&lt;/h2&gt;
+&lt;p&gt;To push to the Docker Hub we need to configure some secrets in AppVeyor. After you are logged in to AppVeyor you can select the &amp;quot;Encrypt data&amp;quot; menu item from the drop down menu or use the link &lt;a href="https://ci.appveyor.com/tools/encrypt"&gt;https://ci.appveyor.com/tools/encrypt&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;There you can enter your cleartext secret and it creates the encrypted configuration data you can use in your &lt;code&gt;appveyor.yml&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/appveyor-encrypt-data.png" alt="Appveyor encrypt configuration data"&gt;&lt;/p&gt;
+&lt;p&gt;These secret variables don't get injected in pull request builds, so nobody can fork your repo and send you an &lt;code&gt;ls env:&lt;/code&gt; pull request to expose that variables in the output.&lt;/p&gt;
+&lt;h2 id="immutablebuilds"&gt;Immutable builds&lt;/h2&gt;
+&lt;p&gt;One of the biggest advantages over self-hosting a CI pipeline is that you get immutable builds. You just do not have to care about the dirt and dust your build left on the build worker. AppVeyor - like all other cloud based CI systems - just throws away the build worker and you get another empty one for the next build.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/appveyor-docker-build.png" alt="AppVeyor immutable build"&gt;&lt;/p&gt;
+&lt;p&gt;Even if you build Windows Docker images you don't have to cleanup your Docker host. You can concentrate on your code, the build and your tests, and forget about maintain your CI workers.&lt;/p&gt;
+&lt;h2 id="examples"&gt;Examples&lt;/h2&gt;
+&lt;p&gt;I have some GitHub repos that already use AppVeyor to build Windows Docker images, so you can have a look how my setup works:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;github.com/StefanScherer/dockerfiles-windows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/StefanScherer/winspector"&gt;github.com/StefanScherer/winspector&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;AppVeyor is my #1 when it comes to automated Windows builds. With the Docker support built-in it becomes even more interesting.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Is there a Windows Docker image for ...?</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">5986d4ec688a490001540970</guid><category>Docker</category><category>Windows</category><category>Golang</category><category>Python</category><category>Node.js</category><category>Java</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.&lt;/p&gt;
+&lt;p&gt;Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.&lt;/p&gt;
+&lt;h2 id="prefernanoserver"&gt;Prefer NanoServer&lt;/h2&gt;
+&lt;p&gt;So starting to work with NanoServer is really easy with Docker as you only choose the right image for the &lt;code&gt;FROM&lt;/code&gt; instruction in your &lt;code&gt;Dockerfile&lt;/code&gt;. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.&lt;/p&gt;
+&lt;p&gt;So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.&lt;/p&gt;
+&lt;h2 id="go"&gt;Go&lt;/h2&gt;
+&lt;p&gt;The Go programming language is available on the Docker Hub as image &lt;a href="https://hub.docker.com/_/golang/"&gt;&lt;code&gt;golang&lt;/code&gt;&lt;/a&gt;. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Have a look at the &lt;a href="https://hub.docker.com/_/golang/"&gt;tags page&lt;/a&gt; if you want another version or if you want to pin a specific version of Golang.&lt;/p&gt;
+&lt;h2 id="java"&gt;Java&lt;/h2&gt;
+&lt;p&gt;When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official &lt;a href="https://hub.docker.com/_/openjdk/"&gt;&lt;code&gt;openjdk&lt;/code&gt;&lt;/a&gt; Docker images. Both Windows Server Core and NanoServer are supported.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the &lt;a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8"&gt;oracle/docker-images&lt;/a&gt; repository.&lt;/p&gt;
+&lt;h2 id="nodejs"&gt;Node.JS&lt;/h2&gt;
+&lt;p&gt;For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official &lt;a href="https://hub.docker.com/_/node/"&gt;&lt;code&gt;node&lt;/code&gt;&lt;/a&gt; images.&lt;/p&gt;
+&lt;p&gt;In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6-nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You also can find more tags and versions at the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/"&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="python"&gt;Python&lt;/h2&gt;
+&lt;p&gt;The script language Python is available as Windows Server Core Docker image at the official &lt;a href="https://hub.docker.com/_/python/"&gt;&lt;code&gt;python&lt;/code&gt;&lt;/a&gt; images. Both major versions of Python are available.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM python:3-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM python:2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I also have a Python Docker image &lt;a href="https://hub.docker.com/r/stefanscherer/python-windows/"&gt;for NanoServer&lt;/a&gt; with Python 3.6 to create smaller Docker images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/python-windows:nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="netcore"&gt;.NET Core&lt;/h2&gt;
+&lt;p&gt;Microsoft provides Linux and Windows Docker images for .NET Core at &lt;a href="https://hub.docker.com/r/microsoft/dotnet/"&gt;&lt;code&gt;microsoft/dotnet&lt;/code&gt;&lt;/a&gt;. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/dotnet:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="aspnet"&gt;&lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;For &lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt; there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at &lt;a href="https://hub.docker.com/r/microsoft/aspnet/"&gt;&lt;code&gt;microsoft/aspnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:4.6.2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:3.5-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.&lt;/p&gt;
+&lt;p&gt;Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Winspector - a tool to inspect your and other's Windows images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
+&lt;p&gt;Is there a way&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/winspector/</link><guid isPermaLink="false">5986d4ec688a49000154096c</guid><category>Docker</category><category>Windows</category><category>Container</category><category>Docker Hub</category><category>Python</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
+&lt;p&gt;Is there a way to look into container images without downloading them?&lt;/p&gt;
+&lt;p&gt;There are several services like &lt;a href="https://imagelayers.io"&gt;imagelayers.io&lt;/a&gt;, &lt;a href="https://microbadger.com"&gt;microbadger&lt;/a&gt;, &lt;a href="http://shields.io"&gt;shields.io&lt;/a&gt; and others which provide badges and online views for existing Docker images at Docker Hub. Unfortunately not all support Windows images at the moment.&lt;/p&gt;
+&lt;h2 id="enterwinspector"&gt;Enter winspector&lt;/h2&gt;
+&lt;p&gt;I found an &lt;a href="https://github.com/giantswarm/inspect-docker-image"&gt;inspector tool&lt;/a&gt; written in Python that might be useful for that task. I've enhanced it and created a tool called winspector which is available as Docker image &lt;a href="https://hub.docker.com/r/stefanscherer/winspector/"&gt;stefanscherer/winspector&lt;/a&gt; for Windows and Linux. With this tool you can inspect any Windows Docker images on the Docker Hub.&lt;/p&gt;
+&lt;p&gt;Winspector will show you&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The creation date of the image and the Docker version and Windows version used at build time.&lt;/li&gt;
+&lt;li&gt;The number of layers down to the Windows base image&lt;/li&gt;
+&lt;li&gt;Which &lt;strong&gt;Windows base image&lt;/strong&gt; the given image depends on. So you know whether a random Windows image uses the up to date Windows base image or not.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;size of each layer&lt;/strong&gt;. This is useful to when you try to optimize your image size.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;&amp;quot;application size&amp;quot; without the Windows base layers&lt;/strong&gt;. So you get an idea how small your Windows application image really is and what other users have to download provided that they already have the base image.&lt;/li&gt;
+&lt;li&gt;The history of the image. It tries to &lt;strong&gt;reconstruct the &lt;code&gt;Dockerfile&lt;/code&gt; commands&lt;/strong&gt; that have been used to build the image.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="runitfromwindows"&gt;Run it from Windows&lt;/h3&gt;
+&lt;p&gt;If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm stefanscherer/winspector microsoft/iis
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/winspector-wndows.png" alt="run from windows"&gt;&lt;/p&gt;
+&lt;p&gt;At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.&lt;/p&gt;
+&lt;h3 id="runitfrommaclinux"&gt;Run it from Mac / Linux&lt;/h3&gt;
+&lt;p&gt;If you have a Linux Docker engine running, just use the exact same command as on Windows. The Docker image &lt;code&gt;stefanscherer/winspector&lt;/code&gt; is a &lt;strong&gt;multiarch Docker image&lt;/strong&gt; and Docker will pull the correct OS specific image for you automatically.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm stefanscherer/winspector microsoft/iis
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/winspector-mac.png" alt="run from mac"&gt;&lt;/p&gt;
+&lt;h2 id="inspectingsomeimages"&gt;Inspecting some images&lt;/h2&gt;
+&lt;p&gt;Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector microsoft/windowsservercore
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Even for this image it can show you some details:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: microsoft/windowsservercore
+Tag: latest
+Number of layers: 2
+Sizes of layers:
+  sha256:3889bb8d808bbae6fa5a33e07... - 4069985900 byte
+  sha256:3430754e4d171ead00cf67667... - 913145061 byte
+Total size (including Windows base layers): 4983130961 byte
+Application size (w/o Windows base layers): 0 byte
+Windows base image used:
+  microsoft/windowsservercore:10.0.14393.447 full
+  microsoft/windowsservercore:10.0.14393.693 update
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.&lt;/p&gt;
+&lt;h2 id="howbigisthewinspectorimage"&gt;How big is the winspector image?&lt;/h2&gt;
+&lt;p&gt;Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector stefanscherer/winspector:windows-1.4.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The (shortened) output looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: stefanscherer/winspector
+Tag: windows-1.4.3
+Number of layers: 14
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:35:22 with Docker 1.13.0-rc7 on windows 10.0.14393.693
+Sizes of layers:
+  ...
+
+Total size (including Windows base layers): 360497565 byte
+Application size (w/o Windows base layers): 27188879 byte
+Windows base image used:
+  microsoft/nanoserver:10.0.14393.447 full
+  microsoft/nanoserver:10.0.14393.693 update
+History:
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So the winspector Windows image is about 27 MByte and it uses the latest nanoserver base image.&lt;/p&gt;
+&lt;h2 id="inspectinglinuximages"&gt;Inspecting Linux images&lt;/h2&gt;
+&lt;p&gt;And winspector is not restricted to Windows images, you can inspect Linux images as well.&lt;/p&gt;
+&lt;p&gt;If you run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector stefanscherer/winspector:linux-1.4.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then winspector will show you&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: stefanscherer/winspector
+Tag: linux-1.4.3
+Number of layers: 8
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:34:21 with Docker 1.12.3 on linux 
+Sizes of layers:
+  ...
+Total size (including Windows base layers): 32708231 byte
+Application size (w/o Windows base layers): 32708231 byte
+Windows base image used:
+  It does not seem to be a Windows image
+History:
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the Linux image is about 32 MByte.&lt;/p&gt;
+&lt;p&gt;So once you have downloaded the latest Windows base images like windowsservercore or nanoserver the download experience is the same for both platforms.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;With winspector you can check any Windows container image on the Docker Hub which version of Windows it uses.&lt;/p&gt;
+&lt;p&gt;You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.&lt;/p&gt;
+&lt;p&gt;The tool is open source on GitHub at &lt;a href="https://github.com/StefanScherer/winspector"&gt;github.com/StefanScherer/winspector&lt;/a&gt;. It is community driven, so feel free to send me feedback in form of issues or pull requests.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Keep your Windows Containers up to date</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.&lt;/p&gt;
+&lt;p&gt;How can I install Windows Updates in my container&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/keep-your-windows-containers-up-to-date/</link><guid isPermaLink="false">5986d4ec688a49000154096b</guid><category>Windows</category><category>Docker</category><category>Container</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 08 Jan 2017 09:23:21 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last year in October Microsoft has released Windows Server 2016 and with it the official support for Windows Containers. If you have tried Windows Containers already and built some Windows Container images you may wonder how to implement an update strategy.&lt;/p&gt;
+&lt;p&gt;How can I install Windows Updates in my container image?&lt;/p&gt;
+&lt;p&gt;Working with containers is not the same as working with real servers or VM's you support for months or years. A container image is a static snapshot of the filesystem (and Windows registry and so on) at a given time.&lt;/p&gt;
+&lt;p&gt;You won't enter a running container and run the Windows Update there. But how should we do it then?&lt;/p&gt;
+&lt;h2 id="containerimageshavelayers"&gt;Container images have layers&lt;/h2&gt;
+&lt;p&gt;First have a look how a container image looks like. It is not just a snapshot. A container image consist of multiple layers. When you look at your &lt;code&gt;Dockerfile&lt;/code&gt; you normally use a line like &lt;code&gt;FROM microsoft/windowsservercore&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Your container image then uses the Windows base image that contains a layer with all the files needed to run Windows containers.&lt;/p&gt;
+&lt;p&gt;If you have some higher level application you may use other prebuilt container images like &lt;code&gt;FROM microsoft/iis&lt;/code&gt; or &lt;code&gt;FROM microsoft/aspnet&lt;/code&gt;. These images also re-use the &lt;code&gt;FROM microsoft/windowsservercore&lt;/code&gt; as base image.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/windows_image_layers-2.png" alt="Windows app image layers"&gt;&lt;/p&gt;
+&lt;p&gt;On top of that you build your own application image with your code and content needed to run the application in a self contained Windows container.&lt;/p&gt;
+&lt;p&gt;Behind the scenes your application image now uses several layers that will be downloaded from the Docker Hub or any other container registry. Same layers can be re-used for different other images. If you build multiple &lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt; appliations as Docker images they will re-use the same layers below.&lt;/p&gt;
+&lt;p&gt;But now back to our first question: How to apply Windows Updates in a container image?&lt;/p&gt;
+&lt;h2 id="thewindowsbaseimages"&gt;The Windows base images&lt;/h2&gt;
+&lt;p&gt;Let's have a closer look at the Windows base images. Microsoft provides two base images: &lt;a href="https://hub.docker.com/r/microsoft/windowsservercore/"&gt;windowsservercore&lt;/a&gt; and &lt;a href="https://hub.docker.com/r/microsoft/nanoserver/"&gt;nanoserver&lt;/a&gt;. Both base images are updated on a regular basis to roll out all security fixes and bug fixes. You might know that the base image for windowsservercore is about 4 to 5 GByte to download.&lt;/p&gt;
+&lt;p&gt;So do we have to download the whole base image each time for each update?&lt;/p&gt;
+&lt;p&gt;If we look closer how the base images are built we see that they contain two layers: One big base layer that will be used for a longer period of time. And there is a smaller update layer that contains only the patched and updated files for the new release.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/windowsservercore_updates.gif" alt="Windows Server Core updates"&gt;&lt;/p&gt;
+&lt;p&gt;So updating to a newer Windows base image version isn't painful as only the update layer must be pulled from the Docker Hub.&lt;/p&gt;
+&lt;p&gt;But in the long term it does not make sense to stick forever to the old base layer. Security scanners will mark them as vulnerable and also all the images that are built from them. And the update layer will increase in size for each new release. So from time to time there is a &amp;quot;breaking&amp;quot; change that replaces the base layer and a new base layer will be used for upcoming releases. We have seen that with the latest release in December.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/windowsservercore_updates_all.gif" alt="Windows Server Core major update"&gt;&lt;/p&gt;
+&lt;p&gt;From time to time you will have to download the big new base layer which is about 4 GByte for windowsservercore (and only about 240 MByte for nanoserver, so try to use nanoserver whereever you can) when you want to use the latest Windows image release.&lt;/p&gt;
+&lt;h2 id="keeporupdate"&gt;Keep or update?&lt;/h2&gt;
+&lt;p&gt;Should I avoid updating the Windows image to revision 576 to keep my downloads small? &lt;strong&gt;No!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;My recommendation is to update all your Windows container images and rebuild them with the newest Windows image. You have to download that bigger base layer also &lt;strong&gt;only once&lt;/strong&gt; and all your container images will re-use it.&lt;/p&gt;
+&lt;p&gt;Perhaps your application code also has some updates you want to ship. It's a good time to ship it on top of the newest Windows base image. So I recommend to run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker pull microsoft/windowsservercore
+docker pull microsoft/nanoserver
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;before you build new Windows container images to have the latest OS base image with all security fixes and bug fixes in it.&lt;/p&gt;
+&lt;p&gt;If you want to keep track which version of the Windows image you use, you can use the tags provided for each release.&lt;/p&gt;
+&lt;p&gt;Instead of using only the latest version in your &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM microsoft/windowsservercore
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;you can append the tag&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM microsoft/windowsservercore:10.0.14393.576
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But I still recommend to update the tag after a new Windows image has been published.&lt;/p&gt;
+&lt;p&gt;You can find the tags for &lt;a href="https://hub.docker.com/r/microsoft/windowsservercore/tags/"&gt;windowsservercore&lt;/a&gt; and &lt;a href="https://hub.docker.com/r/microsoft/nanoserver/tags/"&gt;nanoserver&lt;/a&gt; on the Docker Hub.&lt;/p&gt;
+&lt;h2 id="whatabouttheframeworkimages"&gt;What about the framework images?&lt;/h2&gt;
+&lt;p&gt;Typically you build your application on top of some kind of framework like &lt;a href="https://hub.docker.com/r/microsoft/aspnet/tags/"&gt;ASP.NET&lt;/a&gt;, &lt;a href="https://hub.docker.com/r/microsoft/iis/tags/"&gt;IIS&lt;/a&gt; or a runtime language like Node.js, &lt;a href="https://hub.docker.com/r/library/python/"&gt;Python&lt;/a&gt; and so on. You should have a look at the update cycles of these framework images. The maintainers have to rebuild the framework images after a new release of the Windows base image came out.&lt;/p&gt;
+&lt;p&gt;If you see some of your framework images lag behind, encourage the maintainer to update the Windows base image and to rebuild the framework image.&lt;/p&gt;
+&lt;p&gt;With such updated framework images - they hopefully come with a new version tag - you can rebuild your application.&lt;/p&gt;
+&lt;h1 id="tldr"&gt;TL/DR&lt;/h1&gt;
+&lt;p&gt;So your part to get Windows Updates into your Windows Container images is to choose the newer image in your &lt;code&gt;Dockerfile&lt;/code&gt; and rebuild your application image with it.&lt;/p&gt;
+&lt;p&gt;If you haven't used version tags of the image below, do a &lt;code&gt;docker pull ...&lt;/code&gt; of that image to get sure to have the updated one before you rebuild.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>How to protect a Windows 2016 Docker engine with TLS</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;There is a tutorial&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/protecting-a-windows-2016-docker-engine-with-tls/</link><guid isPermaLink="false">5986d4ec688a49000154096a</guid><category>Docker</category><category>Windows</category><category>Azure</category><category>TLS</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 23 Oct 2016 22:35:19 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;There is a tutorial &lt;a href="https://docs.docker.com/engine/security/https/"&gt;Protect the Docker daemon socket&lt;/a&gt; at the website of Docker which uses the &lt;code&gt;openssl&lt;/code&gt; tool to create all the certificates etc. But how should we do this on Windows?&lt;/p&gt;
+&lt;h2 id="justcontainerizewhatsthere"&gt;Just containerize what's there&lt;/h2&gt;
+&lt;p&gt;I have seen the &lt;a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-server-container-tools/DockerTLS"&gt;DockerTLS&lt;/a&gt; script in a GitHub repo from Microsoft. But this script installs OpenSSL on my machine which I don't want to.&lt;/p&gt;
+&lt;p&gt;My first thought was, let's put this script + OpenSSL into a Docker image and run it in a Windows container.&lt;/p&gt;
+&lt;p&gt;So this &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/2e2a5b12252816744f5414e0621e12bb74b6f59c/dockertls/Dockerfile"&gt;Dockerfile&lt;/a&gt; was my first attempt to just use Chocolatey to install OpenSSL, download the PowerShell script from the Microsoft GitHub repo. Done. The script can run in a safe environment and I don't have to install software on my Docker host.&lt;/p&gt;
+&lt;h2 id="dockertls"&gt;DockerTLS&lt;/h2&gt;
+&lt;p&gt;But there is still work to do on the host to configure the Docker engine which I wanted to automate a little more. So it would be great to have a tool that can&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;generate all TLS certs&lt;/li&gt;
+&lt;li&gt;create or update the Docker &lt;code&gt;daemon.json&lt;/code&gt; file&lt;/li&gt;
+&lt;li&gt;Put the client certs into my home directory&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But still we need a program or script with OpenSSL to do that. I thought this tool should be deployed in a Docker image and shared on the Docker Hub. And here it is:&lt;/p&gt;
+&lt;h2 id="dockerrundockertls"&gt;docker run dockertls&lt;/h2&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls.png" alt="dockertls"&gt;&lt;/p&gt;
+&lt;p&gt;The script &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1"&gt;generate-certs.ps1&lt;/a&gt; creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL/LibreSSL installed.&lt;/p&gt;
+&lt;p&gt;The dockertls Docker image is created with this &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile"&gt;Dockerfile&lt;/a&gt;. It installs LibreSSL from OpenBSD (thanks to &lt;a href="https://twitter.com/friism"&gt;Michael Friis&lt;/a&gt; for that optimization) and copies the PowerShell script inside the image.&lt;/p&gt;
+&lt;p&gt;You can find the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls"&gt;full source code&lt;/a&gt; of the dockertls image in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo if you want to build the Docker image yourself.&lt;/p&gt;
+&lt;p&gt;Otherwise you can just the &lt;a href="https://hub.docker.com/r/stefanscherer/dockertls-windows/"&gt;dockertls Docker image&lt;/a&gt; from the Docker Hub.&lt;/p&gt;
+&lt;h3 id="dryrun"&gt;Dry run&lt;/h3&gt;
+&lt;p&gt;As you don't trust me or my Docker image you can do a dry run with some temporary folders where the container can copy files into without destroying your Docker host.&lt;/p&gt;
+&lt;p&gt;Just create two folders:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir server
+mkdir client\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the Windows container with the environment variables &lt;code&gt;SERVER_NAME&lt;/code&gt; and &lt;code&gt;IP_ADDRESSES&lt;/code&gt; as well as two volume mounts to write the certs back to the host:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &amp;quot;$(pwd)\server:C:\ProgramData\docker&amp;quot; `
+  -v &amp;quot;$(pwd)\client\.docker:C:\Users\ContainerAdministrator\.docker&amp;quot; `
+  stefanscherer/dockertls-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Afterwards check the folders:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dir server\certs.d
+dir server\config
+dir client\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You will see that there are three pem files for the server, the &lt;code&gt;daemon.json&lt;/code&gt; file as well as three pem files for the client.&lt;/p&gt;
+&lt;p&gt;Of course you could manually copy the files and try them out. But this Docker image can do this for you as well.&lt;/p&gt;
+&lt;h3 id="fullrun"&gt;Full run&lt;/h3&gt;
+&lt;p&gt;You may have to create the &lt;code&gt;.docker&lt;/code&gt; folder in your home directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir $env:USERPROFILE\.docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now run the container with the correct paths on the host so it can copy all certs and configs to the right place. The script can read an existing &lt;code&gt;daemon.json&lt;/code&gt; and update it to keep all other configuration untouched.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &amp;quot;C:\ProgramData\docker:C:\ProgramData\docker&amp;quot; `
+  -v &amp;quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&amp;quot; `
+  stefanscherer/dockertls-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now you have to restart the Docker service in an administrator Shell with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;restart-service docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One last step is needed on your host. You have to open the port 2376 in your firewall so you can access the machine from the outside. But then you're done on your host.&lt;/p&gt;
+&lt;p&gt;You can recreate the TLS certs with the same command and just restart the Docker service afterwards.&lt;/p&gt;
+&lt;h3 id="testtlsconnection"&gt;Test TLS connection&lt;/h3&gt;
+&lt;p&gt;Now test the connection to the TLS secured Docker service with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker --tlsverify `
+  --tlscacert=$env:USERPROFILE\.docker\ca.pem `
+  --tlscert=$env:USERPROFILE\.docker\cert.pem `
+  --tlskey=$env:USERPROFILE\.docker\key.pem `
+  -H=tcp://127.0.0.1:2376 version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or just set some environment variables&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$env:DOCKER_HOST=&amp;quot;tcp://127.0.0.1:2376&amp;quot;
+$env:DOCKER_TLS_VERIFY=&amp;quot;1&amp;quot;
+docker version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="azure"&gt;Azure&lt;/h3&gt;
+&lt;p&gt;In an Azure VM you should use your DNS name for the VM in the &lt;code&gt;SERVER_NAME&lt;/code&gt; environment variable and your public and local IP addresses of that machine.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls-run---Kopie.png" alt="docker-run"&gt;&lt;/p&gt;
+&lt;p&gt;You have to open the firewall port 2376 on your Windows Docker host.&lt;/p&gt;
+&lt;p&gt;For Azure you also have to add a incoming rule for port 2376 in your network security group.&lt;/p&gt;
+&lt;p&gt;Then you have to securely transfer the three client pem files from your Azure VM to your laptop.&lt;/p&gt;
+&lt;p&gt;I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/10/dockertls-1.png" alt="docker-version"&gt;&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Run Linux and Windows Containers on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">5986d4ec688a490001540968</guid><category>Docker</category><category>Windows</category><category>Linux</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve newer versions.&lt;/p&gt;
+&lt;p&gt;And Microsoft has added the &lt;strong&gt;Containers feature&lt;/strong&gt; in the Windows 10 Anniversary Update. With some &lt;a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10"&gt;installation steps&lt;/a&gt; you are able to run &lt;strong&gt;Windows Hyper-V Containers&lt;/strong&gt; on your Windows 10 machine.&lt;/p&gt;
+&lt;p&gt;But there is a little bit of confusion which sort of containers can be started with each of the two installations. And you can't run both Docker Engines side-by-side without some adjustments.&lt;/p&gt;
+&lt;p&gt;This is because each of the installations use the same default named pipe &lt;code&gt;//./pipe/docker_engine&lt;/code&gt; causing one of the engines to fail to start.&lt;/p&gt;
+&lt;h2 id="beta26torulethemall"&gt;Beta 26 to rule them all&lt;/h2&gt;
+&lt;p&gt;Beginning with the Docker for Windows Beta 26 there is a very easy approach to solve this confusion. You only have to install Docker for Windows with the MSI installer. There is a new menu item in the Docker tray icon to switch between Linux and Windows containers.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/docker-for-windows-switch.gif" alt="switching"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see in the video you don't have to change environment variables or use the &lt;code&gt;-H&lt;/code&gt; option of the Docker client to talk to the other Docker engine.&lt;/p&gt;
+&lt;p&gt;So if you download &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;Docker for Windows beta&lt;/a&gt; or switch to the beta channel in your installation you can try this out yourself.&lt;/p&gt;
+&lt;p&gt;The installer will activate the &lt;strong&gt;Containers&lt;/strong&gt; feature if you haven't done that yet. A reboot is required for this to add this feature.&lt;/p&gt;
+&lt;p&gt;From now on you can easily switch with the menu item in the tray icon.&lt;/p&gt;
+&lt;p&gt;There also is a command line tool to switch the engine. In a PowerShell windows you can type&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and it switches from Linux to Windows or vice versa. Take care and type the option as shown here as the option is case sensitive.&lt;/p&gt;
+&lt;h2 id="proxyfortherescue"&gt;Proxy for the rescue&lt;/h2&gt;
+&lt;p&gt;But how does the switching work without the need to use another named pipe or socket from the Docker client?&lt;/p&gt;
+&lt;p&gt;The answer is that there is running a Proxy process &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; which listens on the default named pipe &lt;code&gt;//./pipe/docker_engine&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you switch from Linux to Windows the Windows Docker engine &lt;code&gt;dockerd.exe&lt;/code&gt; will be started for you which is listening on another named pipe &lt;code&gt;//./pipe/docker_engine_windows&lt;/code&gt; and a new started Proxy process redirects to this.&lt;/p&gt;
+&lt;h3 id="underthehood"&gt;Under the hood&lt;/h3&gt;
+&lt;p&gt;I have installed the &lt;a href="https://technet.microsoft.com/sysinternals/bb896645"&gt;Sysinternals Process Monitor&lt;/a&gt; tool to learn what happens while switching from Linux to Windows containers. With the Process Tree function you can see a timeline with green bars when each process has started or exited.&lt;/p&gt;
+&lt;p&gt;The following screenshot shows the processes before and after the switch. I have switched about in the middle of the green bar.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/switch-to-windows-dockerd.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;The current &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; (above &lt;code&gt;dockerd.exe&lt;/code&gt; in the list) that talked to the MobyLinuxVM exits as the dark green bar highlights that.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;dockerd.exe&lt;/code&gt; Windows Docker engine is started, as well as a new &lt;code&gt;com.docker.proxy.exe&lt;/code&gt; (below &lt;code&gt;dockerd.exe&lt;/code&gt;) which talks to the Windows Docker engine.&lt;/p&gt;
+&lt;p&gt;So just after the switch you still can use the &lt;code&gt;docker.exe&lt;/code&gt; Client or your Docker integration in your favorite editor or IDE without any environment changes.&lt;/p&gt;
+&lt;h2 id="runningbothcontainerworldsinparallel"&gt;Running both container worlds in parallel&lt;/h2&gt;
+&lt;p&gt;The proxy process just switches the connection to the Docker engine. After such a switch both the Linux and Windows Docker engine are running.&lt;/p&gt;
+&lt;h3 id="runalinuxwebserver"&gt;Run a Linux web server&lt;/h3&gt;
+&lt;p&gt;To try this out we first switch back to the Linux containers. Now we run the default nginx web server on port 80&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -p 80:80 -d nginx
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then switch to the Windows containers with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;amp; 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/docker-run-nginx.png" alt="docker-run-nginx"&gt;&lt;/p&gt;
+&lt;p&gt;Now let's run some Windows containers. But first we try if the Linux container is still running and reachable with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;start http://localhost
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With the &lt;code&gt;start&lt;/code&gt; command you open Edge with the welcome page of the nginx running in a Linux container&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/nginx.png" alt="nginx"&gt;&lt;/p&gt;
+&lt;p&gt;Yes, the Linux container is still running.&lt;/p&gt;
+&lt;h2 id="buildawindowswebserver"&gt;Build a Windows web server&lt;/h2&gt;
+&lt;p&gt;On Windows 10 you &lt;s&gt;only can run Nanoserver containers. There is no IIS docker image for Nanoserver&lt;/s&gt;. &lt;strong&gt;Ignite update&lt;/strong&gt;: You can run Nanoserver &lt;strong&gt;AND&lt;/strong&gt; windowsservercore containers on Windows 10.&lt;/p&gt;
+&lt;p&gt;But to demo how simple nanoserver containers could be I'll keep the following sample as it is. So we create our own small Node.js web server. First we write the simple web server app&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;notepad app.js
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Enter this code as the mini web server in the file &lt;code&gt;app.js&lt;/code&gt; and save the file.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-javascript"&gt;var http = require('http');
+var port = 81;
+
+function handleRequest(req, res) {
+  res.end('Hello from Windows container, path = ' + req.url);
+}
+
+var server = http.createServer(handleRequest);
+
+server.listen(port);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we build a Windows Docker image with that application. We open another editor to create the &lt;code&gt;Dockerfile&lt;/code&gt; with this command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;notepad Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Enter this as the &lt;code&gt;Dockerfile&lt;/code&gt;. As you can see only the &lt;code&gt;FROM&lt;/code&gt; line is different from a typical Linux Dockerfile. This one uses a Windows base image from the Docker Hub.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM stefanscherer/node-windows:6.7.0-nano
+
+COPY app.js app.js
+
+CMD [ &amp;quot;node&amp;quot;, &amp;quot;app.js&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Save the file and build the Docker image with the usual command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t webserver .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Run the Windows web server as a Docker container with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -p 81:81 -d webserver
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/docker-run-webserver-1.png" alt="docker-run-webserver"&gt;&lt;/p&gt;
+&lt;p&gt;At the moment you can't connect directly with 127.0.0.1 to the container. But it is possible to use the IP address of the container. We need the ID or name of the container, so list the containers running with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker ps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then open the browser with the container's IP address:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;start http://$(docker inspect -f &amp;quot;{{ .NetworkSettings.Networks.nat.IPAddress }}&amp;quot; grave_thompson):81
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/docker-inspect.png" alt="docker-inspect"&gt;&lt;/p&gt;
+&lt;p&gt;Additionally the port forwarding from the host to the container allows you to contact the web server on port 81 from another machine.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/09/curl-to-windows-10.png" alt="curl-to-windows-10"&gt;&lt;/p&gt;
+&lt;p&gt;And yes, the Windows container is also handling requests.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The new Docker for Windows beta combines the two container worlds and simplifies building Docker images for both Linux and Windows, making a Windows 10 machine a good development platform for both.&lt;/p&gt;
+&lt;p&gt;And with a little awareness when to switch to the right Docker engine, both Linux and Windows containers can run side-by-side.&lt;/p&gt;
+&lt;p&gt;Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Adding Hyper-V support to 2016 TP5 Docker VM</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Back in June I have attended the &lt;a href="http://2016.dockercon.com"&gt;DockerCon&lt;/a&gt; in Seattle. Beside lots of new features in Docker 1.12 we heard about &lt;a href="https://www.youtube.com/watch?v=A7ABdUmen9s"&gt;Windows Server and Docker&lt;/a&gt; and upcoming features in the Windows Docker engine.&lt;/p&gt;
+&lt;p&gt;Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/adding-hyper-v-support-to-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540969</guid><category>Packer</category><category>Vagrant</category><category>Docker</category><category>Windows</category><category>Hyper-V</category><category>DockerCon</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Thu, 04 Aug 2016 19:59:37 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Back in June I have attended the &lt;a href="http://2016.dockercon.com"&gt;DockerCon&lt;/a&gt; in Seattle. Beside lots of new features in Docker 1.12 we heard about &lt;a href="https://www.youtube.com/watch?v=A7ABdUmen9s"&gt;Windows Server and Docker&lt;/a&gt; and upcoming features in the Windows Docker engine.&lt;/p&gt;
+&lt;p&gt;Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond to meet the Windows Container team around Taylor Brown. After a meeting and having lunch we talked about making my Packer template for a &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_2016_docker.json"&gt;Windows Server 2016 TP5 Docker VM&lt;/a&gt; work with Hyper-V. At that time my packer template supported only VirtualBox and VMware with a &lt;a href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/"&gt;blog post describing how to build it&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/20160623_101541.jpg" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;So Patrick Lang from Microsoft and I started to have a look at the pull request &lt;a href="https://github.com/mitchellh/packer/pull/2576"&gt;mitchellh/packer#2576&lt;/a&gt; by Taliesin Sisson that adds a Hyper-V builder to Packer. After a couple of days (already back to Germany working in different time zones) we improved the template through &lt;a href="https://github.com/PatrickLang/packer-windows/commit/7e13d4799e28a3afb1e35b878e00394256011022"&gt;GitHub&lt;/a&gt; and finally got it working.&lt;/p&gt;
+&lt;h2 id="packerbuildvagrantup"&gt;packer build, vagrant up&lt;/h2&gt;
+&lt;p&gt;If you haven't heard about &lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; and &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; let me explain it with the following diagram. If you want to create a VM from an ISO file you normally click through your hypervisor UI and then follow the installation steps inside the VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/packer_vagrant.png" alt="packer build, vagrant up"&gt;&lt;/p&gt;
+&lt;p&gt;With Packer you can automate that step building a VM from an ISO file, put all steps into a Packer template and then just share the template so others can just run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;packer build template.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In our case the output is a Vagrant box. That is a compressed VM ready to be used with the next tool - Vagrant. It takes a Vagrant box, creates a copy of it to turn it on so you can work again and again with the same predefined VM that was built by Packer. You want to turn your VM on? Just type&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You want to stop the VM after work? Just type&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant halt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You want to try something out and want to undo all that to start over with the clean state. Just destroy it and start it again.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant destroy
+vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are much more commands and even snapshots can be used. The advantage is that you don't have to know all the buttons in your hypervisor. Both Packer and Vagrant are available for &lt;strong&gt;Windows, Mac and Linux&lt;/strong&gt; and also &lt;strong&gt;support &lt;a href="http://www.slideshare.net/PuppetLabs/multiprovider-vagrant"&gt;multiple hypervisors&lt;/a&gt;&lt;/strong&gt; and even cloud providers.&lt;/p&gt;
+&lt;p&gt;So you only have to learn one or both of these tools and you're done if you have to work with VM's.&lt;/p&gt;
+&lt;h2 id="addinghypervbuilder"&gt;Adding Hyper-V builder&lt;/h2&gt;
+&lt;p&gt;The Packer template for a VM has one or more builder sections. The Hyper-V section looks like this and contains the typical steps&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Adding files for a virtual floppy for the first boot&lt;/li&gt;
+&lt;li&gt;Defining disk size, memory and CPU's&lt;/li&gt;
+&lt;li&gt;How to login into the VM&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class="language-json"&gt;    {
+      &amp;quot;vm_name&amp;quot;:&amp;quot;WindowsServer2016TP5Docker&amp;quot;,
+      &amp;quot;type&amp;quot;: &amp;quot;hyperv-iso&amp;quot;,
+      &amp;quot;disk_size&amp;quot;: 41440,
+      &amp;quot;boot_wait&amp;quot;: &amp;quot;0s&amp;quot;,
+      &amp;quot;headless&amp;quot;: false,
+      &amp;quot;guest_additions_mode&amp;quot;:&amp;quot;disable&amp;quot;,
+      &amp;quot;iso_url&amp;quot;: &amp;quot;{{user `iso_url`}}&amp;quot;,
+      &amp;quot;iso_checksum_type&amp;quot;: &amp;quot;{{user `iso_checksum_type`}}&amp;quot;,
+      &amp;quot;iso_checksum&amp;quot;: &amp;quot;{{user `iso_checksum`}}&amp;quot;,
+      &amp;quot;floppy_files&amp;quot;: [
+        &amp;quot;./answer_files/2016/Autounattend.xml&amp;quot;,
+        &amp;quot;./floppy/WindowsPowershell.lnk&amp;quot;,
+        &amp;quot;./floppy/PinTo10.exe&amp;quot;,
+        &amp;quot;./scripts/disable-winrm.ps1&amp;quot;,
+        &amp;quot;./scripts/docker/enable-winrm.ps1&amp;quot;,
+        &amp;quot;./scripts/microsoft-updates.bat&amp;quot;,
+        &amp;quot;./scripts/win-updates.ps1&amp;quot;
+      ],
+      &amp;quot;communicator&amp;quot;:&amp;quot;winrm&amp;quot;,
+      &amp;quot;winrm_username&amp;quot;: &amp;quot;vagrant&amp;quot;,
+      &amp;quot;winrm_password&amp;quot;: &amp;quot;vagrant&amp;quot;,
+      &amp;quot;winrm_timeout&amp;quot; : &amp;quot;4h&amp;quot;,
+      &amp;quot;shutdown_command&amp;quot;: &amp;quot;shutdown /s /t 10 /f /d p:4:1 /c \&amp;quot;Packer Shutdown\&amp;quot;&amp;quot;,
+      &amp;quot;ram_size_mb&amp;quot;: 2048,
+      &amp;quot;cpu&amp;quot;: 2,
+      &amp;quot;switch_name&amp;quot;:&amp;quot;{{user `hyperv_switchname`}}&amp;quot;,
+      &amp;quot;enable_secure_boot&amp;quot;:true
+    },
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Packer can also download ISO files from a download link to make automation very easy.&lt;/p&gt;
+&lt;p&gt;The installation of a Windows Server 2016 VM can be automated with an &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/answer_files/2016/Autounattend.xml"&gt;&lt;code&gt;Autounattend.xml&lt;/code&gt;&lt;/a&gt; file. This file contains information to setup the Windows VM until the WinRM service is up and running and Packer can login from the host machine to run further provision scripts to setup the VM with additional installations.&lt;/p&gt;
+&lt;p&gt;In case of the Windows Server 2016 TP5 Docker VM we additionally &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/scripts/docker/install-docker.ps1"&gt;install Docker 1.12&lt;/a&gt; and pull the Windows base OS docker images into the VM.&lt;/p&gt;
+&lt;p&gt;All these steps defined in the Packer template build a good Vagrant box to have Docker preinstalled with the base docker image as it takes some time to download it the first time.&lt;/p&gt;
+&lt;p&gt;So after a &lt;code&gt;vagrant destroy&lt;/code&gt; you still have the Windows OS docker images installed and can work with a clean installation again. Only from time to time when there is a new OS docker image version you have to rebuild your Vagrant box with Packer.&lt;/p&gt;
+&lt;h2 id="buildthehypervvagrantbox"&gt;Build the Hyper-V Vagrant box&lt;/h2&gt;
+&lt;p&gt;To build the Vagrant box locally on a Windows 10 machine you only need the &lt;strong&gt;Hyper-V feature&lt;/strong&gt; activated and you need a &lt;strong&gt;special version of &lt;code&gt;packer.exe&lt;/code&gt;&lt;/strong&gt; (notice: with &lt;code&gt;choco install packer&lt;/code&gt; you only get the upstream packer where the hyperv builder is not integrated yet). The packer.exe with hyperv builder can be downloaded at &lt;a href="https://dl.bintray.com/taliesins/Packer/"&gt;https://dl.bintray.com/taliesins/Packer/&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Clone my packer template from GitHub and build it with these commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=hyperv-iso windows_2016_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will take some time downloading and caching the ISO file, booting, installing the software and pulling the first Docker images.&lt;/p&gt;
+&lt;h2 id="sharevagrantboxeswithatlas"&gt;Share Vagrant boxes with Atlas&lt;/h2&gt;
+&lt;p&gt;Another advantage of Vagrant is that you can share Vagrant base boxes through Atlas, a service by HashiCorp. So only one has to run Packer and build the Vagrant box and provide it for other team members or the community.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/packer_vagrant_atlas.png" alt="packer atlas vagrant"&gt;&lt;/p&gt;
+&lt;p&gt;Others can create a &lt;code&gt;Vagrantfile&lt;/code&gt; with the box name of one of the provided Vagrant boxes. That name will be used at the first &lt;code&gt;vagrant up&lt;/code&gt; to download the correct Vagrant box for the hypervisor to be used.&lt;/p&gt;
+&lt;p&gt;Even Microsoft has its first &lt;a href="https://atlas.hashicorp.com/Microsoft/boxes/EdgeOnWindows10"&gt;Vagrant box at Atlas&lt;/a&gt; which can be used with VirtualBox only at the moment. But it is only a matter of time that more Hyper-V based Vagrant boxes will show up in Atlas, also boxes for other hypervisors.&lt;/p&gt;
+&lt;p&gt;If you don't have a Vagrantfile you even can create a simple one to start a new test environment with two commands and a suitable Vagrant box from Atlas.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant init Microsoft/EdgeOnWindows10
+vagrant up --provider virtualbox
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Vagrant itself can log into the VM through WinRM and run further provision scripts to setup a good development or test environment. It is just a decision what to install in a Vagrant box with Packer and what to install with Vagrant afterwards. You decide which flexibility you want or if you prefer a faster &lt;code&gt;vagrant up&lt;/code&gt; experience with a full provisioned Vagrant box that was built with a longer running Packer build once.&lt;/p&gt;
+&lt;h2 id="dockerwindowsbox"&gt;docker-windows-box&lt;/h2&gt;
+&lt;p&gt;If you are looking for a test environment for Windows Docker containers you might have a look at my &lt;a href="https://github.com/StefanScherer/docker-windows-box"&gt;docker-windows-box&lt;/a&gt; GitHub repo that installs Git and some additional Docker tools to get started working on some &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;Windows Dockerfiles&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/docker-windows-box.png" alt="docker windows box"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;I'm happy that there is a Hyper-V builder for Packer that really works. Vagrant already has a Hyper-V provider built in so you can have the same experience running and working with VM's as others have with VMware or VirtualBox.&lt;/p&gt;
+&lt;p&gt;With a such a TP5 Vagrant box it is very easy to get in touch with Windows Docker Containers, regardless if you are working on Windows 10 with Hyper-V or from your Mac or Linux machine with another hypervisor.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/packer_multiprovider.png" alt="Packer multiprovider"&gt;&lt;/p&gt;
+&lt;p&gt;Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Setup a local Windows 2016 TP5 Docker VM</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.&lt;/p&gt;
+&lt;p&gt;Very&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/setup-local-windows-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540966</guid><category>Docker</category><category>Windows</category><category>Vagrant</category><category>Packer</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 01 May 2016 08:43:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.&lt;/p&gt;
+&lt;p&gt;Very soon there will be a Microsoft Azure template to get started very easily. Another simple way will be creating a Docker Machine in Azure, once a &lt;a href="https://github.com/docker/machine/pull/3329"&gt;pull request&lt;/a&gt; is merged.&lt;/p&gt;
+&lt;h2 id="tutorials"&gt;Tutorials&lt;/h2&gt;
+&lt;p&gt;But for now it takes some effort and time to set up such a local VM. There are good tutorials that guide you through all the steps needed.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016"&gt;Setup Docker on Windows Server 2016 in VirtualBox&lt;/a&gt; by Arun Gupta&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://lostechies.com/gabrielschenker/2016/04/30/windows-docker-containers/"&gt;Windows Docker Containers in Hyper-V&lt;/a&gt; by Gabriel Schenker&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="packervagrantautomation"&gt;Packer + Vagrant = Automation&lt;/h2&gt;
+&lt;p&gt;If you don't want to do all these whole setup manually and wait in front of your computer to enter the next step you can use Packer and Vagrant.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; takes the ISO file and bakes a base box VM to be used with &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt;. With Vagrant you can spin up one ore more such VM's and even form a Windows Docker Swarm.&lt;/p&gt;
+&lt;p&gt;The Packer template to create a Windows 2016 TP5 VM including the Docker Engine is tested with VirtualBox 5.0.20 and VMware Fusion 8.1 and should also work with VMware Workstation if you are working with a Windows PC.&lt;/p&gt;
+&lt;h3 id="runpacker"&gt;Run Packer&lt;/h3&gt;
+&lt;p&gt;To build the Vagrant base box with Packer 0.10.0 you just clone the &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;GitHub repo&lt;/a&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build the Vagrant base box for VMware&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;packer build --only=vmware-iso windows_2016_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or for VirtualBox.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;packer build --only=virtualbox-iso windows_2016_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This takes about an hour, so you can leave your computer for a while.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/05/packer-build.png" alt="packer-build"&gt;&lt;/p&gt;
+&lt;p&gt;After that a box file should be created in the current directory. Now add this box to Vagrant with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_2016_tp5_docker windows_2016_docker_vmware.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you have both hypervisors, you also can create both base boxes and add them. You can list all your base boxes with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ vagrant box list
+windows_2016_tp5_docker (virtualbox, 0)
+windows_2016_tp5_docker (vmware_desktop, 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="runvagrant"&gt;Run Vagrant&lt;/h2&gt;
+&lt;p&gt;Now you can create test and dev scenarios with this new base box. There is &lt;a href="https://github.com/StefanScherer/docker-windows-box"&gt;another GitHub&lt;/a&gt; repo for that. We just clone it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With the current Vagrant 1.8.1 it is easy to spin up a VM to have Docker running on Windows 2016 TP5.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Vagrant powers up a VM and install further Docker tools like Machine and Compose. Also Git will be installed to get in touch with &lt;a href="https://github.com/brogersyh/Dockerfiles-for-windows"&gt;some&lt;/a&gt; &lt;a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-container-samples/windowsservercore"&gt;Windows&lt;/a&gt; &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;Dockerfiles&lt;/a&gt; available on GitHub.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/05/vagrant-up-1.png" alt="vagrant-up"&gt;&lt;/p&gt;
+&lt;p&gt;You can open a PowerShell window and run for example&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker version
+docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/05/docker-version.png" alt="docker-version"&gt;&lt;/p&gt;
+&lt;p&gt;Congratulations! You can start working with a brand new Docker Engine running on Windows 2016 TP5.&lt;/p&gt;
+&lt;p&gt;Have fun!&lt;/p&gt;
+&lt;h2 id="whatpackerdoesforyou"&gt;What Packer does for you&lt;/h2&gt;
+&lt;p&gt;If you want to understand what Packer does building such a VM in an automated way here is a list of provision scripts that Packer runs.&lt;/p&gt;
+&lt;h3 id="installfeatures"&gt;Install features&lt;/h3&gt;
+&lt;p&gt;In the script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-winrm.ps1"&gt;enable-winrm.ps1&lt;/a&gt;, just before the WinRM port will be opened to let Packer login and do further provisioning some Windows features like Containers and Hyper-V (only VMware) will be enabled.&lt;/p&gt;
+&lt;h3 id="installdocker"&gt;Install Docker&lt;/h3&gt;
+&lt;p&gt;The next script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/install-docker.ps1"&gt;install-docker.ps1&lt;/a&gt; installs the Docker service and client and the &lt;code&gt;windowsservercore&lt;/code&gt; base Docker image. If Hyper-V is enabled, also the &lt;code&gt;nanoserver&lt;/code&gt; base Docker images will be installed.&lt;/p&gt;
+&lt;h3 id="patchwindowsservercoreimage"&gt;Patch windowsservercore image&lt;/h3&gt;
+&lt;p&gt;As the TP5 and relating files and images are very fresh and it is still a technical preview, there might be some obstacles here and there.&lt;/p&gt;
+&lt;p&gt;At the moment &lt;a href="https://social.msdn.microsoft.com/Forums/en-US/e2751260-4494-4b60-999e-5ea27ccbe1db/workaround-to-increase-boot-time-for-windows-server-core-containers?forum=windowscontainers"&gt;we need this script&lt;/a&gt; to speed up the &lt;code&gt;windowsservercore&lt;/code&gt; Docker image a little bit. The script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1"&gt;patch-boot-time-for-containers.ps1&lt;/a&gt; just fixes that for you.&lt;/p&gt;
+&lt;h3 id="enableinsecuredockerport2375"&gt;Enable insecure Docker port 2375&lt;/h3&gt;
+&lt;p&gt;For a local test environment we also just open the insecure Docker port 2375 with the script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-docker-insecure.ps1"&gt;enable-docker-insecure.ps1&lt;/a&gt;.&lt;br&gt;
+You can remote control your Windows Docker engine from your host machine that is running the VM. Try it out, especially if you are normally working with Linux or Mac.&lt;/p&gt;
+&lt;p&gt;Once there is a Docker Machine driver for local Windows VM's is available I would prefer that and have the secure TLS connection.&lt;/p&gt;
+&lt;h3 id="adddockergroup"&gt;Add docker group&lt;/h3&gt;
+&lt;p&gt;The new Windows Docker engine listens to a Windows named pipe. This is very similar to the Unix socket on Linux.&lt;/p&gt;
+&lt;p&gt;A normal user does not have access to it, so you have to open an administrator shell to work with the Docker engine.&lt;/p&gt;
+&lt;p&gt;The script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1"&gt;add-docker-group.ps1&lt;br&gt;
+&lt;/a&gt; adds the option &lt;code&gt;-G docker&lt;/code&gt; to the Docker engine to give all members of the Windows group &lt;code&gt;docker&lt;/code&gt; access to that named pipe.&lt;/p&gt;
+&lt;p&gt;The script also adds the user &lt;code&gt;vagrant&lt;/code&gt; to that group. So in the final Vagrant box you just open a normal PowerShell window and can use the Docker engine.&lt;/p&gt;
+&lt;h3 id="removekeyjson"&gt;Remove key.json&lt;/h3&gt;
+&lt;p&gt;The final script &lt;a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/remove-docker-key-json.ps1"&gt;remove-docker-key-json.ps1&lt;br&gt;
+&lt;/a&gt; removes the &lt;code&gt;key.json&lt;/code&gt; file from the initial installation. This file will be created on the first start of the Docker engine in each Vagrant VM and creates different ID's for each Docker engine.&lt;/p&gt;
+&lt;p&gt;This is important if you want to build a Windows Docker Swarm. Each Docker engine needs a different ID.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;As there might be updates in the Docker base images and the Docker engine itself it is now very easy to reproduce the base VM with Packer and Vagrant without all the manual steps again.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Build Docker Swarm binary for Windows the "Docker way"</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/build-docker-swarm-for-windows-the-docker-way/</link><guid isPermaLink="false">5986d4ec688a490001540963</guid><category>Docker</category><category>Swarm</category><category>Windows</category><category>Golang</category><category>Git</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Mar 2016 20:58:38 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you nowadays need nothing more than the right Dockerfiles to do this.&lt;/p&gt;
+&lt;p&gt;So let's start writing a &lt;code&gt;Dockerfile&lt;/code&gt; to build Docker Swarm inside a Docker container. For the next steps open a PowerShell window and then open an editor.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.builder
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="useabaseimage"&gt;Use a base image&lt;/h3&gt;
+&lt;p&gt;Swarm is written in Go, so we look for a useful base image. And there already is one useful base image in the &lt;strong&gt;Docker Hub&lt;/strong&gt;. So we begin the Dockerfile with the following line.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/golang
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installgit"&gt;Install Git&lt;/h3&gt;
+&lt;p&gt;Additionally to Go we also need Git installed inside the Container image. So we use the following lines that will download and install Git for Windows and then remove the installer again. As a further step we add Git to the &lt;code&gt;PATH&lt;/code&gt; variable.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV GIT_VERSION 2.7.2
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    wget https://github.com/git-for-windows/git/releases/download/v%GIT_VERSION%.windows.1/Git-%GIT_VERSION%-64-bit.exe -outfile gitinstaller.exe ; \
+    Start-Process .\gitinstaller.exe -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /DIR=c:\git' -Wait ; \
+    rm .\gitinstaller.exe
+
+RUN setx PATH %PATH%;C:\git\cmd;C:\git\bin;C:\git\usr\bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installandbuildgodepandswarm"&gt;Install and build Godep and Swarm&lt;/h3&gt;
+&lt;p&gt;The Swarm project uses &lt;code&gt;Godep&lt;/code&gt; to manage the dependencies. We also need this tool as well as the Swarm sources. So let's install both and run the &lt;code&gt;godep&lt;/code&gt; tool to build the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV SWARM_VERSION v1.1.3
+ENV GOPATH C:/go
+
+WORKDIR /go
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    go get github.com/tools/godep ; \
+    mkdir src\github.com\docker ; \
+    cd src\github.com\docker ; \
+    git clone https://github.com/docker/swarm ; \
+    cd swarm ; \
+    git checkout %SWARM_VERSION% ; \
+    Start-Process -FilePath godep.exe -ArgumentList go, install, . -Wait
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now save the &lt;code&gt;Dockerfile.builder&lt;/code&gt; file and close the editor.&lt;/p&gt;
+&lt;p&gt;Back in the PowerShell build the Docker image with the name &lt;code&gt;swarm-builder&lt;/code&gt; and the given Dockerfile with the following command.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;docker build -t swarm-builder -f Dockerfile.builder .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This now creates a Docker image with multiple layers, for each &lt;code&gt;ENV&lt;/code&gt; and &lt;code&gt;RUN&lt;/code&gt; command in the &lt;code&gt;Dockerfile&lt;/code&gt;. You can see the actions on your screen and finally the command finishes and you can list your images with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You should see a image with the name &lt;code&gt;swarm-builder&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+swarm-builder       latest              04e557dd075a        31 minutes ago      1.219 GB
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The size of the Docker image is not good for deployment as we have all the development tools and source codes inside it.&lt;/p&gt;
+&lt;h3 id="testandextracttheswarmexe"&gt;Test and extract the swarm.exe&lt;/h3&gt;
+&lt;p&gt;We only need the &lt;code&gt;swarm.exe&lt;/code&gt; from this image as it is a static binary. So we just run the Docker image and have a very little test of the binary just created by showing its version.&lt;/p&gt;
+&lt;p&gt;After that we copy the &lt;code&gt;swarm.exe&lt;/code&gt; from the container back to the host.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --name swarm-builder swarm-builder swarm --version
+docker cp swarm-builder:/go/bin/swarm.exe ./swarm.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="buildasmallswarmimage"&gt;Build a small Swarm image&lt;/h3&gt;
+&lt;p&gt;The final Docker image for deployment can be produced with a much simpler &lt;code&gt;Dockerfile&lt;/code&gt;. As the time of writing the Technical Preview 4 needs a small workaround to access the network inside a container. We have to add a small helper script for now.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;nodepad run.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The small PowerShell script just sleeps a little and then calls &lt;code&gt;swarm.exe&lt;/code&gt; with the arguments given.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Sleep 2
+\swarm.exe $args
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now it is time to write the &lt;code&gt;Dockerfile&lt;/code&gt;. So open an editor with the following command. Notice the dot '.' as this helps Notepad create a &lt;code&gt;Dockerfile&lt;/code&gt; without an extension.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; now uses the &lt;code&gt;windowsservercore&lt;/code&gt; base image and copies the helper script and the swarm binary into the image and sets the entrypoint.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM windowsservercore
+
+COPY ./swarm.exe /swarm.exe
+COPY ./run.ps1 /run.ps1
+
+ENV SWARM_HOST :2375
+
+ENTRYPOINT [&amp;quot;powershell.exe&amp;quot;, &amp;quot;-File&amp;quot;, &amp;quot;/run.ps1&amp;quot;]
+CMD [&amp;quot;--help&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now build the final Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t swarm .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Just check the size of the Docker images again with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-images.png" alt="docker images"&gt;&lt;/p&gt;
+&lt;p&gt;If you build a new version of the Swarm image later it is useful to tag each Docker image with its version. For this tutorial we have built Swarm 1.1.3, so we tag it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker tag swarm:latest swarm:1.1.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now can run a Swarm container eg. with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it swarm:1.1.3 --version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and you will see the version of the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="automateallthethings"&gt;Automate all the things&lt;/h3&gt;
+&lt;p&gt;Both the Dockerfiles and a build script can be found in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/swarm"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo. Even to download the sources you do not need more than a PowerShell window. Just download it as a ZIP and extract it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -outfile src.zip https://github.com/StefanScherer/dockerfiles-windows/archive/master.zip
+Expand-Archive .\dockerfiles-windows.zip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd src\dockerfiles-windows-master\swarm
+.\build.bat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="tldr"&gt;TL/DR&lt;/h3&gt;
+&lt;p&gt;Even on Windows you now can put development environments into Docker images and build small images for deployment with a two step approach. No special setup is needed on your host machine, just Docker should be reachable.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Everything is reproducable&lt;/strong&gt; on every team members machines. And a CI build pipeline can take advantage of this dockerized setup as well.&lt;/p&gt;
+&lt;p&gt;I hope you get a feeling what you can do with your own software project and &lt;strong&gt;start dockerizing&lt;/strong&gt; as well.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Run a local Windows Docker Swarm</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/build-your-local-windows-docker-swarm/</link><guid isPermaLink="false">5986d4ec688a490001540962</guid><category>Docker</category><category>Windows</category><category>Swarm</category><category>Vagrant</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 01 Mar 2016 17:31:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.&lt;/p&gt;
+&lt;p&gt;At the time of writing there is no docker-machine driver to create the Windows Docker VM's. And my laptop at work is still running with Windows 7, so I have chosen VirtualBox as a local hypervisor instead of Hyper-V.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/windows_swarm_demo.png" alt="Network diagram"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see in the diagram there also is a private Docker registry. I just want to show you that saving and restoring Windows Docker images is just as easy as on Linux.&lt;/p&gt;
+&lt;p&gt;A laptop with 16GB memory is capable of running this setup. With less memory, just run only two of the Windows VM's and reduce the memory setting.&lt;/p&gt;
+&lt;h2 id="setupyourhost"&gt;Setup your host&lt;/h2&gt;
+&lt;p&gt;If you like to follow this tutorial you need some tools on your host machine. Pleas keep in mind that VirtualBox does not work with Hyper-V on the same machine. My preferred way to setup a Windows machine is by install the software with &lt;a href="https://chocolatey.org"&gt;Chocolatey&lt;/a&gt;. So these are the steps needed for the host tools:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install -y virtualbox
+choco install -y vagrant
+choco install -y packer
+choco install -y docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="buildthevagrantbox"&gt;Build the Vagrant box&lt;/h2&gt;
+&lt;p&gt;Before spinning up the swarm you have to build the Windows Server 2016 VM with Docker installed. As I'm a big fan of automation I do not click through the installers, but use &lt;a href="https://packer.io"&gt;Packer&lt;/a&gt; and &lt;a href="https://vagrantup.com"&gt;Vagrant&lt;/a&gt; to build and run local VM's.&lt;/p&gt;
+&lt;p&gt;Before running Packer you should register to the &lt;a href="https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-technical-preview"&gt;technical preview evaluation&lt;/a&gt; and accept the license for the Windows Server ISO file.&lt;/p&gt;
+&lt;p&gt;After that just clone my Packer templates and build the VirtualBox VM with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=virtualbox-iso windows_2016_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now add the Vagrant box to the local list of baseboxes with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_2016_docker windows_2016_docker_virtualbox.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="buildthedockerswarm"&gt;Build the Docker swarm&lt;/h2&gt;
+&lt;p&gt;The next step is also very easy. We clone &lt;a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-demo"&gt;the repo&lt;/a&gt; with the Vagrantfile for the Docker swarm and spin up all boxes.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd swarm-demo
+vagrant up --provider virtualbox
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One after another the VM's are booted and provisioned with the shell scripts provided in the &lt;code&gt;scripts&lt;/code&gt; folder.&lt;/p&gt;
+&lt;h4 id="registry"&gt;registry&lt;/h4&gt;
+&lt;p&gt;The Linux box &lt;code&gt;registry&lt;/code&gt; is used for the Docker Swarm manager and a Docker registry.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The swarm manager is using a token in &lt;code&gt;config/swarm-token&lt;/code&gt;. Edit this as you like.&lt;/li&gt;
+&lt;li&gt;The registry is using the &lt;code&gt;registry-v2&lt;/code&gt; folder on your host to store the Docker images.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="swwin01"&gt;sw-win-01 ...&lt;/h4&gt;
+&lt;p&gt;The Windows Server 2016 TP4 machines that spin up a Swarm container to join the Docker Swarm. The Docker Engines have a connection to the insecure registry running at &lt;code&gt;registry:5000&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="upandrunning"&gt;Up and running&lt;/h2&gt;
+&lt;p&gt;After a while all VM's are up and running and you can see the status with &lt;code&gt;vagrant status&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/vagrant-status.png" alt="vagrant status"&gt;&lt;/p&gt;
+&lt;p&gt;The Docker Swarm is built and all Windows VM's have joined the swarm. You can check this by connecting with the Docker Client to the Swarm Manager.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker -H tcp://192.168.38.100:3375 info
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-info.png" alt="docker info"&gt;&lt;/p&gt;
+&lt;h2 id="runcontainersintheswarm"&gt;Run containers in the swarm&lt;/h2&gt;
+&lt;p&gt;For a very simple demo we now run three containers that are spread over all three Windows Docker Swarm agents.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker -H tcp://192.168.38.100:3375 run -d windowsservercore powershell -Command sleep 60
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-run.png" alt="docker run"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see the containers are running on all different Docker nodes &lt;code&gt;sw-win-01&lt;/code&gt; ... &lt;code&gt;sw-win-03&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;With the local registry you can push and pull Windows images from it and safe your work. The registry files are stored at your host so it is safe to destroy all VM's if you do not use them.&lt;/p&gt;
+&lt;p&gt;I hope you have enjoyed this tutorial. In a future blog post I probably show how to build a Windows Docker Swarm in Azure or in Hyper-V.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>How to run a Windows Docker Engine in Azure</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.&lt;/p&gt;
+&lt;p&gt;The&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/how-to-run-windows-docker-engine-in-azure/</link><guid isPermaLink="false">5986d4ec688a490001540960</guid><category>Docker</category><category>Windows</category><category>Azure</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 01 Feb 2016 12:47:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.&lt;/p&gt;
+&lt;p&gt;The Docker Engine has an API that is compatible between all platforms. So you can even work from your Linux, Mac or Windows notebook and build and run Windows Containers in that remote VM.&lt;/p&gt;
+&lt;p&gt;So let's get started. The Windows Docker Engine is a work in progress, but it's really worth to have a closer look at it right now. It is available with the Windows Server 2016 Technical Preview 4, or TP4 for short.&lt;/p&gt;
+&lt;p&gt;To avoid building own VM's locally or installing it on bare metal we just use the prebuilt TP4 VM in Azure.&lt;/p&gt;
+&lt;h3 id="justwithaclick"&gt;Just with a click&lt;/h3&gt;
+&lt;p&gt;A really nice feature is the &lt;strong&gt;Deploy to Azure&lt;/strong&gt; button. I have found a good template at the &lt;a href="https://github.com/Azure/azure-quickstart-templates"&gt;azure-quickstart-templates&lt;/a&gt; repo and enhanced it a little bit to have more Docker tools pre-installed. For details have a look at my &lt;a href="https://github.com/StefanScherer/docker-windows-azure"&gt;docker-windows-azure&lt;/a&gt; repo.&lt;/p&gt;
+&lt;p&gt;If you have an account for Microsoft Azure you can click on the following button to create the VM with this template. And if not, there also is a short trial period where you can test-drive Azure for some weeks.&lt;/p&gt;
+&lt;a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank"&gt;
+    &lt;img src="http://azuredeploy.net/deploybutton.png"&gt;
+&lt;/a&gt;
+&lt;h3 id="azurecli"&gt;Azure CLI&lt;/h3&gt;
+&lt;p&gt;If you have the &lt;a href="https://azure.microsoft.com/documentation/articles/xplat-cli-install/"&gt;Azure CLI&lt;/a&gt; installed you also can spin up the Windows Docker Engine VM from the command line.&lt;/p&gt;
+&lt;p&gt;The command takes the JSON template file from the &lt;a href="https://github.com/StefanScherer/docker-windows-azure"&gt;docker-windows-azure&lt;/a&gt; repo and adds the parameters that are needed to customize the VM and in which region it should be started.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;azure group deployment create Group docker-tp4 \
+  --template-uri https://raw.githubusercontent.com/StefanScherer/docker-windows-azure/master/azuredeploy.json \
+  -p '{
+    &amp;quot;adminUsername&amp;quot;: {&amp;quot;value&amp;quot;: &amp;quot;docker&amp;quot;},
+    &amp;quot;adminPassword&amp;quot;: {&amp;quot;value&amp;quot;: &amp;quot;Super$ecretPass123&amp;quot;},
+    &amp;quot;dnsNameForPublicIP&amp;quot;: {&amp;quot;value&amp;quot;: &amp;quot;docker-tp4&amp;quot;},
+    &amp;quot;VMName&amp;quot;: {&amp;quot;value&amp;quot;: &amp;quot;docker-tp4&amp;quot;},
+    &amp;quot;location&amp;quot;: {&amp;quot;value&amp;quot;: &amp;quot;West US&amp;quot;}
+    }'
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="connecttothewindowsdockerengine"&gt;Connect to the Windows Docker Engine&lt;/h2&gt;
+&lt;p&gt;Now that the VM is up and running in Azure we want to use it. So we have to connect to the Windows Docker Engine.&lt;/p&gt;
+&lt;p&gt;There are several ways to do that.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Use &lt;strong&gt;RDP&lt;/strong&gt; to connect to the VM and use the Command Shell there to run docker commands locally in the VM.&lt;/li&gt;
+&lt;li&gt;Use &lt;strong&gt;WinRM&lt;/strong&gt; to login to the VM. This connection is protected with a self-signed certifcate that is created on startup. But I had some trouble with the Go/Ruby WinRM clients for OSX, so I also added OpenSSH.&lt;/li&gt;
+&lt;li&gt;Use &lt;strong&gt;SSH&lt;/strong&gt; to login to the VM. Just grab the FQDN or the IP of the VM and ssh into it. Then you also can run docker commands locally in the VM. Add your public SSH key for password-less logins.&lt;/li&gt;
+&lt;li&gt;Use the &lt;strong&gt;Docker API&lt;/strong&gt; running at HTTP port 2375 to connect from your notebook. Then you can remote control the Windows Docker Engine from your Windows, Linux or Mac client.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="remotedockerapi"&gt;Remote Docker API&lt;/h2&gt;
+&lt;p&gt;I'll show you the last method of the list to connect your local Docker client to the remote Windows Docker Engine.&lt;/p&gt;
+&lt;p&gt;Please notice that using the &lt;strong&gt;unsecure HTTP port 2375&lt;/strong&gt; is not recommended. Securing the Docker port with a TLS certificate is part of a future blog post. There also is some good advice in &lt;a href="http://blogsprajeesh.blogspot.de/2015/09/docker-for-windows-on-azure-vm-securing.html"&gt;Docker for windows on Azure VM : Securing the host and TLS&lt;/a&gt; from Prajeesh Prathap.&lt;/p&gt;
+&lt;p&gt;I hope that &lt;code&gt;docker-machine&lt;/code&gt; can do this step for you in the near future. It can generate such certs and upload them as well can help you setting the environment variables for the Docker Client.&lt;/p&gt;
+&lt;p&gt;But for now we just set the environment variables manually.&lt;/p&gt;
+&lt;p&gt;You need the full qualified domain name (FQDN) of your VM in Azure or at least the public IP address. In combination with the &lt;code&gt;azure&lt;/code&gt; cli you can retrieve the IP address and set all the environments in a Linux/Mac/Cygwin shell with the following commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-bash"&gt;unset DOCKER_MACHINE_NAME
+unset DOCKER_TLS_VERIFY
+unset DOCKER_CERT_PATH
+export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep &amp;quot;Public IP address&amp;quot; | cut -d : -f 3):2375
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The three &lt;code&gt;unset&lt;/code&gt; commands are just for the case that you already use &lt;code&gt;docker-machine&lt;/code&gt; with TLS for some other VM's or machines in the Cloud. This just turns off the TLS checks in the Docker Client for now to connect to the Windows Docker Engine.&lt;br&gt;
+For other shells like PowerShell or CMD shell it is the same. Just delete all DOCKER_ environment variables and set the &lt;code&gt;DOCKER_HOST&lt;/code&gt; environment variable to &lt;code&gt;tcp://ip-of-your-tp4-vm:2375&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Now we can check that the Docker Client really talks to our new Windows Docker Engine. So check which Docker images are available with this command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And yes, there is the &lt;code&gt;windowsservercore&lt;/code&gt; Docker image which is the base image to work with Docker on Windows.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images"&gt;&lt;/p&gt;
+&lt;p&gt;Now it is time to run the first Windows Docker container. We just run an interactive container to get a cross-platform feeling if your are working on a Linux or OSX machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it windowsservercore cmd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After the Docker container has started your OSX terminal turns into a Window command shell and you are in a cmd prompt running in a Windows Container in Azure:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd"&gt;&lt;/p&gt;
+&lt;p&gt;Let's look around inside that container. Go to &lt;code&gt;C:\&lt;/code&gt; and check the files there. List all processes. You won't find much processes inside it as well as there is no Docker Engine inside. You really are working inside a Windows Container now.&lt;/p&gt;
+&lt;p&gt;Just type &lt;code&gt;exit&lt;/code&gt; to stop the Windows Container again and you are back in your local terminal.&lt;/p&gt;
+&lt;h2 id="nextsteps"&gt;Next steps&lt;/h2&gt;
+&lt;p&gt;All the normal Docker commands like &lt;code&gt;docker build&lt;/code&gt; and &lt;code&gt;docker run&lt;/code&gt; can be used from your local Notebook.&lt;/p&gt;
+&lt;p&gt;You also can use &lt;code&gt;docker search&lt;/code&gt; and &lt;code&gt;docker pull&lt;/code&gt; to pull some prebuilt Docker Images from Microsoft.&lt;/p&gt;
+&lt;p&gt;Now it is time to build the first Windows Docker images and run them later on. As an inspiration you can have a look at some Dockerfiles for Windows at one of these places&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/brogersyh/Dockerfiles-for-windows"&gt;brogersyh/Dockerfiles-for-windows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;StefanScherer/dockerfiles-windows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/index.html"&gt;Create a Node.js Container image for Windows&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Get started with Docker on Windows using Chocolatey</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.&lt;/p&gt;
+&lt;p&gt;If you don't know what a shell window&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/get-started-with-docker-on-windows-using-chocolatey/</link><guid isPermaLink="false">5986d4ec688a49000154095e</guid><category>Docker</category><category>Windows</category><category>Chocolatey</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 16 Jan 2016 22:31:57 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.&lt;/p&gt;
+&lt;p&gt;If you don't know what a shell window is then you should have a look at the &lt;a href="https://www.docker.com/docker-toolbox"&gt;&lt;strong&gt;Docker Toolbox&lt;/strong&gt;&lt;/a&gt; from Docker. But if you know and use a PowerShell or CMD shell window from time to time I'll guide you through the simple steps.&lt;/p&gt;
+&lt;h2 id="letsgetchocolatey"&gt;Let's get Chocolatey&lt;/h2&gt;
+&lt;p&gt;Chocolatey is an open source project to provide a package manager for Windows as you might know it from Linux distro. You can install many of your software on your Windows machine with it.&lt;/p&gt;
+&lt;p&gt;Just open &lt;a href="https://chocolatey.org"&gt;chocolatey.org&lt;/a&gt; and search for eg. Chrome, Adobe Reader, or other tools you have installed manually in the past. You will find out fast that nearly everything could be installed with just the command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install anything
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That makes Chocolatey really cool. It's like &lt;code&gt;apt-get&lt;/code&gt;, but for Windows. And the software is downloaded from the original places, the choco packages only contains the instructions where to download it and how to install it silent.&lt;/p&gt;
+&lt;p&gt;If you haven't installed Chocolatey already just open the homepage &lt;a href="https://chocolatey.org"&gt;https://chocolatey.org&lt;/a&gt; and copy the simple command to your shell.&lt;/p&gt;
+&lt;h2 id="dockerchocolateypackages"&gt;Docker Chocolatey packages&lt;/h2&gt;
+&lt;p&gt;To see which Docker tools are available through Chocolatey packages, just open the &lt;a href="https://chocolatey.org/packages?q=docker"&gt;Chocolatey homepage and search for docker&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/01/Bildschirmfoto-2016-01-16-um-23-12-12.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;The Chocolatey packages for the Docker tools are maintained by the community. But they are kept up-to-date, so you can update each tool soon after the official release.&lt;/p&gt;
+&lt;p&gt;At the moment you can install&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Docker Client&lt;/li&gt;
+&lt;li&gt;Docker Machine&lt;/li&gt;
+&lt;li&gt;Docker Compose&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;as well as a Docker Machine driver plugin for VMware Workstation.&lt;/p&gt;
+&lt;h2 id="dockerclient"&gt;Docker Client&lt;/h2&gt;
+&lt;p&gt;To begin with Docker you need the Docker Client. Install it in a PowerShell or CMD shell window with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install -y docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The option &lt;code&gt;-y&lt;/code&gt; just auto-answers the question to run the install script.&lt;/p&gt;
+&lt;p&gt;Now we have the &lt;code&gt;docker&lt;/code&gt; command installed. Try it out with &lt;code&gt;docker --version&lt;/code&gt; for the installed version or &lt;code&gt;docker --help&lt;/code&gt; to see the usage. This client will be used to build and run Docker Containers.&lt;/p&gt;
+&lt;h2 id="dockermachine"&gt;Docker Machine&lt;/h2&gt;
+&lt;p&gt;The next step is to create a VM to run the Linux containers in it. &lt;a href="https://docs.docker.com/machine/"&gt;Docker Machine&lt;/a&gt; is the right tool for that task. So we first install it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install -y docker-machine
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="localhypervisor"&gt;Local Hypervisor&lt;/h2&gt;
+&lt;p&gt;Windows users can select between these three local hypervisors to run a Linux Docker Engine in it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hyper-V&lt;/li&gt;
+&lt;li&gt;VirtualBox&lt;/li&gt;
+&lt;li&gt;VMware Workstation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All three hypervisors can be controlled by Docker Machine.&lt;/p&gt;
+&lt;p&gt;For Hyper-V follow the official guide how to install it on your machine.&lt;/p&gt;
+&lt;p&gt;VirtualBox can also be installed with Chocolatey, guess how&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install virtualbox
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For VMware Workstation you also need the driver plugin and VMware Workstation if not already installed:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install docker-machine-vmwareworkstation
+choco install vmwareworkstation
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For VMware Workstation you enter your license before using it.&lt;/p&gt;
+&lt;h2 id="cloud"&gt;Cloud&lt;/h2&gt;
+&lt;p&gt;You also can create a VM in the cloud, Docker Machine has a lot of cloud drivers built in.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows Azure&lt;/li&gt;
+&lt;li&gt;Digital Ocean&lt;/li&gt;
+&lt;li&gt;Google GCE&lt;/li&gt;
+&lt;li&gt;OpenStack&lt;/li&gt;
+&lt;li&gt;Rackspace&lt;/li&gt;
+&lt;li&gt;...&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;See the official guide &lt;a href="https://docs.docker.com/machine/get-started-cloud/"&gt;Using Docker Machine with a cloud provider&lt;/a&gt; for more details.&lt;/p&gt;
+&lt;h2 id="createadockermachine"&gt;Create a Docker Machine&lt;/h2&gt;
+&lt;p&gt;After you have set up your local hypervisor or chosen the cloud provider you want to use, create a Docker Machine VM with the name &lt;code&gt;dev&lt;/code&gt; with one of these commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-machine create -d hyperv dev
+docker-machine create -d virtualbox dev
+docker-machine create -d vmwareworkstation dev
+docker-machine create -d azure ... dev
+docker-machine create -d digitalocean ... dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are driver specific options to tweak the VM settings or the token to connect to your account in the cloud.&lt;/p&gt;
+&lt;p&gt;After a while you will have your local or remote Docker Machine up and running.&lt;/p&gt;
+&lt;p&gt;You can check the status of the machine(s) with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-machine ls
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="connecttoyourdockermachine"&gt;Connect to your Docker Machine&lt;/h2&gt;
+&lt;p&gt;For the Docker Client you need some environment variables so that the Docker Client knows how to connect to your local or remote Docker Engine.&lt;/p&gt;
+&lt;p&gt;In PowerShell it is really easy to set these environments.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-machine env --shell powershell dev | iex
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the near future can skip the &lt;code&gt;--shell&lt;/code&gt; parameter as well to simplify this step.&lt;/p&gt;
+&lt;p&gt;After that you can control the Docker engine and start your first container, eg. this interactive shell&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -it ubuntu bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Type &lt;code&gt;exit&lt;/code&gt; to terminate the container.&lt;br&gt;
+Congratulations! You have started your first container.&lt;/p&gt;
+&lt;h2 id="dockercompose"&gt;Docker Compose&lt;/h2&gt;
+&lt;p&gt;If you want to start more than one container that should work together you can use Docker Compose. It simplifies this task to setup a multi container application.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install -y docker-compose
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Please refer to the official &lt;a href="https://docs.docker.com/compose/"&gt;Overview of Docker Compose&lt;/a&gt; guide to find out more.&lt;/p&gt;
+&lt;p&gt;Now you are ready to work from your Windows machine and control the world of Linux containers. In the near future you also can do this with Windows containers as well.&lt;/p&gt;
+&lt;h2 id="tldr"&gt;TL/DR&lt;/h2&gt;
+&lt;p&gt;With just a few commands you get all the Docker tools installed on your Windows machine. And it fits into a single tweet:&lt;/p&gt;
+&lt;blockquote class="twitter-tweet" lang="de"&gt;&lt;p lang="en" dir="ltr"&gt;Get the latest &lt;a href="https://twitter.com/docker"&gt;@Docker&lt;/a&gt; tools for &lt;a href="https://twitter.com/hashtag/Windows?src=hash"&gt;#Windows&lt;/a&gt;:&amp;#10; &amp;#10;choco install docker&amp;#10;choco install docker-machine&amp;#10;choco install docker-compose&amp;#10;&amp;#10;Done!&lt;/p&gt;&amp;mdash; Stefan Scherer (@stefscherer) &lt;a href="https://twitter.com/stefscherer/status/662634469673799680"&gt;6. November 2015&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+&lt;p&gt;If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Kitematic meets Windows Docker</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2015/09/kitematic-win2016tp3-png-shadow.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;A closer look at the left column shows a running &lt;strong&gt;mongo&lt;/strong&gt; container. Yes, I know,&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/kitematic-meets-windows-docker/</link><guid isPermaLink="false">5986d4ec688a49000154095c</guid><category>Docker</category><category>Windows</category><category>Kitematic</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 08 Sep 2015 22:03:23 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I just want to share some screenshots with you. Today I have played with Kitematic on a Windows Server 2016 TP3 and made it talk to the Windows Docker Engine. Yes, no VirtualBox in between.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2015/09/kitematic-win2016tp3-png-shadow.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;A closer look at the left column shows a running &lt;strong&gt;mongo&lt;/strong&gt; container. Yes, I know, you cannot pull docker images with the Windows Docker Engine at the moment. But if you have created some local Docker images with the official names it looks pretty impressive right now.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2015/09/kitematic-mongo-png-shadow.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;And to show that this is no fake you can see some windows pathes in the container logs view:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2015/09/kitematic-list-png-shadow.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;That's all for now.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

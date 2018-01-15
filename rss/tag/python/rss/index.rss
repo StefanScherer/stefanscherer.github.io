@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Python - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Python - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/python/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Is there a Windows Docker image for ...?</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">5986d4ec688a490001540970</guid><category>Docker</category><category>Windows</category><category>Golang</category><category>Python</category><category>Node.js</category><category>Java</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.&lt;/p&gt;
+&lt;p&gt;Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.&lt;/p&gt;
+&lt;h2 id="prefernanoserver"&gt;Prefer NanoServer&lt;/h2&gt;
+&lt;p&gt;So starting to work with NanoServer is really easy with Docker as you only choose the right image for the &lt;code&gt;FROM&lt;/code&gt; instruction in your &lt;code&gt;Dockerfile&lt;/code&gt;. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.&lt;/p&gt;
+&lt;p&gt;So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.&lt;/p&gt;
+&lt;h2 id="go"&gt;Go&lt;/h2&gt;
+&lt;p&gt;The Go programming language is available on the Docker Hub as image &lt;a href="https://hub.docker.com/_/golang/"&gt;&lt;code&gt;golang&lt;/code&gt;&lt;/a&gt;. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Have a look at the &lt;a href="https://hub.docker.com/_/golang/"&gt;tags page&lt;/a&gt; if you want another version or if you want to pin a specific version of Golang.&lt;/p&gt;
+&lt;h2 id="java"&gt;Java&lt;/h2&gt;
+&lt;p&gt;When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official &lt;a href="https://hub.docker.com/_/openjdk/"&gt;&lt;code&gt;openjdk&lt;/code&gt;&lt;/a&gt; Docker images. Both Windows Server Core and NanoServer are supported.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the &lt;a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8"&gt;oracle/docker-images&lt;/a&gt; repository.&lt;/p&gt;
+&lt;h2 id="nodejs"&gt;Node.JS&lt;/h2&gt;
+&lt;p&gt;For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official &lt;a href="https://hub.docker.com/_/node/"&gt;&lt;code&gt;node&lt;/code&gt;&lt;/a&gt; images.&lt;/p&gt;
+&lt;p&gt;In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6-nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You also can find more tags and versions at the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/"&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="python"&gt;Python&lt;/h2&gt;
+&lt;p&gt;The script language Python is available as Windows Server Core Docker image at the official &lt;a href="https://hub.docker.com/_/python/"&gt;&lt;code&gt;python&lt;/code&gt;&lt;/a&gt; images. Both major versions of Python are available.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM python:3-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM python:2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I also have a Python Docker image &lt;a href="https://hub.docker.com/r/stefanscherer/python-windows/"&gt;for NanoServer&lt;/a&gt; with Python 3.6 to create smaller Docker images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/python-windows:nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="netcore"&gt;.NET Core&lt;/h2&gt;
+&lt;p&gt;Microsoft provides Linux and Windows Docker images for .NET Core at &lt;a href="https://hub.docker.com/r/microsoft/dotnet/"&gt;&lt;code&gt;microsoft/dotnet&lt;/code&gt;&lt;/a&gt;. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/dotnet:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="aspnet"&gt;&lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;For &lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt; there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at &lt;a href="https://hub.docker.com/r/microsoft/aspnet/"&gt;&lt;code&gt;microsoft/aspnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:4.6.2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:3.5-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.&lt;/p&gt;
+&lt;p&gt;Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Winspector - a tool to inspect your and other's Windows images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
+&lt;p&gt;Is there a way&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/winspector/</link><guid isPermaLink="false">5986d4ec688a49000154096c</guid><category>Docker</category><category>Windows</category><category>Container</category><category>Docker Hub</category><category>Python</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/"&gt;previous blog post&lt;/a&gt; I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the &lt;code&gt;FROM&lt;/code&gt; line of your &lt;code&gt;Dockerfile&lt;/code&gt; also uses the correct version of the Windows base image?&lt;/p&gt;
+&lt;p&gt;Is there a way to look into container images without downloading them?&lt;/p&gt;
+&lt;p&gt;There are several services like &lt;a href="https://imagelayers.io"&gt;imagelayers.io&lt;/a&gt;, &lt;a href="https://microbadger.com"&gt;microbadger&lt;/a&gt;, &lt;a href="http://shields.io"&gt;shields.io&lt;/a&gt; and others which provide badges and online views for existing Docker images at Docker Hub. Unfortunately not all support Windows images at the moment.&lt;/p&gt;
+&lt;h2 id="enterwinspector"&gt;Enter winspector&lt;/h2&gt;
+&lt;p&gt;I found an &lt;a href="https://github.com/giantswarm/inspect-docker-image"&gt;inspector tool&lt;/a&gt; written in Python that might be useful for that task. I've enhanced it and created a tool called winspector which is available as Docker image &lt;a href="https://hub.docker.com/r/stefanscherer/winspector/"&gt;stefanscherer/winspector&lt;/a&gt; for Windows and Linux. With this tool you can inspect any Windows Docker images on the Docker Hub.&lt;/p&gt;
+&lt;p&gt;Winspector will show you&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The creation date of the image and the Docker version and Windows version used at build time.&lt;/li&gt;
+&lt;li&gt;The number of layers down to the Windows base image&lt;/li&gt;
+&lt;li&gt;Which &lt;strong&gt;Windows base image&lt;/strong&gt; the given image depends on. So you know whether a random Windows image uses the up to date Windows base image or not.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;size of each layer&lt;/strong&gt;. This is useful to when you try to optimize your image size.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;&amp;quot;application size&amp;quot; without the Windows base layers&lt;/strong&gt;. So you get an idea how small your Windows application image really is and what other users have to download provided that they already have the base image.&lt;/li&gt;
+&lt;li&gt;The history of the image. It tries to &lt;strong&gt;reconstruct the &lt;code&gt;Dockerfile&lt;/code&gt; commands&lt;/strong&gt; that have been used to build the image.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="runitfromwindows"&gt;Run it from Windows&lt;/h3&gt;
+&lt;p&gt;If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm stefanscherer/winspector microsoft/iis
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/winspector-wndows.png" alt="run from windows"&gt;&lt;/p&gt;
+&lt;p&gt;At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.&lt;/p&gt;
+&lt;h3 id="runitfrommaclinux"&gt;Run it from Mac / Linux&lt;/h3&gt;
+&lt;p&gt;If you have a Linux Docker engine running, just use the exact same command as on Windows. The Docker image &lt;code&gt;stefanscherer/winspector&lt;/code&gt; is a &lt;strong&gt;multiarch Docker image&lt;/strong&gt; and Docker will pull the correct OS specific image for you automatically.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm stefanscherer/winspector microsoft/iis
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/01/winspector-mac.png" alt="run from mac"&gt;&lt;/p&gt;
+&lt;h2 id="inspectingsomeimages"&gt;Inspecting some images&lt;/h2&gt;
+&lt;p&gt;Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector microsoft/windowsservercore
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Even for this image it can show you some details:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: microsoft/windowsservercore
+Tag: latest
+Number of layers: 2
+Sizes of layers:
+  sha256:3889bb8d808bbae6fa5a33e07... - 4069985900 byte
+  sha256:3430754e4d171ead00cf67667... - 913145061 byte
+Total size (including Windows base layers): 4983130961 byte
+Application size (w/o Windows base layers): 0 byte
+Windows base image used:
+  microsoft/windowsservercore:10.0.14393.447 full
+  microsoft/windowsservercore:10.0.14393.693 update
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.&lt;/p&gt;
+&lt;h2 id="howbigisthewinspectorimage"&gt;How big is the winspector image?&lt;/h2&gt;
+&lt;p&gt;Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector stefanscherer/winspector:windows-1.4.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The (shortened) output looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: stefanscherer/winspector
+Tag: windows-1.4.3
+Number of layers: 14
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:35:22 with Docker 1.13.0-rc7 on windows 10.0.14393.693
+Sizes of layers:
+  ...
+
+Total size (including Windows base layers): 360497565 byte
+Application size (w/o Windows base layers): 27188879 byte
+Windows base image used:
+  microsoft/nanoserver:10.0.14393.447 full
+  microsoft/nanoserver:10.0.14393.693 update
+History:
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So the winspector Windows image is about 27 MByte and it uses the latest nanoserver base image.&lt;/p&gt;
+&lt;h2 id="inspectinglinuximages"&gt;Inspecting Linux images&lt;/h2&gt;
+&lt;p&gt;And winspector is not restricted to Windows images, you can inspect Linux images as well.&lt;/p&gt;
+&lt;p&gt;If you run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm stefanscherer/winspector stefanscherer/winspector:linux-1.4.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then winspector will show you&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Image name: stefanscherer/winspector
+Tag: linux-1.4.3
+Number of layers: 8
+Schema version: 1
+Architecture: amd64
+Created: 2017-01-15 21:34:21 with Docker 1.12.3 on linux 
+Sizes of layers:
+  ...
+Total size (including Windows base layers): 32708231 byte
+Application size (w/o Windows base layers): 32708231 byte
+Windows base image used:
+  It does not seem to be a Windows image
+History:
+  ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the Linux image is about 32 MByte.&lt;/p&gt;
+&lt;p&gt;So once you have downloaded the latest Windows base images like windowsservercore or nanoserver the download experience is the same for both platforms.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;With winspector you can check any Windows container image on the Docker Hub which version of Windows it uses.&lt;/p&gt;
+&lt;p&gt;You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.&lt;/p&gt;
+&lt;p&gt;The tool is open source on GitHub at &lt;a href="https://github.com/StefanScherer/winspector"&gt;github.com/StefanScherer/winspector&lt;/a&gt;. It is community driven, so feel free to send me feedback in form of issues or pull requests.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

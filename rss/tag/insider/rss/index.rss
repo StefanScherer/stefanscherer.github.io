@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Insider - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Insider - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/insider/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Exploring new NanoServer Insider images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">5986d4ec688a490001540975</guid><category>Docker</category><category>Windows</category><category>Nano Server</category><category>Node.js</category><category>Vagrant</category><category>Packer</category><category>Docker Hub</category><category>Insider</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+&lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.&lt;/p&gt;
+&lt;h2 id="windowsserverinsider"&gt;Windows Server Insider&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Register at Windows Insider program &lt;a href="https://insider.windows.com"&gt;https://insider.windows.com&lt;/a&gt; and join the Windows Server Insider program.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download the Windows Server Insider preview ISO from &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver"&gt;https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Now you can create a VM and install Docker. You can either build the VM manually and follow the docs &lt;a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/using-insider-container-images"&gt;&amp;quot;Using Insider Container Images&amp;quot;&lt;/a&gt; how to install Docker and pull the Insider container images. Or you can use my Packer template and Vagrant environment to automate these steps. The walkthrough is described at&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/StefanScherer/insider-docker-machine"&gt;https://github.com/StefanScherer/insider-docker-machine&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id="windowsinsiderimages"&gt;Windows Insider images&lt;/h2&gt;
+&lt;p&gt;There are four new Docker images available with a much smaller footprint.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/windows_insider_images.png" alt="Windows Insider images"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;microsoft/windowsservercore-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-dotnet&lt;/li&gt;
+&lt;li&gt;microsoft/nanoserver-insider-powershell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Windows Server Core Insider image got down from 5 GB to only 2 GB which saves a lot of bandwidth and download time.&lt;/p&gt;
+&lt;p&gt;You may wonder why there are three Nano Server Insider images and why there is one without PowerShell.&lt;/p&gt;
+&lt;h2 id="aimingthesmallestwindowsbaseimage"&gt;Aiming the smallest Windows base image&lt;/h2&gt;
+&lt;p&gt;If we compare the image sizes of the current &lt;code&gt;microsoft/nanoserver&lt;/code&gt; image with its base layer and update layer with the new Insider images you can see the reason.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/nanoserver_sizes.png" alt="NanoServer sizes"&gt;&lt;/p&gt;
+&lt;p&gt;If you want to ship your application in a container image you don't want to ship a whole operating system, but only the parts needed to run the application.&lt;/p&gt;
+&lt;p&gt;And to ship faster is to ship smaller images. For many applications you do not need eg. PowerShell inside your base image at runtime which would take another 54 MByte to download from the Docker registry.&lt;/p&gt;
+&lt;p&gt;Let's have a look at current Windows Docker images available on the Docker Hub. To run a Golang webserver for example on an empty Windows Docker host you have to pull the 2MB binary and the two NanoServer base layers with hundreds of MB to run it in a container.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-pull-whoami.png" alt="docker pull whoami"&gt;&lt;/p&gt;
+&lt;p&gt;Of course these base images have to be downloaded only once as other NanoServer container images will use the same base image. But if you work with Windows containers for a longer time you may have noticed that you still have to download different update layers from time to time that pull another 122 MB.&lt;/p&gt;
+&lt;p&gt;And if the NanoServer base image is much smaller then the updates also will be smaller and faster to download.&lt;/p&gt;
+&lt;p&gt;With the new Insider container images you can build and run containerized .NET core applications that are still smaller than the NanoServer + PowerShell base image.&lt;/p&gt;
+&lt;h2 id="nodejs"&gt;Node.js&lt;/h2&gt;
+&lt;p&gt;Another example is providing a Node.js container image based on the new NanoServer Insider image with only 92 MByte. We have just cut off &amp;quot;3&amp;quot; hundred MB.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/nodejs_nanoserver_sizes-3.png" alt="Node.js NanoServer sizes"&gt;&lt;/p&gt;
+&lt;p&gt;If we compare that with some of the Linux Node.js container images we are at about the size of the the slim images.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/Bildschirmfoto-2017-07-14-um-08.53.24.png" alt="Node.js slim image sizes"&gt;&lt;/p&gt;
+&lt;h2 id="multistagebuild"&gt;Multi-stage build&lt;/h2&gt;
+&lt;p&gt;To build such small Windows images comes with a cost. You have to live without PowerShell. But the new multi-stage build introduced with Docker 17.05 really helps you and you can use PowerShell before the final image layers are built.&lt;/p&gt;
+&lt;p&gt;If you haven't heard about multi-stage builds its concept is to have multiple &lt;code&gt;FROM&lt;/code&gt; instructions in a &lt;code&gt;Dockerfile&lt;/code&gt;. Only the last &lt;code&gt;FROM&lt;/code&gt; until the end of the file will build the final container image. This is also called the last stage. In all the other stages you don't have to optimze too much and can use the build cache much better. You can read more about &lt;a href="https://blog.docker.com/2017/07/multi-stage-builds/"&gt;multi-stage builds&lt;/a&gt; at the Docker Blog.&lt;/p&gt;
+&lt;p&gt;Let's have a closer look how to build a small Node.js base image. You can find the complete &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/07cedcf2cc93e669bba9c961121feda6f43dab59/node/8.1/nano/Dockerfile"&gt;Dockerfile&lt;/a&gt; on GitHub.&lt;/p&gt;
+&lt;p&gt;In the first stage I'm lazy and even use the &lt;code&gt;microsoft/windowsservercore-insider&lt;/code&gt; image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;# escape=`
+FROM microsoft/windowsservercore-insider as download
+SHELL [&amp;quot;powershell&amp;quot;, &amp;quot;-Command&amp;quot;, &amp;quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&amp;quot;]
+RUN Invoke-WebRequest ... 
+RUN Expand-Archive ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; has a second &lt;code&gt;FROM&lt;/code&gt; instruction which then uses the smallest Windows base image. In that stage you normally &lt;code&gt;COPY&lt;/code&gt; deploy files and folders from previous stages. In our case we copy the Node.js installation folder into the final image.&lt;/p&gt;
+&lt;p&gt;The one &lt;code&gt;RUN&lt;/code&gt; instruction sets the &lt;code&gt;PATH&lt;/code&gt; environment variable with the &lt;code&gt;setx&lt;/code&gt; command instead of PowerShell commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver-insider
+ENV NPM_CONFIG_LOGLEVEL info
+COPY --from=download /nodejs /nodejs
+RUN setx PATH &amp;quot;%PATH%;C:\nodejs;%APPDATA%\npm&amp;quot;
+CMD [ &amp;quot;node.exe&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Users of such a Node.js base image can work as usual by &lt;code&gt;COPY&lt;/code&gt; deploy their source tree and node_modules folder into that image and run the application as a small container.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM stefanscherer/node-windows:8.1.4-insider
+WORKDIR /code
+COPY . /code
+CMD [&amp;quot;node.exe&amp;quot;, &amp;quot;app.js&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So all you have to do is change the &lt;code&gt;FROM&lt;/code&gt; instruction to the smaller insider Node.js image.&lt;/p&gt;
+&lt;h2 id="furtherinsiderimages"&gt;Further Insider images&lt;/h2&gt;
+&lt;p&gt;I have pushed some of my first Insider images to the Docker Hub so it may be easier for you to try out different languages.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;stefanscherer/node-windows:6.11.1-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/node-windows:8.1.4-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/golang-windows:1.8.3-insider&lt;/li&gt;
+&lt;li&gt;stefanscherer/dockertls-windows:insider&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you want to see how these images are built, then you can find the &lt;code&gt;Dockerfiles&lt;/code&gt; in the latest pull requests of my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;https://github.com/StefanScherer/dockerfiles-windows&lt;/a&gt; repo.&lt;/p&gt;
+&lt;h2 id="dockervolumes"&gt;Docker Volumes&lt;/h2&gt;
+&lt;p&gt;If you have worked with Docker Volumes on Windows you may know this already. Node.js and other tools and languages have problems when they want to get the real name of a file or folder that is mapping from the Docker host into the container.&lt;/p&gt;
+&lt;p&gt;Node.js for example thinks the file is in the folder &lt;code&gt;C:\ContainerMappedDirectories&lt;/code&gt;, but cannot find the file there. There is a workaround described in Elton Stoneman's blog post &lt;a href="https://blog.sixeyed.com/docker-volumes-on-windows-the-case-of-the-g-drive/"&gt;&amp;quot;Introducing the 'G' Drive&amp;quot;&lt;/a&gt; to map it to another drive letter.&lt;/p&gt;
+&lt;p&gt;With the new Insider preview I see a great improvement on that topic. Running normal Windows containers without the HyperV isolation there is no longer a symbolic link.&lt;/p&gt;
+&lt;p&gt;If we run the Node.js container interactively and map the folder &lt;code&gt;C:\code&lt;/code&gt; into the container we can list the &lt;code&gt;C:&lt;/code&gt;drive and see that the &lt;code&gt;code&lt;/code&gt; folder is a normal directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -v C:\code:C:\code stefanscherer/node-windows:8.1.4-insider cmd /c dir
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-run-nodejs.png-shadow.png" alt="docker run volume"&gt;&lt;/p&gt;
+&lt;p&gt;With this setup you are able to mount your source code into the Node.js container and run it eg. with &lt;code&gt;nodemon&lt;/code&gt; to live reload it after changing it on the host.&lt;/p&gt;
+&lt;p&gt;Unfortunately this is not available with the Hyper-V isolation that is the default on Windows 10 Insider machines.&lt;/p&gt;
+&lt;p&gt;Running the same command with &lt;code&gt;--isolation=hyperv&lt;/code&gt; shows the symlinked directory which Node.js cannot handle at the moment.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -v C:\code:C:\code --isolation=hyperv stefanscherer/node-windows:8.1.4-insider cmd /c dir
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/07/docker-run-nodejs-hyperv.png-shadow.png" alt="docker run volume hyperv"&gt;&lt;/p&gt;
+&lt;p&gt;But this improvement in native Windows containers looks very promising to solve a lot of headache for all the maintainers of Git for Windows, Golang, Node.js and so on.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Having smaller Windows container images is a huge step forward. I encourage you to try out the much smaller images. You'll learn how it feels to work with them and you can give valuable feedback to the Microsoft Containers team shaping the next version of Windows Server.&lt;/p&gt;
+&lt;p&gt;Can we make even smaller images? I don't know, but let's find it out. How about naming the new images? Please make suggestions at the Microsoft Tech Community &lt;a href="https://techcommunity.microsoft.com"&gt;https://techcommunity.microsoft.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt; to stay up to date with Windows containers.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

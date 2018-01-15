@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Hyper-V - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Hyper-V - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/hyper-v/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Adding Hyper-V support to 2016 TP5 Docker VM]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Back in June I have attended the <a href="http://2016.dockercon.com">DockerCon</a> in Seattle. Beside lots of new features in Docker 1.12 we heard about <a href="https://www.youtube.com/watch?v=A7ABdUmen9s">Windows Server and Docker</a> and upcoming features in the Windows Docker engine.</p>
+<p>Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond</p></div>]]></description><link>https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540969</guid><category><![CDATA[Packer]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[DockerCon]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Thu, 04 Aug 2016 19:59:37 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Back in June I have attended the <a href="http://2016.dockercon.com">DockerCon</a> in Seattle. Beside lots of new features in Docker 1.12 we heard about <a href="https://www.youtube.com/watch?v=A7ABdUmen9s">Windows Server and Docker</a> and upcoming features in the Windows Docker engine.</p>
+<p>Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond to meet the Windows Container team around Taylor Brown. After a meeting and having lunch we talked about making my Packer template for a <a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_2016_docker.json">Windows Server 2016 TP5 Docker VM</a> work with Hyper-V. At that time my packer template supported only VirtualBox and VMware with a <a href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/">blog post describing how to build it</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/20160623_101541.jpg" alt=""></p>
+<p>So Patrick Lang from Microsoft and I started to have a look at the pull request <a href="https://github.com/mitchellh/packer/pull/2576">mitchellh/packer#2576</a> by Taliesin Sisson that adds a Hyper-V builder to Packer. After a couple of days (already back to Germany working in different time zones) we improved the template through <a href="https://github.com/PatrickLang/packer-windows/commit/7e13d4799e28a3afb1e35b878e00394256011022">GitHub</a> and finally got it working.</p>
+<h2 id="packerbuildvagrantup">packer build, vagrant up</h2>
+<p>If you haven't heard about <a href="https://www.packer.io">Packer</a> and <a href="https://www.vagrantup.com">Vagrant</a> let me explain it with the following diagram. If you want to create a VM from an ISO file you normally click through your hypervisor UI and then follow the installation steps inside the VM.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_vagrant.png" alt="packer build, vagrant up"></p>
+<p>With Packer you can automate that step building a VM from an ISO file, put all steps into a Packer template and then just share the template so others can just run</p>
+<pre><code>packer build template.json
+</code></pre>
+<p>In our case the output is a Vagrant box. That is a compressed VM ready to be used with the next tool - Vagrant. It takes a Vagrant box, creates a copy of it to turn it on so you can work again and again with the same predefined VM that was built by Packer. You want to turn your VM on? Just type</p>
+<pre><code>vagrant up
+</code></pre>
+<p>You want to stop the VM after work? Just type</p>
+<pre><code>vagrant halt
+</code></pre>
+<p>You want to try something out and want to undo all that to start over with the clean state. Just destroy it and start it again.</p>
+<pre><code>vagrant destroy
+vagrant up
+</code></pre>
+<p>There are much more commands and even snapshots can be used. The advantage is that you don't have to know all the buttons in your hypervisor. Both Packer and Vagrant are available for <strong>Windows, Mac and Linux</strong> and also <strong>support <a href="http://www.slideshare.net/PuppetLabs/multiprovider-vagrant">multiple hypervisors</a></strong> and even cloud providers.</p>
+<p>So you only have to learn one or both of these tools and you're done if you have to work with VM's.</p>
+<h2 id="addinghypervbuilder">Adding Hyper-V builder</h2>
+<p>The Packer template for a VM has one or more builder sections. The Hyper-V section looks like this and contains the typical steps</p>
+<ul>
+<li>Adding files for a virtual floppy for the first boot</li>
+<li>Defining disk size, memory and CPU's</li>
+<li>How to login into the VM</li>
+</ul>
+<pre><code class="language-json">    {
+      &quot;vm_name&quot;:&quot;WindowsServer2016TP5Docker&quot;,
+      &quot;type&quot;: &quot;hyperv-iso&quot;,
+      &quot;disk_size&quot;: 41440,
+      &quot;boot_wait&quot;: &quot;0s&quot;,
+      &quot;headless&quot;: false,
+      &quot;guest_additions_mode&quot;:&quot;disable&quot;,
+      &quot;iso_url&quot;: &quot;{{user `iso_url`}}&quot;,
+      &quot;iso_checksum_type&quot;: &quot;{{user `iso_checksum_type`}}&quot;,
+      &quot;iso_checksum&quot;: &quot;{{user `iso_checksum`}}&quot;,
+      &quot;floppy_files&quot;: [
+        &quot;./answer_files/2016/Autounattend.xml&quot;,
+        &quot;./floppy/WindowsPowershell.lnk&quot;,
+        &quot;./floppy/PinTo10.exe&quot;,
+        &quot;./scripts/disable-winrm.ps1&quot;,
+        &quot;./scripts/docker/enable-winrm.ps1&quot;,
+        &quot;./scripts/microsoft-updates.bat&quot;,
+        &quot;./scripts/win-updates.ps1&quot;
+      ],
+      &quot;communicator&quot;:&quot;winrm&quot;,
+      &quot;winrm_username&quot;: &quot;vagrant&quot;,
+      &quot;winrm_password&quot;: &quot;vagrant&quot;,
+      &quot;winrm_timeout&quot; : &quot;4h&quot;,
+      &quot;shutdown_command&quot;: &quot;shutdown /s /t 10 /f /d p:4:1 /c \&quot;Packer Shutdown\&quot;&quot;,
+      &quot;ram_size_mb&quot;: 2048,
+      &quot;cpu&quot;: 2,
+      &quot;switch_name&quot;:&quot;{{user `hyperv_switchname`}}&quot;,
+      &quot;enable_secure_boot&quot;:true
+    },
+</code></pre>
+<p>Packer can also download ISO files from a download link to make automation very easy.</p>
+<p>The installation of a Windows Server 2016 VM can be automated with an <a href="https://github.com/StefanScherer/packer-windows/blob/my/answer_files/2016/Autounattend.xml"><code>Autounattend.xml</code></a> file. This file contains information to setup the Windows VM until the WinRM service is up and running and Packer can login from the host machine to run further provision scripts to setup the VM with additional installations.</p>
+<p>In case of the Windows Server 2016 TP5 Docker VM we additionally <a href="https://github.com/StefanScherer/packer-windows/blob/my/scripts/docker/install-docker.ps1">install Docker 1.12</a> and pull the Windows base OS docker images into the VM.</p>
+<p>All these steps defined in the Packer template build a good Vagrant box to have Docker preinstalled with the base docker image as it takes some time to download it the first time.</p>
+<p>So after a <code>vagrant destroy</code> you still have the Windows OS docker images installed and can work with a clean installation again. Only from time to time when there is a new OS docker image version you have to rebuild your Vagrant box with Packer.</p>
+<h2 id="buildthehypervvagrantbox">Build the Hyper-V Vagrant box</h2>
+<p>To build the Vagrant box locally on a Windows 10 machine you only need the <strong>Hyper-V feature</strong> activated and you need a <strong>special version of <code>packer.exe</code></strong> (notice: with <code>choco install packer</code> you only get the upstream packer where the hyperv builder is not integrated yet). The packer.exe with hyperv builder can be downloaded at <a href="https://dl.bintray.com/taliesins/Packer/">https://dl.bintray.com/taliesins/Packer/</a>.</p>
+<p>Clone my packer template from GitHub and build it with these commands:</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=hyperv-iso windows_2016_docker.json
+</code></pre>
+<p>This will take some time downloading and caching the ISO file, booting, installing the software and pulling the first Docker images.</p>
+<h2 id="sharevagrantboxeswithatlas">Share Vagrant boxes with Atlas</h2>
+<p>Another advantage of Vagrant is that you can share Vagrant base boxes through Atlas, a service by HashiCorp. So only one has to run Packer and build the Vagrant box and provide it for other team members or the community.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_vagrant_atlas.png" alt="packer atlas vagrant"></p>
+<p>Others can create a <code>Vagrantfile</code> with the box name of one of the provided Vagrant boxes. That name will be used at the first <code>vagrant up</code> to download the correct Vagrant box for the hypervisor to be used.</p>
+<p>Even Microsoft has its first <a href="https://atlas.hashicorp.com/Microsoft/boxes/EdgeOnWindows10">Vagrant box at Atlas</a> which can be used with VirtualBox only at the moment. But it is only a matter of time that more Hyper-V based Vagrant boxes will show up in Atlas, also boxes for other hypervisors.</p>
+<p>If you don't have a Vagrantfile you even can create a simple one to start a new test environment with two commands and a suitable Vagrant box from Atlas.</p>
+<pre><code>vagrant init Microsoft/EdgeOnWindows10
+vagrant up --provider virtualbox
+</code></pre>
+<p>Vagrant itself can log into the VM through WinRM and run further provision scripts to setup a good development or test environment. It is just a decision what to install in a Vagrant box with Packer and what to install with Vagrant afterwards. You decide which flexibility you want or if you prefer a faster <code>vagrant up</code> experience with a full provisioned Vagrant box that was built with a longer running Packer build once.</p>
+<h2 id="dockerwindowsbox">docker-windows-box</h2>
+<p>If you are looking for a test environment for Windows Docker containers you might have a look at my <a href="https://github.com/StefanScherer/docker-windows-box">docker-windows-box</a> GitHub repo that installs Git and some additional Docker tools to get started working on some <a href="https://github.com/StefanScherer/dockerfiles-windows">Windows Dockerfiles</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/docker-windows-box.png" alt="docker windows box"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I'm happy that there is a Hyper-V builder for Packer that really works. Vagrant already has a Hyper-V provider built in so you can have the same experience running and working with VM's as others have with VMware or VirtualBox.</p>
+<p>With a such a TP5 Vagrant box it is very easy to get in touch with Windows Docker Containers, regardless if you are working on Windows 10 with Hyper-V or from your Mac or Linux machine with another hypervisor.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_multiprovider.png" alt="Packer multiprovider"></p>
+<p>Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item></channel></rss>

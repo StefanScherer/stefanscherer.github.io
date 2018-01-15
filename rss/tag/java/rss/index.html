@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Java - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Java - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/java/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Is there a Windows Docker image for ...?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
+<p>These Docker images are well maintained and you can just start and put</p></div>]]></description><link>https://stefanscherer.github.io/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">5986d4ec688a490001540970</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Golang]]></category><category><![CDATA[Python]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[Java]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
+<p>These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.</p>
+<p>Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.</p>
+<h2 id="prefernanoserver">Prefer NanoServer</h2>
+<p>So starting to work with NanoServer is really easy with Docker as you only choose the right image for the <code>FROM</code> instruction in your <code>Dockerfile</code>. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.</p>
+<p>So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.</p>
+<h2 id="go">Go</h2>
+<p>The Go programming language is available on the Docker Hub as image <a href="https://hub.docker.com/_/golang/"><code>golang</code></a>. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.</p>
+<ul>
+<li><code>FROM golang:windowsservercore</code></li>
+<li><code>FROM golang:nanoserver</code></li>
+</ul>
+<p>Have a look at the <a href="https://hub.docker.com/_/golang/">tags page</a> if you want another version or if you want to pin a specific version of Golang.</p>
+<h2 id="java">Java</h2>
+<p>When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official <a href="https://hub.docker.com/_/openjdk/"><code>openjdk</code></a> Docker images. Both Windows Server Core and NanoServer are supported.</p>
+<ul>
+<li><code>FROM openjdk:windowsservercore</code></li>
+<li><code>FROM openjdk:nanoserver</code></li>
+</ul>
+<p>If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the <a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8">oracle/docker-images</a> repository.</p>
+<h2 id="nodejs">Node.JS</h2>
+<p>For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official <a href="https://hub.docker.com/_/node/"><code>node</code></a> images.</p>
+<p>In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:</p>
+<ul>
+<li><code>FROM stefanscherer/node-windows:6</code></li>
+<li><code>FROM stefanscherer/node-windows:6-nano</code></li>
+</ul>
+<p>You also can find more tags and versions at the <a href="https://hub.docker.com/r/stefanscherer/node-windows/">Docker Hub</a>.</p>
+<h2 id="python">Python</h2>
+<p>The script language Python is available as Windows Server Core Docker image at the official <a href="https://hub.docker.com/_/python/"><code>python</code></a> images. Both major versions of Python are available.</p>
+<ul>
+<li><code>FROM python:3-windowsservercore</code></li>
+<li><code>FROM python:2-windowsservercore</code></li>
+</ul>
+<p>I also have a Python Docker image <a href="https://hub.docker.com/r/stefanscherer/python-windows/">for NanoServer</a> with Python 3.6 to create smaller Docker images.</p>
+<ul>
+<li><code>FROM stefanscherer/python-windows:nano</code></li>
+</ul>
+<h2 id="netcore">.NET Core</h2>
+<p>Microsoft provides Linux and Windows Docker images for .NET Core at <a href="https://hub.docker.com/r/microsoft/dotnet/"><code>microsoft/dotnet</code></a>. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.</p>
+<ul>
+<li><code>FROM microsoft/dotnet:nanoserver</code></li>
+</ul>
+<h2 id="aspnet"><a href="http://ASP.NET">ASP.NET</a></h2>
+<p>For <a href="http://ASP.NET">ASP.NET</a> there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at <a href="https://hub.docker.com/r/microsoft/aspnet/"><code>microsoft/aspnet</code></a>.</p>
+<ul>
+<li><code>FROM microsoft/aspnet:4.6.2-windowsservercore</code></li>
+<li><code>FROM microsoft/aspnet:3.5-windowsservercore</code></li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.</p>
+<p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item></channel></rss>

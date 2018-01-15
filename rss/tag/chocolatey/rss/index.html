@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Chocolatey - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Chocolatey - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:09 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/chocolatey/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Yes, you can "Docker" on Windows 7]]></title><description><![CDATA[<div class="kg-card-markdown"><p>This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use <a href="https://www.vagrantup.com">Vagrant</a></p></div>]]></description><link>https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/</link><guid isPermaLink="false">5986d4ec688a490001540973</guid><category><![CDATA[Docker]]></category><category><![CDATA[Chocolatey]]></category><category><![CDATA[Windows 7]]></category><category><![CDATA[Docker Machine]]></category><category><![CDATA[VMware]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 31 Mar 2017 17:02:07 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use <a href="https://www.vagrantup.com">Vagrant</a> still very often, it seemed to me using <a href="https://www.docker.com">Docker</a> will be easier to maintain as this could be done in a one-shot container.</p>
+<h2 id="thehardfactswindows7enterprise">The hard facts - Windows 7 Enterprise</h2>
+<p>The bigger problem was the fact that in some companies you still find Windows 7 Enterprise. It may be a delayed rollout of new notebooks that keep the employees on that old desktop platform.</p>
+<p>So using <a href="https://docs.docker.com/docker-for-windows/">Docker for Windows</a> was no option as it only works with Windows 10 Pro with Hyper-V. This looks like a good setup for new notebooks, but if you want to use Docker <em>now</em> you have to look for other solutions.</p>
+<h2 id="lockedinhypervisor">Locked-in Hypervisor</h2>
+<p>Next obstacle was that for Vagrant it is better to use <strong>VMware Workstation</strong> on Windows 7 instead of VirtualBox. There also may be a company policy to use one specific hypervisor as the knowledge is already there using other server products in the datacenter.</p>
+<p>So going down to the <a href="https://www.docker.com/products/docker-toolbox">Docker Toolbox</a> also was no option as it comes with VirtualBox to run the Linux boot2docker VM.</p>
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Can&#39;t Believe this..GOT THIS GIF from my Kid :) <a href="https://twitter.com/docker">@docker</a> ..Amazing ! <a href="https://t.co/f09henl5Ta">pic.twitter.com/f09henl5Ta</a></p>&mdash; Ajeet Singh Raina (@ajeetsraina) <a href="https://twitter.com/ajeetsraina/status/847737267510591488">31. März 2017</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<h2 id="embraceyourenvironment">Embrace your environment</h2>
+<p>So we went with a manual installation of some Docker tools to get a Linux Docker VM running on the Windows 7 machine. Luckily the developers already had the <a href="https://chocolatey.org">Chocolatey</a> package manager installed.</p>
+<p>Let's recap what I found on the notebooks</p>
+<ul>
+<li>Windows 7 Enterprise</li>
+<li>VMware Workstation 9/10/11/12</li>
+</ul>
+<p>Well there is a tool Docker Machine to create local Docker VM's very easily, and there is a VMware Workstation plugin available. All these tools are also available as Chocolatey packages.</p>
+<p>So what we did on the machines was installing three packages with these simple commands in an administrator terminal.</p>
+<pre><code>choco install -y docker
+choco install -y docker-machine
+choco install -y docker-machine-vmwareworkstation
+</code></pre>
+<p>Then we closed the administrator terminal as the next commands can be done in normal user mode.</p>
+<h2 id="myhostismycastle">My host is my castle</h2>
+<p>Every developer installs tools that they need for their work. Installing that on the host machine - your desktop or notebook - leads to different machines.</p>
+<p>Creating the Docker Machine we ran into a &quot;works on my machine, but doesn't work on your machine&quot; problem I hadn't seen before.</p>
+<p>Something while setting up the Linux VM just went wrong. It turned out that copying the Docker TLS certs with SSH just didn't work. A deeper look on what else is installed on the host we found that some implementations of SSH clients just doesn't work very well.</p>
+<p>Luckily there is a less known option in the <code>docker-machine</code> binary to ignore external SSH client and use the built-in implementation.</p>
+<p>With that knowledge we were able to create a VMware Docker Machine on that laptop with</p>
+<pre><code>docker-machine --native-ssh create -d vmwareworkstation default
+</code></pre>
+<p>Using the good old PowerShell on the Windows 7 notebook helps you to use that Linux Docker VM by setting some environment variables.</p>
+<pre><code>docker-machine env | iex
+</code></pre>
+<p>After that you can run <code>docker version</code> for example to retrieve client and server version which are both the up-to-date community editions</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/docker-version.png" alt="docker version"></p>
+<p>Quite exciting to be able to use that Windows 7 notebook with the latest Docker tools installed.</p>
+<p>So hopefully Docker and using containers in more and more development tasks helps to keep their notebooks clean and they <strong>install less tools on the host</strong> and instead running more tools in containers.</p>
+<h2 id="icancaproblem">I can C: a problem</h2>
+<p>Using that Docker Machine VM worked really well until we faced another problem. Building some Docker images we ran out of disk space. Oh no, although the Windows 7 notebooks got improved by installing a 1 TB SSD, the C: partition hasn't been increased for some historical reasons.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/facepalm.jpg" alt="Face palm"></p>
+<p>Docker Machine creates the Linux VM's in the current users home directory. This is a good idea, but having a 120 GB partition with only 7 GB left on C: we had to fix it. Taking a deep breath and embracing that environment, we came to the following solution.</p>
+<p>We destroyed the Docker Machine again (because it's so easy) and also removed the <code>.docker</code> folder again to link it to a folder that resides on a bigger partition of the SSD.</p>
+<pre><code>docker-machine rm -f default
+rm $env:USERPROFILE\.docker
+mkdir D:\docker
+cmd /c mklink /J $env:USERPROFILE\.docker D:\docker
+</code></pre>
+<p>Then we recreated the Docker Machine with the command from above and set the environment variables again.</p>
+<pre><code>docker-machine --native-ssh create -d vmwareworkstation default
+docker-machine env | iex
+</code></pre>
+<p>And hurray - it worked. The VM with its disk resides on the bigger D: drive and we don't have to set any other global environment variables.</p>
+<p>With that setup I made the developers happy. They could start using Docker without waiting for new hardware or asking their admins to resize or reformat their partitions.</p>
+<p>We soon had a small <code>Dockerfile</code> and put the already existing provision scripts into an image. So we finished the task running a Linux container that can be thrown away more easily than a whole VM.</p>
+<h2 id="dailywork">Daily work</h2>
+<p>To recap how to use this Docker Machine you normally do the following steps after booting your notebook.</p>
+<pre><code>docker-machine start
+docker-machine env | iex
+</code></pre>
+<p>Then you can work with this default Linux Docker VM.</p>
+<h2 id="planningyourhardwareupdate">Planning your hardware update</h2>
+<p>The story ended well, but I recommended to think ahead and plan the next hardware update. So before they just get the new notebook generation they should think about which hypervisor they should use in the future.</p>
+<p>Using Windows 10 Enterprise with the built-in Hyper-V would be easier. You can run <strong>native Windows containers</strong> with it and use <strong>Docker for Windows</strong> to switch between Linux and Windows containers. Using Vagrant with Hyper-V also gets better and better.</p>
+<p>But if company policy still restricts you to use eg. VMware then you also can use the steps above to create a Linux Docker machine. You also cannot use Windows containers directly on Windows 10 machine as Hyper-V does not work in parallel with other hypervisors. In that case you might spin up a Windows Server 2016 VM using my <a href="https://github.com/StefanScherer/windows-docker-machine">Windows Docker Machine</a> setup. With that you can easily switch between Linux and Windows containers using the <code>docker-machine env</code> command.</p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. I love to hear about your enterprise setup and how to make Docker work on your developer's machines. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Get started with Docker on Windows using Chocolatey]]></title><description><![CDATA[<div class="kg-card-markdown"><p>The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.</p>
+<p>If you don't know what a shell window</p></div>]]></description><link>https://stefanscherer.github.io/get-started-with-docker-on-windows-using-chocolatey/</link><guid isPermaLink="false">5986d4ec688a49000154095e</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Chocolatey]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 16 Jan 2016 22:31:57 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>The Docker tools are useful on a Windows machine to build and run applications in Linux containers locally in a VM or in the cloud. With the Chocolatey package manager you can install all the Docker tools you need to get started.</p>
+<p>If you don't know what a shell window is then you should have a look at the <a href="https://www.docker.com/docker-toolbox"><strong>Docker Toolbox</strong></a> from Docker. But if you know and use a PowerShell or CMD shell window from time to time I'll guide you through the simple steps.</p>
+<h2 id="letsgetchocolatey">Let's get Chocolatey</h2>
+<p>Chocolatey is an open source project to provide a package manager for Windows as you might know it from Linux distro. You can install many of your software on your Windows machine with it.</p>
+<p>Just open <a href="https://chocolatey.org">chocolatey.org</a> and search for eg. Chrome, Adobe Reader, or other tools you have installed manually in the past. You will find out fast that nearly everything could be installed with just the command</p>
+<pre><code>choco install anything
+</code></pre>
+<p>That makes Chocolatey really cool. It's like <code>apt-get</code>, but for Windows. And the software is downloaded from the original places, the choco packages only contains the instructions where to download it and how to install it silent.</p>
+<p>If you haven't installed Chocolatey already just open the homepage <a href="https://chocolatey.org">https://chocolatey.org</a> and copy the simple command to your shell.</p>
+<h2 id="dockerchocolateypackages">Docker Chocolatey packages</h2>
+<p>To see which Docker tools are available through Chocolatey packages, just open the <a href="https://chocolatey.org/packages?q=docker">Chocolatey homepage and search for docker</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/01/Bildschirmfoto-2016-01-16-um-23-12-12.png" alt=""></p>
+<p>The Chocolatey packages for the Docker tools are maintained by the community. But they are kept up-to-date, so you can update each tool soon after the official release.</p>
+<p>At the moment you can install</p>
+<ul>
+<li>Docker Client</li>
+<li>Docker Machine</li>
+<li>Docker Compose</li>
+</ul>
+<p>as well as a Docker Machine driver plugin for VMware Workstation.</p>
+<h2 id="dockerclient">Docker Client</h2>
+<p>To begin with Docker you need the Docker Client. Install it in a PowerShell or CMD shell window with</p>
+<pre><code>choco install -y docker
+</code></pre>
+<p>The option <code>-y</code> just auto-answers the question to run the install script.</p>
+<p>Now we have the <code>docker</code> command installed. Try it out with <code>docker --version</code> for the installed version or <code>docker --help</code> to see the usage. This client will be used to build and run Docker Containers.</p>
+<h2 id="dockermachine">Docker Machine</h2>
+<p>The next step is to create a VM to run the Linux containers in it. <a href="https://docs.docker.com/machine/">Docker Machine</a> is the right tool for that task. So we first install it with</p>
+<pre><code>choco install -y docker-machine
+</code></pre>
+<h2 id="localhypervisor">Local Hypervisor</h2>
+<p>Windows users can select between these three local hypervisors to run a Linux Docker Engine in it.</p>
+<ul>
+<li>Hyper-V</li>
+<li>VirtualBox</li>
+<li>VMware Workstation</li>
+</ul>
+<p>All three hypervisors can be controlled by Docker Machine.</p>
+<p>For Hyper-V follow the official guide how to install it on your machine.</p>
+<p>VirtualBox can also be installed with Chocolatey, guess how</p>
+<pre><code>choco install virtualbox
+</code></pre>
+<p>For VMware Workstation you also need the driver plugin and VMware Workstation if not already installed:</p>
+<pre><code>choco install docker-machine-vmwareworkstation
+choco install vmwareworkstation
+</code></pre>
+<p>For VMware Workstation you enter your license before using it.</p>
+<h2 id="cloud">Cloud</h2>
+<p>You also can create a VM in the cloud, Docker Machine has a lot of cloud drivers built in.</p>
+<ul>
+<li>Windows Azure</li>
+<li>Digital Ocean</li>
+<li>Google GCE</li>
+<li>OpenStack</li>
+<li>Rackspace</li>
+<li>...</li>
+</ul>
+<p>See the official guide <a href="https://docs.docker.com/machine/get-started-cloud/">Using Docker Machine with a cloud provider</a> for more details.</p>
+<h2 id="createadockermachine">Create a Docker Machine</h2>
+<p>After you have set up your local hypervisor or chosen the cloud provider you want to use, create a Docker Machine VM with the name <code>dev</code> with one of these commands:</p>
+<pre><code>docker-machine create -d hyperv dev
+docker-machine create -d virtualbox dev
+docker-machine create -d vmwareworkstation dev
+docker-machine create -d azure ... dev
+docker-machine create -d digitalocean ... dev
+</code></pre>
+<p>There are driver specific options to tweak the VM settings or the token to connect to your account in the cloud.</p>
+<p>After a while you will have your local or remote Docker Machine up and running.</p>
+<p>You can check the status of the machine(s) with</p>
+<pre><code>docker-machine ls
+</code></pre>
+<h2 id="connecttoyourdockermachine">Connect to your Docker Machine</h2>
+<p>For the Docker Client you need some environment variables so that the Docker Client knows how to connect to your local or remote Docker Engine.</p>
+<p>In PowerShell it is really easy to set these environments.</p>
+<pre><code>docker-machine env --shell powershell dev | iex
+</code></pre>
+<p>In the near future can skip the <code>--shell</code> parameter as well to simplify this step.</p>
+<p>After that you can control the Docker engine and start your first container, eg. this interactive shell</p>
+<pre><code>docker run --rm -it ubuntu bash
+</code></pre>
+<p>Type <code>exit</code> to terminate the container.<br>
+Congratulations! You have started your first container.</p>
+<h2 id="dockercompose">Docker Compose</h2>
+<p>If you want to start more than one container that should work together you can use Docker Compose. It simplifies this task to setup a multi container application.</p>
+<pre><code>choco install -y docker-compose
+</code></pre>
+<p>Please refer to the official <a href="https://docs.docker.com/compose/">Overview of Docker Compose</a> guide to find out more.</p>
+<p>Now you are ready to work from your Windows machine and control the world of Linux containers. In the near future you also can do this with Windows containers as well.</p>
+<h2 id="tldr">TL/DR</h2>
+<p>With just a few commands you get all the Docker tools installed on your Windows machine. And it fits into a single tweet:</p>
+<blockquote class="twitter-tweet" lang="de"><p lang="en" dir="ltr">Get the latest <a href="https://twitter.com/docker">@Docker</a> tools for <a href="https://twitter.com/hashtag/Windows?src=hash">#Windows</a>:&#10; &#10;choco install docker&#10;choco install docker-machine&#10;choco install docker-compose&#10;&#10;Done!</p>&mdash; Stefan Scherer (@stefscherer) <a href="https://twitter.com/stefscherer/status/662634469673799680">6. November 2015</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>If you like this blog post please share it with a friend or leave a comment to give feedback or ask questions.</p>
+</div>]]></content:encoded></item></channel></rss>

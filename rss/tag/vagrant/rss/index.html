@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Vagrant - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Vagrant - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/vagrant/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Exploring new NanoServer Insider images]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.</p>
+<p>To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is</p></div>]]></description><link>https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">5986d4ec688a490001540975</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Nano Server]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Packer]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Insider]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.</p>
+<p>To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.</p>
+<h2 id="windowsserverinsider">Windows Server Insider</h2>
+<ol>
+<li>
+<p>Register at Windows Insider program <a href="https://insider.windows.com">https://insider.windows.com</a> and join the Windows Server Insider program.</p>
+</li>
+<li>
+<p>Download the Windows Server Insider preview ISO from <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver">https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewserver</a></p>
+</li>
+</ol>
+<p>Now you can create a VM and install Docker. You can either build the VM manually and follow the docs <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/using-insider-container-images">&quot;Using Insider Container Images&quot;</a> how to install Docker and pull the Insider container images. Or you can use my Packer template and Vagrant environment to automate these steps. The walkthrough is described at</p>
+<p><a href="https://github.com/StefanScherer/insider-docker-machine">https://github.com/StefanScherer/insider-docker-machine</a></p>
+<h2 id="windowsinsiderimages">Windows Insider images</h2>
+<p>There are four new Docker images available with a much smaller footprint.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/windows_insider_images.png" alt="Windows Insider images"></p>
+<ul>
+<li>microsoft/windowsservercore-insider</li>
+<li>microsoft/nanoserver-insider</li>
+<li>microsoft/nanoserver-insider-dotnet</li>
+<li>microsoft/nanoserver-insider-powershell</li>
+</ul>
+<p>The Windows Server Core Insider image got down from 5 GB to only 2 GB which saves a lot of bandwidth and download time.</p>
+<p>You may wonder why there are three Nano Server Insider images and why there is one without PowerShell.</p>
+<h2 id="aimingthesmallestwindowsbaseimage">Aiming the smallest Windows base image</h2>
+<p>If we compare the image sizes of the current <code>microsoft/nanoserver</code> image with its base layer and update layer with the new Insider images you can see the reason.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/nanoserver_sizes.png" alt="NanoServer sizes"></p>
+<p>If you want to ship your application in a container image you don't want to ship a whole operating system, but only the parts needed to run the application.</p>
+<p>And to ship faster is to ship smaller images. For many applications you do not need eg. PowerShell inside your base image at runtime which would take another 54 MByte to download from the Docker registry.</p>
+<p>Let's have a look at current Windows Docker images available on the Docker Hub. To run a Golang webserver for example on an empty Windows Docker host you have to pull the 2MB binary and the two NanoServer base layers with hundreds of MB to run it in a container.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/docker-pull-whoami.png" alt="docker pull whoami"></p>
+<p>Of course these base images have to be downloaded only once as other NanoServer container images will use the same base image. But if you work with Windows containers for a longer time you may have noticed that you still have to download different update layers from time to time that pull another 122 MB.</p>
+<p>And if the NanoServer base image is much smaller then the updates also will be smaller and faster to download.</p>
+<p>With the new Insider container images you can build and run containerized .NET core applications that are still smaller than the NanoServer + PowerShell base image.</p>
+<h2 id="nodejs">Node.js</h2>
+<p>Another example is providing a Node.js container image based on the new NanoServer Insider image with only 92 MByte. We have just cut off &quot;3&quot; hundred MB.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/nodejs_nanoserver_sizes-3.png" alt="Node.js NanoServer sizes"></p>
+<p>If we compare that with some of the Linux Node.js container images we are at about the size of the the slim images.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/Bildschirmfoto-2017-07-14-um-08.53.24.png" alt="Node.js slim image sizes"></p>
+<h2 id="multistagebuild">Multi-stage build</h2>
+<p>To build such small Windows images comes with a cost. You have to live without PowerShell. But the new multi-stage build introduced with Docker 17.05 really helps you and you can use PowerShell before the final image layers are built.</p>
+<p>If you haven't heard about multi-stage builds its concept is to have multiple <code>FROM</code> instructions in a <code>Dockerfile</code>. Only the last <code>FROM</code> until the end of the file will build the final container image. This is also called the last stage. In all the other stages you don't have to optimze too much and can use the build cache much better. You can read more about <a href="https://blog.docker.com/2017/07/multi-stage-builds/">multi-stage builds</a> at the Docker Blog.</p>
+<p>Let's have a closer look how to build a small Node.js base image. You can find the complete <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/07cedcf2cc93e669bba9c961121feda6f43dab59/node/8.1/nano/Dockerfile">Dockerfile</a> on GitHub.</p>
+<p>In the first stage I'm lazy and even use the <code>microsoft/windowsservercore-insider</code> image. The reason is that I'm using the GPG tools to verify the downloads and these tools don't run quiet well in NanoServer at the moment.</p>
+<pre><code class="language-Dockerfile"># escape=`
+FROM microsoft/windowsservercore-insider as download
+SHELL [&quot;powershell&quot;, &quot;-Command&quot;, &quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&quot;]
+RUN Invoke-WebRequest ... 
+RUN Expand-Archive ...
+</code></pre>
+<p>The <code>Dockerfile</code> has a second <code>FROM</code> instruction which then uses the smallest Windows base image. In that stage you normally <code>COPY</code> deploy files and folders from previous stages. In our case we copy the Node.js installation folder into the final image.</p>
+<p>The one <code>RUN</code> instruction sets the <code>PATH</code> environment variable with the <code>setx</code> command instead of PowerShell commands.</p>
+<pre><code class="language-Dockerfile">FROM microsoft/nanoserver-insider
+ENV NPM_CONFIG_LOGLEVEL info
+COPY --from=download /nodejs /nodejs
+RUN setx PATH &quot;%PATH%;C:\nodejs;%APPDATA%\npm&quot;
+CMD [ &quot;node.exe&quot; ]
+</code></pre>
+<p>Users of such a Node.js base image can work as usual by <code>COPY</code> deploy their source tree and node_modules folder into that image and run the application as a small container.</p>
+<pre><code class="language-Dockerfile">FROM stefanscherer/node-windows:8.1.4-insider
+WORKDIR /code
+COPY . /code
+CMD [&quot;node.exe&quot;, &quot;app.js&quot;]
+</code></pre>
+<p>So all you have to do is change the <code>FROM</code> instruction to the smaller insider Node.js image.</p>
+<h2 id="furtherinsiderimages">Further Insider images</h2>
+<p>I have pushed some of my first Insider images to the Docker Hub so it may be easier for you to try out different languages.</p>
+<ul>
+<li>stefanscherer/node-windows:6.11.1-insider</li>
+<li>stefanscherer/node-windows:8.1.4-insider</li>
+<li>stefanscherer/golang-windows:1.8.3-insider</li>
+<li>stefanscherer/dockertls-windows:insider</li>
+</ul>
+<p>If you want to see how these images are built, then you can find the <code>Dockerfiles</code> in the latest pull requests of my <a href="https://github.com/StefanScherer/dockerfiles-windows">https://github.com/StefanScherer/dockerfiles-windows</a> repo.</p>
+<h2 id="dockervolumes">Docker Volumes</h2>
+<p>If you have worked with Docker Volumes on Windows you may know this already. Node.js and other tools and languages have problems when they want to get the real name of a file or folder that is mapping from the Docker host into the container.</p>
+<p>Node.js for example thinks the file is in the folder <code>C:\ContainerMappedDirectories</code>, but cannot find the file there. There is a workaround described in Elton Stoneman's blog post <a href="https://blog.sixeyed.com/docker-volumes-on-windows-the-case-of-the-g-drive/">&quot;Introducing the 'G' Drive&quot;</a> to map it to another drive letter.</p>
+<p>With the new Insider preview I see a great improvement on that topic. Running normal Windows containers without the HyperV isolation there is no longer a symbolic link.</p>
+<p>If we run the Node.js container interactively and map the folder <code>C:\code</code> into the container we can list the <code>C:</code>drive and see that the <code>code</code> folder is a normal directory.</p>
+<pre><code>docker run -v C:\code:C:\code stefanscherer/node-windows:8.1.4-insider cmd /c dir
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/docker-run-nodejs.png-shadow.png" alt="docker run volume"></p>
+<p>With this setup you are able to mount your source code into the Node.js container and run it eg. with <code>nodemon</code> to live reload it after changing it on the host.</p>
+<p>Unfortunately this is not available with the Hyper-V isolation that is the default on Windows 10 Insider machines.</p>
+<p>Running the same command with <code>--isolation=hyperv</code> shows the symlinked directory which Node.js cannot handle at the moment.</p>
+<pre><code>docker run -v C:\code:C:\code --isolation=hyperv stefanscherer/node-windows:8.1.4-insider cmd /c dir
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/07/docker-run-nodejs-hyperv.png-shadow.png" alt="docker run volume hyperv"></p>
+<p>But this improvement in native Windows containers looks very promising to solve a lot of headache for all the maintainers of Git for Windows, Golang, Node.js and so on.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Having smaller Windows container images is a huge step forward. I encourage you to try out the much smaller images. You'll learn how it feels to work with them and you can give valuable feedback to the Microsoft Containers team shaping the next version of Windows Server.</p>
+<p>Can we make even smaller images? I don't know, but let's find it out. How about naming the new images? Please make suggestions at the Microsoft Tech Community <a href="https://techcommunity.microsoft.com">https://techcommunity.microsoft.com</a>.</p>
+<p>Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay up to date with Windows containers.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Adding Hyper-V support to 2016 TP5 Docker VM]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Back in June I have attended the <a href="http://2016.dockercon.com">DockerCon</a> in Seattle. Beside lots of new features in Docker 1.12 we heard about <a href="https://www.youtube.com/watch?v=A7ABdUmen9s">Windows Server and Docker</a> and upcoming features in the Windows Docker engine.</p>
+<p>Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond</p></div>]]></description><link>https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540969</guid><category><![CDATA[Packer]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[DockerCon]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Thu, 04 Aug 2016 19:59:37 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Back in June I have attended the <a href="http://2016.dockercon.com">DockerCon</a> in Seattle. Beside lots of new features in Docker 1.12 we heard about <a href="https://www.youtube.com/watch?v=A7ABdUmen9s">Windows Server and Docker</a> and upcoming features in the Windows Docker engine.</p>
+<p>Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond to meet the Windows Container team around Taylor Brown. After a meeting and having lunch we talked about making my Packer template for a <a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_2016_docker.json">Windows Server 2016 TP5 Docker VM</a> work with Hyper-V. At that time my packer template supported only VirtualBox and VMware with a <a href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/">blog post describing how to build it</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/20160623_101541.jpg" alt=""></p>
+<p>So Patrick Lang from Microsoft and I started to have a look at the pull request <a href="https://github.com/mitchellh/packer/pull/2576">mitchellh/packer#2576</a> by Taliesin Sisson that adds a Hyper-V builder to Packer. After a couple of days (already back to Germany working in different time zones) we improved the template through <a href="https://github.com/PatrickLang/packer-windows/commit/7e13d4799e28a3afb1e35b878e00394256011022">GitHub</a> and finally got it working.</p>
+<h2 id="packerbuildvagrantup">packer build, vagrant up</h2>
+<p>If you haven't heard about <a href="https://www.packer.io">Packer</a> and <a href="https://www.vagrantup.com">Vagrant</a> let me explain it with the following diagram. If you want to create a VM from an ISO file you normally click through your hypervisor UI and then follow the installation steps inside the VM.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_vagrant.png" alt="packer build, vagrant up"></p>
+<p>With Packer you can automate that step building a VM from an ISO file, put all steps into a Packer template and then just share the template so others can just run</p>
+<pre><code>packer build template.json
+</code></pre>
+<p>In our case the output is a Vagrant box. That is a compressed VM ready to be used with the next tool - Vagrant. It takes a Vagrant box, creates a copy of it to turn it on so you can work again and again with the same predefined VM that was built by Packer. You want to turn your VM on? Just type</p>
+<pre><code>vagrant up
+</code></pre>
+<p>You want to stop the VM after work? Just type</p>
+<pre><code>vagrant halt
+</code></pre>
+<p>You want to try something out and want to undo all that to start over with the clean state. Just destroy it and start it again.</p>
+<pre><code>vagrant destroy
+vagrant up
+</code></pre>
+<p>There are much more commands and even snapshots can be used. The advantage is that you don't have to know all the buttons in your hypervisor. Both Packer and Vagrant are available for <strong>Windows, Mac and Linux</strong> and also <strong>support <a href="http://www.slideshare.net/PuppetLabs/multiprovider-vagrant">multiple hypervisors</a></strong> and even cloud providers.</p>
+<p>So you only have to learn one or both of these tools and you're done if you have to work with VM's.</p>
+<h2 id="addinghypervbuilder">Adding Hyper-V builder</h2>
+<p>The Packer template for a VM has one or more builder sections. The Hyper-V section looks like this and contains the typical steps</p>
+<ul>
+<li>Adding files for a virtual floppy for the first boot</li>
+<li>Defining disk size, memory and CPU's</li>
+<li>How to login into the VM</li>
+</ul>
+<pre><code class="language-json">    {
+      &quot;vm_name&quot;:&quot;WindowsServer2016TP5Docker&quot;,
+      &quot;type&quot;: &quot;hyperv-iso&quot;,
+      &quot;disk_size&quot;: 41440,
+      &quot;boot_wait&quot;: &quot;0s&quot;,
+      &quot;headless&quot;: false,
+      &quot;guest_additions_mode&quot;:&quot;disable&quot;,
+      &quot;iso_url&quot;: &quot;{{user `iso_url`}}&quot;,
+      &quot;iso_checksum_type&quot;: &quot;{{user `iso_checksum_type`}}&quot;,
+      &quot;iso_checksum&quot;: &quot;{{user `iso_checksum`}}&quot;,
+      &quot;floppy_files&quot;: [
+        &quot;./answer_files/2016/Autounattend.xml&quot;,
+        &quot;./floppy/WindowsPowershell.lnk&quot;,
+        &quot;./floppy/PinTo10.exe&quot;,
+        &quot;./scripts/disable-winrm.ps1&quot;,
+        &quot;./scripts/docker/enable-winrm.ps1&quot;,
+        &quot;./scripts/microsoft-updates.bat&quot;,
+        &quot;./scripts/win-updates.ps1&quot;
+      ],
+      &quot;communicator&quot;:&quot;winrm&quot;,
+      &quot;winrm_username&quot;: &quot;vagrant&quot;,
+      &quot;winrm_password&quot;: &quot;vagrant&quot;,
+      &quot;winrm_timeout&quot; : &quot;4h&quot;,
+      &quot;shutdown_command&quot;: &quot;shutdown /s /t 10 /f /d p:4:1 /c \&quot;Packer Shutdown\&quot;&quot;,
+      &quot;ram_size_mb&quot;: 2048,
+      &quot;cpu&quot;: 2,
+      &quot;switch_name&quot;:&quot;{{user `hyperv_switchname`}}&quot;,
+      &quot;enable_secure_boot&quot;:true
+    },
+</code></pre>
+<p>Packer can also download ISO files from a download link to make automation very easy.</p>
+<p>The installation of a Windows Server 2016 VM can be automated with an <a href="https://github.com/StefanScherer/packer-windows/blob/my/answer_files/2016/Autounattend.xml"><code>Autounattend.xml</code></a> file. This file contains information to setup the Windows VM until the WinRM service is up and running and Packer can login from the host machine to run further provision scripts to setup the VM with additional installations.</p>
+<p>In case of the Windows Server 2016 TP5 Docker VM we additionally <a href="https://github.com/StefanScherer/packer-windows/blob/my/scripts/docker/install-docker.ps1">install Docker 1.12</a> and pull the Windows base OS docker images into the VM.</p>
+<p>All these steps defined in the Packer template build a good Vagrant box to have Docker preinstalled with the base docker image as it takes some time to download it the first time.</p>
+<p>So after a <code>vagrant destroy</code> you still have the Windows OS docker images installed and can work with a clean installation again. Only from time to time when there is a new OS docker image version you have to rebuild your Vagrant box with Packer.</p>
+<h2 id="buildthehypervvagrantbox">Build the Hyper-V Vagrant box</h2>
+<p>To build the Vagrant box locally on a Windows 10 machine you only need the <strong>Hyper-V feature</strong> activated and you need a <strong>special version of <code>packer.exe</code></strong> (notice: with <code>choco install packer</code> you only get the upstream packer where the hyperv builder is not integrated yet). The packer.exe with hyperv builder can be downloaded at <a href="https://dl.bintray.com/taliesins/Packer/">https://dl.bintray.com/taliesins/Packer/</a>.</p>
+<p>Clone my packer template from GitHub and build it with these commands:</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=hyperv-iso windows_2016_docker.json
+</code></pre>
+<p>This will take some time downloading and caching the ISO file, booting, installing the software and pulling the first Docker images.</p>
+<h2 id="sharevagrantboxeswithatlas">Share Vagrant boxes with Atlas</h2>
+<p>Another advantage of Vagrant is that you can share Vagrant base boxes through Atlas, a service by HashiCorp. So only one has to run Packer and build the Vagrant box and provide it for other team members or the community.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_vagrant_atlas.png" alt="packer atlas vagrant"></p>
+<p>Others can create a <code>Vagrantfile</code> with the box name of one of the provided Vagrant boxes. That name will be used at the first <code>vagrant up</code> to download the correct Vagrant box for the hypervisor to be used.</p>
+<p>Even Microsoft has its first <a href="https://atlas.hashicorp.com/Microsoft/boxes/EdgeOnWindows10">Vagrant box at Atlas</a> which can be used with VirtualBox only at the moment. But it is only a matter of time that more Hyper-V based Vagrant boxes will show up in Atlas, also boxes for other hypervisors.</p>
+<p>If you don't have a Vagrantfile you even can create a simple one to start a new test environment with two commands and a suitable Vagrant box from Atlas.</p>
+<pre><code>vagrant init Microsoft/EdgeOnWindows10
+vagrant up --provider virtualbox
+</code></pre>
+<p>Vagrant itself can log into the VM through WinRM and run further provision scripts to setup a good development or test environment. It is just a decision what to install in a Vagrant box with Packer and what to install with Vagrant afterwards. You decide which flexibility you want or if you prefer a faster <code>vagrant up</code> experience with a full provisioned Vagrant box that was built with a longer running Packer build once.</p>
+<h2 id="dockerwindowsbox">docker-windows-box</h2>
+<p>If you are looking for a test environment for Windows Docker containers you might have a look at my <a href="https://github.com/StefanScherer/docker-windows-box">docker-windows-box</a> GitHub repo that installs Git and some additional Docker tools to get started working on some <a href="https://github.com/StefanScherer/dockerfiles-windows">Windows Dockerfiles</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/docker-windows-box.png" alt="docker windows box"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I'm happy that there is a Hyper-V builder for Packer that really works. Vagrant already has a Hyper-V provider built in so you can have the same experience running and working with VM's as others have with VMware or VirtualBox.</p>
+<p>With a such a TP5 Vagrant box it is very easy to get in touch with Windows Docker Containers, regardless if you are working on Windows 10 with Hyper-V or from your Mac or Linux machine with another hypervisor.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/08/packer_multiprovider.png" alt="Packer multiprovider"></p>
+<p>Please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Setup a local Windows 2016 TP5 Docker VM]]></title><description><![CDATA[<div class="kg-card-markdown"><p>It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.</p>
+<p>Very</p></div>]]></description><link>https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540966</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Packer]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 01 May 2016 08:43:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>It is great to see that more and more people are starting to test Windows Docker containers. The latest Windows Server 2016 Technical Preview 5 is a good starting point to see the current state of the Docker Engine running on Windows and get in touch with Windows Containers.</p>
+<p>Very soon there will be a Microsoft Azure template to get started very easily. Another simple way will be creating a Docker Machine in Azure, once a <a href="https://github.com/docker/machine/pull/3329">pull request</a> is merged.</p>
+<h2 id="tutorials">Tutorials</h2>
+<p>But for now it takes some effort and time to set up such a local VM. There are good tutorials that guide you through all the steps needed.</p>
+<ul>
+<li><a href="http://blog.couchbase.com/2016/april/setup-docker-windows-server-2016">Setup Docker on Windows Server 2016 in VirtualBox</a> by Arun Gupta</li>
+<li><a href="https://lostechies.com/gabrielschenker/2016/04/30/windows-docker-containers/">Windows Docker Containers in Hyper-V</a> by Gabriel Schenker</li>
+</ul>
+<h2 id="packervagrantautomation">Packer + Vagrant = Automation</h2>
+<p>If you don't want to do all these whole setup manually and wait in front of your computer to enter the next step you can use Packer and Vagrant.</p>
+<p><a href="https://www.packer.io">Packer</a> takes the ISO file and bakes a base box VM to be used with <a href="https://www.vagrantup.com">Vagrant</a>. With Vagrant you can spin up one ore more such VM's and even form a Windows Docker Swarm.</p>
+<p>The Packer template to create a Windows 2016 TP5 VM including the Docker Engine is tested with VirtualBox 5.0.20 and VMware Fusion 8.1 and should also work with VMware Workstation if you are working with a Windows PC.</p>
+<h3 id="runpacker">Run Packer</h3>
+<p>To build the Vagrant base box with Packer 0.10.0 you just clone the <a href="https://github.com/StefanScherer/packer-windows">GitHub repo</a>.</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+</code></pre>
+<p>Now build the Vagrant base box for VMware</p>
+<pre><code>packer build --only=vmware-iso windows_2016_docker.json
+</code></pre>
+<p>or for VirtualBox.</p>
+<pre><code>packer build --only=virtualbox-iso windows_2016_docker.json
+</code></pre>
+<p>This takes about an hour, so you can leave your computer for a while.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/05/packer-build.png" alt="packer-build"></p>
+<p>After that a box file should be created in the current directory. Now add this box to Vagrant with</p>
+<pre><code>vagrant box add windows_2016_tp5_docker windows_2016_docker_vmware.box
+</code></pre>
+<p>If you have both hypervisors, you also can create both base boxes and add them. You can list all your base boxes with</p>
+<pre><code>$ vagrant box list
+windows_2016_tp5_docker (virtualbox, 0)
+windows_2016_tp5_docker (vmware_desktop, 0)
+</code></pre>
+<h2 id="runvagrant">Run Vagrant</h2>
+<p>Now you can create test and dev scenarios with this new base box. There is <a href="https://github.com/StefanScherer/docker-windows-box">another GitHub</a> repo for that. We just clone it with</p>
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+</code></pre>
+<p>With the current Vagrant 1.8.1 it is easy to spin up a VM to have Docker running on Windows 2016 TP5.</p>
+<pre><code>vagrant up
+</code></pre>
+<p>Vagrant powers up a VM and install further Docker tools like Machine and Compose. Also Git will be installed to get in touch with <a href="https://github.com/brogersyh/Dockerfiles-for-windows">some</a> <a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-container-samples/windowsservercore">Windows</a> <a href="https://github.com/StefanScherer/dockerfiles-windows">Dockerfiles</a> available on GitHub.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/05/vagrant-up-1.png" alt="vagrant-up"></p>
+<p>You can open a PowerShell window and run for example</p>
+<pre><code>docker version
+docker images
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2016/05/docker-version.png" alt="docker-version"></p>
+<p>Congratulations! You can start working with a brand new Docker Engine running on Windows 2016 TP5.</p>
+<p>Have fun!</p>
+<h2 id="whatpackerdoesforyou">What Packer does for you</h2>
+<p>If you want to understand what Packer does building such a VM in an automated way here is a list of provision scripts that Packer runs.</p>
+<h3 id="installfeatures">Install features</h3>
+<p>In the script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-winrm.ps1">enable-winrm.ps1</a>, just before the WinRM port will be opened to let Packer login and do further provisioning some Windows features like Containers and Hyper-V (only VMware) will be enabled.</p>
+<h3 id="installdocker">Install Docker</h3>
+<p>The next script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/install-docker.ps1">install-docker.ps1</a> installs the Docker service and client and the <code>windowsservercore</code> base Docker image. If Hyper-V is enabled, also the <code>nanoserver</code> base Docker images will be installed.</p>
+<h3 id="patchwindowsservercoreimage">Patch windowsservercore image</h3>
+<p>As the TP5 and relating files and images are very fresh and it is still a technical preview, there might be some obstacles here and there.</p>
+<p>At the moment <a href="https://social.msdn.microsoft.com/Forums/en-US/e2751260-4494-4b60-999e-5ea27ccbe1db/workaround-to-increase-boot-time-for-windows-server-core-containers?forum=windowscontainers">we need this script</a> to speed up the <code>windowsservercore</code> Docker image a little bit. The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/patch-boot-time-for-containers.ps1">patch-boot-time-for-containers.ps1</a> just fixes that for you.</p>
+<h3 id="enableinsecuredockerport2375">Enable insecure Docker port 2375</h3>
+<p>For a local test environment we also just open the insecure Docker port 2375 with the script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/enable-docker-insecure.ps1">enable-docker-insecure.ps1</a>.<br>
+You can remote control your Windows Docker engine from your host machine that is running the VM. Try it out, especially if you are normally working with Linux or Mac.</p>
+<p>Once there is a Docker Machine driver for local Windows VM's is available I would prefer that and have the secure TLS connection.</p>
+<h3 id="adddockergroup">Add docker group</h3>
+<p>The new Windows Docker engine listens to a Windows named pipe. This is very similar to the Unix socket on Linux.</p>
+<p>A normal user does not have access to it, so you have to open an administrator shell to work with the Docker engine.</p>
+<p>The script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/add-docker-group.ps1">add-docker-group.ps1<br>
+</a> adds the option <code>-G docker</code> to the Docker engine to give all members of the Windows group <code>docker</code> access to that named pipe.</p>
+<p>The script also adds the user <code>vagrant</code> to that group. So in the final Vagrant box you just open a normal PowerShell window and can use the Docker engine.</p>
+<h3 id="removekeyjson">Remove key.json</h3>
+<p>The final script <a href="https://github.com/StefanScherer/packer-windows/blob/df8dedca5e1421290de322b3dfbb0e08a834f122/scripts/docker/remove-docker-key-json.ps1">remove-docker-key-json.ps1<br>
+</a> removes the <code>key.json</code> file from the initial installation. This file will be created on the first start of the Docker engine in each Vagrant VM and creates different ID's for each Docker engine.</p>
+<p>This is important if you want to build a Windows Docker Swarm. Each Docker engine needs a different ID.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>As there might be updates in the Docker base images and the Docker engine itself it is now very easy to reproduce the base VM with Packer and Vagrant without all the manual steps again.</p>
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Run a local Windows Docker Swarm]]></title><description><![CDATA[<div class="kg-card-markdown"><p>At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.</p></div>]]></description><link>https://stefanscherer.github.io/build-your-local-windows-docker-swarm/</link><guid isPermaLink="false">5986d4ec688a490001540962</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Swarm]]></category><category><![CDATA[Vagrant]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 01 Mar 2016 17:31:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.</p>
+<p>At the time of writing there is no docker-machine driver to create the Windows Docker VM's. And my laptop at work is still running with Windows 7, so I have chosen VirtualBox as a local hypervisor instead of Hyper-V.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/03/windows_swarm_demo.png" alt="Network diagram"></p>
+<p>As you can see in the diagram there also is a private Docker registry. I just want to show you that saving and restoring Windows Docker images is just as easy as on Linux.</p>
+<p>A laptop with 16GB memory is capable of running this setup. With less memory, just run only two of the Windows VM's and reduce the memory setting.</p>
+<h2 id="setupyourhost">Setup your host</h2>
+<p>If you like to follow this tutorial you need some tools on your host machine. Pleas keep in mind that VirtualBox does not work with Hyper-V on the same machine. My preferred way to setup a Windows machine is by install the software with <a href="https://chocolatey.org">Chocolatey</a>. So these are the steps needed for the host tools:</p>
+<pre><code>iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install -y virtualbox
+choco install -y vagrant
+choco install -y packer
+choco install -y docker
+</code></pre>
+<h2 id="buildthevagrantbox">Build the Vagrant box</h2>
+<p>Before spinning up the swarm you have to build the Windows Server 2016 VM with Docker installed. As I'm a big fan of automation I do not click through the installers, but use <a href="https://packer.io">Packer</a> and <a href="https://vagrantup.com">Vagrant</a> to build and run local VM's.</p>
+<p>Before running Packer you should register to the <a href="https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-technical-preview">technical preview evaluation</a> and accept the license for the Windows Server ISO file.</p>
+<p>After that just clone my Packer templates and build the VirtualBox VM with</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=virtualbox-iso windows_2016_docker.json
+</code></pre>
+<p>Now add the Vagrant box to the local list of baseboxes with</p>
+<pre><code>vagrant box add windows_2016_docker windows_2016_docker_virtualbox.box
+</code></pre>
+<h2 id="buildthedockerswarm">Build the Docker swarm</h2>
+<p>The next step is also very easy. We clone <a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-demo">the repo</a> with the Vagrantfile for the Docker swarm and spin up all boxes.</p>
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd swarm-demo
+vagrant up --provider virtualbox
+</code></pre>
+<p>One after another the VM's are booted and provisioned with the shell scripts provided in the <code>scripts</code> folder.</p>
+<h4 id="registry">registry</h4>
+<p>The Linux box <code>registry</code> is used for the Docker Swarm manager and a Docker registry.</p>
+<ol>
+<li>The swarm manager is using a token in <code>config/swarm-token</code>. Edit this as you like.</li>
+<li>The registry is using the <code>registry-v2</code> folder on your host to store the Docker images.</li>
+</ol>
+<h4 id="swwin01">sw-win-01 ...</h4>
+<p>The Windows Server 2016 TP4 machines that spin up a Swarm container to join the Docker Swarm. The Docker Engines have a connection to the insecure registry running at <code>registry:5000</code>.</p>
+<h2 id="upandrunning">Up and running</h2>
+<p>After a while all VM's are up and running and you can see the status with <code>vagrant status</code></p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/03/vagrant-status.png" alt="vagrant status"></p>
+<p>The Docker Swarm is built and all Windows VM's have joined the swarm. You can check this by connecting with the Docker Client to the Swarm Manager.</p>
+<pre><code>docker -H tcp://192.168.38.100:3375 info
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2016/03/docker-info.png" alt="docker info"></p>
+<h2 id="runcontainersintheswarm">Run containers in the swarm</h2>
+<p>For a very simple demo we now run three containers that are spread over all three Windows Docker Swarm agents.</p>
+<pre><code>docker -H tcp://192.168.38.100:3375 run -d windowsservercore powershell -Command sleep 60
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2016/03/docker-run.png" alt="docker run"></p>
+<p>As you can see the containers are running on all different Docker nodes <code>sw-win-01</code> ... <code>sw-win-03</code>.</p>
+<p>With the local registry you can push and pull Windows images from it and safe your work. The registry files are stored at your host so it is safe to destroy all VM's if you do not use them.</p>
+<p>I hope you have enjoyed this tutorial. In a future blog post I probably show how to build a Windows Docker Swarm in Azure or in Hyper-V.</p>
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>]]></content:encoded></item></channel></rss>

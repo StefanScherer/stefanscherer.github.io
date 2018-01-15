@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Golang - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Golang - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/golang/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Is there a Windows Docker image for ...?</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">5986d4ec688a490001540970</guid><category>Docker</category><category>Windows</category><category>Golang</category><category>Python</category><category>Node.js</category><category>Java</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.&lt;/p&gt;
+&lt;p&gt;These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.&lt;/p&gt;
+&lt;p&gt;Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.&lt;/p&gt;
+&lt;h2 id="prefernanoserver"&gt;Prefer NanoServer&lt;/h2&gt;
+&lt;p&gt;So starting to work with NanoServer is really easy with Docker as you only choose the right image for the &lt;code&gt;FROM&lt;/code&gt; instruction in your &lt;code&gt;Dockerfile&lt;/code&gt;. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.&lt;/p&gt;
+&lt;p&gt;So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.&lt;/p&gt;
+&lt;h2 id="go"&gt;Go&lt;/h2&gt;
+&lt;p&gt;The Go programming language is available on the Docker Hub as image &lt;a href="https://hub.docker.com/_/golang/"&gt;&lt;code&gt;golang&lt;/code&gt;&lt;/a&gt;. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM golang:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Have a look at the &lt;a href="https://hub.docker.com/_/golang/"&gt;tags page&lt;/a&gt; if you want another version or if you want to pin a specific version of Golang.&lt;/p&gt;
+&lt;h2 id="java"&gt;Java&lt;/h2&gt;
+&lt;p&gt;When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official &lt;a href="https://hub.docker.com/_/openjdk/"&gt;&lt;code&gt;openjdk&lt;/code&gt;&lt;/a&gt; Docker images. Both Windows Server Core and NanoServer are supported.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM openjdk:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the &lt;a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8"&gt;oracle/docker-images&lt;/a&gt; repository.&lt;/p&gt;
+&lt;h2 id="nodejs"&gt;Node.JS&lt;/h2&gt;
+&lt;p&gt;For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official &lt;a href="https://hub.docker.com/_/node/"&gt;&lt;code&gt;node&lt;/code&gt;&lt;/a&gt; images.&lt;/p&gt;
+&lt;p&gt;In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/node-windows:6-nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You also can find more tags and versions at the &lt;a href="https://hub.docker.com/r/stefanscherer/node-windows/"&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="python"&gt;Python&lt;/h2&gt;
+&lt;p&gt;The script language Python is available as Windows Server Core Docker image at the official &lt;a href="https://hub.docker.com/_/python/"&gt;&lt;code&gt;python&lt;/code&gt;&lt;/a&gt; images. Both major versions of Python are available.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM python:3-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM python:2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I also have a Python Docker image &lt;a href="https://hub.docker.com/r/stefanscherer/python-windows/"&gt;for NanoServer&lt;/a&gt; with Python 3.6 to create smaller Docker images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM stefanscherer/python-windows:nano&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="netcore"&gt;.NET Core&lt;/h2&gt;
+&lt;p&gt;Microsoft provides Linux and Windows Docker images for .NET Core at &lt;a href="https://hub.docker.com/r/microsoft/dotnet/"&gt;&lt;code&gt;microsoft/dotnet&lt;/code&gt;&lt;/a&gt;. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/dotnet:nanoserver&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="aspnet"&gt;&lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;For &lt;a href="http://ASP.NET"&gt;ASP.NET&lt;/a&gt; there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at &lt;a href="https://hub.docker.com/r/microsoft/aspnet/"&gt;&lt;code&gt;microsoft/aspnet&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:4.6.2-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FROM microsoft/aspnet:3.5-windowsservercore&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.&lt;/p&gt;
+&lt;p&gt;Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Build Docker Swarm binary for Windows the "Docker way"</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/build-docker-swarm-for-windows-the-docker-way/</link><guid isPermaLink="false">5986d4ec688a490001540963</guid><category>Docker</category><category>Swarm</category><category>Windows</category><category>Golang</category><category>Git</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Mar 2016 20:58:38 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you nowadays need nothing more than the right Dockerfiles to do this.&lt;/p&gt;
+&lt;p&gt;So let's start writing a &lt;code&gt;Dockerfile&lt;/code&gt; to build Docker Swarm inside a Docker container. For the next steps open a PowerShell window and then open an editor.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.builder
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="useabaseimage"&gt;Use a base image&lt;/h3&gt;
+&lt;p&gt;Swarm is written in Go, so we look for a useful base image. And there already is one useful base image in the &lt;strong&gt;Docker Hub&lt;/strong&gt;. So we begin the Dockerfile with the following line.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/golang
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installgit"&gt;Install Git&lt;/h3&gt;
+&lt;p&gt;Additionally to Go we also need Git installed inside the Container image. So we use the following lines that will download and install Git for Windows and then remove the installer again. As a further step we add Git to the &lt;code&gt;PATH&lt;/code&gt; variable.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV GIT_VERSION 2.7.2
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    wget https://github.com/git-for-windows/git/releases/download/v%GIT_VERSION%.windows.1/Git-%GIT_VERSION%-64-bit.exe -outfile gitinstaller.exe ; \
+    Start-Process .\gitinstaller.exe -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /DIR=c:\git' -Wait ; \
+    rm .\gitinstaller.exe
+
+RUN setx PATH %PATH%;C:\git\cmd;C:\git\bin;C:\git\usr\bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installandbuildgodepandswarm"&gt;Install and build Godep and Swarm&lt;/h3&gt;
+&lt;p&gt;The Swarm project uses &lt;code&gt;Godep&lt;/code&gt; to manage the dependencies. We also need this tool as well as the Swarm sources. So let's install both and run the &lt;code&gt;godep&lt;/code&gt; tool to build the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV SWARM_VERSION v1.1.3
+ENV GOPATH C:/go
+
+WORKDIR /go
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    go get github.com/tools/godep ; \
+    mkdir src\github.com\docker ; \
+    cd src\github.com\docker ; \
+    git clone https://github.com/docker/swarm ; \
+    cd swarm ; \
+    git checkout %SWARM_VERSION% ; \
+    Start-Process -FilePath godep.exe -ArgumentList go, install, . -Wait
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now save the &lt;code&gt;Dockerfile.builder&lt;/code&gt; file and close the editor.&lt;/p&gt;
+&lt;p&gt;Back in the PowerShell build the Docker image with the name &lt;code&gt;swarm-builder&lt;/code&gt; and the given Dockerfile with the following command.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;docker build -t swarm-builder -f Dockerfile.builder .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This now creates a Docker image with multiple layers, for each &lt;code&gt;ENV&lt;/code&gt; and &lt;code&gt;RUN&lt;/code&gt; command in the &lt;code&gt;Dockerfile&lt;/code&gt;. You can see the actions on your screen and finally the command finishes and you can list your images with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You should see a image with the name &lt;code&gt;swarm-builder&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+swarm-builder       latest              04e557dd075a        31 minutes ago      1.219 GB
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The size of the Docker image is not good for deployment as we have all the development tools and source codes inside it.&lt;/p&gt;
+&lt;h3 id="testandextracttheswarmexe"&gt;Test and extract the swarm.exe&lt;/h3&gt;
+&lt;p&gt;We only need the &lt;code&gt;swarm.exe&lt;/code&gt; from this image as it is a static binary. So we just run the Docker image and have a very little test of the binary just created by showing its version.&lt;/p&gt;
+&lt;p&gt;After that we copy the &lt;code&gt;swarm.exe&lt;/code&gt; from the container back to the host.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --name swarm-builder swarm-builder swarm --version
+docker cp swarm-builder:/go/bin/swarm.exe ./swarm.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="buildasmallswarmimage"&gt;Build a small Swarm image&lt;/h3&gt;
+&lt;p&gt;The final Docker image for deployment can be produced with a much simpler &lt;code&gt;Dockerfile&lt;/code&gt;. As the time of writing the Technical Preview 4 needs a small workaround to access the network inside a container. We have to add a small helper script for now.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;nodepad run.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The small PowerShell script just sleeps a little and then calls &lt;code&gt;swarm.exe&lt;/code&gt; with the arguments given.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Sleep 2
+\swarm.exe $args
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now it is time to write the &lt;code&gt;Dockerfile&lt;/code&gt;. So open an editor with the following command. Notice the dot '.' as this helps Notepad create a &lt;code&gt;Dockerfile&lt;/code&gt; without an extension.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; now uses the &lt;code&gt;windowsservercore&lt;/code&gt; base image and copies the helper script and the swarm binary into the image and sets the entrypoint.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM windowsservercore
+
+COPY ./swarm.exe /swarm.exe
+COPY ./run.ps1 /run.ps1
+
+ENV SWARM_HOST :2375
+
+ENTRYPOINT [&amp;quot;powershell.exe&amp;quot;, &amp;quot;-File&amp;quot;, &amp;quot;/run.ps1&amp;quot;]
+CMD [&amp;quot;--help&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now build the final Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t swarm .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Just check the size of the Docker images again with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-images.png" alt="docker images"&gt;&lt;/p&gt;
+&lt;p&gt;If you build a new version of the Swarm image later it is useful to tag each Docker image with its version. For this tutorial we have built Swarm 1.1.3, so we tag it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker tag swarm:latest swarm:1.1.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now can run a Swarm container eg. with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it swarm:1.1.3 --version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and you will see the version of the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="automateallthethings"&gt;Automate all the things&lt;/h3&gt;
+&lt;p&gt;Both the Dockerfiles and a build script can be found in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/swarm"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo. Even to download the sources you do not need more than a PowerShell window. Just download it as a ZIP and extract it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -outfile src.zip https://github.com/StefanScherer/dockerfiles-windows/archive/master.zip
+Expand-Archive .\dockerfiles-windows.zip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd src\dockerfiles-windows-master\swarm
+.\build.bat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="tldr"&gt;TL/DR&lt;/h3&gt;
+&lt;p&gt;Even on Windows you now can put development environments into Docker images and build small images for deployment with a two step approach. No special setup is needed on your host machine, just Docker should be reachable.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Everything is reproducable&lt;/strong&gt; on every team members machines. And a CI build pipeline can take advantage of this dockerized setup as well.&lt;/p&gt;
+&lt;p&gt;I hope you get a feeling what you can do with your own software project and &lt;strong&gt;start dockerizing&lt;/strong&gt; as well.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[LCOW - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>LCOW - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/lcow/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[DockerCon: LCOW and Windows Server 1709]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.</p>
+<h2 id="dockeronwindowsworkshop">Docker on Windows Workshop</h2>
+<p>On Monday</p></div>]]></description><link>https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/</link><guid isPermaLink="false">59f3b65cdd4c1b0001e301e7</guid><category><![CDATA[DockerCon]]></category><category><![CDATA[windows-containers]]></category><category><![CDATA[LCOW]]></category><category><![CDATA[Windows Server 1709]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 28 Oct 2017 00:18:11 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers.</p>
+<h2 id="dockeronwindowsworkshop">Docker on Windows Workshop</h2>
+<p>On Monday I helped <a href="https://twitter.com/EltonStoneman">Elton Stoneman</a> in his Docker on Windows Workshop. This time it was a full-day workshop and it was fully packed with 50 people.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/dowws.jpg" alt="Docker on Windows Workshop"></p>
+<p>Elton is always running the workshop at a rapic pace, but don't worry the workshop material is all public <a href="https://github.com/sixeyed/docker-windows-workshop">available on GitHub</a>. So we went through dockerizing <a href="http://ASP.NET">ASP.NET</a> apps, adding Prometheus, Grafana and an ELK stack for monitoring, building a Jenkins CI pipeline and finally running a Docker Swarm. There is lots of things to look up in the material. If you prefer a book, I can recommend his <a href="https://www.amazon.de/Docker-Windows-Elt%E2%80%A6">Docker on Windows</a> book which is also fully packed with many tips and tricks.</p>
+<h2 id="lcowtheinsidestory">LCOW - The Inside Story</h2>
+<p>One of my favorite talks was by <a href="https://twitter.com/gigastarks">John Starks</a> from Microsoft about Linux Container on Windows - The Inside Story. He explained how LinuxKit is used to run a small HyperV VM for the Linux containers to provide the Linux kernel. On his Windows 10 1709 machine he also gave pretty good live demos. The <a href="https://dockercon.docker.com/watch/U7Bxp66uKmemZssjCTyXkm">video is online</a> and is worth watching.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/dcon-lcow.jpg" alt="Linux and Windows containers side-by-side"></p>
+<p>In the photo you can see an alpine and nanoserver container running side-by-side. So you will no longer need to switch between Linux and Windows containers, it just works. He also showed that volumes work between Linux and Windows containers. This demo was done with a special Docker engine as not all pull requests haven't been merged. But still challenging for me to try this on a own machine ...</p>
+<h2 id="windowsserver1709">Windows Server 1709</h2>
+<p>During the DockerCon week Microsoft has announced the availability of Windows Server Version 1709 for download. I first looked at the Azure Portal, but found nothing yet. I also couldn't find the downloads.</p>
+<p>So after the LCOW talk I used a Windows 10 VM in Azure and installed the Fall Creators Update to have 1709 on that desktop machine. I found the missing pull request and compiled a Docker engine from source and then I had my LCOW moment:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/docker-run-lcow.gif" alt="docker-run-lcow"></p>
+<p>When you see this the first time working and know what technical details had to be solved make make it look so simple and easy - awesome!</p>
+<p>The next day I found the Windows Server 1709 ISO in my MSDN subscription. So I could start working on a Packer template in my <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> GitHub repo to automate the creation of such Windows VM's. But DockerCon is to meet people and learn new things: <a href="https://twitter.com/NicholasDille">Nicholas Dille</a> went another very interesting way to <a href="http://dille.name/blog/2017/10/25/building-a-windowscontainer-docker-host-without-running-windows-setup/">build a VM with Docker without running Windows Setup</a>.</p>
+<h2 id="smallerwindowsimages">Smaller Windows images</h2>
+<p>In the last months we could follow the progress of the Windows Server in several Insider builds. I blogged about the <a href="https://stefanscherer.github.io/exploring-new-nanoserver-insider-images/">smaller NanoServer Insider images</a> in July going down to 80-90 MByte. Now with the new release of Windows Server 1709 and Windows 10 version 1709 we now can use official images.</p>
+<ul>
+<li>microsoft/windowsservercore:1709</li>
+<li>microsoft/nanoserver:1709</li>
+<li>microsoft/dotnet:2.0.0-*-nanoserver-1709</li>
+<li>microsoft/aspnet:4.7.1-windowsservercore-1709</li>
+</ul>
+<p>The biggest discussion is about having no PowerShell in the small nanoserver image. For me it's a nice fit to just <code>COPY</code> deploy microservices into the Windows image.</p>
+<p>I haven't seen an official PowerShell base image based on nanoserver, but there is at least the beta version</p>
+<ul>
+<li>microsoft/powershell:6.0.0-beta.9-nanoserver-1709</li>
+</ul>
+<p>I also have pushed some images to the Docker Hub to get started with other languages and tools.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/Bildschirmfoto-2017-10-19-um-11.14.43.png" alt="Bildschirmfoto-2017-10-19-um-11.14.43"></p>
+<p>If you don't have HyperV installed in Windows Server 1709 (maybe you are running a VM in the Cloud) then you cannot run older Windows Docker image on the new server. All images have to be built based on the new 1709 base images.</p>
+<p>Windows 10 users always use HyperV to run Linux or Windows containers, so you don't feel that hard constraint on your developer machine.</p>
+<p>It will be interesting to see how the multiple Windows versions evolve and when the next Insider program is giving us early access to the upcoming features.</p>
+<h2 id="captainshackday">Captains Hack Day</h2>
+<p>On our Docker Captains Hack Day <a href="https://twitter.com/mikesir87">Michael Irwin</a> has started a better <a href="https://github.com/mikesir87/swarm-viz">Swarm Visualizer 2.0</a>. During the day we have added a first CI pipeline and - of course - Windows support. But not only Windows! With some magic multi-stage multi-arch builds we also managed to cross-build the visualizer on an Intel machine and create a Docker image for IBM z390 mainframes. <a href="https://twitter.com/estesp">Phil Estes</a> tested the image in the IBM cloud. I'll write a more detailed blog post about how to cross-build Node.js apps with Docker.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/10/captain-hack-day.jpg" alt="captain-hack-day"></p>
+<p>That was a fascinating week at DockerCon. Thanks to Jenny, Ashlinn, Victor, Mano ... for making this event so wonderful. I had a lot of hallway tracks to talk with many people about Windows Containers in devolpment and production. Share and learn!</p>
+<p>Stefan<br>
+<a href="https://twitter.com/stefscherer">@stefscherer</a></p>
+</div>]]></content:encoded></item></channel></rss>

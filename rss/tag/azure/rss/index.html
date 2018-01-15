@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Azure - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Azure - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/azure/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to run encrypted Windows websites with Docker and Træfɪk]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like</p></div>]]></description><link>https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/</link><guid isPermaLink="false">5986d4ec688a490001540971</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><category><![CDATA[Traefik]]></category><category><![CDATA[Portainer]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 10 Mar 2017 22:21:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like many others I guess - have heard of Let's Encrypt, but never really tried it.</p>
+<p>But let's learn new things and try it out. I also have promised in the <a href="https://blog.docker.com/2017/02/dockercast-interview-docker-captain-stefan-scherer-microsoft-docker/">interview in John Willis' Dockercast</a> that I will write a blog post about it. With some modern tools you will see, it's not very complicated to run your Windows website with TLS certificates.</p>
+<p>In this blog post I will show you how to run your website in Windows containers with Docker. You can develop your website locally in a container and push it to your server. And another Windows container runs the Træfɪk proxy, that helps us with the TLS certificate as well as with its dynamic configuration to add more than just one website.</p>
+<p><a href="https://traefik.io">Træfɪk</a> is a modern HTTP reverse proxy and load balancer made to deploy microservices with ease. It supports several backends like Docker to register and update its configuration for each new started container.</p>
+<p>This picture gives you an overview of the architecture:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/architecture.png" alt="Traefik architecture"></p>
+<p>Normally Træfɪk is running inside a container and it is well known in the Linux Docker community. A few weeks ago I have seen that there also are Windows binaries available. Let's see if we can use Træfɪk in a Windows container to provide us encrypted HTTPS traffic to other Windows containers running our IIS website, or other web service.</p>
+<h2 id="step1createawindowsdockerhostinazure">Step 1: Create a Windows Docker host in Azure</h2>
+<p>First of all we need a Windows Server 2016 machine with Docker in the cloud. I will use Azure as Microsoft provides a VM template for that. This server will be our webserver later on with an own DNS name and TLS certs running our website.</p>
+<p>Go to the <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-server">Windows Containers quick start guide</a> at <a href="http://docs.microsoft.com">docs.microsoft.com</a> and press the &quot;Deploy to Azure&quot; button.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/01-deploy-to-azure-1.png" alt="Deploy to Azure"></p>
+<p>This will bring you to the Azure portal where you can customize the virtual machine. Create a new resource group, choose the location where the server should be running a and public DNS name, as well as the size of the VM.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/02-customize.png" alt="Customize machine"></p>
+<p>After you click on &quot;Purchase&quot; the deployment starts which should take only a few minutes.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/03-deployment-started.png" alt="Azure starts deployment"></p>
+<p>In the meantime click on the cube symbol on the left. That will show you all resource groups you have.</p>
+<p>This Windows + Docker template already creates inbound security rules for HTTPS port 443 as well as the Docker TLS port 2376. So for our purposes we don't need to add more inbound rules.</p>
+<h2 id="step2buyadomainandupdatednsrecords">Step 2: Buy a domain and update DNS records</h2>
+<p>For Let's Encrypt you need an own domain name to get TLS certificates. For my tests I ordered a domain name at GoDaddy. But after I walked through the steps I realised that Træfɪk also can automatically update your DNS records when you use DNSimple, CloudFlare etc.</p>
+<p>But for first time domain name users like me I show you the manual steps. In my case I went to my domain provider and configured the DNS records.</p>
+<h4 id="getthepublicipaddress">Get the public IP address</h4>
+<p>Before we can update the DNS record we need the public IP address of the VM. This IP address is also used for the Docker TLS certificates we will create later on.</p>
+<p>In the Azure Portal, open the resource group and click on the public IP address.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/04-resource-group-1.png" alt="Resource group"></p>
+<p>Write down or copy the IP address shown here.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/08-pubip-1.png" alt="Public IP address"></p>
+<p>Go back to your domain provider and enter the public IP address in the A record. If you want to run multiple websites within Docker containers, add a CNAME resource record for each sub domain you need. For this tutorial I have added <code>portainer</code> and <code>whoami</code> as additional sub domains.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/09-dns-a-record-cname-1.png" alt="Update DNS records"></p>
+<p>After some minutes all the DNS servers should know your domain name with the new IP address of your Windows Server 2016.</p>
+<h2 id="step3securedockerwithtls">Step 3: Secure Docker with TLS</h2>
+<p>We now log into the Docker host with RDP. You can use the DNS name provided by Azure or use your domain name. But before you connect with RDP, add a shared folder to your RDP session so you can also copy back the Docker TLS client certificates to your local machine. With this you will also be able to control your Windows Docker engine directly from your local computer.</p>
+<p>In this example I shared my desktop folder with the Windows VM.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/10-rdp-client-add-folder.png" alt="Add folder in RDP client"></p>
+<p>Now login with the username and password entered at creation time.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/11-rdp-login.png" alt="Login with RDP"></p>
+<h4 id="createdockertlscerts">Create Docker TLS certs</h4>
+<p>To use Docker remotely it is recommended to use client certificates, so nobody without that certs can talk to your Docker engine. The same applies if a Windows container wants to communicate with the Docker engine. Using just the unprotected port 2375 would give every container the possibility to gain access to your Docker host.</p>
+<p>Open a PowerShell terminal as an administrator to run a Windows container that can be used to create TLS certificates for your Docker engine. I already have blogged about <a href="https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/">DockerTLS in more detail</a> so we just use it here as a tool.</p>
+<p>Retrieve all local IP addresses to allow the TLS certificate also from the host itself, but as well for other Windows containers to talk to your Docker engine.</p>
+<pre><code>$ips = ((Get-NetIPAddress -AddressFamily IPv4).IPAddress) -Join ','
+</code></pre>
+<p>Also create a local folder for the client certificates.</p>
+<pre><code>mkdir ~\.docker
+</code></pre>
+<p>Now run the DockerTLS tool with <code>docker run</code>, just append the public IP address from above to the list of <code>IP_ADDRESSES</code>. Also adjust the <code>SERVER_NAME</code> variable to your domain name.</p>
+<pre><code>docker run --rm `
+  -e SERVER_NAME=schererstefan.xyz `
+  -e IP_ADDRESSES=$ips,52.XXXXXXX.198 `
+  -v &quot;C:\ProgramData\docker:C:\ProgramData\docker&quot; `
+  -v &quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
+  stefanscherer/dockertls-windows
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/12-mkdir-and-run-dockertls.png-shadow.png" alt="Run dockertls"></p>
+<p>Docker will pull the Windows image from Docker Hub and create the TLS certificates in the correct folders for your Docker engine.</p>
+<p>Afterwards you have to restart the Docker engine to use the TLS certificates. The Docker engine now additionally listen on TCP port 2376.</p>
+<pre><code>restart-service docker
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/13-restart-docker.png-shadow.png" alt="Restart docker"></p>
+<h4 id="addfirewallexceptionfordocker">Add firewall exception for Docker</h4>
+<p>This step is needed to make other Windows container talk to the Docker engine at port 2376. But it also has another benefit. With these certs you can use the Docker client on your local machine to communicate with the Windows Docker engine in Azure. But I will start Træfɪk later on from the Docker host itself as we need some volume mount points.</p>
+<p>The Windows Server's firewall is active, so we now have to add an exception to allow inbound traffic on port 2376. The network security group for the public IP address already has an inbound rule to the VM. This firewall exception now allows the connection to the Docker engine.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/14-inbound-rule-2376-in-vm.png-shadow.png" alt="Add firewall exception"></p>
+<p>From now on you can connect to the Docker engine listing on port 2376 from the internet.</p>
+<h4 id="copydockerclientcertstoyourlocalmachine">Copy Docker client certs to your local machine</h4>
+<p>To setup a working communication from your local machine, copy the Docker client certificates from the virtual machine through the RDP session back to your local machine.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/17-copy-docker-certs.png-shadow.png" alt="Copy Docker TLS certs to client"></p>
+<p>On your local machine try to connect with the remote Windows Docker engine with TLS encryption and the client certs.</p>
+<pre><code>$ DOCKER_CERT_PATH=~/Desktop/.docker DOCKER_TLS_VERIFY=1 docker -H tcp://schererstefan.xyz:2376 version
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/18-mac-client.png" alt="Docker client from Mac"></p>
+<p>Now you are able to start and stop containers as you like.</p>
+<h2 id="step4runtrfkandotherservices">Step 4: Run Træfɪk and other services</h2>
+<p>Now comes the fun part. We use Docker and Docker Compose to describe which containers we want to run.</p>
+<h4 id="installdockercompose">Install Docker Compose</h4>
+<p>To spin up all our containers I use Docker Compose and a <code>docker-compose.yml</code> file that describes all services.</p>
+<p>The Windows VM does not come with Docker Compose. So we have to install Docker Compose first. If you are working remotely you can use your local installation of Compose and skip this step.</p>
+<pre><code>Invoke-WebRequest &quot;https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Windows-x86_64.exe&quot; `
+  -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
+</code></pre>
+<p>If you prefer Chocolatey, use <code>choco install docker-compose</code> instead.</p>
+<h4 id="createdatafoldersondockerhost">Create data folders on Docker host</h4>
+<p>You need to persist some data outside of the Docker containers, so we create some data folders. Træfɪk retrieves the TLS certs and these should be persisted outside of the container. Otherwise you run into the Let's Encrypt rate limit of 20 requests per week to obtain new certificates. This happened to me trying different things with Træfɪk and starting and killing the container lots of times.</p>
+<pre><code>PS C:\Users\demo&gt; mkdir sample
+PS C:\Users\demo&gt; cd sample
+PS C:\Users\demo\sample&gt; mkdir traefikdata
+PS C:\Users\demo\sample&gt; mkdir portainerdata
+</code></pre>
+<h4 id="dockercomposeyml">docker-compose.yml</h4>
+<p>For a first test we define two services, the traefik service and a example web server called whoami. This tutorial should give you just an idea and you can extend the YAML file to your needs. Run an IIS website? Put it into a container image. And another IIS website? Just run a separate container with that other website in it. You see you don't have to mix multiple sites, just leave them alone in single microservice images.</p>
+<p>Open up an editor and create the YAML file.</p>
+<pre><code>PS C:\Users\demo\sample&gt; notepad docker-compose.yml
+</code></pre>
+<pre><code class="language-yaml">version: '2.1'
+services:
+  traefik:
+    image: stefanscherer/traefik-windows
+    ports:
+      - &quot;8080:8080&quot;
+      - &quot;443:443&quot;
+    volumes:
+      - ./traefikdata:C:/etc/traefik
+      - ${USERPROFILE}/.docker:C:/etc/ssl:ro
+
+  whoami:
+    image: stefanscherer/whoami-windows
+    depends_on:
+      - traefik
+    labels:
+      - &quot;traefik.backend=whoami&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:whoami.schererstefan.xyz&quot;
+
+networks:
+  default:
+    external:
+      name: nat
+</code></pre>
+<p>I already have built a Træfɪk Windows Docker image that you can use. There might be an official image in the future. If you don't want to use my image, just use this <code>Dockerfile</code> and replace the <code>image: stefanscherer/traefik-windows</code> with <code>build: .</code>, so Docker Compose will build the Træfɪk image for you.</p>
+<p>The <code>Dockerfile</code> looks very simple as we directly add the Go binary to the Nanoserver Docker image and define some volumes and labels.</p>
+<pre><code>FROM microsoft/nanoserver
+
+ADD https://github.com/containous/traefik/releases/download/v1.2.0-rc2/traefik_windows-amd64 /traefik.exe
+
+VOLUME C:/etc/traefik
+VOLUME C:/etc/ssl
+
+EXPOSE 80
+ENTRYPOINT [&quot;/traefik&quot;, &quot;--configfile=C:/etc/traefik/traefik.toml&quot;]
+
+# Metadata
+LABEL org.label-schema.vendor=&quot;Containous&quot; \
+      org.label-schema.url=&quot;https://traefik.io&quot; \
+      org.label-schema.name=&quot;Traefik&quot; \
+      org.label-schema.description=&quot;A modern reverse-proxy&quot; \
+      org.label-schema.version=&quot;v1.2.0-rc2&quot; \
+      org.label-schema.docker.schema-version=&quot;1.0&quot;
+</code></pre>
+<h4 id="traefiktoml">traefik.toml</h4>
+<p>Træfɪk needs a configuration file where you specify your email address for the Let's Encrypt certificate requests. You will also need the IP address of the container network so that Træfɪk can contact your Docker engine.</p>
+<pre><code>$ip=(Get-NetIPAddress -AddressFamily IPv4 `
+   | Where-Object -FilterScript { $_.InterfaceAlias -Eq &quot;vEthernet (HNS Internal NIC)&quot; } `
+   ).IPAddress
+Write-Host $ip
+</code></pre>
+<p>Now open an editor to create the <code>traefik.toml</code> file.</p>
+<pre><code>PS C:\Users\demo\sample&gt; notepad traefikdata\traefik.toml
+</code></pre>
+<p>Enter that IP address at the <code>endpoint</code> of the <code>[docker]</code> section. Also adjust the domain names</p>
+<pre><code class="language-toml">[web]
+address = &quot;:8080&quot;
+
+[docker]
+domain = &quot;schererstefan.xyz&quot;
+endpoint = &quot;tcp://172.24.128.1:2376&quot;
+watch = true
+
+[docker.tls]
+ca = &quot;C:/etc/ssl/ca.pem&quot;
+cert = &quot;C:/etc/ssl/cert.pem&quot;
+key = &quot;C:/etc/ssl/key.pem&quot;
+
+# Sample entrypoint configuration when using ACME
+[entryPoints]
+  [entryPoints.https]
+  address = &quot;:443&quot;
+    [entryPoints.https.tls]
+
+[acme]
+
+# Email address used for registration
+#
+# Required
+#
+email = &quot;you@yourmailprovider.com&quot;
+
+storage = &quot;c:/etc/traefik/acme.json&quot;
+entryPoint = &quot;https&quot;
+
+[[acme.domains]]
+   main = &quot;schererstefan.xyz&quot;
+   sans = [&quot;whoami.schererstefan.xyz&quot;, &quot;portainer.schererstefan.xyz&quot;, &quot;www.schererstefan.xyz&quot;]
+</code></pre>
+<h4 id="openfirewallforallcontainerportsused">Open firewall for all container ports used</h4>
+<p>Please notice that the Windows firewall is also active for the container network. The <code>whoami</code> service listens on port 8000 in each container. To make Træfɪk connect to the <code>whoami</code> containers you have to add a firewall exception for port 8000.</p>
+<p>Docker automatically adds a firewall exception for all ports mapped to the host with <code>ports:</code> in the <code>docker-compose.yml</code>. But for the exposed ports this does not happen automatically.</p>
+<h4 id="spinuptrfkandwhoami">Spin up Træfɪk and whoami</h4>
+<p>Now it's time to spin up the two containers.</p>
+<pre><code>docker-compose up
+</code></pre>
+<p>You can see the output of each container and stop them by pressing <code>CTRL+C</code>. If you want to run them detached in the background, use</p>
+<pre><code>docker-compose up -d
+</code></pre>
+<p>So see the output of the services you can use <code>docker-compose logs traefik</code> or <code>docker-compose logs whoami</code> at any time.</p>
+<p>Træfɪk now fetches TLS certificates for your domain with the given sub domains. Træfɪk listens for starting and stopping containers.</p>
+<h2 id="testwithabrowser">Test with a browser</h2>
+<p>Now open a browser on your local machine and try your TLS encrypted website with the subdomain <code>whoami</code>. You should see a text like <code>I'm 3e1f17ecbba3</code> which is the hostname of the container.</p>
+<p>Now let's try Træfɪk load balancing feature by scaling up the <code>whoami</code> service.</p>
+<pre><code>docker-compose scale whoami=3
+</code></pre>
+<p>Now there are three <code>whoami</code> containers running and Træfɪk knows all three of them. Each request to the subdomain will be load balanced to one of these containers. You can <code>SHIFT</code>-reload your page in the browser and see that each request returns another hostname.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/15-browser.png" alt="Test whoami service with browser"></p>
+<p>So we have a secured HTTPS connection to our Windows containers.</p>
+<h2 id="iis">IIS</h2>
+<p>The power of Docker is that you can run multiple services on one machine if you have resources left. So let's add another web server, let's choose an IIS server.</p>
+<p>Add these lines to the <code>docker-compose.yml</code>.</p>
+<pre><code>  www:
+    image: microsoft/iis
+    expose:
+      - 80
+    depends_on:
+      - traefik
+    labels:
+      - &quot;traefik.backend=www&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:www.schererstefan.xyz&quot;
+</code></pre>
+<p>Remember to add a firewall exception for port 80 manually. After that spin up the IIS container with</p>
+<pre><code>docker-compose up -d www
+</code></pre>
+<p>And check the new sub domain. You will see the welcome page of IIS.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/iis-welcom.png" alt="IIS welcome page"></p>
+<h2 id="portainer">Portainer</h2>
+<p>Let's add another useful service to monitor your Docker engine. Portainer is a very good UI for that task and it is also available as a Windows Docker image.</p>
+<p>Add another few lines to our <code>docker-compose.yml</code>.</p>
+<pre><code>  portainer:
+    image: portainer/portainer
+    command: -H tcp://172.24.128.1:2376 --tlsverify
+    volumes:
+      - ./portainerdata:C:/data
+      - ${USERPROFILE}/.docker:C:/certs
+    depends_on:
+      - traefik
+    labels:
+      - &quot;traefik.backend=portainer&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:portainer.schererstefan.xyz&quot;
+</code></pre>
+<p>Portainer also needs the client certs to communicate with the Docker engine. Another volume mount point is used to persist data like your admin login outside the container.</p>
+<p>Now run Portainer with</p>
+<pre><code>docker-compose up -d portainer
+</code></pre>
+<p>Then open your browser on your local machine with the subdomain. When you open it the first time Portainer will ask you for an admin password. Enter a password you want to use and then login with it.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/19-portainer-login.png" alt="Portainer login"></p>
+<p>Now you have an UI to see all containers running, all Docker images downloaded etc.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/20-portainer-dashboard.png" alt="Portainer dashboard"></p>
+<p><img src="https://stefanscherer.github.io/content/images/2017/03/21-portainer-containers.png" alt="Portainer containers"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>What we have learned is that Træfɪk works pretty good on Windows. It helps us securing our websites with TLS certificates. In combination with Docker Compose you can add or remove new websites on the fly or even scale some services with the built-in load balancer of Træfɪk.</p>
+<p>Read more details in the <a href="https://docs.traefik.io">Træfɪk documentation</a> as I can give you only a short intro of its capabilities.</p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[How to protect a Windows 2016 Docker engine with TLS]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
+<p>There is a tutorial</p></div>]]></description><link>https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/</link><guid isPermaLink="false">5986d4ec688a49000154096a</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><category><![CDATA[TLS]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 23 Oct 2016 22:35:19 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Today I have started a Windows Server 2016 VM with Container support in Azure. This is pretty easy as there is a prebuilt VM with the Docker base images. But I want a secured connection from my laptop to the Windows Docker engine running in Azure.</p>
+<p>There is a tutorial <a href="https://docs.docker.com/engine/security/https/">Protect the Docker daemon socket</a> at the website of Docker which uses the <code>openssl</code> tool to create all the certificates etc. But how should we do this on Windows?</p>
+<h2 id="justcontainerizewhatsthere">Just containerize what's there</h2>
+<p>I have seen the <a href="https://github.com/Microsoft/Virtualization-Documentation/tree/master/windows-server-container-tools/DockerTLS">DockerTLS</a> script in a GitHub repo from Microsoft. But this script installs OpenSSL on my machine which I don't want to.</p>
+<p>My first thought was, let's put this script + OpenSSL into a Docker image and run it in a Windows container.</p>
+<p>So this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/2e2a5b12252816744f5414e0621e12bb74b6f59c/dockertls/Dockerfile">Dockerfile</a> was my first attempt to just use Chocolatey to install OpenSSL, download the PowerShell script from the Microsoft GitHub repo. Done. The script can run in a safe environment and I don't have to install software on my Docker host.</p>
+<h2 id="dockertls">DockerTLS</h2>
+<p>But there is still work to do on the host to configure the Docker engine which I wanted to automate a little more. So it would be great to have a tool that can</p>
+<ul>
+<li>generate all TLS certs</li>
+<li>create or update the Docker <code>daemon.json</code> file</li>
+<li>Put the client certs into my home directory</li>
+</ul>
+<p>But still we need a program or script with OpenSSL to do that. I thought this tool should be deployed in a Docker image and shared on the Docker Hub. And here it is:</p>
+<h2 id="dockerrundockertls">docker run dockertls</h2>
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls.png" alt="dockertls"></p>
+<p>The script <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/generate-certs.ps1">generate-certs.ps1</a> creates the TLS certs and copies them to the folders that would be used on the Docker host. The script would directly work on a Docker host if you have OpenSSL/LibreSSL installed.</p>
+<p>The dockertls Docker image is created with this <a href="https://github.com/StefanScherer/dockerfiles-windows/blob/master/dockertls/Dockerfile">Dockerfile</a>. It installs LibreSSL from OpenBSD (thanks to <a href="https://twitter.com/friism">Michael Friis</a> for that optimization) and copies the PowerShell script inside the image.</p>
+<p>You can find the <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/dockertls">full source code</a> of the dockertls image in my <a href="https://github.com/StefanScherer/dockerfiles-windows">dockerfiles-windows</a> GitHub repo if you want to build the Docker image yourself.</p>
+<p>Otherwise you can just the <a href="https://hub.docker.com/r/stefanscherer/dockertls-windows/">dockertls Docker image</a> from the Docker Hub.</p>
+<h3 id="dryrun">Dry run</h3>
+<p>As you don't trust me or my Docker image you can do a dry run with some temporary folders where the container can copy files into without destroying your Docker host.</p>
+<p>Just create two folders:</p>
+<pre><code>mkdir server
+mkdir client\.docker
+</code></pre>
+<p>Now run the Windows container with the environment variables <code>SERVER_NAME</code> and <code>IP_ADDRESSES</code> as well as two volume mounts to write the certs back to the host:</p>
+<pre><code>docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &quot;$(pwd)\server:C:\ProgramData\docker&quot; `
+  -v &quot;$(pwd)\client\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
+  stefanscherer/dockertls-windows
+</code></pre>
+<p>Afterwards check the folders:</p>
+<pre><code>dir server\certs.d
+dir server\config
+dir client\.docker
+</code></pre>
+<p>You will see that there are three pem files for the server, the <code>daemon.json</code> file as well as three pem files for the client.</p>
+<p>Of course you could manually copy the files and try them out. But this Docker image can do this for you as well.</p>
+<h3 id="fullrun">Full run</h3>
+<p>You may have to create the <code>.docker</code> folder in your home directory.</p>
+<pre><code>mkdir $env:USERPROFILE\.docker
+</code></pre>
+<p>Now run the container with the correct paths on the host so it can copy all certs and configs to the right place. The script can read an existing <code>daemon.json</code> and update it to keep all other configuration untouched.</p>
+<pre><code>docker run --rm `
+  -e SERVER_NAME=$(hostname) `
+  -e IP_ADDRESSES=127.0.0.1,192.168.254.123 `
+  -v &quot;C:\ProgramData\docker:C:\ProgramData\docker&quot; `
+  -v &quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
+  stefanscherer/dockertls-windows
+</code></pre>
+<p>Now you have to restart the Docker service in an administrator Shell with</p>
+<pre><code>restart-service docker
+</code></pre>
+<p>One last step is needed on your host. You have to open the port 2376 in your firewall so you can access the machine from the outside. But then you're done on your host.</p>
+<p>You can recreate the TLS certs with the same command and just restart the Docker service afterwards.</p>
+<h3 id="testtlsconnection">Test TLS connection</h3>
+<p>Now test the connection to the TLS secured Docker service with</p>
+<pre><code>docker --tlsverify `
+  --tlscacert=$env:USERPROFILE\.docker\ca.pem `
+  --tlscert=$env:USERPROFILE\.docker\cert.pem `
+  --tlskey=$env:USERPROFILE\.docker\key.pem `
+  -H=tcp://127.0.0.1:2376 version
+</code></pre>
+<p>Or just set some environment variables</p>
+<pre><code>$env:DOCKER_HOST=&quot;tcp://127.0.0.1:2376&quot;
+$env:DOCKER_TLS_VERIFY=&quot;1&quot;
+docker version
+</code></pre>
+<h3 id="azure">Azure</h3>
+<p>In an Azure VM you should use your DNS name for the VM in the <code>SERVER_NAME</code> environment variable and your public and local IP addresses of that machine.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-run---Kopie.png" alt="docker-run"></p>
+<p>You have to open the firewall port 2376 on your Windows Docker host.</p>
+<p>For Azure you also have to add a incoming rule for port 2376 in your network security group.</p>
+<p>Then you have to securely transfer the three client pem files from your Azure VM to your laptop.</p>
+<p>I've done that on my old Windows 10 machine which is only a 32bit machine, but I still can work with the Windows 2016 Docker engine running in Azure.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/10/dockertls-1.png" alt="docker-version"></p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[How to run a Windows Docker Engine in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.</p>
+<p>The</p></div>]]></description><link>https://stefanscherer.github.io/how-to-run-windows-docker-engine-in-azure/</link><guid isPermaLink="false">5986d4ec688a490001540960</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Azure]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 01 Feb 2016 12:47:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Over the weekend I had a look at how easy it is to get in touch with Docker on Windows. But this time with the Windows Docker Engine in mind. In this blog post I show you how to run a Windows Docker Engine in a VM in Azure.</p>
+<p>The Docker Engine has an API that is compatible between all platforms. So you can even work from your Linux, Mac or Windows notebook and build and run Windows Containers in that remote VM.</p>
+<p>So let's get started. The Windows Docker Engine is a work in progress, but it's really worth to have a closer look at it right now. It is available with the Windows Server 2016 Technical Preview 4, or TP4 for short.</p>
+<p>To avoid building own VM's locally or installing it on bare metal we just use the prebuilt TP4 VM in Azure.</p>
+<h3 id="justwithaclick">Just with a click</h3>
+<p>A really nice feature is the <strong>Deploy to Azure</strong> button. I have found a good template at the <a href="https://github.com/Azure/azure-quickstart-templates">azure-quickstart-templates</a> repo and enhanced it a little bit to have more Docker tools pre-installed. For details have a look at my <a href="https://github.com/StefanScherer/docker-windows-azure">docker-windows-azure</a> repo.</p>
+<p>If you have an account for Microsoft Azure you can click on the following button to create the VM with this template. And if not, there also is a short trial period where you can test-drive Azure for some weeks.</p>
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FStefanScherer%2Fdocker-windows-azure%2Fmaster%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png">
+</a>
+<h3 id="azurecli">Azure CLI</h3>
+<p>If you have the <a href="https://azure.microsoft.com/documentation/articles/xplat-cli-install/">Azure CLI</a> installed you also can spin up the Windows Docker Engine VM from the command line.</p>
+<p>The command takes the JSON template file from the <a href="https://github.com/StefanScherer/docker-windows-azure">docker-windows-azure</a> repo and adds the parameters that are needed to customize the VM and in which region it should be started.</p>
+<pre><code class="language-bash">azure group deployment create Group docker-tp4 \
+  --template-uri https://raw.githubusercontent.com/StefanScherer/docker-windows-azure/master/azuredeploy.json \
+  -p '{
+    &quot;adminUsername&quot;: {&quot;value&quot;: &quot;docker&quot;},
+    &quot;adminPassword&quot;: {&quot;value&quot;: &quot;Super$ecretPass123&quot;},
+    &quot;dnsNameForPublicIP&quot;: {&quot;value&quot;: &quot;docker-tp4&quot;},
+    &quot;VMName&quot;: {&quot;value&quot;: &quot;docker-tp4&quot;},
+    &quot;location&quot;: {&quot;value&quot;: &quot;West US&quot;}
+    }'
+</code></pre>
+<h2 id="connecttothewindowsdockerengine">Connect to the Windows Docker Engine</h2>
+<p>Now that the VM is up and running in Azure we want to use it. So we have to connect to the Windows Docker Engine.</p>
+<p>There are several ways to do that.</p>
+<ul>
+<li>Use <strong>RDP</strong> to connect to the VM and use the Command Shell there to run docker commands locally in the VM.</li>
+<li>Use <strong>WinRM</strong> to login to the VM. This connection is protected with a self-signed certifcate that is created on startup. But I had some trouble with the Go/Ruby WinRM clients for OSX, so I also added OpenSSH.</li>
+<li>Use <strong>SSH</strong> to login to the VM. Just grab the FQDN or the IP of the VM and ssh into it. Then you also can run docker commands locally in the VM. Add your public SSH key for password-less logins.</li>
+<li>Use the <strong>Docker API</strong> running at HTTP port 2375 to connect from your notebook. Then you can remote control the Windows Docker Engine from your Windows, Linux or Mac client.</li>
+</ul>
+<h2 id="remotedockerapi">Remote Docker API</h2>
+<p>I'll show you the last method of the list to connect your local Docker client to the remote Windows Docker Engine.</p>
+<p>Please notice that using the <strong>unsecure HTTP port 2375</strong> is not recommended. Securing the Docker port with a TLS certificate is part of a future blog post. There also is some good advice in <a href="http://blogsprajeesh.blogspot.de/2015/09/docker-for-windows-on-azure-vm-securing.html">Docker for windows on Azure VM : Securing the host and TLS</a> from Prajeesh Prathap.</p>
+<p>I hope that <code>docker-machine</code> can do this step for you in the near future. It can generate such certs and upload them as well can help you setting the environment variables for the Docker Client.</p>
+<p>But for now we just set the environment variables manually.</p>
+<p>You need the full qualified domain name (FQDN) of your VM in Azure or at least the public IP address. In combination with the <code>azure</code> cli you can retrieve the IP address and set all the environments in a Linux/Mac/Cygwin shell with the following commands.</p>
+<pre><code class="language-bash">unset DOCKER_MACHINE_NAME
+unset DOCKER_TLS_VERIFY
+unset DOCKER_CERT_PATH
+export DOCKER_HOST=tcp://$(azure vm show Group docker-tp4 | grep &quot;Public IP address&quot; | cut -d : -f 3):2375
+</code></pre>
+<p>The three <code>unset</code> commands are just for the case that you already use <code>docker-machine</code> with TLS for some other VM's or machines in the Cloud. This just turns off the TLS checks in the Docker Client for now to connect to the Windows Docker Engine.<br>
+For other shells like PowerShell or CMD shell it is the same. Just delete all DOCKER_ environment variables and set the <code>DOCKER_HOST</code> environment variable to <code>tcp://ip-of-your-tp4-vm:2375</code>.</p>
+<p>Now we can check that the Docker Client really talks to our new Windows Docker Engine. So check which Docker images are available with this command</p>
+<pre><code>docker images
+</code></pre>
+<p>And yes, there is the <code>windowsservercore</code> Docker image which is the base image to work with Docker on Windows.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-43-33.png" alt="docker-images"></p>
+<p>Now it is time to run the first Windows Docker container. We just run an interactive container to get a cross-platform feeling if your are working on a Linux or OSX machine.</p>
+<pre><code>docker run -it windowsservercore cmd
+</code></pre>
+<p>After the Docker container has started your OSX terminal turns into a Window command shell and you are in a cmd prompt running in a Windows Container in Azure:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2016/02/Bildschirmfoto-2016-02-01-um-08-44-29.png" alt="docker-run-cmd"></p>
+<p>Let's look around inside that container. Go to <code>C:\</code> and check the files there. List all processes. You won't find much processes inside it as well as there is no Docker Engine inside. You really are working inside a Windows Container now.</p>
+<p>Just type <code>exit</code> to stop the Windows Container again and you are back in your local terminal.</p>
+<h2 id="nextsteps">Next steps</h2>
+<p>All the normal Docker commands like <code>docker build</code> and <code>docker run</code> can be used from your local Notebook.</p>
+<p>You also can use <code>docker search</code> and <code>docker pull</code> to pull some prebuilt Docker Images from Microsoft.</p>
+<p>Now it is time to build the first Windows Docker images and run them later on. As an inspiration you can have a look at some Dockerfiles for Windows at one of these places</p>
+<ul>
+<li><a href="https://github.com/brogersyh/Dockerfiles-for-windows">brogersyh/Dockerfiles-for-windows</a></li>
+<li><a href="https://github.com/StefanScherer/dockerfiles-windows">StefanScherer/dockerfiles-windows</a></li>
+<li><a href="https://stefanscherer.github.io/create-an-io-js-container-image-for-windows/">Create a Node.js Container image for Windows</a></li>
+</ul>
+<p>If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements.</p>
+</div>]]></content:encoded></item></channel></rss>

@@ -1,4 +1,5 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 01 Nov 2017 09:24:28 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>PoC: How to build images for 1709 without 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?&lt;/p&gt;
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer's Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>PoC: How to build images for 1709 without 1709</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; The tools and described workflow to build such images on&lt;/p&gt;&lt;/blockquote&gt;&lt;/div&gt;</description><link>https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/</link><guid isPermaLink="false">59f90ee4f830c70001a9b8f1</guid><category>Docker</category><category>Windows Server 1709</category><category>windows-containers</category><category>AppVeyor</category><category>multi-arch</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 31 Oct 2017 23:55:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1282,11 +1283,11 @@ vi Vagrantfile
 &lt;p&gt;As I've mentioned above you cannot publish ports and there is no routing mesh at the moment. So the next thing is to create another service that will access the &lt;code&gt;whoami&lt;/code&gt; service inside the overlay network. On Linux you probably would use &lt;code&gt;curl&lt;/code&gt; to do that. I tried just a simple PowerShell script to do the same.&lt;/p&gt;
 &lt;p&gt;Two small files are needed to create a Docker image. First the simple script &lt;code&gt;askthem.ps1&lt;/code&gt;:&lt;/p&gt;
 &lt;pre&gt;&lt;code class="language-powershell"&gt;while ($true) {
-  (Invoke-WebRequest -UseBasicParsing http://whoami:8000).Content
+  (Invoke-WebRequest -UseBasicParsing http://whoami:8080).Content
   Start-Sleep 1
 }
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;As you can see the PowerShell script will access the webserver with the hostname &lt;code&gt;whoami&lt;/code&gt; on port 8000.&lt;/p&gt;
+&lt;p&gt;As you can see the PowerShell script will access the webserver with the hostname &lt;code&gt;whoami&lt;/code&gt; on port 8080.&lt;/p&gt;
 &lt;p&gt;Now put this Script into a Docker image with this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
 &lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver
 COPY askthem.ps1 askthem.ps1
@@ -1477,4 +1478,4 @@ History:
 &lt;p&gt;You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.&lt;/p&gt;
 &lt;p&gt;The tool is open source on GitHub at &lt;a href="https://github.com/StefanScherer/winspector"&gt;github.com/StefanScherer/winspector&lt;/a&gt;. It is community driven, so feel free to send me feedback in form of issues or pull requests.&lt;/p&gt;
 &lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
-&lt;/div&gt;</content:encoded></item></channel></rss>
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

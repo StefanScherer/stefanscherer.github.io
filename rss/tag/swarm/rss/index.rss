@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Swarm - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Swarm - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/swarm/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Getting started with Docker Swarm-mode on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/docker-swarm-mode-windows10/</link><guid isPermaLink="false">5986d4ec688a49000154096d</guid><category>Docker</category><category>Swarm</category><category>Windows 10</category><category>Overlay</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Mon, 13 Feb 2017 01:31:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last Friday I noticed a blog post that &lt;a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/"&gt;Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10&lt;/a&gt;. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.&lt;/p&gt;
+&lt;p&gt;Well you wonder why this feature is available on Windows 10 and not Windows Server 2016. Sure it will make more sense in production running a Docker Swarm on multiple servers. The reason is that the Insider preview is the fastest channel to ship new features. Unfortunately there is no equivalent for Windows Server editions.&lt;/p&gt;
+&lt;p&gt;So if you need it for Windows Server you have to wait a little longer. You can indeed test Swarm-Mode on Windows Server 2016 and Docker 1.13, but only without the Overlay network.  To test Swarm-Mode with Overlay network you will need some machines running Windows 10 Insider 15031.&lt;/p&gt;
+&lt;h2 id="preparation"&gt;Preparation&lt;/h2&gt;
+&lt;p&gt;In my case I use &lt;a href="https://www.vagrantup.com"&gt;Vagrant&lt;/a&gt; to spin up Windows VM's locally on my notebook. The advantage is that you can describe some test scenarios with a &lt;code&gt;Vagrantfile&lt;/code&gt; and share it on GitHub.&lt;/p&gt;
+&lt;p&gt;I already have played with Docker Swarm-Mode in December and created a &lt;a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-mode"&gt;Vagrant environment with some Windows Server 2016 VM's&lt;/a&gt;. I'll re-use this scenario and just replace the underlying Vagrant box.&lt;/p&gt;
+&lt;p&gt;So the hardest part is to build a Windows 10 Insider 15031 VM. The &lt;a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewadvanced"&gt;latest ISO file&lt;/a&gt; with Windows 10 Insider 15025 is a good starting point. You have to switch to the Fast Ring to fetch the latest updates for Insider 15031.&lt;/p&gt;
+&lt;p&gt;Normally I use &lt;a href="https://www.packer.io"&gt;Packer&lt;/a&gt; with my &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; templates available on GitHub to automatically create such Vagrant boxes. In this case I only have a semi-automated template. Download the ISO file, build a VM with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_insider.json"&gt;&lt;code&gt;windows_10_insider.json&lt;/code&gt;&lt;/a&gt; template and update it to Insider 15031 manually. With such a VM, build the final Vagrant box with the &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_docker.json"&gt;&lt;code&gt;windows_10_docker.json&lt;/code&gt;&lt;/a&gt; Packer template.&lt;/p&gt;
+&lt;p&gt;What we now have is a Windows 10 Insider 15031 VM with the Containers and Hyper-V features activated, Docker 1.13.1 installed and both Microsoft Docker images downloaded. All the time consuming things should be done in a Packer build to make the final &lt;code&gt;vagrant up&lt;/code&gt; a breeze.&lt;/p&gt;
+&lt;p&gt;In my case I had to add the Vagrant box with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_10_docker ./windows_10_insider_15031_docker_vmware.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Vagrant 1.9.1 is able to use linked clones for VMware Fusion, VirtualBox and Hyper-V. So you need this big Vagrant box only once on disk. For the Docker Swarm only a clone will be started for each VM to save time and disk space.&lt;/p&gt;
+&lt;h2 id="createtheswarm"&gt;Create the Swarm&lt;/h2&gt;
+&lt;p&gt;Now we use the prepared Vagrant environment and adjust it&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box/swarm-mode
+vi Vagrantfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the &lt;code&gt;Vagrantfile&lt;/code&gt; I had to change only the name of the box after &lt;code&gt;config.vm.box&lt;/code&gt; to the newly added Vagrant box. This is like changing the &lt;code&gt;FROM&lt;/code&gt; in a &lt;code&gt;Dockerfile&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/git-diff-swarm-mode.png" alt="git diff Vagrantfile"&gt;&lt;/p&gt;
+&lt;p&gt;I also adjusted the memory a little bit to spin up more Hyper-V containers.&lt;/p&gt;
+&lt;p&gt;But now we are ready to create the Docker Swarm with a simple&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will spin up three Windows 10 VM's and build the Docker Swarm automatically for you. But using linked clones and the well prepared Vagrant basebox it takes only some minutes to have a complete Docker Swarm up and running.&lt;/p&gt;
+&lt;h2 id="dockernodels"&gt;docker node ls&lt;/h2&gt;
+&lt;p&gt;After all three VM's are up and running, go into the first VM and open a PowerShell terminal. With&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker node ls
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;you can check if your Docker Swarm is active.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/swarm-mode.png" alt=""&gt;&lt;/p&gt;
+&lt;h2 id="createanetwork"&gt;Create a network&lt;/h2&gt;
+&lt;p&gt;Now we create a new overlay network with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker network create --driver=overlay sample
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can list all networks with &lt;code&gt;docker network ls&lt;/code&gt; as there are already some others.&lt;/p&gt;
+&lt;h2 id="createawhoamiservice"&gt;Create a whoami service&lt;/h2&gt;
+&lt;p&gt;With this new overlay network we start a simple service. I've prepared a Windows version of the &lt;code&gt;whoami&lt;/code&gt; service. This is a simple webserver that just responds with its internal container hostname.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service create --name=whoami --endpoint-mode dnsrr `
+  --network=sample stefanscherer/whoami-windows:latest
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;At the moment only DNS round robin is implemented as described in the Microsoft blog post. You cannot use to publish ports externally right now. More to come in the near future.&lt;/p&gt;
+&lt;h2 id="runvisualizer"&gt;Run visualizer&lt;/h2&gt;
+&lt;p&gt;To make it more visible what happens in the next steps I recommend to run the Visualizer. On the first VM you can run the Visualizer with &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/run-portainer.ps1"&gt;this script&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\run-visualizer.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now open a browser with another &lt;a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/open-visualizer.ps1"&gt;helper script&lt;/a&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;C:\vagrant\scripts\open-visualizer.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now you can scale up the service to spread it over your Docker swarm.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service scale whoami=4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will bring up the service on all three nodes and one of the nodes is running two instances of the whoami service.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/visualizer.png" alt="Visualizer"&gt;&lt;/p&gt;
+&lt;p&gt;Just play around scaling the service up and down a little bit.&lt;/p&gt;
+&lt;h2 id="buildandcreateanotherservice"&gt;Build and create another service&lt;/h2&gt;
+&lt;p&gt;As I've mentioned above you cannot publish ports and there is no routing mesh at the moment. So the next thing is to create another service that will access the &lt;code&gt;whoami&lt;/code&gt; service inside the overlay network. On Linux you probably would use &lt;code&gt;curl&lt;/code&gt; to do that. I tried just a simple PowerShell script to do the same.&lt;/p&gt;
+&lt;p&gt;Two small files are needed to create a Docker image. First the simple script &lt;code&gt;askthem.ps1&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-powershell"&gt;while ($true) {
+  (Invoke-WebRequest -UseBasicParsing http://whoami:8080).Content
+  Start-Sleep 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see the PowerShell script will access the webserver with the hostname &lt;code&gt;whoami&lt;/code&gt; on port 8080.&lt;/p&gt;
+&lt;p&gt;Now put this Script into a Docker image with this &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver
+COPY askthem.ps1 askthem.ps1
+CMD [&amp;quot;powershell&amp;quot;, &amp;quot;-file&amp;quot;, &amp;quot;askthem.ps1&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build the Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t askthem .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now can start the second service that consumes the whoami service.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service create --name=askthem --network=sample askthem:latest
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now should see one instance of the newly created &lt;code&gt;askthem&lt;/code&gt; service. Let's have a look at the logs. As this Vagrant environment enables the experimental features of Docker we are able to get the logs with this command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker service logs askthem
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In my case I had luck and the &lt;code&gt;askthem&lt;/code&gt; service got a response from one of the &lt;code&gt;whoami&lt;/code&gt; containers that is running on a different Docker node.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/windows10-swarm-mode.png" alt="Windows 10 Swarm-Mode"&gt;&lt;/p&gt;
+&lt;p&gt;I haven't figured out why all the responses are from the same container. Maybe PowerShell or the &lt;code&gt;askthem&lt;/code&gt; container itself caches the DNS requests.&lt;/p&gt;
+&lt;p&gt;But it still proves that overlay networking is working across multiple Windows machines.&lt;/p&gt;
+&lt;h2 id="moretoplaywith"&gt;More to play with&lt;/h2&gt;
+&lt;p&gt;The Vagrant environment has some more things prepared. You also can spin up &lt;a href="http://portainer.io"&gt;Portainer&lt;/a&gt; that gives you a nice UI to your Docker swarm. You can have a look at your Nodes, the Docker images, the containers and services running and so on.&lt;/p&gt;
+&lt;p&gt;I also found out that you can scale services in the Portainer UI by changing the replicas. Running Visualizer and Portainer side-by-side demonstrates that:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.&lt;/p&gt;
+&lt;p&gt;As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Build Docker Swarm binary for Windows the "Docker way"</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/build-docker-swarm-for-windows-the-docker-way/</link><guid isPermaLink="false">5986d4ec688a490001540963</guid><category>Docker</category><category>Swarm</category><category>Windows</category><category>Golang</category><category>Git</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Mar 2016 20:58:38 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;In my &lt;a href="https://stefanscherer.github.io/build-your-local-windows-docker-swarm/"&gt;last blog&lt;/a&gt; post I showed how to run a Windows Docker Swarm. That tutorial just used a prebuilt Swarm Docker image that was loaded from local disk.&lt;/p&gt;
+&lt;p&gt;Some people asked me how I have built that container image. Assuming you have a Windows Server 2016 TP4 machine you nowadays need nothing more than the right Dockerfiles to do this.&lt;/p&gt;
+&lt;p&gt;So let's start writing a &lt;code&gt;Dockerfile&lt;/code&gt; to build Docker Swarm inside a Docker container. For the next steps open a PowerShell window and then open an editor.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.builder
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="useabaseimage"&gt;Use a base image&lt;/h3&gt;
+&lt;p&gt;Swarm is written in Go, so we look for a useful base image. And there already is one useful base image in the &lt;strong&gt;Docker Hub&lt;/strong&gt;. So we begin the Dockerfile with the following line.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/golang
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installgit"&gt;Install Git&lt;/h3&gt;
+&lt;p&gt;Additionally to Go we also need Git installed inside the Container image. So we use the following lines that will download and install Git for Windows and then remove the installer again. As a further step we add Git to the &lt;code&gt;PATH&lt;/code&gt; variable.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV GIT_VERSION 2.7.2
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    wget https://github.com/git-for-windows/git/releases/download/v%GIT_VERSION%.windows.1/Git-%GIT_VERSION%-64-bit.exe -outfile gitinstaller.exe ; \
+    Start-Process .\gitinstaller.exe -ArgumentList '/VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /DIR=c:\git' -Wait ; \
+    rm .\gitinstaller.exe
+
+RUN setx PATH %PATH%;C:\git\cmd;C:\git\bin;C:\git\usr\bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="installandbuildgodepandswarm"&gt;Install and build Godep and Swarm&lt;/h3&gt;
+&lt;p&gt;The Swarm project uses &lt;code&gt;Godep&lt;/code&gt; to manage the dependencies. We also need this tool as well as the Swarm sources. So let's install both and run the &lt;code&gt;godep&lt;/code&gt; tool to build the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;ENV SWARM_VERSION v1.1.3
+ENV GOPATH C:/go
+
+WORKDIR /go
+
+RUN powershell -Command \
+    Sleep 2 ; \
+    go get github.com/tools/godep ; \
+    mkdir src\github.com\docker ; \
+    cd src\github.com\docker ; \
+    git clone https://github.com/docker/swarm ; \
+    cd swarm ; \
+    git checkout %SWARM_VERSION% ; \
+    Start-Process -FilePath godep.exe -ArgumentList go, install, . -Wait
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now save the &lt;code&gt;Dockerfile.builder&lt;/code&gt; file and close the editor.&lt;/p&gt;
+&lt;p&gt;Back in the PowerShell build the Docker image with the name &lt;code&gt;swarm-builder&lt;/code&gt; and the given Dockerfile with the following command.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;docker build -t swarm-builder -f Dockerfile.builder .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This now creates a Docker image with multiple layers, for each &lt;code&gt;ENV&lt;/code&gt; and &lt;code&gt;RUN&lt;/code&gt; command in the &lt;code&gt;Dockerfile&lt;/code&gt;. You can see the actions on your screen and finally the command finishes and you can list your images with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You should see a image with the name &lt;code&gt;swarm-builder&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+swarm-builder       latest              04e557dd075a        31 minutes ago      1.219 GB
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The size of the Docker image is not good for deployment as we have all the development tools and source codes inside it.&lt;/p&gt;
+&lt;h3 id="testandextracttheswarmexe"&gt;Test and extract the swarm.exe&lt;/h3&gt;
+&lt;p&gt;We only need the &lt;code&gt;swarm.exe&lt;/code&gt; from this image as it is a static binary. So we just run the Docker image and have a very little test of the binary just created by showing its version.&lt;/p&gt;
+&lt;p&gt;After that we copy the &lt;code&gt;swarm.exe&lt;/code&gt; from the container back to the host.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --name swarm-builder swarm-builder swarm --version
+docker cp swarm-builder:/go/bin/swarm.exe ./swarm.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="buildasmallswarmimage"&gt;Build a small Swarm image&lt;/h3&gt;
+&lt;p&gt;The final Docker image for deployment can be produced with a much simpler &lt;code&gt;Dockerfile&lt;/code&gt;. As the time of writing the Technical Preview 4 needs a small workaround to access the network inside a container. We have to add a small helper script for now.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;nodepad run.ps1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The small PowerShell script just sleeps a little and then calls &lt;code&gt;swarm.exe&lt;/code&gt; with the arguments given.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Sleep 2
+\swarm.exe $args
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now it is time to write the &lt;code&gt;Dockerfile&lt;/code&gt;. So open an editor with the following command. Notice the dot '.' as this helps Notepad create a &lt;code&gt;Dockerfile&lt;/code&gt; without an extension.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-cmd"&gt;notepad Dockerfile.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; now uses the &lt;code&gt;windowsservercore&lt;/code&gt; base image and copies the helper script and the swarm binary into the image and sets the entrypoint.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM windowsservercore
+
+COPY ./swarm.exe /swarm.exe
+COPY ./run.ps1 /run.ps1
+
+ENV SWARM_HOST :2375
+
+ENTRYPOINT [&amp;quot;powershell.exe&amp;quot;, &amp;quot;-File&amp;quot;, &amp;quot;/run.ps1&amp;quot;]
+CMD [&amp;quot;--help&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We now build the final Docker image with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t swarm .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Just check the size of the Docker images again with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-images.png" alt="docker images"&gt;&lt;/p&gt;
+&lt;p&gt;If you build a new version of the Swarm image later it is useful to tag each Docker image with its version. For this tutorial we have built Swarm 1.1.3, so we tag it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker tag swarm:latest swarm:1.1.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now can run a Swarm container eg. with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it swarm:1.1.3 --version
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and you will see the version of the &lt;code&gt;swarm.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="automateallthethings"&gt;Automate all the things&lt;/h3&gt;
+&lt;p&gt;Both the Dockerfiles and a build script can be found in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/swarm"&gt;dockerfiles-windows&lt;/a&gt; GitHub repo. Even to download the sources you do not need more than a PowerShell window. Just download it as a ZIP and extract it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -outfile src.zip https://github.com/StefanScherer/dockerfiles-windows/archive/master.zip
+Expand-Archive .\dockerfiles-windows.zip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The steps to build both the development Docker image as well the final image is added to a small build script which can be run with this commands&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd src\dockerfiles-windows-master\swarm
+.\build.bat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="tldr"&gt;TL/DR&lt;/h3&gt;
+&lt;p&gt;Even on Windows you now can put development environments into Docker images and build small images for deployment with a two step approach. No special setup is needed on your host machine, just Docker should be reachable.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Everything is reproducable&lt;/strong&gt; on every team members machines. And a CI build pipeline can take advantage of this dockerized setup as well.&lt;/p&gt;
+&lt;p&gt;I hope you get a feeling what you can do with your own software project and &lt;strong&gt;start dockerizing&lt;/strong&gt; as well.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Run a local Windows Docker Swarm</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/build-your-local-windows-docker-swarm/</link><guid isPermaLink="false">5986d4ec688a490001540962</guid><category>Docker</category><category>Windows</category><category>Swarm</category><category>Vagrant</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 01 Mar 2016 17:31:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At the DockerCon EU 2015 Arnaud Porterie showed us a Docker Swarm between a Linux and a Windows Docker Engine. In this blog post I explain how to set up a Windows Docker Swarm. I use this setup for demonstration purposes, so the VM's are running locally on my laptop.&lt;/p&gt;
+&lt;p&gt;At the time of writing there is no docker-machine driver to create the Windows Docker VM's. And my laptop at work is still running with Windows 7, so I have chosen VirtualBox as a local hypervisor instead of Hyper-V.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/windows_swarm_demo.png" alt="Network diagram"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see in the diagram there also is a private Docker registry. I just want to show you that saving and restoring Windows Docker images is just as easy as on Linux.&lt;/p&gt;
+&lt;p&gt;A laptop with 16GB memory is capable of running this setup. With less memory, just run only two of the Windows VM's and reduce the memory setting.&lt;/p&gt;
+&lt;h2 id="setupyourhost"&gt;Setup your host&lt;/h2&gt;
+&lt;p&gt;If you like to follow this tutorial you need some tools on your host machine. Pleas keep in mind that VirtualBox does not work with Hyper-V on the same machine. My preferred way to setup a Windows machine is by install the software with &lt;a href="https://chocolatey.org"&gt;Chocolatey&lt;/a&gt;. So these are the steps needed for the host tools:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install -y virtualbox
+choco install -y vagrant
+choco install -y packer
+choco install -y docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="buildthevagrantbox"&gt;Build the Vagrant box&lt;/h2&gt;
+&lt;p&gt;Before spinning up the swarm you have to build the Windows Server 2016 VM with Docker installed. As I'm a big fan of automation I do not click through the installers, but use &lt;a href="https://packer.io"&gt;Packer&lt;/a&gt; and &lt;a href="https://vagrantup.com"&gt;Vagrant&lt;/a&gt; to build and run local VM's.&lt;/p&gt;
+&lt;p&gt;Before running Packer you should register to the &lt;a href="https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-technical-preview"&gt;technical preview evaluation&lt;/a&gt; and accept the license for the Windows Server ISO file.&lt;/p&gt;
+&lt;p&gt;After that just clone my Packer templates and build the VirtualBox VM with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+packer build --only=virtualbox-iso windows_2016_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now add the Vagrant box to the local list of baseboxes with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_2016_docker windows_2016_docker_virtualbox.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="buildthedockerswarm"&gt;Build the Docker swarm&lt;/h2&gt;
+&lt;p&gt;The next step is also very easy. We clone &lt;a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-demo"&gt;the repo&lt;/a&gt; with the Vagrantfile for the Docker swarm and spin up all boxes.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd swarm-demo
+vagrant up --provider virtualbox
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One after another the VM's are booted and provisioned with the shell scripts provided in the &lt;code&gt;scripts&lt;/code&gt; folder.&lt;/p&gt;
+&lt;h4 id="registry"&gt;registry&lt;/h4&gt;
+&lt;p&gt;The Linux box &lt;code&gt;registry&lt;/code&gt; is used for the Docker Swarm manager and a Docker registry.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The swarm manager is using a token in &lt;code&gt;config/swarm-token&lt;/code&gt;. Edit this as you like.&lt;/li&gt;
+&lt;li&gt;The registry is using the &lt;code&gt;registry-v2&lt;/code&gt; folder on your host to store the Docker images.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="swwin01"&gt;sw-win-01 ...&lt;/h4&gt;
+&lt;p&gt;The Windows Server 2016 TP4 machines that spin up a Swarm container to join the Docker Swarm. The Docker Engines have a connection to the insecure registry running at &lt;code&gt;registry:5000&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="upandrunning"&gt;Up and running&lt;/h2&gt;
+&lt;p&gt;After a while all VM's are up and running and you can see the status with &lt;code&gt;vagrant status&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/vagrant-status.png" alt="vagrant status"&gt;&lt;/p&gt;
+&lt;p&gt;The Docker Swarm is built and all Windows VM's have joined the swarm. You can check this by connecting with the Docker Client to the Swarm Manager.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker -H tcp://192.168.38.100:3375 info
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-info.png" alt="docker info"&gt;&lt;/p&gt;
+&lt;h2 id="runcontainersintheswarm"&gt;Run containers in the swarm&lt;/h2&gt;
+&lt;p&gt;For a very simple demo we now run three containers that are spread over all three Windows Docker Swarm agents.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker -H tcp://192.168.38.100:3375 run -d windowsservercore powershell -Command sleep 60
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/03/docker-run.png" alt="docker run"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see the containers are running on all different Docker nodes &lt;code&gt;sw-win-01&lt;/code&gt; ... &lt;code&gt;sw-win-03&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;With the local registry you can push and pull Windows images from it and safe your work. The registry files are stored at your host so it is safe to destroy all VM's if you do not use them.&lt;/p&gt;
+&lt;p&gt;I hope you have enjoyed this tutorial. In a future blog post I probably show how to build a Windows Docker Swarm in Azure or in Hyper-V.&lt;/p&gt;
+&lt;p&gt;If you find this blog post useful, just share it with your friends and colleages. Please leave a comment if you have questions or improvements. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

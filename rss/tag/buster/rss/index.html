@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Buster - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Buster - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/buster/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Dockerizing Ghost and Buster to run a blog on GitHub pages]]></title><description><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
+<p>I still like this setup hosting only the static</p></div>]]></description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">5986d4ec688a49000154096e</guid><category><![CDATA[Docker]]></category><category><![CDATA[Ghost]]></category><category><![CDATA[Buster]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[GitHub]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
+<p>I still like this setup hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers.</p>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>Docker for Mac</li>
+<li><code>git</code> (is already installed)</li>
+<li><code>docker-compose</code> (already installed with D4M)</li>
+</ul>
+<p>You can find my setup and all files in my GitHub repo <a href="https://github.com/StefanScherer/ghost-buster-docker">StefanScherer/ghost-buster-docker</a>.</p>
+<p>As I'm upgrading from my local Ghost installation to this dockerized version I already have some content, the static files and my GitHub pages repo. Please refer to my old blog post how to create your repo. The following commands should give you an idea how to setup the two folders <code>content</code> and <code>static</code>.</p>
+<pre><code>git clone https://github.com/YOURNAME/ghost-buster-docker
+cd ghost-buster-docker
+mkdir content
+git clone https://github.com/YOURNAME/YOURNAME.github.io static
+</code></pre>
+<h3 id="dockercomposeyml">docker-compose.yml</h3>
+<p>To simplify running Ghost and Buster I've created a <code>docker-compose.yml</code> with all the published ports and volume mount points.</p>
+<p>There are three services</p>
+<ul>
+<li>ghost</li>
+<li>buster</li>
+<li>preview</li>
+</ul>
+<pre><code class="language-yaml">version: '2.1'
+
+services:
+  ghost:
+    image: ghost:0.11.4
+    volumes:
+      - ./content:/var/lib/ghost
+    ports:
+      - 2368:2368
+
+  buster:
+    image: stefanscherer/buster
+    command: /buster.sh
+    volumes:
+      - ./static:/static
+      - ./buster.sh:/buster.sh
+
+  preview:
+    image: nginx
+    volumes:
+      - ./static:/usr/share/nginx/html:ro
+    ports:
+      - 2369:80
+</code></pre>
+<h3 id="editcontentwithghost">Edit content with Ghost</h3>
+<p>To create new blog post or edit existing posts you spin up the <code>ghost</code> container with</p>
+<pre><code>docker-compose up -d ghost
+</code></pre>
+<p>and then open up your browser at <code>https://stefanscherer.github.io/ghost</code> to login and edit content. As you can see the folder <code>content</code> is mapped into the <code>ghost</code> container to persist your Ghost blog data and images on your host machine.</p>
+<h3 id="generatestaticfiles">Generate static files</h3>
+<p>To generate the static HTML pages we use the second service with Buster installed. This is no real service, so we do not &quot;up&quot; but &quot;run&quot; it with</p>
+<pre><code>docker-compose run buster
+</code></pre>
+<p>Now you have updated files in the <code>static</code> folder. You may edit the local script <code>buster.sh</code> to fix some links that Buster broke in the past in my pages.</p>
+<h2 id="previewstaticfiles">Preview static files</h2>
+<p>From time to time it is useful to check the generated static HTML files before pushing them to GitHub pages. The third service is useful to run a webserver with the created static pages.</p>
+<pre><code>docker-compose up -d preview
+</code></pre>
+<p>Open your browser at <code>http://localhost:2369</code> and check if everything looks good. In my setup I've added Disqus and first wanted to try out the results of modifying the <code>post.hbs</code> file of the theme.</p>
+<h3 id="deploystaticfiles">Deploy static files</h3>
+<p>If you are happy with the new static files it's time to push them. I've added a small script <code>deploy.sh</code> to do the final steps on the host as only <code>git</code> is used here. As I'm using GitHub with SSH and a passphrase I don't want to put that into a container. Have a look at the shell script and you will see that it's only a <code>git add &amp;&amp; git commit &amp;&amp; git push</code> script.</p>
+<pre><code>./deploy.sh
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>I think this setup will help me in the future to update Ghost more easily.</p>
+<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Setup Ghost for GitHub Pages]]></title><description><![CDATA[<div class="kg-card-markdown"><p>To build your own static <a href="https://pages.github.com">GitHub Pages</a> with <a href="https://ghost.org">Ghost</a>, just follow these steps.</p>
+<h2 id="installnodejs">Install Node.js</h2>
+<p>Ghost is written in Node.js, so you will need the Node.js runtime.</p>
+<pre><code>brew install node
+brew install wget
+</code></pre>
+<h2 id="downloadandinstallghost">Download and Install Ghost</h2>
+<p>Check for the latest version of Ghost from <a href="http://ghost.org/download">Ghost.org</a></p></div>]]></description><link>https://stefanscherer.github.io/setup-ghost-for-github-pages/</link><guid isPermaLink="false">5986d4eb688a490001540953</guid><category><![CDATA[Ghost]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[Buster]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 07 Jul 2014 19:38:59 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>To build your own static <a href="https://pages.github.com">GitHub Pages</a> with <a href="https://ghost.org">Ghost</a>, just follow these steps.</p>
+<h2 id="installnodejs">Install Node.js</h2>
+<p>Ghost is written in Node.js, so you will need the Node.js runtime.</p>
+<pre><code>brew install node
+brew install wget
+</code></pre>
+<h2 id="downloadandinstallghost">Download and Install Ghost</h2>
+<p>Check for the latest version of Ghost from <a href="http://ghost.org/download">Ghost.org</a></p>
+<pre><code>mkdir ghost
+cd ghost
+wget --no-check-certificate https://ghost.org/zip/ghost-0.5.2.zip
+unzip ghost-0.5.2.zip
+npm install --production
+</code></pre>
+<h2 id="startghost">Start Ghost</h2>
+<pre><code>npm start
+</code></pre>
+<h2 id="logintoghost">Login to Ghost</h2>
+<pre><code>open http://localhost:2368/ghost
+</code></pre>
+<p>Create an account, read the intial blog post how to edit with Markdown etc.</p>
+<h2 id="createyourgithubpagesrepo">Create your GitHub Pages repo</h2>
+<p>See the <a href="https://help.github.com/categories/20/articles">GitHub Pages Basics Documentation</a> for details.</p>
+<p>You must use the <code>username/username.github.io</code> naming scheme. The repo name must be <strong>lower case</strong> even if your username has upper case letters.</p>
+<h2 id="installbuster">Install Buster</h2>
+<p>With the tool <a href="https://github.com/axitkhurana/buster">Buster</a> you can export the Ghost blogs into static pages. First we install Buster with:</p>
+<pre><code>brew install python
+sudo pip install buster
+</code></pre>
+<h2 id="preparestaticfolder">Prepare static folder</h2>
+<p>I have placed the <code>static</code> folder for Buster inside my Ghost installation. So I just cloned my <code>username/username.github.io</code> repo with a target directory name like this:</p>
+<pre><code>git clone git@github.com:username/username.github.io.git static
+</code></pre>
+<h2 id="writeblogposts">Write Blog posts</h2>
+<p>Now your setup is complete and you can start writing Blog posts in Ghost.</p>
+<h2 id="exportghostwithbuster">Export Ghost with Buster</h2>
+<p>All published blog posts could be exported to the <code>static</code> folder with Buster.</p>
+<pre><code>buster generate --domain=http://localhost:2368
+buster preview
+open http://localhost:9000
+</code></pre>
+<p>The output of Buster could be previewed on port 9000.</p>
+<h2 id="deploytogithubpages">Deploy to GitHub Pages</h2>
+<pre><code>buster deploy
+</code></pre>
+<p>This will add, commit and push all files in the <code>static</code> folder to your GitHub repo.</p>
+<p>For the initial push, please wait up to 10 minutes until GitHub deploys your subdomain.</p>
+<p>All upcoming pushes are much faster and you can see your static Ghost blog posts on <a href="https://username.github.io">https://username.github.io</a></p>
+<h2 id="writenewblogposts">Write new Blog posts</h2>
+<p>To write new Blog posts or update the existing ones, just start Ghost, edit, then generate and deploy the static pages.</p>
+<pre><code>cd ghost
+npm start
+buster deploy
+</code></pre>
+<p>The <code>sed</code> commands will fix the share links from localhost to your correct GitHub pages URL.</p>
+<p>That's it.</p>
+<h2 id="fixinglinks">Fixing links</h2>
+<p><strong>Update</strong> It seems that buster has problems fixing all hyperlinks. So I made this script that works for me:</p>
+<pre><code class="language-bash">#!/bin/bash
+buster generate --domain=http://127.0.0.1:2368
+find static -name *.html -type f -exec sed -i '' 's#http://localhost:2368#https://stefanscherer.github.io#g' {} \;
+buster deploy
+</code></pre>
+<p>This will generate the new pages, fix all links and then deploy them on GitHub.</p>
+</div>]]></content:encoded></item></channel></rss>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>multi-stage - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>multi-stage - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:08 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/multi-stage/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Use Docker to Search in 320 Million Pwned Passwords</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
+&lt;p&gt;In his latest blog post&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/use-docker-to-search-in-320-million-pwned-passwords/</link><guid isPermaLink="false">5986d4ec688a490001540976</guid><category>Docker</category><category>multi-stage</category><category>HaveIBeenPwned</category><category>passwords</category><category>Security</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 05 Aug 2017 00:55:07 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of &lt;a href="https://haveibeenpwned.com"&gt;Have I Been Pwned?&lt;/a&gt; website and service that will notify you when one of your registered email addresses have been compromised by a data breach.&lt;/p&gt;
+&lt;p&gt;In his latest blog post he introduced &lt;a href="https://www.troyhunt.com/introducing-306-million-freely-downloadable-pwned-passwords/"&gt;306 Million Freely Downloadable Pwned Passwords&lt;/a&gt; with an update of another 14 Million just on the following day. He also has setup a online search at &lt;a href="https://haveibeenpwned.com/Passwords"&gt;https://haveibeenpwned.com/Passwords&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;You can enter passwords and check if they have been compromised. &lt;strong&gt;But do not enter actively used passwords here&lt;/strong&gt;, even if Troy is a nice person living in sunny Australia.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/pwned-passwords.png" alt="Pwned Passwords online service"&gt;&lt;/p&gt;
+&lt;p&gt;My recommendation is&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;If you are in doubt if your password has been pwned, just &lt;strong&gt;change it first&lt;/strong&gt; and then check the old one in the online form.&lt;/li&gt;
+&lt;li&gt;Use a &lt;strong&gt;Password manager&lt;/strong&gt; like 1Password to create an individual long random password &lt;strong&gt;for each service&lt;/strong&gt; you use.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;But the huge password list is still quite interesting to work with.&lt;/p&gt;
+&lt;h2 id="letsbuildalocalsearch"&gt;Let's build a local search&lt;/h2&gt;
+&lt;p&gt;What you can do is download the list of passwords (about 5 GByte compressed) and search locally in a safe place. You won't get the cleartext passwords, but only SHA1 sums of them. But we can create SHA1 sums of the passwords we want to search in this huge list.&lt;/p&gt;
+&lt;p&gt;You can download the files that are compressed with 7-Zip. You also need a tool to create a SHA1 sum of a plain text. And then you need another tool, a database or algorithm to quickly search in that text file that has nearly 320 Million lines.&lt;/p&gt;
+&lt;h2 id="usedockerforthetask"&gt;Use Docker for the task&lt;/h2&gt;
+&lt;p&gt;I immediately thought of a Container that has all these tools installed. But I didn't want to add the huge password lists into that container as it would build a Docker image of about 12 GByte or probably 5-6 GB Docker image on the Docker Hub.&lt;/p&gt;
+&lt;p&gt;The password files should be persisted locally on your laptop and mounted into the container to search in them with the tools needed for the task.&lt;/p&gt;
+&lt;p&gt;And I want to use some simple tools to get the work done. A first idea was born in the comments of Troys blog post where someone showed a small bash script with &lt;code&gt;grep&lt;/code&gt; to search in the file.&lt;/p&gt;
+&lt;p&gt;I first tried &lt;code&gt;grep&lt;/code&gt;, but this took about 2 minutes to find the hash in the file. So I searched a little bit and found &lt;a href="http://sgrep.sourceforge.net"&gt;&lt;code&gt;sgrep&lt;/code&gt;&lt;/a&gt; - a tool to grep in sorted files. Luckily the password files are sorted by the SHA1 hash. But I found only the source code and there is no standard package to install it. So we also need a C compiler for that.&lt;/p&gt;
+&lt;p&gt;In times before Docker you had a lot of stress installing many tools on your computer. But let's see how Docker can help us with all these steps.&lt;/p&gt;
+&lt;h2 id="buildthedockerimage"&gt;Build the Docker image&lt;/h2&gt;
+&lt;p&gt;I found the Sources of sgrep on &lt;a href="https://github.com/colinscape/sgrep"&gt;GitHub&lt;/a&gt; and we will need Make and a C compiler to build the &lt;code&gt;sgrep&lt;/code&gt; binary.&lt;/p&gt;
+&lt;p&gt;I will use a &lt;strong&gt;multi-stage build&lt;/strong&gt; Dockerfile and explain every single line. You can build the image line by line and see the benefits of build caches while working on the &lt;code&gt;Dockerfile&lt;/code&gt;. So after adding a line to the file you can run &lt;code&gt;docker build -t pwned-passwords .&lt;/code&gt; to build and update the image.&lt;/p&gt;
+&lt;p&gt;For the beginning let's choose a small Linux base image. We will name the first stage as &lt;code&gt;build&lt;/code&gt;. So the &lt;code&gt;Dockerfile&lt;/code&gt; starts with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM alpine:3.6 AS build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The next step is we have to install Git, Make and the C compiler with its header files.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN apk update &amp;amp;&amp;amp; apk add git make gcc musl-dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we clone the GitHub repo with the source code of sgrep.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN git clone https://github.com/colinscape/sgrep
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the next line I'll create a bin folder that is needed for the build process. Then we go to the source directory and run the &lt;code&gt;make&lt;/code&gt; command as there is a &lt;code&gt;Makefile&lt;/code&gt; in that directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN mkdir sgrep/bin &amp;amp;&amp;amp; cd sgrep/src &amp;amp;&amp;amp; make
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After these steps we have the &lt;code&gt;sgrep&lt;/code&gt; binary compiled for Alpine Linux. But we also have installed a ton of other tools.&lt;/p&gt;
+&lt;p&gt;Now put all these instructions into a &lt;code&gt;Dockerfile&lt;/code&gt; and build the Docker image.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker build -t pwned-passwords .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let's inspect all image layers we have created so far.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker history --format &amp;quot;{{.ID}}\t{{.Size}}\t{{.CreatedBy}}&amp;quot; pwned-passwords
+78171a118279	24.5kB	/bin/sh -c mkdir sgrep/bin &amp;amp;&amp;amp; cd sgrep/src...
+2323bcb14b5f	93.6kB	/bin/sh -c git clone https://github.com/co...
+8ec1470030af	119MB	/bin/sh -c apk update &amp;amp;&amp;amp; apk add git make ...
+7328f6f8b418	0B	/bin/sh -c #(nop)  CMD [&amp;quot;/bin/sh&amp;quot;]
+&amp;lt;missing&amp;gt;	3.97MB	/bin/sh -c #(nop) ADD file:4583e12bf5caec4...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see we now have a Docker image of more than 120 MByte, but the &lt;code&gt;sgrep&lt;/code&gt; binary is only 15 KByte. Yes, this is no typo. Yes, we will grep through GByte of data with a tiny 15 KByte binary.&lt;/p&gt;
+&lt;h2 id="multistagebuildforthewin"&gt;Multi-stage build for the win&lt;/h2&gt;
+&lt;p&gt;With Docker 17.05 and newer you can now add another &lt;code&gt;FROM&lt;/code&gt; instruction and start with a new stage in your &lt;code&gt;Dockerfile&lt;/code&gt;. The last stage will create the final Docker image. So every instruction after the last &lt;code&gt;FROM&lt;/code&gt; defines what goes into the image you want to share eg. on Docker Hub.&lt;/p&gt;
+&lt;p&gt;So let's start our final stage of our Docker image build with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM alpine:3.6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The last stage does not need a name. Now we have an empty Alpine Linux again, all the 120 MByte of development environment won't make it into the final image. But if you build the Docker image more than once the temporary layers are still there and will be reused if they are unmodified. So the Docker build cache helps you speed up while working on the shell script.&lt;/p&gt;
+&lt;p&gt;In the previous build stage we have created the much faster &lt;code&gt;sgrep&lt;/code&gt; command. What we now need is a small shell script that converts a plaintext password into a SHA1 sum and runs the &lt;code&gt;sgrep&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;To create a SHA1 sum I'll use &lt;code&gt;openssl&lt;/code&gt; command. And it would be nice if the shell script can download the huge files for us. As the files are compressed with 7-zip we also need &lt;code&gt;wget&lt;/code&gt; to download and &lt;code&gt;7z&lt;/code&gt; to extract them.&lt;/p&gt;
+&lt;p&gt;In the next instruction we install OpenSSL and the 7-Zip tool.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN apk update &amp;amp;&amp;amp; apk add openssl p7zip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;COPY&lt;/code&gt; instruction has an option &lt;code&gt;--from&lt;/code&gt; where you can specify another named stage of your build. So we copy the compiled &lt;code&gt;sgrep&lt;/code&gt; binary from the &lt;code&gt;build&lt;/code&gt; stage into the local bin directory.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;COPY --from=build /sgrep/bin/sgrep /usr/local/bin/sgrep
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The complete shell script is called &lt;code&gt;search&lt;/code&gt; and can be found in &lt;a href="https://github.com/StefanScherer/pwned-passwords"&gt;my pwned-passwords&lt;/a&gt; GitHub repo. Just assume we have it in the current directory. The next &lt;code&gt;COPY&lt;/code&gt; instruction copies it from your real machine into the image layer.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;COPY search /usr/local/bin/search
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As the last line of the &lt;code&gt;Dockerfile&lt;/code&gt; we define an entrypoint to run this shell script if we run the Docker container.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ENTRYPOINT [&amp;quot;/usr/local/bin/search&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now append these lines to the &lt;code&gt;Dockerfile&lt;/code&gt; and build the complete image. You will see that the first layers are already cached and only the last stage will be built.&lt;/p&gt;
+&lt;h3 id="thesearchscript"&gt;The search script&lt;/h3&gt;
+&lt;p&gt;You can find the &lt;a href="https://github.com/StefanScherer/pwned-passwords/blob/master/search"&gt;&lt;code&gt;search&lt;/code&gt; script&lt;/a&gt; in my GitHub repo as well as the &lt;code&gt;Dockerfile&lt;/code&gt;. You only need these two tiny files to build the Docker image yourself.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#!/bin/sh
+set -e
+
+if [ ! -d /data ]; then
+  echo &amp;quot;Please run this container with a volume mounted at /data.&amp;quot;
+  echo &amp;quot;docker run --rm -v \ $(pwd):/data pwned-passwords $*&amp;quot;
+  exit 1
+fi
+
+FILES=&amp;quot;pwned-passwords-1.0.txt pwned-passwords-update-1.txt&amp;quot;
+for i in $FILES
+do
+  if [ ! -f &amp;quot;/data/$i&amp;quot; ]; then
+    echo &amp;quot;Downloading $i&amp;quot;
+    wget -O &amp;quot;/tmp/$i.7z&amp;quot; &amp;quot;https://downloads.pwnedpasswords.com/passwords/$i.7z&amp;quot;
+    echo &amp;quot;Extracting $i to /data&amp;quot;
+    7z x -o/data &amp;quot;/tmp/$i.7z&amp;quot;
+    rm &amp;quot;/tmp/$i.7z&amp;quot;
+  fi
+done
+
+if [[ $1 != &amp;quot;&amp;quot; ]]
+then
+PWD=$1
+else
+PWD=&amp;quot;password&amp;quot;
+echo &amp;quot;checking $PWD&amp;quot;
+fi
+
+hash=`echo -n $PWD | openssl sha1 | awk '{print $2}' | awk 'BEGIN { getline; print toupper($0)  }'`
+echo &amp;quot;Hash is $hash&amp;quot;
+totalcount=0
+for i in $(sgrep -c $hash /data/*.txt)
+do
+  file=$(echo &amp;quot;$i&amp;quot; | cut -f1 -d:)
+  count=$(echo &amp;quot;$i&amp;quot; | cut -f2 -d:)
+  if [[ $count -ne 0 ]]; then
+    echo &amp;quot;Oh no - pwned! Found $count occurences in $file&amp;quot;
+  fi
+  totalcount=$(( $totalcount + $count ))
+done
+if [[ $totalcount -eq 0 ]]; then
+  echo &amp;quot;Good news - no pwnage found!&amp;quot;
+else
+  exit 1
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="buildthefinalimage"&gt;Build the final image&lt;/h2&gt;
+&lt;p&gt;Now with these two files, &lt;code&gt;Dockerfile&lt;/code&gt; and &lt;code&gt;search&lt;/code&gt; shell script build the small Docker image.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker build -t pwned-passwords .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let's have a look at the final image layers with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker history --format &amp;quot;{{.ID}}\t{{.Size}}\t{{.CreatedBy}}&amp;quot; stefanscherer/pwned-passwords
+24eca60756c8	0B	/bin/sh -c #(nop)  ENTRYPOINT [&amp;quot;/usr/local...
+c1a9fc5fdb78	1.04kB	/bin/sh -c #(nop) COPY file:ea5f7cefd82369...
+a1f4a26a50a4	15.7kB	/bin/sh -c #(nop) COPY file:bf96562251dbd1...
+f99b3a9601ea	10.7MB	/bin/sh -c apk update &amp;amp;&amp;amp; apk add openssl p...
+7328f6f8b418	0B	/bin/sh -c #(nop)  CMD [&amp;quot;/bin/sh&amp;quot;]
+&amp;lt;missing&amp;gt;	3.97MB	/bin/sh -c #(nop) ADD file:4583e12bf5caec4...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see, OpenSSL and 7-Zip take about 10 MByte, the 16 KByte sgrep binary and the 1 KByte shell script are sitting on top of the 4 MByte Alpine base image.&lt;/p&gt;
+&lt;p&gt;I also have pushed this image to the &lt;a href="https://hub.docker.com/r/stefanscherer/pwned-passwords/"&gt;Docker Hub&lt;/a&gt; with a compressed size of about 7 MByte. If you trust me, you can use this Docker image as well. But you will learn more how multi-stage builds feel like if you build the image yourself.&lt;/p&gt;
+&lt;h2 id="searchforpwnedpasswords"&gt;Search for pwned passwords&lt;/h2&gt;
+&lt;p&gt;We now have a small 14.7 MByte Linux Docker image to search for pwned passwords.&lt;/p&gt;
+&lt;p&gt;Run the container with a folder mounted to &lt;code&gt;/data&lt;/code&gt;. If you forgot this, the script will show you how to run it.&lt;/p&gt;
+&lt;p&gt;Running the container for the first time it will download the two password files (5 GByte) which may take some minutes depending on your internet connectivity.&lt;/p&gt;
+&lt;p&gt;After the script has downloaded everything two files should appear in the current folder. For me it looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/list.png" alt="file list"&gt;&lt;/p&gt;
+&lt;p&gt;Now search for passwords by adding a plaintext password as an argument&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm -v $(pwd):/data pwned-passwords troyhunt
+Hash is 0CCE6A0DD219810B5964369F90A94BB52B056494
+Oh no - pwned! Found 1 occurences in /data/pwned-passwords-1.0.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you don't trust my script or the &lt;code&gt;sgrep&lt;/code&gt; command, the run the container without network connectivity&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ docker run --rm -v $(pwd):/data --network none pwned-passwords secret4949
+Hash is 6D26C5C10FF089BFE81AB22152E2C0F31C58E132
+Good news - no pwnage found!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So you have luck, you can securely check that your password &lt;code&gt;secure4949&lt;/code&gt; hasn't been breached. But beware this is still no good password :-)&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/mac.png" alt="Run pwned-passwords"&gt;&lt;/p&gt;
+&lt;h2 id="worksonwindows"&gt;Works on Windows&lt;/h2&gt;
+&lt;p&gt;If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.&lt;/p&gt;
+&lt;p&gt;With Docker 4 Windows it only depends on the shell you use.&lt;/p&gt;
+&lt;p&gt;For PowerShell the command to run the image is&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -v &amp;quot;$(pwd):/data&amp;quot; pwned-passwords yourpass
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/ps1.png" alt="PowerShell"&gt;&lt;/p&gt;
+&lt;p&gt;And if you prefer the classic CMD shell use this command&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -v &amp;quot;%cd%:/data&amp;quot; pwned-passwords yourpass
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/cmd.png" alt="CMD shell"&gt;&lt;/p&gt;
+&lt;p&gt;On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as &lt;code&gt;/data&lt;/code&gt; into the container.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -v &amp;quot;/c/Users/stefan.scherer/pwned:/data&amp;quot; stefanscherer/pwned-passwords troyhunt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/08/win7.png" alt="Windows 7 with pwned-passwords image"&gt;&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;You now know that there are Millions of passwords out there that may be used in a brute force attack to other online services.&lt;/p&gt;
+&lt;p&gt;So please use a password manager instead of predictable patterns how to modify passwords for different services.&lt;/p&gt;
+&lt;p&gt;You also have learned how Docker can keep your computer clean but still compile some open source projects from source code.&lt;/p&gt;
+&lt;p&gt;You have seen the benefits of multi-stage builds to create and share minimal Docker images without the development environment.&lt;/p&gt;
+&lt;p&gt;And you now have the possibility to search your current passwords in a save place without leaking it to the internet. Some other online service may collect all the data entered into a form. So keep your passwords secret and change&lt;/p&gt;
+&lt;p&gt;If you want to hear more about Docker, follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Use multi-stage builds for smaller Windows images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
+&lt;p&gt;On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/use-multi-stage-builds-for-smaller-windows-images/</link><guid isPermaLink="false">5986d4ec688a490001540974</guid><category>Docker</category><category>windows-containers</category><category>multi-stage</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 19 Apr 2017 22:52:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements that is very useful to build small Windows Docker images.&lt;/p&gt;
+&lt;p&gt;On Tuesday's first keynote at DockerCon Solomon Hykes introduced the most impressive feature for me that will make it in version 17.05.0 of Docker: &lt;strong&gt;The multi-stage builds&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2017/04/multi-stage-build.jpg" alt="announcement at DockerCon about multi-stage builds"&gt;&lt;/p&gt;
+&lt;p&gt;The demo in the keynote only showed Linux images, but you can use this feature for Windows images as well.&lt;/p&gt;
+&lt;h2 id="howdidwebuildsmallerimagesinthepast"&gt;How did we build smaller images in the past?&lt;/h2&gt;
+&lt;p&gt;As we know each instruction in a &lt;code&gt;Dockerfile&lt;/code&gt; like &lt;code&gt;COPY&lt;/code&gt; or &lt;code&gt;RUN&lt;/code&gt; builds a new layer of the image. So everything you do in eg. a &lt;code&gt;RUN&lt;/code&gt; instruction is atomic and saved into one layer. It was a common practise to use multi-line &lt;code&gt;RUN&lt;/code&gt; instructions to clean up temporary files and cache folders before that instruction ends to minimize the size of that layer.&lt;/p&gt;
+&lt;p&gt;For me it always looked like a workaround and a little too technical to know where all these temporary files have to be wiped out. So it is great to remove this noise out of your Dockerfiles.&lt;/p&gt;
+&lt;p&gt;And another workaround that was used in addition was to create two Dockerfiles and a script to simulate such stages and copy files from the first Docker image back to the host and then into the second Docker image. This could lead to errors if you have old temp folders on your host where you copy the results from the first build in. So it will be good that we can remove this complexity and avoid such build scripts entirely.&lt;/p&gt;
+&lt;h2 id="multistagebuildonwindows"&gt;Multi-stage build on Windows&lt;/h2&gt;
+&lt;p&gt;The idea behind multi-stage builds is that you can define two or more build stages and only the layers of the last stage gets into the final Docker image.&lt;/p&gt;
+&lt;h3 id="thefirststage"&gt;The first stage&lt;/h3&gt;
+&lt;p&gt;As you can see in the nice slide you can start with a first stage and do what you like in there. Maybe you need a &lt;strong&gt;complete build environment&lt;/strong&gt; like MSBuild, or the Golang compiler or dev dependencies to run Node.js tests with your sources.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;FROM&lt;/code&gt; instruction now can be followed by a stage name, eg. &lt;code&gt;build&lt;/code&gt;. I recommend to introduce that to your &lt;code&gt;Dockefile&lt;/code&gt; as we will need this name later again. This is how your Dockerfile then could look like:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/windowsservercore as build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You do not need to use multi-line &lt;code&gt;RUN&lt;/code&gt; instructions any more if you haven't liked it. Just keep your Dockerfile &lt;strong&gt;simple, readable and maintainable&lt;/strong&gt; by your team colleages. The advantage that even you have is that you can use the Docker build cache much better.&lt;/p&gt;
+&lt;p&gt;Think of a giant multi-line &lt;code&gt;RUN&lt;/code&gt; instruction with three big downloads, uncompress and cleanup steps and the third download crashes due to internet connectivity. Then you have to do all the other downloads again if you start the &lt;code&gt;docker build&lt;/code&gt; again.&lt;/p&gt;
+&lt;p&gt;So relax and just download one file per &lt;code&gt;RUN&lt;/code&gt; instruction, even put the uncompress into another &lt;code&gt;RUN&lt;/code&gt; layer, it doesn't matter for the final image size.&lt;/p&gt;
+&lt;h3 id="thelaststage"&gt;The last stage&lt;/h3&gt;
+&lt;p&gt;The magic comes into the &lt;code&gt;Dockerfile&lt;/code&gt; as you can use more than one &lt;code&gt;FROM&lt;/code&gt; instructions. Each &lt;code&gt;FROM&lt;/code&gt; starts a new build stage and all lines beginning from the last &lt;code&gt;FROM&lt;/code&gt; will make it into the final Docker image. The last stage does not need to have a name like the previous ones.&lt;/p&gt;
+&lt;p&gt;In this last stage you define the &lt;strong&gt;minimal runtime environment&lt;/strong&gt; for your containerised application.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;COPY&lt;/code&gt; instruction now has a new option &lt;code&gt;--from&lt;/code&gt; where you can specify from with stage you want to copy files or directories into the current stage.&lt;/p&gt;
+&lt;p&gt;Enough theory. Let's have a look at some real use-cases I already tried out.&lt;/p&gt;
+&lt;h2 id="buildagolangprogram"&gt;Build a Golang program&lt;/h2&gt;
+&lt;p&gt;A simple multi-stage &lt;code&gt;Dockerfile&lt;/code&gt; to build a Golang binary from source could look like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM golang:nanoserver as gobuild
+COPY . /code
+WORKDIR /code
+RUN go build webserver.go
+
+FROM microsoft/nanoserver
+COPY --from=gobuild /code/webserver.exe /webserver.exe
+EXPOSE 8080
+CMD [&amp;quot;\\webserver.exe&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The first four lines describe the normal build. We copy the source codes into the Golang build environment and build the Windows binary with it.&lt;/p&gt;
+&lt;p&gt;Then with the second &lt;code&gt;FROM&lt;/code&gt; instruction we choose an empty NanoServer image. With this we skip about 100 MByte of compressed Golang build environment images for the production image.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;COPY --from=gobuild&lt;/code&gt; instruction copies the final Windows binary from the gobuild stage into the final stage.&lt;/p&gt;
+&lt;p&gt;The last two lines are just the normal things you do, expose the port on which your app is listening and describing the command that should be called when running a container with it.&lt;/p&gt;
+&lt;p&gt;This &lt;code&gt;Dockerfile&lt;/code&gt; now can be easily be built as always with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t webserver .
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The final Docker image only has a 2 MByte compressed layer in addition to the NanoServer base layers.&lt;/p&gt;
+&lt;p&gt;You can find a full example for such a simple Golang webserver in my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/webserver"&gt;dockerfiles-windows&lt;/a&gt; repo, the final Docker Hub image is available at &lt;a href="https://hub.docker.com/r/stefanscherer/whoami/tags/"&gt;&lt;code&gt;stefanscherer/whoami:windows-amd64-1.2.0&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="installmongodbmsiinnanoserver"&gt;Install MongoDB MSI in NanoServer&lt;/h2&gt;
+&lt;p&gt;Another example for this multi-stage build is that you can use it to &lt;strong&gt;install MSI packages&lt;/strong&gt; and put the installed programs and files &lt;strong&gt;into a NanoServer&lt;/strong&gt; image.&lt;/p&gt;
+&lt;p&gt;Well, you cannot install MSI packages in NanoServer directly, but you can &lt;strong&gt;start with the Windows Server Core&lt;/strong&gt; image in the build stage and &lt;strong&gt;then switch to NanoServer&lt;/strong&gt; in the final stage.&lt;/p&gt;
+&lt;p&gt;If you know where the software has been installed you can &lt;code&gt;COPY&lt;/code&gt; deploy them in the final stage into the image.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; how to build a MongoDB NanoServer image is also available &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile"&gt;on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L1-L18"&gt;first stage&lt;/a&gt; more or less looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/windowsservercore as msi
+RUN &amp;quot;download MSI page&amp;quot;
+RUN &amp;quot;check SHA sum of download&amp;quot;
+RUN &amp;quot;run MSI installer&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and the &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/142debf6ddeb9f5fb57d2d472ebf166a32dbcc87/mongo/3.4/Dockerfile#L20-L32"&gt;final stage&lt;/a&gt; looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="language-Dockerfile"&gt;FROM microsoft/nanoserver
+COPY --from=msi C:\mongodb\ C:\mongodb\
+...
+RUN &amp;quot;put MongoDB binaries into PATH&amp;quot;
+VOLUME C:\data\db
+EXPOSE 27017
+CMD [&amp;quot;mongod.exe&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Another pro tip: If you really want small Windows Docker images you should also avoid &lt;code&gt;RUN&lt;/code&gt; or &lt;code&gt;ENV&lt;/code&gt; instructions in the last stage.&lt;/p&gt;
+&lt;p&gt;The final MongoDB NanoServer image is available at &lt;a href="https://hub.docker.com/r/stefanscherer/mongo-windows/tags/"&gt;&lt;code&gt;stefanscherer/mongo-windows:3.4.2-nano&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;With multi-stage builds coming into Docker 17.05 we will be able to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;put all build stages into a single Dockerfile to use only one simple &lt;code&gt;docker build&lt;/code&gt; command&lt;/li&gt;
+&lt;li&gt;use the build cache by using single line &lt;code&gt;RUN&lt;/code&gt; instructions&lt;/li&gt;
+&lt;li&gt;start with ServerCore, then switch to NanoServer&lt;/li&gt;
+&lt;li&gt;use latest NanoServer image with all security updates installed for the last stage even if upstream build layer may be out of date&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This gives you an idea what you will be able to do once you have Docker 17.05 or later installed.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update 2017-05-07&lt;/strong&gt;: I build all my &lt;a href="https://github.com/StefanScherer/dockerfiles-windows"&gt;dockerfiles-windows&lt;/a&gt; Windows Docker images with &lt;a href="https://www.appveyor.com"&gt;AppVeyor&lt;/a&gt; and it is very easy to upgrade to Docker 17.05.0-ce during the build with the script &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/blob/d1c01effe957281f72a762914b7fae36bdf49c15/update-docker-ce.ps1"&gt;&lt;code&gt;update-docker-ce.ps1&lt;/code&gt;&lt;/a&gt;. For local Windows Server 2016 VM's you could use this script as well. Sure, at the moment we have to switch from EE to CE edition until 17.06.0-ee also will bring this feature. Your images will still run on 17.03.1-ee production servers.&lt;/p&gt;
+&lt;p&gt;Please use the comments below if you have further ideas, questions or improvements to share. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>

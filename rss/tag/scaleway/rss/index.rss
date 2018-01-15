@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Scaleway - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Scaleway - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:09 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/scaleway/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Run your own dockerized openVPN server at Scaleway</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After reading this &lt;a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html"&gt;blog post&lt;/a&gt; about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.scaleway.com"&gt;Scaleway&lt;/a&gt; provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/run-your-own-dockerized-openvpn-server-at-scaleway/</link><guid isPermaLink="false">5986d4ec688a49000154095d</guid><category>Docker</category><category>Scaleway</category><category>ARM</category><category>openVPN</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 04 Nov 2015 12:16:00 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;After reading this &lt;a href="https://blog.pgp.help/vpn/docker/2015/09/02/DIY-VPN-with-docker.html"&gt;blog post&lt;/a&gt; about becoming your own VPN provider with Docker I thought if this is possible at Scaleway as well.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.scaleway.com"&gt;Scaleway&lt;/a&gt; provides real ARM hardware in the cloud and Docker runs well on it. So here are the steps to spin up an own openVPN ARM Docker container at minimal costs.&lt;/p&gt;
+&lt;h2 id="installlocaltools"&gt;Install local tools&lt;/h2&gt;
+&lt;p&gt;First install the scaleway commandline tool as well as the VPN client for Mac OSX.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;brew install scw
+brew cask install tunnelblick
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="prepareascalewayserver"&gt;Prepare a Scaleway server&lt;/h2&gt;
+&lt;p&gt;If you haven't one yet, create a Scaleway server running with Docker. The commandline tool makes this is really easy.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;scw login
+scw create --name scwdocker Docker_1_7_1
+scw start scwdocker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="prepareandstartyouropenvpncontainer"&gt;Prepare and start your openVPN container&lt;/h2&gt;
+&lt;p&gt;The next steps should be done on the Scaleway server, so login to it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;scw exec scwdocker bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There already is an ARM port of the &lt;a href="https://github.com/jpetazzo/dockvpn"&gt;jpetazzo/dockvpn&lt;/a&gt; Docker image for the Raspberry Pi. We just clone the GitHub repo &lt;a href="https://github.com/dimetron/dockvpn-rpi"&gt;dimetron/dockvpn-rpi&lt;/a&gt; and build the Docker image.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/dimetron/dockvpn-rpi.git
+cd dockvpn-rpi
+docker build -t jpetazzo/dockvpn .
+docker run -d --cap-add=NET_ADMIN --name=dockvpn -p 1194:1194/udp -p 443:443/tcp jpetazzo/dockvpn
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now create the ovpn file by running another container and extract it with &lt;code&gt;curl&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -t -i -p 8080:8080 --volumes-from dockvpn jpetazzo/dockvpn serveconfig
+curl -k -v https://localhost:8080 &amp;gt;scwvpn.ovpn 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You now may logout from your Scaleway server.&lt;/p&gt;
+&lt;h2 id="backtomac"&gt;Back to Mac&lt;/h2&gt;
+&lt;p&gt;Copy the ovpn file back to your Mac with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;scw cp scwdocker:dockvpn-rpi/scwvpn.ovpn scwvpn.ovpn
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the &lt;code&gt;scw cp&lt;/code&gt; command hangs, try this command instead&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;scw exec scwdocker cat dockvpn-rpi/scwvpn.ovpn &amp;gt;scwvpn.ovpn
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then double click on the ovpn file or open it with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;open scwvpn.ovpn
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and Tunnelblick should start and import the file. Now you're ready to connect to your VPN server running at Scaleway!&lt;/p&gt;
+&lt;p&gt;Please read the &lt;a href="https://github.com/jpetazzo/dockvpn#security-discussion"&gt;security discussion&lt;/a&gt; section and decide if you are happy with it.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item></channel></rss></html>
