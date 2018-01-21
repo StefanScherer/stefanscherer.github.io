@@ -1,5 +1,98 @@
 <!DOCTYPE html>
-<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Linux - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Linux - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:09 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/linux/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Run Linux and Windows Containers on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">5986d4ec688a490001540968</guid><category>Docker</category><category>Windows</category><category>Linux</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve newer versions.&lt;/p&gt;
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Linux - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Linux - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:06:23 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/linux/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>A sneak peek at LCOW</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week a major &lt;a href="https://github.com/moby/moby/pull/34859"&gt;pull request&lt;/a&gt; to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run &lt;strong&gt;both Linux and Windows containers side-by-side&lt;/strong&gt; with a single Docker engine.&lt;/p&gt;
+&lt;p&gt;So let's have a look how a&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/sneak-peek-at-lcow/</link><guid isPermaLink="false">5a64a75ee5611a0001acf91f</guid><category>Docker</category><category>LCOW</category><category>Linux</category><category>Windows 10</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 21 Jan 2018 15:30:58 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week a major &lt;a href="https://github.com/moby/moby/pull/34859"&gt;pull request&lt;/a&gt; to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run &lt;strong&gt;both Linux and Windows containers side-by-side&lt;/strong&gt; with a single Docker engine.&lt;/p&gt;
+&lt;p&gt;So let's have a look how a Windows 10 developer machine will look like in near future.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/lcow.png" alt="LCOW on Windows 10"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Docker command &lt;code&gt;docker ps&lt;/code&gt; lists all your running Linux and Windows containers.&lt;/li&gt;
+&lt;li&gt;You can use volumes to share data between containers and the host.&lt;/li&gt;
+&lt;li&gt;The containers can talk to each other over the container networks.&lt;/li&gt;
+&lt;li&gt;You can publish ports to your host and use localhost. But wait, this is still a Windows Insider feature coming to Windows 10 1803 release.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="runninglinuxcontainers"&gt;Running Linux containers&lt;/h2&gt;
+&lt;p&gt;At the moment you need to specify the &lt;code&gt;--platform&lt;/code&gt; option to pull Linux images. This option is also needed when the specific Docker images is a multi-arch image for both Linux and Windows.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker pull --platform linux alpine
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Once you have pulled Linux images you can run them without the &lt;code&gt;--platform&lt;/code&gt; option.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run alpine uname -a
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To allow Windows run Linux containers a small Hyper-V VM is needed. The LinuxKit project provides an image for LCOW at &lt;a href="https://github.com/linuxkit/lcow"&gt;https://github.com/linuxkit/lcow&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id="sharedvolumes"&gt;Shared volumes&lt;/h1&gt;
+&lt;p&gt;Let's see how containers of different platforms can share data in a simple way. You can bind mount a volume into Linux and Windows containers.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/lcow-in-action.gif" alt="LCOW in action with shared volumes"&gt;&lt;/p&gt;
+&lt;p&gt;The following example shares a folder from the host with a Linux and Windows container.&lt;/p&gt;
+&lt;p&gt;First create a folder on the Windows 10 host:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd \
+mkdir host
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="runalinuxcontainer"&gt;Run a Linux container&lt;/h3&gt;
+&lt;p&gt;On the Windows 10 host run a Linux container and bind mount the folder as &lt;code&gt;/test&lt;/code&gt; in the Linux container.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -it -v C:\host:/test alpine sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the Linux container create a file in that mounted volume.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uname -a &amp;gt; test/hello-from-linux.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="runawindowscontainer"&gt;Run a Windows container&lt;/h3&gt;
+&lt;p&gt;On the Windows 10 host run a Windows container and bind mount the folder as &lt;code&gt;C:\test&lt;/code&gt; in the Windows container.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -i -v C:\host:C:\test microsoft/nanoserver:1709 cmd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the Windows container create a file in that mounted volume.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ver &amp;gt; test\hello-from-windows.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="result"&gt;Result&lt;/h3&gt;
+&lt;p&gt;On the Windows 10 host list the files in the shared folder&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\&amp;gt; dir host
+
+
+    Directory: C:\host
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        1/21/2018   4:32 AM             85 hello-from-linux.txt
+-a----        1/21/2018   4:33 AM             46 hello-from-windows.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is super convenient for development environments to share configuration files or even source code.&lt;/p&gt;
+&lt;h1 id="buildyourowntestenvironment"&gt;Build your own test environment&lt;/h1&gt;
+&lt;p&gt;If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 VM.&lt;/p&gt;
+&lt;h2 id="azure"&gt;Azure&lt;/h2&gt;
+&lt;p&gt;I have tested LCOW with a Windows 10 1709 VM in Azure. Choose a V3 machine to have nested hypervisor which you will need to run Hyper-V containers.&lt;/p&gt;
+&lt;h3 id="containersandhyperv"&gt;Containers and Hyper-V&lt;/h3&gt;
+&lt;p&gt;Enable the Containers feature and Hyper-V feature:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Enable-WindowsOptionalFeature -Online -FeatureName containers -All -NoRestart
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="linuxkit"&gt;LinuxKit&lt;/h3&gt;
+&lt;p&gt;Now install the LinuxKit image for LCOW. I have catched the latest from a CircleCI artifact, but soon there will be a new release in the &lt;a href="https://github.com/linuxkit/lcow/releases"&gt;linuxkit/lcow&lt;/a&gt; repo.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Invoke-WebRequest -OutFile &amp;quot;$env:TEMP\linuxkit-lcow.zip&amp;quot; &amp;quot;https://23-111085629-gh.circle-artifacts.com/0/release.zip&amp;quot;
+Expand-Archive -Path &amp;quot;$env:TEMP\linuxkit-lcow.zip&amp;quot; -DestinationPath &amp;quot;$env:ProgramFiles\Linux Containers&amp;quot; -Force
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id="dockernightlybuild"&gt;Docker nightly build&lt;/h3&gt;
+&lt;p&gt;Now download and install the Docker engine. As this pull request only landed in master branch we have to use the nightly build for now.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Invoke-WebRequest -OutFile &amp;quot;$env:TEMP\docker-master.zip&amp;quot; &amp;quot;https://master.dockerproject.com/windows/x86_64/docker.zip&amp;quot;
+Expand-Archive -Path &amp;quot;$env:TEMP\docker-master.zip&amp;quot; -DestinationPath $env:ProgramFiles -Force
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The next command installs the Docker service and enables the experimental features.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;. $env:ProgramFiles\docker\dockerd.exe --register-service --experimental
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Set the PATH variable to have the Docker CLI available.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Environment]::SetEnvironmentVariable(&amp;quot;Path&amp;quot;, $env:Path + &amp;quot;;$($env:ProgramFiles)\docker&amp;quot;, [EnvironmentVariableTarget]::Machine)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now reboot the machine to finish the Containers and Hyper-V installation. After the reboot the Docker engine should be up and running and the Docker CLI can be used from the PowerShell terminal.&lt;/p&gt;
+&lt;h2 id="localvagrantenvironment"&gt;Local Vagrant environment&lt;/h2&gt;
+&lt;p&gt;If you have &lt;a href="https://vagrantup.com"&gt;Vagrant&lt;/a&gt; installed with Hyper-V or VMware as your hypervisor, you can spin up a local test environment with a few commands.&lt;/p&gt;
+&lt;p&gt;First clone my GitHub repo &lt;a href="https://github.com/StefanScherer/docker-windows-box"&gt;docker-windows-box&lt;/a&gt; which has a LCOW environment to play with.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd lcow
+vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will download the Vagrant base box if needed, spins up the Windows 10 VM and automatically installs all features shown above.&lt;/p&gt;
+&lt;h1 id="conclusion"&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;With all these new Docker features coming to Windows in the next few months, Windows 10 is evolving to the most interesting developer platform in 2018.&lt;/p&gt;
+&lt;p&gt;Imagine what's possible: Use a &lt;code&gt;docker-compose.yml&lt;/code&gt; to spin up a mixed scenario with Linux and Windows containers, live debug your app from Visual Studio Code, and much more.&lt;/p&gt;
+&lt;p&gt;If you liked this blog post please share it with your friends. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt; to stay updated with Windows containers.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Run Linux and Windows Containers on Windows 10</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/run-linux-and-windows-containers-on-windows-10/</link><guid isPermaLink="false">5986d4ec688a490001540968</guid><category>Docker</category><category>Windows</category><category>Linux</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sat, 24 Sep 2016 12:55:29 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;At DockerCon 2016 in Seattle Docker announced the public beta of &lt;strong&gt;Docker for Windows&lt;/strong&gt;. With this you can work with Docker running &lt;strong&gt;Linux containers&lt;/strong&gt; in a very easy way on Windows 10 Pro with Hyper-V installed. In the meantime there is a &lt;a href="https://docs.docker.com/docker-for-windows/"&gt;stable version and a beta channel&lt;/a&gt; to retrieve newer versions.&lt;/p&gt;
 &lt;p&gt;And Microsoft has added the &lt;strong&gt;Containers feature&lt;/strong&gt; in the Windows 10 Anniversary Update. With some &lt;a href="https://msdn.microsoft.com/en-us/virtualization/windowscontainers/quick_start/quick_start_windows_10"&gt;installation steps&lt;/a&gt; you are able to run &lt;strong&gt;Windows Hyper-V Containers&lt;/strong&gt; on your Windows 10 machine.&lt;/p&gt;
 &lt;p&gt;But there is a little bit of confusion which sort of containers can be started with each of the two installations. And you can't run both Docker Engines side-by-side without some adjustments.&lt;/p&gt;
 &lt;p&gt;This is because each of the installations use the same default named pipe &lt;code&gt;//./pipe/docker_engine&lt;/code&gt; causing one of the engines to fail to start.&lt;/p&gt;

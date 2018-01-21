@@ -1,4 +1,97 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 15 Jan 2018 20:20:07 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[PoC: How to build images for 1709 without 1709]]></title><description><![CDATA[<div class="kg-card-markdown"><p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:06:21 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[A sneak peek at LCOW]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
+<p>So let's have a look how a</p></div>]]></description><link>http://localhost:2368/sneak-peek-at-lcow/</link><guid isPermaLink="false">5a64a75ee5611a0001acf91f</guid><category><![CDATA[Docker]]></category><category><![CDATA[LCOW]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Windows 10]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 15:30:58 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
+<p>So let's have a look how a Windows 10 developer machine will look like in near future.</p>
+<p><img src="http://localhost:2368/content/images/2018/01/lcow.png" alt="LCOW on Windows 10"></p>
+<ul>
+<li>The Docker command <code>docker ps</code> lists all your running Linux and Windows containers.</li>
+<li>You can use volumes to share data between containers and the host.</li>
+<li>The containers can talk to each other over the container networks.</li>
+<li>You can publish ports to your host and use localhost. But wait, this is still a Windows Insider feature coming to Windows 10 1803 release.</li>
+</ul>
+<h2 id="runninglinuxcontainers">Running Linux containers</h2>
+<p>At the moment you need to specify the <code>--platform</code> option to pull Linux images. This option is also needed when the specific Docker images is a multi-arch image for both Linux and Windows.</p>
+<pre><code>docker pull --platform linux alpine
+</code></pre>
+<p>Once you have pulled Linux images you can run them without the <code>--platform</code> option.</p>
+<pre><code>docker run alpine uname -a
+</code></pre>
+<p>To allow Windows run Linux containers a small Hyper-V VM is needed. The LinuxKit project provides an image for LCOW at <a href="https://github.com/linuxkit/lcow">https://github.com/linuxkit/lcow</a>.</p>
+<h1 id="sharedvolumes">Shared volumes</h1>
+<p>Let's see how containers of different platforms can share data in a simple way. You can bind mount a volume into Linux and Windows containers.</p>
+<p><img src="http://localhost:2368/content/images/2018/01/lcow-in-action.gif" alt="LCOW in action with shared volumes"></p>
+<p>The following example shares a folder from the host with a Linux and Windows container.</p>
+<p>First create a folder on the Windows 10 host:</p>
+<pre><code>cd \
+mkdir host
+</code></pre>
+<h3 id="runalinuxcontainer">Run a Linux container</h3>
+<p>On the Windows 10 host run a Linux container and bind mount the folder as <code>/test</code> in the Linux container.</p>
+<pre><code>docker run -it -v C:\host:/test alpine sh
+</code></pre>
+<p>In the Linux container create a file in that mounted volume.</p>
+<pre><code>uname -a &gt; test/hello-from-linux.txt
+</code></pre>
+<h3 id="runawindowscontainer">Run a Windows container</h3>
+<p>On the Windows 10 host run a Windows container and bind mount the folder as <code>C:\test</code> in the Windows container.</p>
+<pre><code>docker run -i -v C:\host:C:\test microsoft/nanoserver:1709 cmd
+</code></pre>
+<p>In the Windows container create a file in that mounted volume.</p>
+<pre><code>ver &gt; test\hello-from-windows.txt
+</code></pre>
+<h3 id="result">Result</h3>
+<p>On the Windows 10 host list the files in the shared folder</p>
+<pre><code>PS C:\&gt; dir host
+
+
+    Directory: C:\host
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        1/21/2018   4:32 AM             85 hello-from-linux.txt
+-a----        1/21/2018   4:33 AM             46 hello-from-windows.txt
+</code></pre>
+<p>This is super convenient for development environments to share configuration files or even source code.</p>
+<h1 id="buildyourowntestenvironment">Build your own test environment</h1>
+<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 VM.</p>
+<h2 id="azure">Azure</h2>
+<p>I have tested LCOW with a Windows 10 1709 VM in Azure. Choose a V3 machine to have nested hypervisor which you will need to run Hyper-V containers.</p>
+<h3 id="containersandhyperv">Containers and Hyper-V</h3>
+<p>Enable the Containers feature and Hyper-V feature:</p>
+<pre><code>Enable-WindowsOptionalFeature -Online -FeatureName containers -All -NoRestart
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+</code></pre>
+<h3 id="linuxkit">LinuxKit</h3>
+<p>Now install the LinuxKit image for LCOW. I have catched the latest from a CircleCI artifact, but soon there will be a new release in the <a href="https://github.com/linuxkit/lcow/releases">linuxkit/lcow</a> repo.</p>
+<pre><code>Invoke-WebRequest -OutFile &quot;$env:TEMP\linuxkit-lcow.zip&quot; &quot;https://23-111085629-gh.circle-artifacts.com/0/release.zip&quot;
+Expand-Archive -Path &quot;$env:TEMP\linuxkit-lcow.zip&quot; -DestinationPath &quot;$env:ProgramFiles\Linux Containers&quot; -Force
+</code></pre>
+<h3 id="dockernightlybuild">Docker nightly build</h3>
+<p>Now download and install the Docker engine. As this pull request only landed in master branch we have to use the nightly build for now.</p>
+<pre><code>Invoke-WebRequest -OutFile &quot;$env:TEMP\docker-master.zip&quot; &quot;https://master.dockerproject.com/windows/x86_64/docker.zip&quot;
+Expand-Archive -Path &quot;$env:TEMP\docker-master.zip&quot; -DestinationPath $env:ProgramFiles -Force
+</code></pre>
+<p>The next command installs the Docker service and enables the experimental features.</p>
+<pre><code>. $env:ProgramFiles\docker\dockerd.exe --register-service --experimental
+</code></pre>
+<p>Set the PATH variable to have the Docker CLI available.</p>
+<pre><code>[Environment]::SetEnvironmentVariable(&quot;Path&quot;, $env:Path + &quot;;$($env:ProgramFiles)\docker&quot;, [EnvironmentVariableTarget]::Machine)
+</code></pre>
+<p>Now reboot the machine to finish the Containers and Hyper-V installation. After the reboot the Docker engine should be up and running and the Docker CLI can be used from the PowerShell terminal.</p>
+<h2 id="localvagrantenvironment">Local Vagrant environment</h2>
+<p>If you have <a href="https://vagrantup.com">Vagrant</a> installed with Hyper-V or VMware as your hypervisor, you can spin up a local test environment with a few commands.</p>
+<p>First clone my GitHub repo <a href="https://github.com/StefanScherer/docker-windows-box">docker-windows-box</a> which has a LCOW environment to play with.</p>
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd lcow
+vagrant up
+</code></pre>
+<p>This will download the Vagrant base box if needed, spins up the Windows 10 VM and automatically installs all features shown above.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>With all these new Docker features coming to Windows in the next few months, Windows 10 is evolving to the most interesting developer platform in 2018.</p>
+<p>Imagine what's possible: Use a <code>docker-compose.yml</code> to spin up a mixed scenario with Linux and Windows containers, live debug your app from Visual Studio Code, and much more.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay updated with Windows containers.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[PoC: How to build images for 1709 without 1709]]></title><description><![CDATA[<div class="kg-card-markdown"><p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?</p>
 <blockquote>
 <p><strong>Disclaimer:</strong> The tools and described workflow to build such images on</p></blockquote></div>]]></description><link>http://localhost:2368/poc-build-images-for-1709-without-1709/</link><guid isPermaLink="false">59f90ee4f830c70001a9b8f1</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows Server 1709]]></category><category><![CDATA[windows-containers]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[multi-arch]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 31 Oct 2017 23:55:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I found a way to build Windows Docker images based on the new 1709 images without running on 1709. Sounds weird?</p>
 <blockquote>
@@ -1381,100 +1474,5 @@ services:
 </code></pre>
 <h2 id="conclusion">Conclusion</h2>
 <p>I think this setup will help me in the future to update Ghost more easily.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Winspector - a tool to inspect your and other's Windows images]]></title><description><![CDATA[<div class="kg-card-markdown"><p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
-<p>Is there a way</p></div>]]></description><link>http://localhost:2368/winspector/</link><guid isPermaLink="false">5986d4ec688a49000154096c</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Container]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Python]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 08 Jan 2017 14:00:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>In my <a href="https://stefanscherer.github.io/keep-your-windows-containers-up-to-date/">previous blog post</a> I showed you how to get Windows Updates into your container images. But how do you know if your underlying Docker image you use in the <code>FROM</code> line of your <code>Dockerfile</code> also uses the correct version of the Windows base image?</p>
-<p>Is there a way to look into container images without downloading them?</p>
-<p>There are several services like <a href="https://imagelayers.io">imagelayers.io</a>, <a href="https://microbadger.com">microbadger</a>, <a href="http://shields.io">shields.io</a> and others which provide badges and online views for existing Docker images at Docker Hub. Unfortunately not all support Windows images at the moment.</p>
-<h2 id="enterwinspector">Enter winspector</h2>
-<p>I found an <a href="https://github.com/giantswarm/inspect-docker-image">inspector tool</a> written in Python that might be useful for that task. I've enhanced it and created a tool called winspector which is available as Docker image <a href="https://hub.docker.com/r/stefanscherer/winspector/">stefanscherer/winspector</a> for Windows and Linux. With this tool you can inspect any Windows Docker images on the Docker Hub.</p>
-<p>Winspector will show you</p>
-<ul>
-<li>The creation date of the image and the Docker version and Windows version used at build time.</li>
-<li>The number of layers down to the Windows base image</li>
-<li>Which <strong>Windows base image</strong> the given image depends on. So you know whether a random Windows image uses the up to date Windows base image or not.</li>
-<li>The <strong>size of each layer</strong>. This is useful to when you try to optimize your image size.</li>
-<li>The <strong>&quot;application size&quot; without the Windows base layers</strong>. So you get an idea how small your Windows application image really is and what other users have to download provided that they already have the base image.</li>
-<li>The history of the image. It tries to <strong>reconstruct the <code>Dockerfile</code> commands</strong> that have been used to build the image.</li>
-</ul>
-<h3 id="runitfromwindows">Run it from Windows</h3>
-<p>If you have Docker running with Windows containers, use this command to run the tool with any given image name and an optional tag.</p>
-<pre><code>docker run --rm stefanscherer/winspector microsoft/iis
-</code></pre>
-<p><img src="http://localhost:2368/content/images/2017/01/winspector-wndows.png" alt="run from windows"></p>
-<p>At the moment the Docker image depends on the windowsservercore base image. I'll try to move it to nanoserver to reduce download size for Windows 10 users.</p>
-<h3 id="runitfrommaclinux">Run it from Mac / Linux</h3>
-<p>If you have a Linux Docker engine running, just use the exact same command as on Windows. The Docker image <code>stefanscherer/winspector</code> is a <strong>multiarch Docker image</strong> and Docker will pull the correct OS specific image for you automatically.</p>
-<pre><code>docker run --rm stefanscherer/winspector microsoft/iis
-</code></pre>
-<p><img src="http://localhost:2368/content/images/2017/01/winspector-mac.png" alt="run from mac"></p>
-<h2 id="inspectingsomeimages">Inspecting some images</h2>
-<p>Now let's try winspector and inspect a random Docker image. We could start with the Windows base image itself.</p>
-<pre><code>$ docker run --rm stefanscherer/winspector microsoft/windowsservercore
-</code></pre>
-<p>Even for this image it can show you some details:</p>
-<pre><code>Image name: microsoft/windowsservercore
-Tag: latest
-Number of layers: 2
-Sizes of layers:
-  sha256:3889bb8d808bbae6fa5a33e07... - 4069985900 byte
-  sha256:3430754e4d171ead00cf67667... - 913145061 byte
-Total size (including Windows base layers): 4983130961 byte
-Application size (w/o Windows base layers): 0 byte
-Windows base image used:
-  microsoft/windowsservercore:10.0.14393.447 full
-  microsoft/windowsservercore:10.0.14393.693 update
-</code></pre>
-<p>As you can see the latest windowsservercore image has two layers. The sizes shown here are the download sizes of the compressed layers. The smaller one is the layer that will be replaced by a newer update layer with the next release.</p>
-<h2 id="howbigisthewinspectorimage">How big is the winspector image?</h2>
-<p>Now let's have a look at the winspector Windows image to see what winspector can retrieve for you.</p>
-<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:windows-1.4.3
-</code></pre>
-<p>The (shortened) output looks like this:</p>
-<pre><code>Image name: stefanscherer/winspector
-Tag: windows-1.4.3
-Number of layers: 14
-Schema version: 1
-Architecture: amd64
-Created: 2017-01-15 21:35:22 with Docker 1.13.0-rc7 on windows 10.0.14393.693
-Sizes of layers:
-  ...
-
-Total size (including Windows base layers): 360497565 byte
-Application size (w/o Windows base layers): 27188879 byte
-Windows base image used:
-  microsoft/nanoserver:10.0.14393.447 full
-  microsoft/nanoserver:10.0.14393.693 update
-History:
-  ...
-</code></pre>
-<p>So the winspector Windows image is about 27 MByte and it uses the latest nanoserver base image.</p>
-<h2 id="inspectinglinuximages">Inspecting Linux images</h2>
-<p>And winspector is not restricted to Windows images, you can inspect Linux images as well.</p>
-<p>If you run</p>
-<pre><code>$ docker run --rm stefanscherer/winspector stefanscherer/winspector:linux-1.4.3
-</code></pre>
-<p>then winspector will show you</p>
-<pre><code>Image name: stefanscherer/winspector
-Tag: linux-1.4.3
-Number of layers: 8
-Schema version: 1
-Architecture: amd64
-Created: 2017-01-15 21:34:21 with Docker 1.12.3 on linux 
-Sizes of layers:
-  ...
-Total size (including Windows base layers): 32708231 byte
-Application size (w/o Windows base layers): 32708231 byte
-Windows base image used:
-  It does not seem to be a Windows image
-History:
-  ...
-</code></pre>
-<p>As you can see the Linux image is about 32 MByte.</p>
-<p>So once you have downloaded the latest Windows base images like windowsservercore or nanoserver the download experience is the same for both platforms.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>With winspector you can check any Windows container image on the Docker Hub which version of Windows it uses.</p>
-<p>You can also see how big each image layer is and learn how to optimize commands in your Dockerfile to create smaller Windows images.</p>
-<p>The tool is open source on GitHub at <a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a>. It is community driven, so feel free to send me feedback in form of issues or pull requests.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>

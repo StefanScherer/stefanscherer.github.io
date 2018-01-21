@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>A sneak peek at LCOW</title>
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=c3a7438a6c">
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://stefanscherer.github.io/sneak-peek-at-lcow/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/sneak-peek-at-lcow/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A sneak peek at LCOW">
+    <meta property="og:description" content="Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let's have a look how a">
+    <meta property="og:url" content="https://stefanscherer.github.io/sneak-peek-at-lcow/">
+    <meta property="article:published_time" content="2018-01-21T15:30:58.000Z">
+    <meta property="article:modified_time" content="2018-01-21T18:05:02.000Z">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="LCOW">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Windows 10">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="A sneak peek at LCOW">
+    <meta name="twitter:description" content="Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let's have a look how a">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/sneak-peek-at-lcow/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Docker, LCOW, Linux, Windows 10">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "A sneak peek at LCOW",
+    "url": "https://stefanscherer.github.io/sneak-peek-at-lcow/",
+    "datePublished": "2018-01-21T15:30:58.000Z",
+    "dateModified": "2018-01-21T18:05:02.000Z",
+    "keywords": "Docker, LCOW, Linux, Windows 10",
+    "description": "Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let&#x27;s have a look how a",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=c3a7438a6c"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+</head>
+<body class="post-template tag-docker tag-lcow tag-linux tag-windows-10 nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-lcow tag-linux tag-windows-10">
+
+        <header class="post-header">
+            <h1 class="post-title">A sneak peek at LCOW</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2018-01-21">21 January 2018</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/lcow/">LCOW</a>, <a href="../tag/linux/">Linux</a>, <a href="../tag/windows-10/">Windows 10</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
+<p>So let's have a look how a Windows 10 developer machine will look like in near future.</p>
+<p><img src="../content/images/2018/01/lcow.png" alt="LCOW on Windows 10"></p>
+<ul>
+<li>The Docker command <code>docker ps</code> lists all your running Linux and Windows containers.</li>
+<li>You can use volumes to share data between containers and the host.</li>
+<li>The containers can talk to each other over the container networks.</li>
+<li>You can publish ports to your host and use localhost. But wait, this is still a Windows Insider feature coming to Windows 10 1803 release.</li>
+</ul>
+<h2 id="runninglinuxcontainers">Running Linux containers</h2>
+<p>At the moment you need to specify the <code>--platform</code> option to pull Linux images. This option is also needed when the specific Docker images is a multi-arch image for both Linux and Windows.</p>
+<pre><code>docker pull --platform linux alpine
+</code></pre>
+<p>Once you have pulled Linux images you can run them without the <code>--platform</code> option.</p>
+<pre><code>docker run alpine uname -a
+</code></pre>
+<p>To allow Windows run Linux containers a small Hyper-V VM is needed. The LinuxKit project provides an image for LCOW at <a href="https://github.com/linuxkit/lcow">https://github.com/linuxkit/lcow</a>.</p>
+<h1 id="sharedvolumes">Shared volumes</h1>
+<p>Let's see how containers of different platforms can share data in a simple way. You can bind mount a volume into Linux and Windows containers.</p>
+<p><img src="../content/images/2018/01/lcow-in-action.gif" alt="LCOW in action with shared volumes"></p>
+<p>The following example shares a folder from the host with a Linux and Windows container.</p>
+<p>First create a folder on the Windows 10 host:</p>
+<pre><code>cd \
+mkdir host
+</code></pre>
+<h3 id="runalinuxcontainer">Run a Linux container</h3>
+<p>On the Windows 10 host run a Linux container and bind mount the folder as <code>/test</code> in the Linux container.</p>
+<pre><code>docker run -it -v C:\host:/test alpine sh
+</code></pre>
+<p>In the Linux container create a file in that mounted volume.</p>
+<pre><code>uname -a &gt; test/hello-from-linux.txt
+</code></pre>
+<h3 id="runawindowscontainer">Run a Windows container</h3>
+<p>On the Windows 10 host run a Windows container and bind mount the folder as <code>C:\test</code> in the Windows container.</p>
+<pre><code>docker run -i -v C:\host:C:\test microsoft/nanoserver:1709 cmd
+</code></pre>
+<p>In the Windows container create a file in that mounted volume.</p>
+<pre><code>ver &gt; test\hello-from-windows.txt
+</code></pre>
+<h3 id="result">Result</h3>
+<p>On the Windows 10 host list the files in the shared folder</p>
+<pre><code>PS C:\&gt; dir host
+
+
+    Directory: C:\host
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        1/21/2018   4:32 AM             85 hello-from-linux.txt
+-a----        1/21/2018   4:33 AM             46 hello-from-windows.txt
+</code></pre>
+<p>This is super convenient for development environments to share configuration files or even source code.</p>
+<h1 id="buildyourowntestenvironment">Build your own test environment</h1>
+<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 VM.</p>
+<h2 id="azure">Azure</h2>
+<p>I have tested LCOW with a Windows 10 1709 VM in Azure. Choose a V3 machine to have nested hypervisor which you will need to run Hyper-V containers.</p>
+<h3 id="containersandhyperv">Containers and Hyper-V</h3>
+<p>Enable the Containers feature and Hyper-V feature:</p>
+<pre><code>Enable-WindowsOptionalFeature -Online -FeatureName containers -All -NoRestart
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+</code></pre>
+<h3 id="linuxkit">LinuxKit</h3>
+<p>Now install the LinuxKit image for LCOW. I have catched the latest from a CircleCI artifact, but soon there will be a new release in the <a href="https://github.com/linuxkit/lcow/releases">linuxkit/lcow</a> repo.</p>
+<pre><code>Invoke-WebRequest -OutFile "$env:TEMP\linuxkit-lcow.zip" "https://23-111085629-gh.circle-artifacts.com/0/release.zip"
+Expand-Archive -Path "$env:TEMP\linuxkit-lcow.zip" -DestinationPath "$env:ProgramFiles\Linux Containers" -Force
+</code></pre>
+<h3 id="dockernightlybuild">Docker nightly build</h3>
+<p>Now download and install the Docker engine. As this pull request only landed in master branch we have to use the nightly build for now.</p>
+<pre><code>Invoke-WebRequest -OutFile "$env:TEMP\docker-master.zip" "https://master.dockerproject.com/windows/x86_64/docker.zip"
+Expand-Archive -Path "$env:TEMP\docker-master.zip" -DestinationPath $env:ProgramFiles -Force
+</code></pre>
+<p>The next command installs the Docker service and enables the experimental features.</p>
+<pre><code>. $env:ProgramFiles\docker\dockerd.exe --register-service --experimental
+</code></pre>
+<p>Set the PATH variable to have the Docker CLI available.</p>
+<pre><code>[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$($env:ProgramFiles)\docker", [EnvironmentVariableTarget]::Machine)
+</code></pre>
+<p>Now reboot the machine to finish the Containers and Hyper-V installation. After the reboot the Docker engine should be up and running and the Docker CLI can be used from the PowerShell terminal.</p>
+<h2 id="localvagrantenvironment">Local Vagrant environment</h2>
+<p>If you have <a href="https://vagrantup.com">Vagrant</a> installed with Hyper-V or VMware as your hypervisor, you can spin up a local test environment with a few commands.</p>
+<p>First clone my GitHub repo <a href="https://github.com/StefanScherer/docker-windows-box">docker-windows-box</a> which has a LCOW environment to play with.</p>
+<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
+cd docker-windows-box
+cd lcow
+vagrant up
+</code></pre>
+<p>This will download the Vagrant base box if needed, spins up the Windows 10 VM and automatically installs all features shown above.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>With all these new Docker features coming to Windows in the next few months, Windows 10 is evolving to the most interesting developer platform in 2018.</p>
+<p>Imagine what's possible: Use a <code>docker-compose.yml</code> to spin up a mixed scenario with Linux and Windows containers, live debug your app from Visual Studio Code, and much more.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay updated with Windows containers.</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=A%20sneak%20peek%20at%20LCOW&amp;url=https://stefanscherer.github.io/sneak-peek-at-lcow/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/sneak-peek-at-lcow/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/sneak-peek-at-lcow/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../poc-build-images-for-1709-without-1709/">
+        <section class="post">
+            <h2>PoC: How to build images for 1709 without 1709</h2>
+            <p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=c3a7438a6c"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=c3a7438a6c"></script>
+
+</body>
+</html>
