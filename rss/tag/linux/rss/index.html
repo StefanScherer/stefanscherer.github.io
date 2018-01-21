@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Linux - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Linux - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:06:23 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/linux/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[A sneak peek at LCOW]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Linux - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Linux - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:18:39 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/linux/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[A sneak peek at LCOW]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
 <p>So let's have a look how a</p></div>]]></description><link>https://stefanscherer.github.io/sneak-peek-at-lcow/</link><guid isPermaLink="false">5a64a75ee5611a0001acf91f</guid><category><![CDATA[Docker]]></category><category><![CDATA[LCOW]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Windows 10]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 15:30:58 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
 <p>So let's have a look how a Windows 10 developer machine will look like in near future.</p>
 <p><img src="https://stefanscherer.github.io/content/images/2018/01/lcow.png" alt="LCOW on Windows 10"></p>
@@ -52,8 +52,38 @@ Mode                LastWriteTime         Length Name
 -a----        1/21/2018   4:33 AM             46 hello-from-windows.txt
 </code></pre>
 <p>This is super convenient for development environments to share configuration files or even source code.</p>
-<h1 id="buildyourowntestenvironment">Build your own test environment</h1>
-<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 VM.</p>
+<h1 id="draftingmixedworkloads">Drafting mixed workloads</h1>
+<p>With Docker Compose you can spin up a mixed container environment. I just did these first steps to spin up a Linux and Windows web server.</p>
+<pre><code class="language-yaml">version: &quot;3.2&quot;
+
+services:
+
+  web1:
+    image: nginx
+    volumes:
+      - type: bind
+        source: C:\host
+        target: /test
+    ports:
+      - 80:80
+
+  web2:
+    image: stefanscherer/hello-dresden:0.0.3-windows-1709
+    volumes:
+      - type: bind
+        source: C:\host
+        target: C:\test
+    ports:
+      - 81:3000
+
+networks:
+  default:
+    external:
+      name: nat
+</code></pre>
+<p>Think of a Linux database and a Window front end, or vice versa...</p>
+<h1 id="buildyourownlcowtestenvironment">Build your own LCOW test environment</h1>
+<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 1709 VM.</p>
 <h2 id="azure">Azure</h2>
 <p>I have tested LCOW with a Windows 10 1709 VM in Azure. Choose a V3 machine to have nested hypervisor which you will need to run Hyper-V containers.</p>
 <h3 id="containersandhyperv">Containers and Hyper-V</h3>

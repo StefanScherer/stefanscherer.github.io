@@ -24,7 +24,7 @@
     <meta property="og:description" content="Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let's have a look how a">
     <meta property="og:url" content="https://stefanscherer.github.io/sneak-peek-at-lcow/">
     <meta property="article:published_time" content="2018-01-21T15:30:58.000Z">
-    <meta property="article:modified_time" content="2018-01-21T18:05:02.000Z">
+    <meta property="article:modified_time" content="2018-01-21T18:18:16.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="LCOW">
     <meta property="article:tag" content="Linux">
@@ -68,7 +68,7 @@
     "headline": "A sneak peek at LCOW",
     "url": "https://stefanscherer.github.io/sneak-peek-at-lcow/",
     "datePublished": "2018-01-21T15:30:58.000Z",
-    "dateModified": "2018-01-21T18:05:02.000Z",
+    "dateModified": "2018-01-21T18:18:16.000Z",
     "keywords": "Docker, LCOW, Linux, Windows 10",
     "description": "Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let&#x27;s have a look how a",
     "mainEntityOfPage": {
@@ -182,8 +182,38 @@ Mode                LastWriteTime         Length Name
 -a----        1/21/2018   4:33 AM             46 hello-from-windows.txt
 </code></pre>
 <p>This is super convenient for development environments to share configuration files or even source code.</p>
-<h1 id="buildyourowntestenvironment">Build your own test environment</h1>
-<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 VM.</p>
+<h1 id="draftingmixedworkloads">Drafting mixed workloads</h1>
+<p>With Docker Compose you can spin up a mixed container environment. I just did these first steps to spin up a Linux and Windows web server.</p>
+<pre><code class="language-yaml">version: "3.2"
+
+services:
+
+  web1:
+    image: nginx
+    volumes:
+      - type: bind
+        source: C:\host
+        target: /test
+    ports:
+      - 80:80
+
+  web2:
+    image: stefanscherer/hello-dresden:0.0.3-windows-1709
+    volumes:
+      - type: bind
+        source: C:\host
+        target: C:\test
+    ports:
+      - 81:3000
+
+networks:
+  default:
+    external:
+      name: nat
+</code></pre>
+<p>Think of a Linux database and a Window front end, or vice versa...</p>
+<h1 id="buildyourownlcowtestenvironment">Build your own LCOW test environment</h1>
+<p>If you want to try LCOW yourself I suggest to spin up a fresh Windows 10 1709 VM.</p>
 <h2 id="azure">Azure</h2>
 <p>I have tested LCOW with a Windows 10 1709 VM in Azure. Choose a V3 machine to have nested hypervisor which you will need to run Hyper-V containers.</p>
 <h3 id="containersandhyperv">Containers and Hyper-V</h3>
