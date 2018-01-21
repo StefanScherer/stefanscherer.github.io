@@ -1,5 +1,96 @@
 <!DOCTYPE html>
-<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Insider - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Insider - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:06:22 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/insider/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Exploring new NanoServer Insider images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Insider - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Insider - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 21:36:22 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/insider/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Terraforming a Windows Insider Server in Azure</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.&lt;/p&gt;
+&lt;h2 id="buildtheazurevm"&gt;Build the Azure VM&lt;/h2&gt;
+&lt;p&gt;On your local machine clone the &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; repo which has a Terraform template to build an Azure&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/terraforming-a-windows-insider-server-in-azure/</link><guid isPermaLink="false">5a64f348845d55000179abc4</guid><category>Azure</category><category>Docker</category><category>windows-containers</category><category>Insider</category><category>Windows</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Sun, 21 Jan 2018 21:32:41 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.&lt;/p&gt;
+&lt;h2 id="buildtheazurevm"&gt;Build the Azure VM&lt;/h2&gt;
+&lt;p&gt;On your local machine clone the &lt;a href="https://github.com/StefanScherer/packer-windows"&gt;packer-windows&lt;/a&gt; repo which has a Terraform template to build an Azure VM. The template chooses a V3 machine which is able to run nested VM's.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/insider_in_azure_terraform_apply.png" alt="Create a VM in Azure with Terraform"&gt;&lt;/p&gt;
+&lt;p&gt;You need &lt;a href="https://terraform.io"&gt;Terraform&lt;/a&gt; on your local machine which can be installed with a package manager.&lt;/p&gt;
+&lt;p&gt;Mac:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;brew install terraform
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Windows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;choco install terraform
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now clone the GitHub repo and go to the template.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows/nested/terraform
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Adjust the &lt;code&gt;variables.tf&lt;/code&gt; file with resource group name, account name and password, region and other things. You also need some information for Terraform to create resources in your Azure account. Please read the &lt;a href="https://www.terraform.io/docs/providers/azurerm/index.html"&gt;Azure Provider&lt;/a&gt; documentation for details how to obtain these values.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export ARM_SUBSCRIPTION_ID=&amp;quot;uuid&amp;quot;
+export ARM_CLIENT_ID=&amp;quot;uuid&amp;quot;
+export ARM_CLIENT_SECRET=&amp;quot;uuid&amp;quot;
+export ARM_TENANT_ID=&amp;quot;uuid&amp;quot;
+
+terraform apply
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This command will take some minutes until the VM is up and running. It also runs a provision script to install further tools for you.&lt;/p&gt;
+&lt;h2 id="rdpintothepackerbuildervm"&gt;RDP into the Packer builder VM&lt;/h2&gt;
+&lt;p&gt;Now log into the Azure VM with a RDP client. This VM has Hyper-V installed as well as Packer and Vagrant, the tools we will use next.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/insider_in_azure_packer_build_vagrant_up.png" alt="Run Packer and Vagrant in Azure VM"&gt;&lt;/p&gt;
+&lt;h2 id="buildtheinsidervm"&gt;Build the Insider VM&lt;/h2&gt;
+&lt;p&gt;The next step is to build the Windows Insider Server VM. We will use &lt;a href="https://packer.io"&gt;Packer&lt;/a&gt; for the task. This produces a Vagrant box file that can be re-used locally on a Windows 10 machine.&lt;/p&gt;
+&lt;p&gt;Clone the packer-windows repo and run the Packer build with the manually downloaded Insider ISO file.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+
+packer build --only=hyperv-iso --var iso_url=~/Downloads/Windows_InsiderPreview_Server_2_17074.iso windows_server_insider_docker.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This command will take some minutes as it also downloads the Insider Docker images to have them cached when you start a new VM.&lt;/p&gt;
+&lt;p&gt;Add the box file so it can be used by Vagrant.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant box add windows_server_insider_docker windows_server_insider_docker_hyperv.box
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="boottheinsidervm"&gt;Boot the Insider VM&lt;/h2&gt;
+&lt;p&gt;Now we're using &lt;a href="https://vagrantup.com"&gt;Vagrant&lt;/a&gt; to boot the Insider VM. I'll use my &lt;a href="https://github.com/StefanScherer/windows-docker-machine"&gt;windows-docker-machine&lt;/a&gt; Vagrant template which I also use locally on a Mac or Windows 10 laptop.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/StefanScherer/windows-docker-machine
+cd windows-docker-machine
+vagrant plugin install vagrant-reload
+
+vagrant up --provider hyperv insider
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will spin up a VM and creates TLS certificates for the Docker engine running in the Windows Insider Server VM.&lt;/p&gt;
+&lt;p&gt;You could use it from the Azure VM, but we want to make the nested VM reachable from our laptop.&lt;/p&gt;
+&lt;p&gt;Now retrieve the IP address of this nested VM to add some port mappings so we can access the nested VM from our local machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vagrant ssh-config
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Use the IP address shown for the next commands, eg. 192.168.0.10&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;netsh interface portproxy add v4tov4 listenport=2376 listenaddress=0.0.0.0 connectport=2376 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=9000 listenaddress=0.0.0.0 connectport=9000 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=3390 listenaddress=0.0.0.0 connectport=3389 connectaddress=192.168.0.10
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="createdockertlsforexternaluse"&gt;Create Docker TLS for external use&lt;/h2&gt;
+&lt;p&gt;As we want to access this Docker engine from our local laptop we have to re-create the TLS certs with the FQDN of the Azure VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/insider_in_azure_rdp.png" alt="RDP to Azure and nested VM"&gt;&lt;/p&gt;
+&lt;p&gt;Now RDP into the nested VM through port 3390 from your laptop.&lt;/p&gt;
+&lt;p&gt;You will see a CMD terminal. Run &lt;code&gt;powershell&lt;/code&gt; to enter a PowerShell terminal.&lt;/p&gt;
+&lt;p&gt;Run the &lt;code&gt;create-machine.ps1&lt;/code&gt; provision script again with the IP address and the FQDN of the Azure VM. Also specify the path of your local home directory (in my case &lt;code&gt;-machineHome /Users/stefan&lt;/code&gt;) to make the docker-machine configuration work.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;C:\Users\demo\insider-docker-machine\scripts\create-machine.ps1 -machineHome /Users/stefan -machineName az-insider -machineIp 1.2.3.4 -machineFqdn az-insider-01.westeurope.cloudapp.azure.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="rundockercontainers"&gt;Run Docker containers&lt;/h2&gt;
+&lt;p&gt;You can copy the generated TLS certificates from the nested VM through the RDP session back to your home directory in &lt;code&gt;$HOME/.docker/machine/machines&lt;/code&gt; folder.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/01/insider_in_azure-1.png" alt="insider_in_azure-1"&gt;&lt;/p&gt;
+&lt;p&gt;Then you can easily switch the Docker environment variables locally on your&lt;/p&gt;
+&lt;p&gt;Mac:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;eval $(docker-machine env az-insider)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;or Windows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker-machine env az-insider | iex
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now you should be able to run Docker commands like&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker images
+docker run -it microsoft/nanoserver-insider cmd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id="conclusion"&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;We have used a lot of tools to create this setup. If you do this only once it seems to be more step than needed. But keep in mind the Insider builds are shipped regularly so you will do some steps again and again.&lt;/p&gt;
+&lt;p&gt;To repeat some of these steps tools like Packer and Vagrant can help you go faster building VM's as Docker helps you go faster to ship your apps.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Packer helps you repeat building a VM from new ISO.&lt;/li&gt;
+&lt;li&gt;Vagrant helps you repeat booting fresh VMs. Destroy early and often. Rebuild is cheap.&lt;/li&gt;
+&lt;li&gt;Docker helps you repeat creating and running applications.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you have another approach to run Insider builds in Azure please let me know. I love to hear your story. Please use the comments below if you have questions or want to share your setup.&lt;/p&gt;
+&lt;p&gt;If you liked this blog post please share it with your friends. You can follow me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt; to stay updated with Windows containers.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Exploring new NanoServer Insider images</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
 &lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/exploring-new-nanoserver-insider-images/</link><guid isPermaLink="false">5986d4ec688a490001540975</guid><category>Docker</category><category>Windows</category><category>Nano Server</category><category>Node.js</category><category>Vagrant</category><category>Packer</category><category>Docker Hub</category><category>Insider</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Tue, 18 Jul 2017 09:42:41 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Last week the first Insider preview container images appeared on the Docker Hub. They promise us much smaller sizes to have more lightweight Windows images for our applications.&lt;/p&gt;
 &lt;p&gt;To use these Insider container images you also need an Insider preview of Windows Server 2016 or Windows 10. Yes, this is another great announcement that you can get early access and give feedback to the upcoming version of Windows Server. So let's grab it.&lt;/p&gt;
 &lt;h2 id="windowsserverinsider"&gt;Windows Server Insider&lt;/h2&gt;

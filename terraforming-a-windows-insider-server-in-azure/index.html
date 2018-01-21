@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Terraforming a Windows Insider Server in Azure</title>
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=9453d0d002">
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/amp/">
+    
+    <meta property="og:site_name" content="Stefan Scherer's Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Terraforming a Windows Insider Server in Azure">
+    <meta property="og:description" content="There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build. Build the Azure VM On your local machine clone the packer-windows repo which has a Terraform template to build an Azure">
+    <meta property="og:url" content="https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/">
+    <meta property="article:published_time" content="2018-01-21T21:32:41.000Z">
+    <meta property="article:modified_time" content="2018-01-21T21:33:19.000Z">
+    <meta property="article:tag" content="Azure">
+    <meta property="article:tag" content="Docker">
+    <meta property="article:tag" content="windows-containers">
+    <meta property="article:tag" content="Insider">
+    <meta property="article:tag" content="Windows">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Terraforming a Windows Insider Server in Azure">
+    <meta name="twitter:description" content="There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build. Build the Azure VM On your local machine clone the packer-windows repo which has a Terraform template to build an Azure">
+    <meta name="twitter:url" content="https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Stefan Scherer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Azure, Docker, windows-containers, Insider, Windows">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": "https://stefanscherer.github.io/favicon.ico"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 2020,
+            "height": 709
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "Terraforming a Windows Insider Server in Azure",
+    "url": "https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/",
+    "datePublished": "2018-01-21T21:32:41.000Z",
+    "dateModified": "2018-01-21T21:33:19.000Z",
+    "keywords": "Azure, Docker, windows-containers, Insider, Windows",
+    "description": "There may be different ways to run the Windows Insider Server Preview builds in Azure. Here&#x27;s my approach to run a Windows Docker engine with the latest Insider build. Build the Azure VM On your local machine clone the packer-windows repo which has a Terraform template to build an Azure",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=9453d0d002"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8">
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+</head>
+<body class="post-template tag-azure tag-docker tag-windows-containers tag-insider tag-windows nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-azure tag-docker tag-windows-containers tag-insider tag-windows">
+
+        <header class="post-header">
+            <h1 class="post-title">Terraforming a Windows Insider Server in Azure</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2018-01-21">21 January 2018</time>  on <a href="../tag/azure/">Azure</a>, <a href="../tag/docker/">Docker</a>, <a href="../tag/windows-containers/">windows-containers</a>, <a href="../tag/insider/">Insider</a>, <a href="../tag/windows/">Windows</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
+<h2 id="buildtheazurevm">Build the Azure VM</h2>
+<p>On your local machine clone the <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> repo which has a Terraform template to build an Azure VM. The template chooses a V3 machine which is able to run nested VM's.</p>
+<p><img src="../content/images/2018/01/insider_in_azure_terraform_apply.png" alt="Create a VM in Azure with Terraform"></p>
+<p>You need <a href="https://terraform.io">Terraform</a> on your local machine which can be installed with a package manager.</p>
+<p>Mac:</p>
+<pre><code>brew install terraform
+</code></pre>
+<p>Windows:</p>
+<pre><code>choco install terraform
+</code></pre>
+<p>Now clone the GitHub repo and go to the template.</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows/nested/terraform
+</code></pre>
+<p>Adjust the <code>variables.tf</code> file with resource group name, account name and password, region and other things. You also need some information for Terraform to create resources in your Azure account. Please read the <a href="https://www.terraform.io/docs/providers/azurerm/">Azure Provider</a> documentation for details how to obtain these values.</p>
+<pre><code>export ARM_SUBSCRIPTION_ID="uuid"
+export ARM_CLIENT_ID="uuid"
+export ARM_CLIENT_SECRET="uuid"
+export ARM_TENANT_ID="uuid"
+
+terraform apply
+</code></pre>
+<p>This command will take some minutes until the VM is up and running. It also runs a provision script to install further tools for you.</p>
+<h2 id="rdpintothepackerbuildervm">RDP into the Packer builder VM</h2>
+<p>Now log into the Azure VM with a RDP client. This VM has Hyper-V installed as well as Packer and Vagrant, the tools we will use next.</p>
+<p><img src="../content/images/2018/01/insider_in_azure_packer_build_vagrant_up.png" alt="Run Packer and Vagrant in Azure VM"></p>
+<h2 id="buildtheinsidervm">Build the Insider VM</h2>
+<p>The next step is to build the Windows Insider Server VM. We will use <a href="https://packer.io">Packer</a> for the task. This produces a Vagrant box file that can be re-used locally on a Windows 10 machine.</p>
+<p>Clone the packer-windows repo and run the Packer build with the manually downloaded Insider ISO file.</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+
+packer build --only=hyperv-iso --var iso_url=~/Downloads/Windows_InsiderPreview_Server_2_17074.iso windows_server_insider_docker.json
+</code></pre>
+<p>This command will take some minutes as it also downloads the Insider Docker images to have them cached when you start a new VM.</p>
+<p>Add the box file so it can be used by Vagrant.</p>
+<pre><code>vagrant box add windows_server_insider_docker windows_server_insider_docker_hyperv.box
+</code></pre>
+<h2 id="boottheinsidervm">Boot the Insider VM</h2>
+<p>Now we're using <a href="https://vagrantup.com">Vagrant</a> to boot the Insider VM. I'll use my <a href="https://github.com/StefanScherer/windows-docker-machine">windows-docker-machine</a> Vagrant template which I also use locally on a Mac or Windows 10 laptop.</p>
+<pre><code>git clone https://github.com/StefanScherer/windows-docker-machine
+cd windows-docker-machine
+vagrant plugin install vagrant-reload
+
+vagrant up --provider hyperv insider
+</code></pre>
+<p>This will spin up a VM and creates TLS certificates for the Docker engine running in the Windows Insider Server VM.</p>
+<p>You could use it from the Azure VM, but we want to make the nested VM reachable from our laptop.</p>
+<p>Now retrieve the IP address of this nested VM to add some port mappings so we can access the nested VM from our local machine.</p>
+<pre><code>vagrant ssh-config
+</code></pre>
+<p>Use the IP address shown for the next commands, eg. 192.168.0.10</p>
+<pre><code>netsh interface portproxy add v4tov4 listenport=2376 listenaddress=0.0.0.0 connectport=2376 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=9000 listenaddress=0.0.0.0 connectport=9000 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=3390 listenaddress=0.0.0.0 connectport=3389 connectaddress=192.168.0.10
+</code></pre>
+<h2 id="createdockertlsforexternaluse">Create Docker TLS for external use</h2>
+<p>As we want to access this Docker engine from our local laptop we have to re-create the TLS certs with the FQDN of the Azure VM.</p>
+<p><img src="../content/images/2018/01/insider_in_azure_rdp.png" alt="RDP to Azure and nested VM"></p>
+<p>Now RDP into the nested VM through port 3390 from your laptop.</p>
+<p>You will see a CMD terminal. Run <code>powershell</code> to enter a PowerShell terminal.</p>
+<p>Run the <code>create-machine.ps1</code> provision script again with the IP address and the FQDN of the Azure VM. Also specify the path of your local home directory (in my case <code>-machineHome /Users/stefan</code>) to make the docker-machine configuration work.</p>
+<pre><code>C:\Users\demo\insider-docker-machine\scripts\create-machine.ps1 -machineHome /Users/stefan -machineName az-insider -machineIp 1.2.3.4 -machineFqdn az-insider-01.westeurope.cloudapp.azure.com
+</code></pre>
+<h2 id="rundockercontainers">Run Docker containers</h2>
+<p>You can copy the generated TLS certificates from the nested VM through the RDP session back to your home directory in <code>$HOME/.docker/machine/machines</code> folder.</p>
+<p><img src="../content/images/2018/01/insider_in_azure-1.png" alt="insider_in_azure-1"></p>
+<p>Then you can easily switch the Docker environment variables locally on your</p>
+<p>Mac:</p>
+<pre><code>eval $(docker-machine env az-insider)
+</code></pre>
+<p>or Windows:</p>
+<pre><code>docker-machine env az-insider | iex
+</code></pre>
+<p>Now you should be able to run Docker commands like</p>
+<pre><code>docker images
+docker run -it microsoft/nanoserver-insider cmd
+</code></pre>
+<h1 id="conclusion">Conclusion</h1>
+<p>We have used a lot of tools to create this setup. If you do this only once it seems to be more step than needed. But keep in mind the Insider builds are shipped regularly so you will do some steps again and again.</p>
+<p>To repeat some of these steps tools like Packer and Vagrant can help you go faster building VM's as Docker helps you go faster to ship your apps.</p>
+<ul>
+<li>Packer helps you repeat building a VM from new ISO.</li>
+<li>Vagrant helps you repeat booting fresh VMs. Destroy early and often. Rebuild is cheap.</li>
+<li>Docker helps you repeat creating and running applications.</li>
+</ul>
+<p>If you have another approach to run Insider builds in Azure please let me know. I love to hear your story. Please use the comments below if you have questions or want to share your setup.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay updated with Windows containers.</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Terraforming%20a%20Windows%20Insider%20Server%20in%20Azure&amp;url=https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../sneak-peek-at-lcow/">
+        <section class="post">
+            <h2>A sneak peek at LCOW</h2>
+            <p>Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=9453d0d002"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=9453d0d002"></script>
+
+</body>
+</html>

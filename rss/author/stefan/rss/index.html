@@ -1,4 +1,95 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 18:18:40 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/author/stefan/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[A sneak peek at LCOW]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sun, 21 Jan 2018 21:36:24 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/author/stefan/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Terraforming a Windows Insider Server in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
+<h2 id="buildtheazurevm">Build the Azure VM</h2>
+<p>On your local machine clone the <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> repo which has a Terraform template to build an Azure</p></div>]]></description><link>https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/</link><guid isPermaLink="false">5a64f348845d55000179abc4</guid><category><![CDATA[Azure]]></category><category><![CDATA[Docker]]></category><category><![CDATA[windows-containers]]></category><category><![CDATA[Insider]]></category><category><![CDATA[Windows]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 21:32:41 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
+<h2 id="buildtheazurevm">Build the Azure VM</h2>
+<p>On your local machine clone the <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> repo which has a Terraform template to build an Azure VM. The template chooses a V3 machine which is able to run nested VM's.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/01/insider_in_azure_terraform_apply.png" alt="Create a VM in Azure with Terraform"></p>
+<p>You need <a href="https://terraform.io">Terraform</a> on your local machine which can be installed with a package manager.</p>
+<p>Mac:</p>
+<pre><code>brew install terraform
+</code></pre>
+<p>Windows:</p>
+<pre><code>choco install terraform
+</code></pre>
+<p>Now clone the GitHub repo and go to the template.</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows/nested/terraform
+</code></pre>
+<p>Adjust the <code>variables.tf</code> file with resource group name, account name and password, region and other things. You also need some information for Terraform to create resources in your Azure account. Please read the <a href="https://www.terraform.io/docs/providers/azurerm/">Azure Provider</a> documentation for details how to obtain these values.</p>
+<pre><code>export ARM_SUBSCRIPTION_ID=&quot;uuid&quot;
+export ARM_CLIENT_ID=&quot;uuid&quot;
+export ARM_CLIENT_SECRET=&quot;uuid&quot;
+export ARM_TENANT_ID=&quot;uuid&quot;
+
+terraform apply
+</code></pre>
+<p>This command will take some minutes until the VM is up and running. It also runs a provision script to install further tools for you.</p>
+<h2 id="rdpintothepackerbuildervm">RDP into the Packer builder VM</h2>
+<p>Now log into the Azure VM with a RDP client. This VM has Hyper-V installed as well as Packer and Vagrant, the tools we will use next.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/01/insider_in_azure_packer_build_vagrant_up.png" alt="Run Packer and Vagrant in Azure VM"></p>
+<h2 id="buildtheinsidervm">Build the Insider VM</h2>
+<p>The next step is to build the Windows Insider Server VM. We will use <a href="https://packer.io">Packer</a> for the task. This produces a Vagrant box file that can be re-used locally on a Windows 10 machine.</p>
+<p>Clone the packer-windows repo and run the Packer build with the manually downloaded Insider ISO file.</p>
+<pre><code>git clone https://github.com/StefanScherer/packer-windows
+cd packer-windows
+
+packer build --only=hyperv-iso --var iso_url=~/Downloads/Windows_InsiderPreview_Server_2_17074.iso windows_server_insider_docker.json
+</code></pre>
+<p>This command will take some minutes as it also downloads the Insider Docker images to have them cached when you start a new VM.</p>
+<p>Add the box file so it can be used by Vagrant.</p>
+<pre><code>vagrant box add windows_server_insider_docker windows_server_insider_docker_hyperv.box
+</code></pre>
+<h2 id="boottheinsidervm">Boot the Insider VM</h2>
+<p>Now we're using <a href="https://vagrantup.com">Vagrant</a> to boot the Insider VM. I'll use my <a href="https://github.com/StefanScherer/windows-docker-machine">windows-docker-machine</a> Vagrant template which I also use locally on a Mac or Windows 10 laptop.</p>
+<pre><code>git clone https://github.com/StefanScherer/windows-docker-machine
+cd windows-docker-machine
+vagrant plugin install vagrant-reload
+
+vagrant up --provider hyperv insider
+</code></pre>
+<p>This will spin up a VM and creates TLS certificates for the Docker engine running in the Windows Insider Server VM.</p>
+<p>You could use it from the Azure VM, but we want to make the nested VM reachable from our laptop.</p>
+<p>Now retrieve the IP address of this nested VM to add some port mappings so we can access the nested VM from our local machine.</p>
+<pre><code>vagrant ssh-config
+</code></pre>
+<p>Use the IP address shown for the next commands, eg. 192.168.0.10</p>
+<pre><code>netsh interface portproxy add v4tov4 listenport=2376 listenaddress=0.0.0.0 connectport=2376 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=9000 listenaddress=0.0.0.0 connectport=9000 connectaddress=192.168.0.10
+netsh interface portproxy add v4tov4 listenport=3390 listenaddress=0.0.0.0 connectport=3389 connectaddress=192.168.0.10
+</code></pre>
+<h2 id="createdockertlsforexternaluse">Create Docker TLS for external use</h2>
+<p>As we want to access this Docker engine from our local laptop we have to re-create the TLS certs with the FQDN of the Azure VM.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/01/insider_in_azure_rdp.png" alt="RDP to Azure and nested VM"></p>
+<p>Now RDP into the nested VM through port 3390 from your laptop.</p>
+<p>You will see a CMD terminal. Run <code>powershell</code> to enter a PowerShell terminal.</p>
+<p>Run the <code>create-machine.ps1</code> provision script again with the IP address and the FQDN of the Azure VM. Also specify the path of your local home directory (in my case <code>-machineHome /Users/stefan</code>) to make the docker-machine configuration work.</p>
+<pre><code>C:\Users\demo\insider-docker-machine\scripts\create-machine.ps1 -machineHome /Users/stefan -machineName az-insider -machineIp 1.2.3.4 -machineFqdn az-insider-01.westeurope.cloudapp.azure.com
+</code></pre>
+<h2 id="rundockercontainers">Run Docker containers</h2>
+<p>You can copy the generated TLS certificates from the nested VM through the RDP session back to your home directory in <code>$HOME/.docker/machine/machines</code> folder.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/01/insider_in_azure-1.png" alt="insider_in_azure-1"></p>
+<p>Then you can easily switch the Docker environment variables locally on your</p>
+<p>Mac:</p>
+<pre><code>eval $(docker-machine env az-insider)
+</code></pre>
+<p>or Windows:</p>
+<pre><code>docker-machine env az-insider | iex
+</code></pre>
+<p>Now you should be able to run Docker commands like</p>
+<pre><code>docker images
+docker run -it microsoft/nanoserver-insider cmd
+</code></pre>
+<h1 id="conclusion">Conclusion</h1>
+<p>We have used a lot of tools to create this setup. If you do this only once it seems to be more step than needed. But keep in mind the Insider builds are shipped regularly so you will do some steps again and again.</p>
+<p>To repeat some of these steps tools like Packer and Vagrant can help you go faster building VM's as Docker helps you go faster to ship your apps.</p>
+<ul>
+<li>Packer helps you repeat building a VM from new ISO.</li>
+<li>Vagrant helps you repeat booting fresh VMs. Destroy early and often. Rebuild is cheap.</li>
+<li>Docker helps you repeat creating and running applications.</li>
+</ul>
+<p>If you have another approach to run Insider builds in Azure please let me know. I love to hear your story. Please use the comments below if you have questions or want to share your setup.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> to stay updated with Windows containers.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[A sneak peek at LCOW]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
 <p>So let's have a look how a</p></div>]]></description><link>https://stefanscherer.github.io/sneak-peek-at-lcow/</link><guid isPermaLink="false">5a64a75ee5611a0001acf91f</guid><category><![CDATA[Docker]]></category><category><![CDATA[LCOW]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Windows 10]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 15:30:58 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
 <p>So let's have a look how a Windows 10 developer machine will look like in near future.</p>
 <p><img src="https://stefanscherer.github.io/content/images/2018/01/lcow.png" alt="LCOW on Windows 10"></p>
@@ -1434,75 +1525,5 @@ CMD [&quot;powershell&quot;, &quot;-file&quot;, &quot;askthem.ps1&quot;]
 <p><img src="https://stefanscherer.github.io/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"></p>
 <h2 id="conclusion">Conclusion</h2>
 <p>I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Dockerizing Ghost and Buster to run a blog on GitHub pages]]></title><description><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
-<p>I still like this setup hosting only the static</p></div>]]></description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">5986d4ec688a49000154096e</guid><category><![CDATA[Docker]]></category><category><![CDATA[Ghost]]></category><category><![CDATA[Buster]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[GitHub]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
-<p>I still like this setup hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers.</p>
-<h3 id="requirements">Requirements</h3>
-<ul>
-<li>Docker for Mac</li>
-<li><code>git</code> (is already installed)</li>
-<li><code>docker-compose</code> (already installed with D4M)</li>
-</ul>
-<p>You can find my setup and all files in my GitHub repo <a href="https://github.com/StefanScherer/ghost-buster-docker">StefanScherer/ghost-buster-docker</a>.</p>
-<p>As I'm upgrading from my local Ghost installation to this dockerized version I already have some content, the static files and my GitHub pages repo. Please refer to my old blog post how to create your repo. The following commands should give you an idea how to setup the two folders <code>content</code> and <code>static</code>.</p>
-<pre><code>git clone https://github.com/YOURNAME/ghost-buster-docker
-cd ghost-buster-docker
-mkdir content
-git clone https://github.com/YOURNAME/YOURNAME.github.io static
-</code></pre>
-<h3 id="dockercomposeyml">docker-compose.yml</h3>
-<p>To simplify running Ghost and Buster I've created a <code>docker-compose.yml</code> with all the published ports and volume mount points.</p>
-<p>There are three services</p>
-<ul>
-<li>ghost</li>
-<li>buster</li>
-<li>preview</li>
-</ul>
-<pre><code class="language-yaml">version: '2.1'
-
-services:
-  ghost:
-    image: ghost:0.11.4
-    volumes:
-      - ./content:/var/lib/ghost
-    ports:
-      - 2368:2368
-
-  buster:
-    image: stefanscherer/buster
-    command: /buster.sh
-    volumes:
-      - ./static:/static
-      - ./buster.sh:/buster.sh
-
-  preview:
-    image: nginx
-    volumes:
-      - ./static:/usr/share/nginx/html:ro
-    ports:
-      - 2369:80
-</code></pre>
-<h3 id="editcontentwithghost">Edit content with Ghost</h3>
-<p>To create new blog post or edit existing posts you spin up the <code>ghost</code> container with</p>
-<pre><code>docker-compose up -d ghost
-</code></pre>
-<p>and then open up your browser at <code>https://stefanscherer.github.io/ghost</code> to login and edit content. As you can see the folder <code>content</code> is mapped into the <code>ghost</code> container to persist your Ghost blog data and images on your host machine.</p>
-<h3 id="generatestaticfiles">Generate static files</h3>
-<p>To generate the static HTML pages we use the second service with Buster installed. This is no real service, so we do not &quot;up&quot; but &quot;run&quot; it with</p>
-<pre><code>docker-compose run buster
-</code></pre>
-<p>Now you have updated files in the <code>static</code> folder. You may edit the local script <code>buster.sh</code> to fix some links that Buster broke in the past in my pages.</p>
-<h2 id="previewstaticfiles">Preview static files</h2>
-<p>From time to time it is useful to check the generated static HTML files before pushing them to GitHub pages. The third service is useful to run a webserver with the created static pages.</p>
-<pre><code>docker-compose up -d preview
-</code></pre>
-<p>Open your browser at <code>http://localhost:2369</code> and check if everything looks good. In my setup I've added Disqus and first wanted to try out the results of modifying the <code>post.hbs</code> file of the theme.</p>
-<h3 id="deploystaticfiles">Deploy static files</h3>
-<p>If you are happy with the new static files it's time to push them. I've added a small script <code>deploy.sh</code> to do the final steps on the host as only <code>git</code> is used here. As I'm using GitHub with SSH and a passphrase I don't want to put that into a container. Have a look at the shell script and you will see that it's only a <code>git add &amp;&amp; git commit &amp;&amp; git push</code> script.</p>
-<pre><code>./deploy.sh
-</code></pre>
-<h2 id="conclusion">Conclusion</h2>
-<p>I think this setup will help me in the future to update Ghost more easily.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>
