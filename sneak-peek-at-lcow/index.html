@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=9453d0d002">
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=4f5d64f6ae">
 
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
@@ -24,7 +24,7 @@
     <meta property="og:description" content="Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let's have a look how a">
     <meta property="og:url" content="https://stefanscherer.github.io/sneak-peek-at-lcow/">
     <meta property="article:published_time" content="2018-01-21T15:30:58.000Z">
-    <meta property="article:modified_time" content="2018-01-21T18:18:16.000Z">
+    <meta property="article:modified_time" content="2018-01-22T07:15:28.000Z">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="LCOW">
     <meta property="article:tag" content="Linux">
@@ -46,7 +46,12 @@
     "publisher": {
         "@type": "Organization",
         "name": "Stefan Scherer&#x27;s Blog",
-        "logo": "https://stefanscherer.github.io/favicon.ico"
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
     },
     "author": {
         "@type": "Person",
@@ -54,8 +59,8 @@
         "image": {
             "@type": "ImageObject",
             "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
-            "width": 2020,
-            "height": 709
+            "width": 250,
+            "height": 250
         },
         "url": "https://stefanscherer.github.io/author/stefan/",
         "sameAs": []
@@ -63,7 +68,7 @@
     "headline": "A sneak peek at LCOW",
     "url": "https://stefanscherer.github.io/sneak-peek-at-lcow/",
     "datePublished": "2018-01-21T15:30:58.000Z",
-    "dateModified": "2018-01-21T18:18:16.000Z",
+    "dateModified": "2018-01-22T07:15:28.000Z",
     "keywords": "Docker, LCOW, Linux, Windows 10",
     "description": "Last week a major pull request to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run both Linux and Windows containers side-by-side with a single Docker engine. So let&#x27;s have a look how a",
     "mainEntityOfPage": {
@@ -73,7 +78,7 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=9453d0d002"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=4f5d64f6ae"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
@@ -126,7 +131,7 @@ ghost.init({
         <section class="post-content">
             <div class="kg-card-markdown"><p>Last week a major <a href="https://github.com/moby/moby/pull/34859">pull request</a> to support Linux Containers on Windows (LCOW) has landed in master branch of the Docker project. With that feature enabled you will be able to run <strong>both Linux and Windows containers side-by-side</strong> with a single Docker engine.</p>
 <p>So let's have a look how a Windows 10 developer machine will look like in near future.</p>
-<p><img src="../content/images/2018/01/lcow.png" alt="LCOW on Windows 10"></p>
+<p><img src="../content/images/2018/01/lcow-marked.jpg" alt="LCOW on Windows 10"></p>
 <ul>
 <li>The Docker command <code>docker ps</code> lists all your running Linux and Windows containers.</li>
 <li>You can use volumes to share data between containers and the host.</li>
@@ -334,8 +339,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=9453d0d002"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=9453d0d002"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=4f5d64f6ae"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=4f5d64f6ae"></script>
 
 </body>
 </html>
