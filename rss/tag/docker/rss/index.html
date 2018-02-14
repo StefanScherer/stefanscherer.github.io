@@ -1,4 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Docker - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Docker - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 22 Jan 2018 07:15:56 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/docker/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Terraforming a Windows Insider Server in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Docker - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Docker - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 14 Feb 2018 23:30:29 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/docker/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to find dependencies of containerized Windows apps]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's</p></div>]]></description><link>https://stefanscherer.github.io/find-dependencies-in-windows-containers/</link><guid isPermaLink="false">5a84a3660f689f0001bafe61</guid><category><![CDATA[windows-containers]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[process-monitor]]></category><category><![CDATA[sysinternals]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 14 Feb 2018 23:01:47 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's missing.</p>
+<h1 id="processmonitor">Process Monitor</h1>
+<p>To find out what's going on in a Windows Container I often use the <a href="https://sysinternals.com">Sysinternals</a> Process Monitor. It can capture all major syscalls in Windows such as file activity, starting processes, registry and networking activity.</p>
+<p>But how can we use procmon to monitor inside a Windows container?</p>
+<p>Well, I heard today that you can run procmon from command line to start and stop capturing events. I tried <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/procmon">running procmon in a Windows container</a>, but it doesn't work correctly at the moment.</p>
+<p>So the next possibilty is to run procmon on the container host.</p>
+<p>On Windows 10 you only have Hyper-V containers. These are &quot;black boxes&quot; from your host operating system. The Process Monitor cannot look inside Hyper-V containers.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/procmon_windows10_hyperv_container.png" alt="procmon_windows10_hyperv_container"></p>
+<p>To investigate a Windows container we need the &quot;normal&quot; Windows containers without running in Hyper-V isolation. The best solution I came up with is to run a Windows Server 2016 VM and install Process Monitor inside that VM.</p>
+<p>When you run a Windows container you can see the container processes in the Task Manager of the Server 2016 VM. And Process Monitor can also see what these processes are doing. We have made some containers out of &quot;glass&quot; to look inside.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/procmon_windows_container_glass.png" alt="procmon_windows_container_glass"></p>
+<h1 id="examplepostgresql">Example: PostgreSQL</h1>
+<p>Let's try this out and put the PostgreSQL database server into a Windows container.</p>
+<p>The following <code>Dockerfile</code> downloads the ZIP file of PostgreSQL 10.2, extracts all files and removes the ZIP file again.</p>
+<pre><code># escape=`
+FROM microsoft/windowsservercore:10.0.14393.2007 AS download
+
+SHELL [&quot;powershell&quot;, &quot;-Command&quot;, &quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&quot;]
+
+ENV PG_VERSION 10.2-1
+
+RUN Invoke-WebRequest $('https://get.enterprisedb.com/postgresql/postgresql-{0}-windows-x64-binaries.zip' -f $env:PG_VERSION) -OutFile 'postgres.zip' -UseBasicParsing ; `
+    Expand-Archive postgres.zip -DestinationPath C:\ ; `
+    Remove-Item postgres.zip
+</code></pre>
+<p>Now build and run a first container to try out the <code>postgres.exe</code> inside the container.</p>
+<pre><code>docker build -t postgres .
+docker run -it postgres cmd
+</code></pre>
+<p>Navigate into <code>C:\pgsql\bin</code> folder and run <code>postgres.exe -h</code>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/postgres-nooutput.png" alt="postgres no output"></p>
+<p>As you can see, nothing happens. No output. You just are back to the CMD prompt.</p>
+<p>Now it's time to install <code>procmon.exe</code> on the container host and run it.</p>
+<p>Open a PowerShell terminal in your Windows Server 2016 VM and run</p>
+<pre><code>iwr -usebasicparsing https://live.sysinternals.com/procmon.exe -outfile procmon.exe
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/install-procmon.png-shadow.png" alt="install procmon"></p>
+<p>Now run <code>procmon.exe</code> and define a filter to see only file activity looking for DLL files and start capturing.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/procmon-filter.png-shadow.png" alt="define procmon filter"></p>
+<p>I have a prepared filter available for download: <a href="https://github.com/StefanScherer/dockerfiles-windows/raw/master/procmon/depends.PMF">depends.PMF</a><br>
+Go to <strong>Filter</strong>, then <strong>Organize Filters...</strong> and then <strong>Import...</strong></p>
+<p>Now in your container run <code>postgres.exe -h</code> again.</p>
+<p>As you can see Process Monitor captures file access to <code>\Device\Harddisk\VolumeXX\psql\bin\</code> which is a folder in your container.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/procmon-postgres.png-shadow.png" alt="procmon postgres capture"></p>
+<p>The interesting part is which DLL's cannot be found here. The <code>MSVCR120.dll</code> is missing, the Visual Studio Runtime DLL's.</p>
+<p>For other applications you might have to look for config files or folders that are missing that stops your app from running in a Windows container.</p>
+<p>Let's append the missing runtime in the <code>Dockerfile</code> with the next few lines:</p>
+<pre><code>RUN Invoke-WebRequest 'http://download.microsoft.com/download/0/5/6/056DCDA9-D667-4E27-8001-8A0C6971D6B1/vcredist_x64.exe' -OutFile vcredist_x64.exe ; `
+    Start-Process vcredist_x64.exe -ArgumentList '/install', '/passive', '/norestart' -NoNewWindow -Wait ; `
+    Remove-Item vcredist_x64.exe
+</code></pre>
+<p>Build the image and run another container and see if it works now.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/postgres-usage.png" alt="postgres usage"></p>
+<p>Yes, this time we see the <code>postgres.exe</code> usage, so it seems we have solved all our dependency problems.</p>
+<h1 id="gonanoserver">Go NanoServer</h1>
+<p>Now we have a Windows Server Core image with PostgreSQL server. The image size is now 11.1GByte. Let's go one step further and make it a much smaller NanoServer image.</p>
+<p>In NanoServer we cannot run MSI packages or vcredist installers, and soon there is also no PowerShell. But with a so called <strong>multi-stage build</strong> it's easy to <code>COPY</code> deploy the PostgreSQL binaries and dependencies into a fresh NanoServer image.</p>
+<p>We append some more lines to our <code>Dockerfile</code>. Most important line is the second <code>FROM</code> line to start a new stage with the smaller NanoServer image.</p>
+<pre><code>FROM microsoft/nanoserver:10.0.14393.2007
+</code></pre>
+<p>Then we <code>COPY</code> the <code>pgsql</code> folder from the first stage into the NanoServer image, as well as the important runtime DLL's.</p>
+<pre><code>COPY --from=download /pgsql /pgsql
+COPY --from=download /windows/system32/msvcp120.dll /pgsql/bin/msvcp120.dll
+COPY --from=download /windows/system32/msvcr120.dll /pgsql/bin/msvcr120.dll
+</code></pre>
+<p>Set the <code>PATH</code> variable to have all tools accessible, expose the standard port and define a command.</p>
+<pre><code>RUN setx /M PATH &quot;C:\pgsql\bin;%PATH%&quot;
+
+EXPOSE 5432
+CMD [&quot;postgres&quot;]
+</code></pre>
+<p>Now build the image again and try it out with</p>
+<pre><code>docker run postgres postgres.exe --help
+</code></pre>
+<p><img src="https://stefanscherer.github.io/content/images/2018/02/docker-run-postgres-nano.png" alt="docker run postgres in nano"></p>
+<p>We still see the usage, so the binaries also work fine in NanoServer. The final postgres images is down at 1.64GByte.<br>
+If you do this with a NanoServer 1709 or Insider image the sizes is even smaller at 738MByte.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>Process Monitor can help you find issues that prevent applications to run properly in Windows containers. Run it from a Server 2016 container host to observe your or a foreign application.</p>
+<p>I hope you find this blog post useful and I love to hear your feedback and experience about Windows containers. Just drop a comment below or ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Terraforming a Windows Insider Server in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
 <h2 id="buildtheazurevm">Build the Azure VM</h2>
 <p>On your local machine clone the <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> repo which has a Terraform template to build an Azure</p></div>]]></description><link>https://stefanscherer.github.io/terraforming-a-windows-insider-server-in-azure/</link><guid isPermaLink="false">5a64f348845d55000179abc4</guid><category><![CDATA[Azure]]></category><category><![CDATA[Docker]]></category><category><![CDATA[windows-containers]]></category><category><![CDATA[Insider]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Terraform]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Packer]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 21:32:41 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
 <h2 id="buildtheazurevm">Build the Azure VM</h2>
@@ -1484,75 +1564,5 @@ CMD [&quot;powershell&quot;, &quot;-file&quot;, &quot;askthem.ps1&quot;]
 <p><img src="https://stefanscherer.github.io/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"></p>
 <h2 id="conclusion">Conclusion</h2>
 <p>I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Dockerizing Ghost and Buster to run a blog on GitHub pages]]></title><description><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
-<p>I still like this setup hosting only the static</p></div>]]></description><link>https://stefanscherer.github.io/dockerizing-ghost-buster/</link><guid isPermaLink="false">5986d4ec688a49000154096e</guid><category><![CDATA[Docker]]></category><category><![CDATA[Ghost]]></category><category><![CDATA[Buster]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[GitHub]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 11 Feb 2017 18:46:46 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>I'm running this blog for nearly three years now. One of my first posts was the description how to <a href="https://stefanscherer.github.io/setup-ghost-for-github-pages/">setup Ghost for GitHub pages</a>. In the past I've installed lots of tools on my Mac to run <a href="https://ghost.org">Ghost</a> and <a href="https://pypi.python.org/pypi/buster/0.1.3">Buster</a> locally.</p>
-<p>I still like this setup hosting only the static files at GitHub without maintaining an online server. But over time you also have to update Ghost, the Node version used and so on. That's why I have revisited my setup to make it easier for me to update Ghost by running all tools in Docker containers.</p>
-<h3 id="requirements">Requirements</h3>
-<ul>
-<li>Docker for Mac</li>
-<li><code>git</code> (is already installed)</li>
-<li><code>docker-compose</code> (already installed with D4M)</li>
-</ul>
-<p>You can find my setup and all files in my GitHub repo <a href="https://github.com/StefanScherer/ghost-buster-docker">StefanScherer/ghost-buster-docker</a>.</p>
-<p>As I'm upgrading from my local Ghost installation to this dockerized version I already have some content, the static files and my GitHub pages repo. Please refer to my old blog post how to create your repo. The following commands should give you an idea how to setup the two folders <code>content</code> and <code>static</code>.</p>
-<pre><code>git clone https://github.com/YOURNAME/ghost-buster-docker
-cd ghost-buster-docker
-mkdir content
-git clone https://github.com/YOURNAME/YOURNAME.github.io static
-</code></pre>
-<h3 id="dockercomposeyml">docker-compose.yml</h3>
-<p>To simplify running Ghost and Buster I've created a <code>docker-compose.yml</code> with all the published ports and volume mount points.</p>
-<p>There are three services</p>
-<ul>
-<li>ghost</li>
-<li>buster</li>
-<li>preview</li>
-</ul>
-<pre><code class="language-yaml">version: '2.1'
-
-services:
-  ghost:
-    image: ghost:0.11.4
-    volumes:
-      - ./content:/var/lib/ghost
-    ports:
-      - 2368:2368
-
-  buster:
-    image: stefanscherer/buster
-    command: /buster.sh
-    volumes:
-      - ./static:/static
-      - ./buster.sh:/buster.sh
-
-  preview:
-    image: nginx
-    volumes:
-      - ./static:/usr/share/nginx/html:ro
-    ports:
-      - 2369:80
-</code></pre>
-<h3 id="editcontentwithghost">Edit content with Ghost</h3>
-<p>To create new blog post or edit existing posts you spin up the <code>ghost</code> container with</p>
-<pre><code>docker-compose up -d ghost
-</code></pre>
-<p>and then open up your browser at <code>https://stefanscherer.github.io/ghost</code> to login and edit content. As you can see the folder <code>content</code> is mapped into the <code>ghost</code> container to persist your Ghost blog data and images on your host machine.</p>
-<h3 id="generatestaticfiles">Generate static files</h3>
-<p>To generate the static HTML pages we use the second service with Buster installed. This is no real service, so we do not &quot;up&quot; but &quot;run&quot; it with</p>
-<pre><code>docker-compose run buster
-</code></pre>
-<p>Now you have updated files in the <code>static</code> folder. You may edit the local script <code>buster.sh</code> to fix some links that Buster broke in the past in my pages.</p>
-<h2 id="previewstaticfiles">Preview static files</h2>
-<p>From time to time it is useful to check the generated static HTML files before pushing them to GitHub pages. The third service is useful to run a webserver with the created static pages.</p>
-<pre><code>docker-compose up -d preview
-</code></pre>
-<p>Open your browser at <code>http://localhost:2369</code> and check if everything looks good. In my setup I've added Disqus and first wanted to try out the results of modifying the <code>post.hbs</code> file of the theme.</p>
-<h3 id="deploystaticfiles">Deploy static files</h3>
-<p>If you are happy with the new static files it's time to push them. I've added a small script <code>deploy.sh</code> to do the final steps on the host as only <code>git</code> is used here. As I'm using GitHub with SSH and a passphrase I don't want to put that into a container. Have a look at the shell script and you will see that it's only a <code>git add &amp;&amp; git commit &amp;&amp; git push</code> script.</p>
-<pre><code>./deploy.sh
-</code></pre>
-<h2 id="conclusion">Conclusion</h2>
-<p>I think this setup will help me in the future to update Ghost more easily.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>

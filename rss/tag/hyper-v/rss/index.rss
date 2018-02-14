@@ -1,5 +1,85 @@
 <!DOCTYPE html>
-<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Hyper-V - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Hyper-V - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 22 Jan 2018 07:15:56 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/hyper-v/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>Adding Hyper-V support to 2016 TP5 Docker VM</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Back in June I have attended the &lt;a href="http://2016.dockercon.com"&gt;DockerCon&lt;/a&gt; in Seattle. Beside lots of new features in Docker 1.12 we heard about &lt;a href="https://www.youtube.com/watch?v=A7ABdUmen9s"&gt;Windows Server and Docker&lt;/a&gt; and upcoming features in the Windows Docker engine.&lt;/p&gt;
+<html><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" version="2.0"><channel><title>Hyper-V - Stefan Scherer's Blog</title><description>Just my techie notes.</description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Hyper-V - Stefan Scherer's Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 14 Feb 2018 23:30:28 GMT</lastBuildDate><atom:link href="http://localhost:2368/tag/hyper-v/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title>How to find dependencies of containerized Windows apps</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/find-dependencies-in-windows-containers/</link><guid isPermaLink="false">5a84a3660f689f0001bafe61</guid><category>windows-containers</category><category>Docker</category><category>Hyper-V</category><category>process-monitor</category><category>sysinternals</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Wed, 14 Feb 2018 23:01:47 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's missing.&lt;/p&gt;
+&lt;h1 id="processmonitor"&gt;Process Monitor&lt;/h1&gt;
+&lt;p&gt;To find out what's going on in a Windows Container I often use the &lt;a href="https://sysinternals.com"&gt;Sysinternals&lt;/a&gt; Process Monitor. It can capture all major syscalls in Windows such as file activity, starting processes, registry and networking activity.&lt;/p&gt;
+&lt;p&gt;But how can we use procmon to monitor inside a Windows container?&lt;/p&gt;
+&lt;p&gt;Well, I heard today that you can run procmon from command line to start and stop capturing events. I tried &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/procmon"&gt;running procmon in a Windows container&lt;/a&gt;, but it doesn't work correctly at the moment.&lt;/p&gt;
+&lt;p&gt;So the next possibilty is to run procmon on the container host.&lt;/p&gt;
+&lt;p&gt;On Windows 10 you only have Hyper-V containers. These are &amp;quot;black boxes&amp;quot; from your host operating system. The Process Monitor cannot look inside Hyper-V containers.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/procmon_windows10_hyperv_container.png" alt="procmon_windows10_hyperv_container"&gt;&lt;/p&gt;
+&lt;p&gt;To investigate a Windows container we need the &amp;quot;normal&amp;quot; Windows containers without running in Hyper-V isolation. The best solution I came up with is to run a Windows Server 2016 VM and install Process Monitor inside that VM.&lt;/p&gt;
+&lt;p&gt;When you run a Windows container you can see the container processes in the Task Manager of the Server 2016 VM. And Process Monitor can also see what these processes are doing. We have made some containers out of &amp;quot;glass&amp;quot; to look inside.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/procmon_windows_container_glass.png" alt="procmon_windows_container_glass"&gt;&lt;/p&gt;
+&lt;h1 id="examplepostgresql"&gt;Example: PostgreSQL&lt;/h1&gt;
+&lt;p&gt;Let's try this out and put the PostgreSQL database server into a Windows container.&lt;/p&gt;
+&lt;p&gt;The following &lt;code&gt;Dockerfile&lt;/code&gt; downloads the ZIP file of PostgreSQL 10.2, extracts all files and removes the ZIP file again.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# escape=`
+FROM microsoft/windowsservercore:10.0.14393.2007 AS download
+
+SHELL [&amp;quot;powershell&amp;quot;, &amp;quot;-Command&amp;quot;, &amp;quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&amp;quot;]
+
+ENV PG_VERSION 10.2-1
+
+RUN Invoke-WebRequest $('https://get.enterprisedb.com/postgresql/postgresql-{0}-windows-x64-binaries.zip' -f $env:PG_VERSION) -OutFile 'postgres.zip' -UseBasicParsing ; `
+    Expand-Archive postgres.zip -DestinationPath C:\ ; `
+    Remove-Item postgres.zip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build and run a first container to try out the &lt;code&gt;postgres.exe&lt;/code&gt; inside the container.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker build -t postgres .
+docker run -it postgres cmd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Navigate into &lt;code&gt;C:\pgsql\bin&lt;/code&gt; folder and run &lt;code&gt;postgres.exe -h&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/postgres-nooutput.png" alt="postgres no output"&gt;&lt;/p&gt;
+&lt;p&gt;As you can see, nothing happens. No output. You just are back to the CMD prompt.&lt;/p&gt;
+&lt;p&gt;Now it's time to install &lt;code&gt;procmon.exe&lt;/code&gt; on the container host and run it.&lt;/p&gt;
+&lt;p&gt;Open a PowerShell terminal in your Windows Server 2016 VM and run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iwr -usebasicparsing https://live.sysinternals.com/procmon.exe -outfile procmon.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/install-procmon.png-shadow.png" alt="install procmon"&gt;&lt;/p&gt;
+&lt;p&gt;Now run &lt;code&gt;procmon.exe&lt;/code&gt; and define a filter to see only file activity looking for DLL files and start capturing.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/procmon-filter.png-shadow.png" alt="define procmon filter"&gt;&lt;/p&gt;
+&lt;p&gt;I have a prepared filter available for download: &lt;a href="https://github.com/StefanScherer/dockerfiles-windows/raw/master/procmon/depends.PMF"&gt;depends.PMF&lt;/a&gt;&lt;br&gt;
+Go to &lt;strong&gt;Filter&lt;/strong&gt;, then &lt;strong&gt;Organize Filters...&lt;/strong&gt; and then &lt;strong&gt;Import...&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Now in your container run &lt;code&gt;postgres.exe -h&lt;/code&gt; again.&lt;/p&gt;
+&lt;p&gt;As you can see Process Monitor captures file access to &lt;code&gt;\Device\Harddisk\VolumeXX\psql\bin\&lt;/code&gt; which is a folder in your container.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/procmon-postgres.png-shadow.png" alt="procmon postgres capture"&gt;&lt;/p&gt;
+&lt;p&gt;The interesting part is which DLL's cannot be found here. The &lt;code&gt;MSVCR120.dll&lt;/code&gt; is missing, the Visual Studio Runtime DLL's.&lt;/p&gt;
+&lt;p&gt;For other applications you might have to look for config files or folders that are missing that stops your app from running in a Windows container.&lt;/p&gt;
+&lt;p&gt;Let's append the missing runtime in the &lt;code&gt;Dockerfile&lt;/code&gt; with the next few lines:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN Invoke-WebRequest 'http://download.microsoft.com/download/0/5/6/056DCDA9-D667-4E27-8001-8A0C6971D6B1/vcredist_x64.exe' -OutFile vcredist_x64.exe ; `
+    Start-Process vcredist_x64.exe -ArgumentList '/install', '/passive', '/norestart' -NoNewWindow -Wait ; `
+    Remove-Item vcredist_x64.exe
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Build the image and run another container and see if it works now.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/postgres-usage.png" alt="postgres usage"&gt;&lt;/p&gt;
+&lt;p&gt;Yes, this time we see the &lt;code&gt;postgres.exe&lt;/code&gt; usage, so it seems we have solved all our dependency problems.&lt;/p&gt;
+&lt;h1 id="gonanoserver"&gt;Go NanoServer&lt;/h1&gt;
+&lt;p&gt;Now we have a Windows Server Core image with PostgreSQL server. The image size is now 11.1GByte. Let's go one step further and make it a much smaller NanoServer image.&lt;/p&gt;
+&lt;p&gt;In NanoServer we cannot run MSI packages or vcredist installers, and soon there is also no PowerShell. But with a so called &lt;strong&gt;multi-stage build&lt;/strong&gt; it's easy to &lt;code&gt;COPY&lt;/code&gt; deploy the PostgreSQL binaries and dependencies into a fresh NanoServer image.&lt;/p&gt;
+&lt;p&gt;We append some more lines to our &lt;code&gt;Dockerfile&lt;/code&gt;. Most important line is the second &lt;code&gt;FROM&lt;/code&gt; line to start a new stage with the smaller NanoServer image.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM microsoft/nanoserver:10.0.14393.2007
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then we &lt;code&gt;COPY&lt;/code&gt; the &lt;code&gt;pgsql&lt;/code&gt; folder from the first stage into the NanoServer image, as well as the important runtime DLL's.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;COPY --from=download /pgsql /pgsql
+COPY --from=download /windows/system32/msvcp120.dll /pgsql/bin/msvcp120.dll
+COPY --from=download /windows/system32/msvcr120.dll /pgsql/bin/msvcr120.dll
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Set the &lt;code&gt;PATH&lt;/code&gt; variable to have all tools accessible, expose the standard port and define a command.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;RUN setx /M PATH &amp;quot;C:\pgsql\bin;%PATH%&amp;quot;
+
+EXPOSE 5432
+CMD [&amp;quot;postgres&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now build the image again and try it out with&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run postgres postgres.exe --help
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src="http://localhost:2368/content/images/2018/02/docker-run-postgres-nano.png" alt="docker run postgres in nano"&gt;&lt;/p&gt;
+&lt;p&gt;We still see the usage, so the binaries also work fine in NanoServer. The final postgres images is down at 1.64GByte.&lt;br&gt;
+If you do this with a NanoServer 1709 or Insider image the sizes is even smaller at 738MByte.&lt;/p&gt;
+&lt;h1 id="conclusion"&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;Process Monitor can help you find issues that prevent applications to run properly in Windows containers. Run it from a Server 2016 container host to observe your or a foreign application.&lt;/p&gt;
+&lt;p&gt;I hope you find this blog post useful and I love to hear your feedback and experience about Windows containers. Just drop a comment below or ping me on Twitter &lt;a href="https://twitter.com/stefscherer"&gt;@stefscherer&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;</content:encoded></item><item><title>Adding Hyper-V support to 2016 TP5 Docker VM</title><description>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Back in June I have attended the &lt;a href="http://2016.dockercon.com"&gt;DockerCon&lt;/a&gt; in Seattle. Beside lots of new features in Docker 1.12 we heard about &lt;a href="https://www.youtube.com/watch?v=A7ABdUmen9s"&gt;Windows Server and Docker&lt;/a&gt; and upcoming features in the Windows Docker engine.&lt;/p&gt;
 &lt;p&gt;Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond&lt;/p&gt;&lt;/div&gt;</description><link>http://localhost:2368/adding-hyper-v-support-to-2016-tp5-docker-vm/</link><guid isPermaLink="false">5986d4ec688a490001540969</guid><category>Packer</category><category>Vagrant</category><category>Docker</category><category>Windows</category><category>Hyper-V</category><category>DockerCon</category><dc:creator>Stefan Scherer</dc:creator><pubDate>Thu, 04 Aug 2016 19:59:37 GMT</pubDate><content:encoded>&lt;div class="kg-card-markdown"&gt;&lt;p&gt;Back in June I have attended the &lt;a href="http://2016.dockercon.com"&gt;DockerCon&lt;/a&gt; in Seattle. Beside lots of new features in Docker 1.12 we heard about &lt;a href="https://www.youtube.com/watch?v=A7ABdUmen9s"&gt;Windows Server and Docker&lt;/a&gt; and upcoming features in the Windows Docker engine.&lt;/p&gt;
 &lt;p&gt;Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond to meet the Windows Container team around Taylor Brown. After a meeting and having lunch we talked about making my Packer template for a &lt;a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_2016_docker.json"&gt;Windows Server 2016 TP5 Docker VM&lt;/a&gt; work with Hyper-V. At that time my packer template supported only VirtualBox and VMware with a &lt;a href="https://stefanscherer.github.io/setup-local-windows-2016-tp5-docker-vm/"&gt;blog post describing how to build it&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img src="http://localhost:2368/content/images/2016/08/20160623_101541.jpg" alt=""&gt;&lt;/p&gt;

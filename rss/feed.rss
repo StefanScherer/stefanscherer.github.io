@@ -1,4 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Mon, 22 Jan 2018 07:15:56 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Terraforming a Windows Insider Server in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>http://localhost:2368/</link><image><url>http://localhost:2368/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>http://localhost:2368/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 14 Feb 2018 23:30:28 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to find dependencies of containerized Windows apps]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's</p></div>]]></description><link>http://localhost:2368/find-dependencies-in-windows-containers/</link><guid isPermaLink="false">5a84a3660f689f0001bafe61</guid><category><![CDATA[windows-containers]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[process-monitor]]></category><category><![CDATA[sysinternals]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 14 Feb 2018 23:01:47 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's missing.</p>
+<h1 id="processmonitor">Process Monitor</h1>
+<p>To find out what's going on in a Windows Container I often use the <a href="https://sysinternals.com">Sysinternals</a> Process Monitor. It can capture all major syscalls in Windows such as file activity, starting processes, registry and networking activity.</p>
+<p>But how can we use procmon to monitor inside a Windows container?</p>
+<p>Well, I heard today that you can run procmon from command line to start and stop capturing events. I tried <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/procmon">running procmon in a Windows container</a>, but it doesn't work correctly at the moment.</p>
+<p>So the next possibilty is to run procmon on the container host.</p>
+<p>On Windows 10 you only have Hyper-V containers. These are &quot;black boxes&quot; from your host operating system. The Process Monitor cannot look inside Hyper-V containers.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/procmon_windows10_hyperv_container.png" alt="procmon_windows10_hyperv_container"></p>
+<p>To investigate a Windows container we need the &quot;normal&quot; Windows containers without running in Hyper-V isolation. The best solution I came up with is to run a Windows Server 2016 VM and install Process Monitor inside that VM.</p>
+<p>When you run a Windows container you can see the container processes in the Task Manager of the Server 2016 VM. And Process Monitor can also see what these processes are doing. We have made some containers out of &quot;glass&quot; to look inside.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/procmon_windows_container_glass.png" alt="procmon_windows_container_glass"></p>
+<h1 id="examplepostgresql">Example: PostgreSQL</h1>
+<p>Let's try this out and put the PostgreSQL database server into a Windows container.</p>
+<p>The following <code>Dockerfile</code> downloads the ZIP file of PostgreSQL 10.2, extracts all files and removes the ZIP file again.</p>
+<pre><code># escape=`
+FROM microsoft/windowsservercore:10.0.14393.2007 AS download
+
+SHELL [&quot;powershell&quot;, &quot;-Command&quot;, &quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&quot;]
+
+ENV PG_VERSION 10.2-1
+
+RUN Invoke-WebRequest $('https://get.enterprisedb.com/postgresql/postgresql-{0}-windows-x64-binaries.zip' -f $env:PG_VERSION) -OutFile 'postgres.zip' -UseBasicParsing ; `
+    Expand-Archive postgres.zip -DestinationPath C:\ ; `
+    Remove-Item postgres.zip
+</code></pre>
+<p>Now build and run a first container to try out the <code>postgres.exe</code> inside the container.</p>
+<pre><code>docker build -t postgres .
+docker run -it postgres cmd
+</code></pre>
+<p>Navigate into <code>C:\pgsql\bin</code> folder and run <code>postgres.exe -h</code>.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/postgres-nooutput.png" alt="postgres no output"></p>
+<p>As you can see, nothing happens. No output. You just are back to the CMD prompt.</p>
+<p>Now it's time to install <code>procmon.exe</code> on the container host and run it.</p>
+<p>Open a PowerShell terminal in your Windows Server 2016 VM and run</p>
+<pre><code>iwr -usebasicparsing https://live.sysinternals.com/procmon.exe -outfile procmon.exe
+</code></pre>
+<p><img src="http://localhost:2368/content/images/2018/02/install-procmon.png-shadow.png" alt="install procmon"></p>
+<p>Now run <code>procmon.exe</code> and define a filter to see only file activity looking for DLL files and start capturing.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/procmon-filter.png-shadow.png" alt="define procmon filter"></p>
+<p>I have a prepared filter available for download: <a href="https://github.com/StefanScherer/dockerfiles-windows/raw/master/procmon/depends.PMF">depends.PMF</a><br>
+Go to <strong>Filter</strong>, then <strong>Organize Filters...</strong> and then <strong>Import...</strong></p>
+<p>Now in your container run <code>postgres.exe -h</code> again.</p>
+<p>As you can see Process Monitor captures file access to <code>\Device\Harddisk\VolumeXX\psql\bin\</code> which is a folder in your container.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/procmon-postgres.png-shadow.png" alt="procmon postgres capture"></p>
+<p>The interesting part is which DLL's cannot be found here. The <code>MSVCR120.dll</code> is missing, the Visual Studio Runtime DLL's.</p>
+<p>For other applications you might have to look for config files or folders that are missing that stops your app from running in a Windows container.</p>
+<p>Let's append the missing runtime in the <code>Dockerfile</code> with the next few lines:</p>
+<pre><code>RUN Invoke-WebRequest 'http://download.microsoft.com/download/0/5/6/056DCDA9-D667-4E27-8001-8A0C6971D6B1/vcredist_x64.exe' -OutFile vcredist_x64.exe ; `
+    Start-Process vcredist_x64.exe -ArgumentList '/install', '/passive', '/norestart' -NoNewWindow -Wait ; `
+    Remove-Item vcredist_x64.exe
+</code></pre>
+<p>Build the image and run another container and see if it works now.</p>
+<p><img src="http://localhost:2368/content/images/2018/02/postgres-usage.png" alt="postgres usage"></p>
+<p>Yes, this time we see the <code>postgres.exe</code> usage, so it seems we have solved all our dependency problems.</p>
+<h1 id="gonanoserver">Go NanoServer</h1>
+<p>Now we have a Windows Server Core image with PostgreSQL server. The image size is now 11.1GByte. Let's go one step further and make it a much smaller NanoServer image.</p>
+<p>In NanoServer we cannot run MSI packages or vcredist installers, and soon there is also no PowerShell. But with a so called <strong>multi-stage build</strong> it's easy to <code>COPY</code> deploy the PostgreSQL binaries and dependencies into a fresh NanoServer image.</p>
+<p>We append some more lines to our <code>Dockerfile</code>. Most important line is the second <code>FROM</code> line to start a new stage with the smaller NanoServer image.</p>
+<pre><code>FROM microsoft/nanoserver:10.0.14393.2007
+</code></pre>
+<p>Then we <code>COPY</code> the <code>pgsql</code> folder from the first stage into the NanoServer image, as well as the important runtime DLL's.</p>
+<pre><code>COPY --from=download /pgsql /pgsql
+COPY --from=download /windows/system32/msvcp120.dll /pgsql/bin/msvcp120.dll
+COPY --from=download /windows/system32/msvcr120.dll /pgsql/bin/msvcr120.dll
+</code></pre>
+<p>Set the <code>PATH</code> variable to have all tools accessible, expose the standard port and define a command.</p>
+<pre><code>RUN setx /M PATH &quot;C:\pgsql\bin;%PATH%&quot;
+
+EXPOSE 5432
+CMD [&quot;postgres&quot;]
+</code></pre>
+<p>Now build the image again and try it out with</p>
+<pre><code>docker run postgres postgres.exe --help
+</code></pre>
+<p><img src="http://localhost:2368/content/images/2018/02/docker-run-postgres-nano.png" alt="docker run postgres in nano"></p>
+<p>We still see the usage, so the binaries also work fine in NanoServer. The final postgres images is down at 1.64GByte.<br>
+If you do this with a NanoServer 1709 or Insider image the sizes is even smaller at 738MByte.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>Process Monitor can help you find issues that prevent applications to run properly in Windows containers. Run it from a Server 2016 container host to observe your or a foreign application.</p>
+<p>I hope you find this blog post useful and I love to hear your feedback and experience about Windows containers. Just drop a comment below or ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Terraforming a Windows Insider Server in Azure]]></title><description><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
 <h2 id="buildtheazurevm">Build the Azure VM</h2>
 <p>On your local machine clone the <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> repo which has a Terraform template to build an Azure</p></div>]]></description><link>http://localhost:2368/terraforming-a-windows-insider-server-in-azure/</link><guid isPermaLink="false">5a64f348845d55000179abc4</guid><category><![CDATA[Azure]]></category><category><![CDATA[Docker]]></category><category><![CDATA[windows-containers]]></category><category><![CDATA[Insider]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Terraform]]></category><category><![CDATA[Vagrant]]></category><category><![CDATA[Packer]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sun, 21 Jan 2018 21:32:41 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to run a Windows Docker engine with the latest Insider build.</p>
 <h2 id="buildtheazurevm">Build the Azure VM</h2>
@@ -1435,95 +1515,4 @@ deploy_script:
 <h2 id="conclusion">Conclusion</h2>
 <p>The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.</p>
 <p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Getting started with Docker Swarm-mode on Windows 10]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last Friday I noticed a blog post that <a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/">Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10</a>. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.</p>
-<p>Well you wonder why this feature is available on</p></div>]]></description><link>http://localhost:2368/docker-swarm-mode-windows10/</link><guid isPermaLink="false">5986d4ec688a49000154096d</guid><category><![CDATA[Docker]]></category><category><![CDATA[Swarm]]></category><category><![CDATA[Windows 10]]></category><category><![CDATA[Overlay]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Mon, 13 Feb 2017 01:31:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last Friday I noticed a blog post that <a href="https://blogs.technet.microsoft.com/virtualization/2017/02/09/overlay-network-driver-with-support-for-docker-swarm-mode-now-available-to-windows-insiders-on-windows-10/">Overlay Network Driver with Support for Docker Swarm Mode Now Available to Windows Insiders on Windows 10</a>. A long awaited feature to use Docker Swarm on Windows, so it's time to test-drive it.</p>
-<p>Well you wonder why this feature is available on Windows 10 and not Windows Server 2016. Sure it will make more sense in production running a Docker Swarm on multiple servers. The reason is that the Insider preview is the fastest channel to ship new features. Unfortunately there is no equivalent for Windows Server editions.</p>
-<p>So if you need it for Windows Server you have to wait a little longer. You can indeed test Swarm-Mode on Windows Server 2016 and Docker 1.13, but only without the Overlay network.  To test Swarm-Mode with Overlay network you will need some machines running Windows 10 Insider 15031.</p>
-<h2 id="preparation">Preparation</h2>
-<p>In my case I use <a href="https://www.vagrantup.com">Vagrant</a> to spin up Windows VM's locally on my notebook. The advantage is that you can describe some test scenarios with a <code>Vagrantfile</code> and share it on GitHub.</p>
-<p>I already have played with Docker Swarm-Mode in December and created a <a href="https://github.com/StefanScherer/docker-windows-box/tree/master/swarm-mode">Vagrant environment with some Windows Server 2016 VM's</a>. I'll re-use this scenario and just replace the underlying Vagrant box.</p>
-<p>So the hardest part is to build a Windows 10 Insider 15031 VM. The <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewadvanced">latest ISO file</a> with Windows 10 Insider 15025 is a good starting point. You have to switch to the Fast Ring to fetch the latest updates for Insider 15031.</p>
-<p>Normally I use <a href="https://www.packer.io">Packer</a> with my <a href="https://github.com/StefanScherer/packer-windows">packer-windows</a> templates available on GitHub to automatically create such Vagrant boxes. In this case I only have a semi-automated template. Download the ISO file, build a VM with the <a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_insider.json"><code>windows_10_insider.json</code></a> template and update it to Insider 15031 manually. With such a VM, build the final Vagrant box with the <a href="https://github.com/StefanScherer/packer-windows/blob/my/windows_10_docker.json"><code>windows_10_docker.json</code></a> Packer template.</p>
-<p>What we now have is a Windows 10 Insider 15031 VM with the Containers and Hyper-V features activated, Docker 1.13.1 installed and both Microsoft Docker images downloaded. All the time consuming things should be done in a Packer build to make the final <code>vagrant up</code> a breeze.</p>
-<p>In my case I had to add the Vagrant box with</p>
-<pre><code>vagrant box add windows_10_docker ./windows_10_insider_15031_docker_vmware.box
-</code></pre>
-<p>Vagrant 1.9.1 is able to use linked clones for VMware Fusion, VirtualBox and Hyper-V. So you need this big Vagrant box only once on disk. For the Docker Swarm only a clone will be started for each VM to save time and disk space.</p>
-<h2 id="createtheswarm">Create the Swarm</h2>
-<p>Now we use the prepared Vagrant environment and adjust it</p>
-<pre><code>git clone https://github.com/StefanScherer/docker-windows-box
-cd docker-windows-box/swarm-mode
-vi Vagrantfile
-</code></pre>
-<p>In the <code>Vagrantfile</code> I had to change only the name of the box after <code>config.vm.box</code> to the newly added Vagrant box. This is like changing the <code>FROM</code> in a <code>Dockerfile</code>.</p>
-<p><img src="http://localhost:2368/content/images/2017/02/git-diff-swarm-mode.png" alt="git diff Vagrantfile"></p>
-<p>I also adjusted the memory a little bit to spin up more Hyper-V containers.</p>
-<p>But now we are ready to create the Docker Swarm with a simple</p>
-<pre><code>vagrant up
-</code></pre>
-<p>This will spin up three Windows 10 VM's and build the Docker Swarm automatically for you. But using linked clones and the well prepared Vagrant basebox it takes only some minutes to have a complete Docker Swarm up and running.</p>
-<h2 id="dockernodels">docker node ls</h2>
-<p>After all three VM's are up and running, go into the first VM and open a PowerShell terminal. With</p>
-<pre><code>docker node ls
-</code></pre>
-<p>you can check if your Docker Swarm is active.</p>
-<p><img src="http://localhost:2368/content/images/2017/02/swarm-mode.png" alt=""></p>
-<h2 id="createanetwork">Create a network</h2>
-<p>Now we create a new overlay network with</p>
-<pre><code>docker network create --driver=overlay sample
-</code></pre>
-<p>You can list all networks with <code>docker network ls</code> as there are already some others.</p>
-<h2 id="createawhoamiservice">Create a whoami service</h2>
-<p>With this new overlay network we start a simple service. I've prepared a Windows version of the <code>whoami</code> service. This is a simple webserver that just responds with its internal container hostname.</p>
-<pre><code>docker service create --name=whoami --endpoint-mode dnsrr `
-  --network=sample stefanscherer/whoami-windows:latest
-</code></pre>
-<p>At the moment only DNS round robin is implemented as described in the Microsoft blog post. You cannot use to publish ports externally right now. More to come in the near future.</p>
-<h2 id="runvisualizer">Run visualizer</h2>
-<p>To make it more visible what happens in the next steps I recommend to run the Visualizer. On the first VM you can run the Visualizer with <a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/run-portainer.ps1">this script</a>:</p>
-<pre><code class="language-powershell">C:\vagrant\scripts\run-visualizer.ps1
-</code></pre>
-<p>Now open a browser with another <a href="https://github.com/StefanScherer/docker-windows-box/blob/master/swarm-mode/scripts/open-visualizer.ps1">helper script</a>:</p>
-<pre><code class="language-powershell">C:\vagrant\scripts\open-visualizer.ps1
-</code></pre>
-<p>Now you can scale up the service to spread it over your Docker swarm.</p>
-<pre><code>docker service scale whoami=4
-</code></pre>
-<p>This will bring up the service on all three nodes and one of the nodes is running two instances of the whoami service.</p>
-<p><img src="http://localhost:2368/content/images/2017/02/visualizer.png" alt="Visualizer"></p>
-<p>Just play around scaling the service up and down a little bit.</p>
-<h2 id="buildandcreateanotherservice">Build and create another service</h2>
-<p>As I've mentioned above you cannot publish ports and there is no routing mesh at the moment. So the next thing is to create another service that will access the <code>whoami</code> service inside the overlay network. On Linux you probably would use <code>curl</code> to do that. I tried just a simple PowerShell script to do the same.</p>
-<p>Two small files are needed to create a Docker image. First the simple script <code>askthem.ps1</code>:</p>
-<pre><code class="language-powershell">while ($true) {
-  (Invoke-WebRequest -UseBasicParsing http://whoami:8080).Content
-  Start-Sleep 1
-}
-</code></pre>
-<p>As you can see the PowerShell script will access the webserver with the hostname <code>whoami</code> on port 8080.</p>
-<p>Now put this Script into a Docker image with this <code>Dockerfile</code>:</p>
-<pre><code class="language-Dockerfile">FROM microsoft/nanoserver
-COPY askthem.ps1 askthem.ps1
-CMD [&quot;powershell&quot;, &quot;-file&quot;, &quot;askthem.ps1&quot;]
-</code></pre>
-<p>Now build the Docker image with</p>
-<pre><code>docker build -t askthem .
-</code></pre>
-<p>We now can start the second service that consumes the whoami service.</p>
-<pre><code>docker service create --name=askthem --network=sample askthem:latest
-</code></pre>
-<p>You now should see one instance of the newly created <code>askthem</code> service. Let's have a look at the logs. As this Vagrant environment enables the experimental features of Docker we are able to get the logs with this command:</p>
-<pre><code>docker service logs askthem
-</code></pre>
-<p>In my case I had luck and the <code>askthem</code> service got a response from one of the <code>whoami</code> containers that is running on a different Docker node.</p>
-<p><img src="http://localhost:2368/content/images/2017/02/windows10-swarm-mode.png" alt="Windows 10 Swarm-Mode"></p>
-<p>I haven't figured out why all the responses are from the same container. Maybe PowerShell or the <code>askthem</code> container itself caches the DNS requests.</p>
-<p>But it still proves that overlay networking is working across multiple Windows machines.</p>
-<h2 id="moretoplaywith">More to play with</h2>
-<p>The Vagrant environment has some more things prepared. You also can spin up <a href="http://portainer.io">Portainer</a> that gives you a nice UI to your Docker swarm. You can have a look at your Nodes, the Docker images, the containers and services running and so on.</p>
-<p>I also found out that you can scale services in the Portainer UI by changing the replicas. Running Visualizer and Portainer side-by-side demonstrates that:</p>
-<p><img src="http://localhost:2368/content/images/2017/02/visualizer-portainer.gif" alt="Visualizer and Portainer"></p>
-<h2 id="conclusion">Conclusion</h2>
-<p>I think this setup can help you trying out the new Overlay network in Windows 10 Insider, and hopefully in Windows Server 2016 very soon as well.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>
