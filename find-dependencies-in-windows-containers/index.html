@@ -24,7 +24,7 @@
     <meta property="og:description" content="Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's">
     <meta property="og:url" content="https://stefanscherer.github.io/find-dependencies-in-windows-containers/">
     <meta property="article:published_time" content="2018-02-14T23:01:47.000Z">
-    <meta property="article:modified_time" content="2018-02-14T23:29:48.000Z">
+    <meta property="article:modified_time" content="2018-02-14T23:33:50.000Z">
     <meta property="article:tag" content="windows-containers">
     <meta property="article:tag" content="Docker">
     <meta property="article:tag" content="Hyper-V">
@@ -69,7 +69,7 @@
     "headline": "How to find dependencies of containerized Windows apps",
     "url": "https://stefanscherer.github.io/find-dependencies-in-windows-containers/",
     "datePublished": "2018-02-14T23:01:47.000Z",
-    "dateModified": "2018-02-14T23:29:48.000Z",
+    "dateModified": "2018-02-14T23:33:50.000Z",
     "keywords": "windows-containers, Docker, Hyper-V, process-monitor, sysinternals",
     "description": "Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL&#x27;s. But sometimes it&#x27;s hard to figure out why an application doesn&#x27;t run in a container. Here&#x27;s my way to find out what&#x27;s",
     "mainEntityOfPage": {
@@ -206,7 +206,7 @@ CMD ["postgres"]
 </code></pre>
 <p><img src="../content/images/2018/02/docker-run-postgres-nano.png" alt="docker run postgres in nano"></p>
 <p>We still see the usage, so the binaries also work fine in NanoServer. The final postgres images is down at 1.64GByte.<br>
-If you do this with a NanoServer 1709 or Insider image the sizes is even smaller at 738MByte.</p>
+If you do this with a NanoServer 1709 or Insider image the sizes is even smaller at 738MByte. You can have a look at the compressed sizes on the Docker Hub at <a href="https://hub.docker.com/r/stefanscherer/postgres-windows/tags/">stefanscherer/postgres-windows</a>.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>Process Monitor can help you find issues that prevent applications to run properly in Windows containers. Run it from a Server 2016 container host to observe your or a foreign application.</p>
 <p>I hope you find this blog post useful and I love to hear your feedback and experience about Windows containers. Just drop a comment below or ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
