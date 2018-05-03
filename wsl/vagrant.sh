@@ -6,7 +6,7 @@ if [ ! -e ~/.vagrant.d ]; then
   ln -s /mnt/c/Users/$(cmd.exe /c echo %USERNAME% | tr -d '\r')/.vagrant.d/ ~/.vagrant.d
 fi
 
-if [ "$(dpkg -l | grep vagrant)" != "" ]; then
+if [ "$(dpkg -l | grep vagrant)" == "" ]; then
   echo "Installing Vagrant"
   wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
   sudo dpkg -i vagrant_2.0.4_x86_64.deb
