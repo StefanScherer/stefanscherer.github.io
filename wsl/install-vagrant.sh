@@ -10,6 +10,7 @@ if [ "$(dpkg -l | grep vagrant)" != "" ]; then
   echo "Installing Vagrant"
   wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
   sudo dpkg -i vagrant_2.0.4_x86_64.deb
+  rm vagrant_2.0.4_x86_64.deb
   export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
 fi
 
