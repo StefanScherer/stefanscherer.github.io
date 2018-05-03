@@ -35,3 +35,7 @@ if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/vi
   wget https://github.com/StefanScherer/vagrant/blob/wsl-remove-raise-vboxmanage-missing/plugins/providers/virtualbox/driver/base.rb
   sudo mv base.rb /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/virtualbox/driver/base.rb
 fi
+
+if [ ! -f ~/.vagrant.d/icense-vagrant-vmware-desktop.lic ]; then
+  echo "Now run vagrant plugin license vagrant-vmware-desktop ./license.lic"
+fi
