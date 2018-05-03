@@ -1,3 +1,19 @@
+# Get the ID and security principal of the current user account
+$myWindowsID=[System.Security.Principal.WindowsIdentity]::GetCurrent()
+$myWindowsPrincipal=new-object System.Security.Principal.WindowsPrincipal($myWindowsID)
+ 
+# Get the security principal for the Administrator role
+$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
+ 
+# Check to see if we are currently running "as Administrator"
+if ($myWindowsPrincipal.IsInRole($adminRole)) {
+  Write-Host "Script is running as admin."
+} else {
+  Write-Host "This script must be run as admin."
+  exit 1
+}
+
+
 if (!(Test-Path C:\ProgramData\chocolatey\bin\choco.exe)) {
   Write-Host "Installing Chocolatey"
   iwr -useb https://chocolatey.org/install.ps1 | iex
