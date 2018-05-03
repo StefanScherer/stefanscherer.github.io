@@ -6,10 +6,12 @@ if [ ! -e ~/.vagrant.d ]; then
   ln -s /mnt/c/Users/$(cmd.exe /c echo %USERNAME% | tr -d '\r')/.vagrant.d/ ~/.vagrant.d
 fi
 
-echo "Installing Vagrant"
-wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
-sudo dpkg -i vagrant_2.0.4_x86_64.deb
-export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
+if [ "$(dpkg -l | grep vagrant)" != "" ]; then
+  echo "Installing Vagrant"
+  wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
+  sudo dpkg -i vagrant_2.0.4_x86_64.deb
+  export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
+fi
 
 echo "Preparing Vagrant VMware"
 sudo ln -s /mnt/c/ProgramData/HashiCorp/vagrant-vmware-desktop /opt/vagrant-vmware-desktop
@@ -39,3 +41,6 @@ fi
 if [ ! -f ~/.vagrant.d/icense-vagrant-vmware-desktop.lic ]; then
   echo "Now run vagrant plugin license vagrant-vmware-desktop ./license.lic"
 fi
+
+echo "Please add the following command to your ~/.bashrc"
+echo   export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
