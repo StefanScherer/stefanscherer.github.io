@@ -46,3 +46,5 @@ if (!(Test-Path C:\mnt\c\Users)) {
     }
   }
 }
+
+Write-Host "Everything prepared in Windows."
