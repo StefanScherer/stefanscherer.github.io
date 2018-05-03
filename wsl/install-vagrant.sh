@@ -40,8 +40,9 @@ if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/vi
 fi
 
 if [ ! -f ~/.vagrant.d/icense-vagrant-vmware-desktop.lic ]; then
-  echo "Now run vagrant plugin license vagrant-vmware-desktop ./license.lic"
+  echo "Now run the following command"
+  echo "  vagrant plugin license vagrant-vmware-desktop ./license.lic"
 fi
 
 echo "Please add the following command to your ~/.bashrc"
-echo   export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
+echo "  export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1"
