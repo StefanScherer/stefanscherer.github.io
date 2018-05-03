@@ -32,13 +32,13 @@ fi
 
 if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/hosts/linux/cap/rdp.rb ]; then
   echo "Fixing vagrant rdp"
-  wget https://raw.githubusercontent.com/StefanScherer/vagrant/wsl-rdp/plugins/hosts/linux/cap/rdp.rb
+  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/plugins/hosts/linux/cap/rdp.rb
   sudo mv rdp.rb /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/hosts/linux/cap/rdp.rb
 fi
 
 if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/virtualbox/driver/base.rb ]; then
   echo "Fixing vagrant status"
-  wget https://raw.githubusercontent.com/StefanScherer/vagrant/wsl-remove-raise-vboxmanage-missing/plugins/providers/virtualbox/driver/base.rb
+  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/plugins/providers/virtualbox/driver/base.rb
   sudo mv base.rb /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/virtualbox/driver/base.rb
 fi
 
