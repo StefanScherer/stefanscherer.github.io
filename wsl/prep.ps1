@@ -33,7 +33,7 @@ if (! $myWindowsPrincipal.IsInRole($adminRole)) {
   }
 
   if (!(Test-Path C:\mnt\c\Users)) {
-    Write-Host "Creating symlink for Linux Vagrant 2.0.4"
+    Write-Host "Creating symlink for Linux Vagrant 2.0.4/2.1.0"
     choco uninstall vagrant
     mkdir C:\mnt\c\Users 
     $windowsuser=((tasklist /V | sls explorer.exe) -split " +")[7] -replace ".*\\", ""

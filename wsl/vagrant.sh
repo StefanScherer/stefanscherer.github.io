@@ -9,9 +9,9 @@ fi
 v=$(dpkg -l | grep vagrant)
 if [ "$v" == "" ]; then
   echo "Installing Vagrant"
-  wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
-  sudo dpkg -i vagrant_2.0.4_x86_64.deb
-  rm vagrant_2.0.4_x86_64.deb
+  wget https://releases.hashicorp.com/vagrant/2.1.0/vagrant_2.1.0_x86_64.deb
+  sudo dpkg -i vagrant_2.1.0_x86_64.deb
+  rm vagrant_2.1.0_x86_64.deb
   export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS=1
 fi
 
@@ -22,24 +22,12 @@ fi
 vagrant plugin install vagrant-vmware-desktop
 
 
-if [ -d /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins ]; then
-  echo "Fixing Vagrant 2.0.4 vmrun and shared folders"
+if [ -d /opt/vagrant/embedded/gems/2.1.0 ]; then
+  echo "Fixing Vagrant 2.1.0 vmrun and shared folders"
   wget https://raw.githubusercontent.com/StefanScherer/dotfiles/master/bin/vmrun.exe-helper
   chmod +x vmrun.exe-helper
   sudo cp vmrun.exe-helper "/usr/bin/C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe"
   rm vmrun.exe-helper
-fi
-
-if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/hosts/linux/cap/rdp.rb ]; then
-  echo "Fixing vagrant rdp"
-  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/plugins/hosts/linux/cap/rdp.rb
-  sudo mv rdp.rb /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/hosts/linux/cap/rdp.rb
-fi
-
-if [ -f /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/virtualbox/driver/base.rb ]; then
-  echo "Fixing vagrant status"
-  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/plugins/providers/virtualbox/driver/base.rb
-  sudo mv base.rb /opt/vagrant/embedded/gems/2.0.4/gems/vagrant-2.0.4/plugins/providers/virtualbox/driver/base.rb
 fi
 
 if [ ! -f ~/.vagrant.d/icense-vagrant-vmware-desktop.lic ]; then
