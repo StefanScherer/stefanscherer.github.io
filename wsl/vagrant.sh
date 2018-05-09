@@ -30,7 +30,7 @@ if [ -d /opt/vagrant/embedded/gems/2.1.0 ]; then
   rm vmrun.exe-helper
 fi
 
-if [ ! -f ~/.vagrant.d/icense-vagrant-vmware-desktop.lic ]; then
+if [ ! -f ~/.vagrant.d/license-vagrant-vmware-desktop.lic ]; then
   echo "Now run the following command"
   echo "  vagrant plugin license vagrant-vmware-desktop ./license.lic"
 fi
