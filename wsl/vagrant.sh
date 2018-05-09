@@ -17,7 +17,11 @@ fi
 
 echo "Preparing Vagrant VMware"
 if [ ! -e /opt/vagrant-vmware-desktop ]; then
-  sudo ln -s /mnt/c/ProgramData/HashiCorp/vagrant-vmware-desktop /opt/vagrant-vmware-desktop
+  if [ -e /mnt/c/ProgramData/HashiCorp/vagrant-vmware-desktop ]; then
+    sudo ln -s /mnt/c/ProgramData/HashiCorp/vagrant-vmware-desktop /opt/vagrant-vmware-desktop
+  else
+    sudo ln -s /mnt/c/ProgramData/hashicorp/vagrant-vmware-desktop /opt/vagrant-vmware-desktop
+  fi
 fi
 vagrant plugin install vagrant-vmware-desktop
 
