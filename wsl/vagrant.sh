@@ -8,8 +8,7 @@ fi
 
 VAGRANT_VERSION=2.1.1
 
-v=$(dpkg -l | grep vagrant)
-if [ "$v" == "" ]; then
+if [[ "$(dpkg -l | grep vagrant)" == "" ]]; then
   echo "Installing Vagrant"
   wget https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb
   sudo dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb
