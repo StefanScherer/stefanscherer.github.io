@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How to build a forked GitHub repo: Spot the YAML</title>
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/amp/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to build a forked GitHub repo: Spot the YAML" />
+    <meta property="og:description" content="Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don&#x27;t have locally. Of" />
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/" />
+    <meta property="article:published_time" content="2018-06-02T16:45:00.000Z" />
+    <meta property="article:modified_time" content="2018-06-02T16:52:22.000Z" />
+    <meta property="article:tag" content="AppVeyor" />
+    <meta property="article:tag" content="GitHub" />
+    <meta property="article:tag" content="Docker Hub" />
+    <meta property="article:tag" content="Docker" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to build a forked GitHub repo: Spot the YAML" />
+    <meta name="twitter:description" content="Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don&#x27;t have locally. Of" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="AppVeyor, GitHub, Docker Hub, Docker" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "How to build a forked GitHub repo: Spot the YAML",
+    "url": "https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/",
+    "datePublished": "2018-06-02T16:45:00.000Z",
+    "dateModified": "2018-06-02T16:52:22.000Z",
+    "keywords": "AppVeyor, GitHub, Docker Hub, Docker",
+    "description": "Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don&#x27;t have locally. Of",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template tag-appveyor tag-github tag-docker-hub tag-docker nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-appveyor tag-github tag-docker-hub tag-docker">
+
+        <header class="post-header">
+            <h1 class="post-title">How to build a forked GitHub repo: Spot the YAML</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2018-06-02">02 June 2018</time>  on <a href="../tag/appveyor/">AppVeyor</a>, <a href="../tag/github/">GitHub</a>, <a href="../tag/docker-hub/">Docker Hub</a>, <a href="../tag/docker/">Docker</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don't have locally. Of course you have hear of Docker to put all build tools and dependencies into a container. But what if the project doesn't provide a Dockerfile?</p>
+<p>Sometimes it is easier to just look at the repo. Does it have some green build badges in the <a href="http://README.md">README.md</a>? That is a good first hint that they use a CI pipeline. Look for YAML files that show you which CI service the project uses.</p>
+<p>I'll show you an example with one of my GitHub repos. This project builds a Docker image with a simple web server, it's written in Golang, bla bla bla...<br>
+The point is, there is a CI pipeline for AppVeyor and the corresponding YAML file also is in my repo. Let's have a look how you can fork my repo and fork the build pipeline.</p>
+<h2 id="whatisappveyor">What is AppVeyor?</h2>
+<p>The GitHub market place shows a lot of offerings for <a href="https://github.com/marketplace/category/continuous-integration">continuous integration</a>. This is what you normally want to have automatic tests for each Git commit or pull request you receive.</p>
+<p><img src="../content/images/2018/06/appveyor.png" alt="appveyor"></p>
+<p><a href="https://www.appveyor.com">AppVeyor</a> is my #1 place to go if I want Windows builds. It is really easy to attach it to your GitHub repo with a YAML file.</p>
+<p>It can be as simple as this example <code>appveyor.yml</code> file.</p>
+<pre><code>version: 1.0.{build}
+image:
+- Visual Studio 2017
+
+build_script:
+  - ps: ./build.ps1
+
+test_script:
+  - ps: ./test.ps1
+
+deploy_script:
+  - ps: ./deploy.ps1
+</code></pre>
+<h2 id="forkingbuildpipelines">Forking build pipelines</h2>
+<p>What is the advantage to write a YAML file you may ask. Well I really like to share not only my code, but also my pipeline with the community. Others can fork my repo and only need a few clicks to attach the fork and have the complete pipeline up and running for themselves.</p>
+<h1 id="whoamiexample">Whoami example</h1>
+<p>In the next screenshots I will show you how easy it is to setup a build pipeline for a repo that you have seen the first time.</p>
+<p>Go to the GitHub repo <a href="https://github.com/StefanScherer/whoami">https://github.com/StefanScherer/whoami</a>.</p>
+<p><img src="../content/images/2018/06/github-whoami-repo.png" alt="GitHub StefanScherer/whoami repo"></p>
+<p>You can fork it to your own GitHub account with the &quot;Fork&quot; button. GitHub will prepare the fork for you.</p>
+<p><img src="../content/images/2018/06/github-forking-repo.png" alt="github forking repo"></p>
+<p>Now scroll down to the <a href="http://README.md">README.md</a>. The next thing is to attach the pipeline to your fork.</p>
+<p><img src="../content/images/2018/06/github-readme-link-to-appveyor.png" alt="github repo, go to readme and follow link to appveyor"></p>
+<p>Just click on the the AppVeyor build badge to jump to the AppVeyor site, maybe open a new tab as we need the GitHub site later as well.<br>
+Now you can see the build status of my repo. This is not your fork yet, but we now can sign in to AppVeyor.</p>
+<p><img src="../content/images/2018/06/appveyor-buildstatus-upstream-repo.png" alt="appveyor buildstatus upstream repo, link to sign in"></p>
+<p>Click on &quot;SIGN IN&quot; in the top right corner. AppVeyor will ask you how to sign in. Just use GitHub.</p>
+<p><img src="../content/images/2018/06/appveyor-sign-in.png" alt="appveyor sign in with github"></p>
+<p>Now GitHub will ask you if you want to give AppVeyor read-only access to your user data and public teams.</p>
+<p><img src="../content/images/2018/06/appveyor-auth-login.png" alt="appveyor-auth-login"></p>
+<p>After that you have connected AppVeyor to your account.</p>
+<p><img src="../content/images/2018/06/appveyor-lets-start.png" alt="appveyor-lets-start"></p>
+<p>Now this has to be done only once. After that you can add the forked repo to build on AppVeyor. Click on &quot;NEW PROJECT&quot; in the top left corner.</p>
+<p><img src="../content/images/2018/06/appveyor-select-github-repo.png" alt="appveyor-select-github-repo"></p>
+<p>You can choose between several version control systems. As you have forked a GitHub repo, click on &quot;GitHub&quot; and then on &quot;Authorize GitHub&quot;.</p>
+<p><img src="../content/images/2018/06/appveyor-auth-github-repos.png" alt="appveyor-auth-github-repos"></p>
+<p>AppVeyor needs some more access rights to add the Web hook for you and to send commit statuses. Click on &quot;Authorize appveyor&quot; to grant access.</p>
+<p>Now you will see a list of GitHub repos of your GitHub account.</p>
+<p><img src="../content/images/2018/06/appveyor-add-github-project.png" alt="appveyor-add-github-project"></p>
+<p>Move to the &quot;whoami&quot; repo and click on the <strong>&quot;+ Add&quot;</strong> button on the right side. The UI isn't the best here, I often missed the Add link for my first projects.</p>
+<p><img src="../content/images/2018/06/appveyor-github-repo-connected.png" alt="appveyor-github-repo-connected"></p>
+<p>Congratulations! You have the build pipeline up and running. No VM's to setup, no installation required. You didn't have to clone the repo to your local machine yet.</p>
+<p>Each Git commit will now trigger a build on AppVeyor with the <code>appveyor.yml</code> file that comes with the sources in the GitHub repo. You don't have to think what steps you have to do to build this project.</p>
+<h2 id="adjustthefork">Adjust the fork</h2>
+<h3 id="adjustreadmemd">Adjust <a href="http://README.md">README.md</a></h3>
+<p>The first change should be to adjust the build badge in the <code>README.md</code> to link to your forked build.</p>
+<p>Let's do that in the browser, so you still don't have to clone the repo to you local machine.</p>
+<p>But first we have to grab the build badge link. Go to &quot;Settings&quot; and then to &quot;Badges&quot;. You will see some samples, pick the Sample Markdown code</p>
+<p><img src="../content/images/2018/06/appveyor-settings-badge-markdown.png" alt="appveyor-settings-badge-markdown"></p>
+<p>Now head over to the GitHub browser tab and edit the <code>README.md</code> file.</p>
+<p><img src="../content/images/2018/06/github-edit-readme.png" alt="github-edit-readme"></p>
+<p>In this editor paste the new build badge link. Also adjust the Docker Hub badge to point to your desired Docker Hub image name. After that scroll down and commit the changes.</p>
+<p><img src="../content/images/2018/06/github-commit-readme-changes.png" alt="github-commit-readme-changes"></p>
+<p>Head back to AppVeyor and you will see your first build running.</p>
+<p><img src="../content/images/2018/06/appveyor-first-build-running.png" alt="appveyor-first-build-running"></p>
+<p>Isn't that fantastic? You just triggered a build from your browser. You can follow the build (it's a matrix build, we will have a closer look in the next blog post).</p>
+<p>After a while the build is green.</p>
+<p><img src="../content/images/2018/06/Bildschirmfoto-2018-06-02-um-17.42.57.png" alt="Bildschirmfoto-2018-06-02-um-17.42.57"></p>
+<h3 id="adjustdeployps1">Adjust deploy.ps1</h3>
+<p>The second change in the forked repo is to adjust the Docker image name to deploy it to Docker Hub for when you start a GitHub release build.</p>
+<p>Head over to GitHub browser tab and edit the <code>deploy.ps1</code> script.</p>
+<p><img src="../content/images/2018/06/github-edit-deploy-ps1.png" alt="github-edit-deploy-ps1"></p>
+<p>In line 8 you have to adjust the <code>$image</code> variable to fit your needs.</p>
+<p><img src="../content/images/2018/06/github-commit-changes-deploy-ps1.png" alt="github-commit-changes-deploy-ps1"></p>
+<p>After that commit the changes, a second build will be triggered. But nothing more happens in the second build.</p>
+<h2 id="tellmeasecret">Tell me a secret</h2>
+<p>The <code>appveyor.yml</code> is configured to deploy the Docker image only during a release build. For such releases AppVeyor needs access to your Docker registry you want to push to. In our case it's the Docker Hub.</p>
+<p>This is done with secret environment variables. You can either use secrets in the <code>appveyor.yml</code> or just edit the environment variables in the AppVeyor browser tab. I'll show you the latter how to do it.</p>
+<p>Go to &quot;SETTINGS&quot; and click the &quot;Environment&quot; tab. We need to add two environment variables</p>
+<ul>
+<li>DOCKER_USER</li>
+<li>DOCKER_PASS</li>
+</ul>
+<p><img src="../content/images/2018/06/appveyor-project-settings-environment.png" alt="appveyor-project-settings-environment"></p>
+<p>Then scroll down and <strong>click on &quot;Save&quot;</strong>. This is the second thing that could be improved in the UI. You often don't see this &quot;Save&quot; button.</p>
+<p>If you don't like to add your real Docker Hub account a good practise is to use another Docker Hub account for just the pushes and grant that account write access to only the Docker Hub images you want to.</p>
+<h2 id="releaseit">Release it!</h2>
+<p>Now, the build pipeline is set up in AppVeyor, as you have seen, the build and minimal tests were green. Now it's time to release the first Docker image.</p>
+<p>Go to your forked GitHub repo again. There is a link to the &quot;releases&quot;. Click on &quot;releases&quot;.</p>
+<p><img src="../content/images/2018/06/github-go-to-releases.png" alt="github-go-to-releases"></p>
+<p>You have forked all the tags, but not the releases. Now let's &quot;Draft a new release&quot; to trigger a build.</p>
+<p><img src="../content/images/2018/06/github-releases-draft-new-release.png" alt="github-releases-draft-new-release"></p>
+<p>Use for example &quot;2.0.0&quot; as new release and tag name, enter some useful description.</p>
+<p><img src="../content/images/2018/06/github-draft-release-2.png" alt="github-draft-release-2"></p>
+<p>Then press &quot;Publish release&quot;. This also triggers a new build in AppVeyor, this time a tagged build.</p>
+<p>In AppVeyor you can see the tag name &quot;2.0.0&quot;<br>
+<img src="../content/images/2018/06/appveyor-release-build.png" alt="appveyor-release-build"></p>
+<p>You now also can follow the build, but I'll explain it in more detail in the next blog post. After some minutes the build is completed and green.</p>
+<p><img src="../content/images/2018/06/appveyor-release-build-finished-1.png" alt="appveyor-release-build-finished-1"></p>
+<p>Now, do we really have a Docker image pushed to Docker Hub? Let's check. Go back to your GitHub repo and check if the Docker Hub badge also works.</p>
+<p><img src="../content/images/2018/06/github-dockerhub-badges.png" alt="github-dockerhub-badges"></p>
+<p>And yes, there it is. You have successfully published a Docker image from an application you don't really have to understand the language or how to setup the build steps for that.</p>
+<p><img src="../content/images/2018/06/dockerhub-whoami.png" alt="dockerhub-whoami"></p>
+<p>That's the &quot;let me do it&quot; first approach. Now you have time to look at all the files. Start with the <code>appveyor.yml</code>, the YAML is the start of the build pipeline.</p>
+<p>Or start with the application code which is written in Golang.</p>
+<h1 id="tldrshareyouryaml">TL/DR: Share your YAML</h1>
+<p>In this blog post you have seen how important it is to share not only the code, but also the build pipeline. You have learned to watch out for YAML files. There are other CI services out there, but the pattern is almost the same. Look for <code>.travis.yml</code>, <code>.circleci/config.yml</code> and similar names.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> as well.</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20build%20a%20forked%20GitHub%20repo%3A%20Spot%20the%20YAML&amp;url=https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../ship-happens-secrets-leaked-to-github/">
+        <section class="post">
+            <h2>Ship happens. Secrets leaked to GitHub, what next?</h2>
+            <p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened.&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
+
+</body>
+</html>

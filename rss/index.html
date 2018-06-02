@@ -1,4 +1,111 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 02 Jun 2018 13:25:45 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Ship happens. Secrets leaked to GitHub, what next?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I</p></div>]]></description><link>https://stefanscherer.github.io/ship-happens-secrets-leaked-to-github/</link><guid isPermaLink="false">5b1288ffd71f9600016d99e0</guid><category><![CDATA[GitHub]]></category><category><![CDATA[secrets]]></category><category><![CDATA[ubiquity]]></category><category><![CDATA[unify]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 13:15:26 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I use my mistake to talk about how to fix this and how to prevent it from happening in the future again.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 02 Jun 2018 16:54:00 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to build a forked GitHub repo: Spot the YAML]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don't have locally. Of</p></div>]]></description><link>https://stefanscherer.github.io/how-to-use-appveyor-to-build-a-multi-arch-docker-image/</link><guid isPermaLink="false">5b12b403d71f9600016d99e8</guid><category><![CDATA[AppVeyor]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[Docker]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 16:45:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don't have locally. Of course you have hear of Docker to put all build tools and dependencies into a container. But what if the project doesn't provide a Dockerfile?</p>
+<p>Sometimes it is easier to just look at the repo. Does it have some green build badges in the <a href="http://README.md">README.md</a>? That is a good first hint that they use a CI pipeline. Look for YAML files that show you which CI service the project uses.</p>
+<p>I'll show you an example with one of my GitHub repos. This project builds a Docker image with a simple web server, it's written in Golang, bla bla bla...<br>
+The point is, there is a CI pipeline for AppVeyor and the corresponding YAML file also is in my repo. Let's have a look how you can fork my repo and fork the build pipeline.</p>
+<h2 id="whatisappveyor">What is AppVeyor?</h2>
+<p>The GitHub market place shows a lot of offerings for <a href="https://github.com/marketplace/category/continuous-integration">continuous integration</a>. This is what you normally want to have automatic tests for each Git commit or pull request you receive.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor.png" alt="appveyor"></p>
+<p><a href="https://www.appveyor.com">AppVeyor</a> is my #1 place to go if I want Windows builds. It is really easy to attach it to your GitHub repo with a YAML file.</p>
+<p>It can be as simple as this example <code>appveyor.yml</code> file.</p>
+<pre><code>version: 1.0.{build}
+image:
+- Visual Studio 2017
+
+build_script:
+  - ps: ./build.ps1
+
+test_script:
+  - ps: ./test.ps1
+
+deploy_script:
+  - ps: ./deploy.ps1
+</code></pre>
+<h2 id="forkingbuildpipelines">Forking build pipelines</h2>
+<p>What is the advantage to write a YAML file you may ask. Well I really like to share not only my code, but also my pipeline with the community. Others can fork my repo and only need a few clicks to attach the fork and have the complete pipeline up and running for themselves.</p>
+<h1 id="whoamiexample">Whoami example</h1>
+<p>In the next screenshots I will show you how easy it is to setup a build pipeline for a repo that you have seen the first time.</p>
+<p>Go to the GitHub repo <a href="https://github.com/StefanScherer/whoami">https://github.com/StefanScherer/whoami</a>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-whoami-repo.png" alt="GitHub StefanScherer/whoami repo"></p>
+<p>You can fork it to your own GitHub account with the &quot;Fork&quot; button. GitHub will prepare the fork for you.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-forking-repo.png" alt="github forking repo"></p>
+<p>Now scroll down to the <a href="http://README.md">README.md</a>. The next thing is to attach the pipeline to your fork.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-readme-link-to-appveyor.png" alt="github repo, go to readme and follow link to appveyor"></p>
+<p>Just click on the the AppVeyor build badge to jump to the AppVeyor site, maybe open a new tab as we need the GitHub site later as well.<br>
+Now you can see the build status of my repo. This is not your fork yet, but we now can sign in to AppVeyor.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-buildstatus-upstream-repo.png" alt="appveyor buildstatus upstream repo, link to sign in"></p>
+<p>Click on &quot;SIGN IN&quot; in the top right corner. AppVeyor will ask you how to sign in. Just use GitHub.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-sign-in.png" alt="appveyor sign in with github"></p>
+<p>Now GitHub will ask you if you want to give AppVeyor read-only access to your user data and public teams.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-auth-login.png" alt="appveyor-auth-login"></p>
+<p>After that you have connected AppVeyor to your account.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-lets-start.png" alt="appveyor-lets-start"></p>
+<p>Now this has to be done only once. After that you can add the forked repo to build on AppVeyor. Click on &quot;NEW PROJECT&quot; in the top left corner.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-select-github-repo.png" alt="appveyor-select-github-repo"></p>
+<p>You can choose between several version control systems. As you have forked a GitHub repo, click on &quot;GitHub&quot; and then on &quot;Authorize GitHub&quot;.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-auth-github-repos.png" alt="appveyor-auth-github-repos"></p>
+<p>AppVeyor needs some more access rights to add the Web hook for you and to send commit statuses. Click on &quot;Authorize appveyor&quot; to grant access.</p>
+<p>Now you will see a list of GitHub repos of your GitHub account.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-add-github-project.png" alt="appveyor-add-github-project"></p>
+<p>Move to the &quot;whoami&quot; repo and click on the <strong>&quot;+ Add&quot;</strong> button on the right side. The UI isn't the best here, I often missed the Add link for my first projects.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-github-repo-connected.png" alt="appveyor-github-repo-connected"></p>
+<p>Congratulations! You have the build pipeline up and running. No VM's to setup, no installation required. You didn't have to clone the repo to your local machine yet.</p>
+<p>Each Git commit will now trigger a build on AppVeyor with the <code>appveyor.yml</code> file that comes with the sources in the GitHub repo. You don't have to think what steps you have to do to build this project.</p>
+<h2 id="adjustthefork">Adjust the fork</h2>
+<h3 id="adjustreadmemd">Adjust <a href="http://README.md">README.md</a></h3>
+<p>The first change should be to adjust the build badge in the <code>README.md</code> to link to your forked build.</p>
+<p>Let's do that in the browser, so you still don't have to clone the repo to you local machine.</p>
+<p>But first we have to grab the build badge link. Go to &quot;Settings&quot; and then to &quot;Badges&quot;. You will see some samples, pick the Sample Markdown code</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-settings-badge-markdown.png" alt="appveyor-settings-badge-markdown"></p>
+<p>Now head over to the GitHub browser tab and edit the <code>README.md</code> file.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-edit-readme.png" alt="github-edit-readme"></p>
+<p>In this editor paste the new build badge link. Also adjust the Docker Hub badge to point to your desired Docker Hub image name. After that scroll down and commit the changes.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-commit-readme-changes.png" alt="github-commit-readme-changes"></p>
+<p>Head back to AppVeyor and you will see your first build running.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-first-build-running.png" alt="appveyor-first-build-running"></p>
+<p>Isn't that fantastic? You just triggered a build from your browser. You can follow the build (it's a matrix build, we will have a closer look in the next blog post).</p>
+<p>After a while the build is green.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/Bildschirmfoto-2018-06-02-um-17.42.57.png" alt="Bildschirmfoto-2018-06-02-um-17.42.57"></p>
+<h3 id="adjustdeployps1">Adjust deploy.ps1</h3>
+<p>The second change in the forked repo is to adjust the Docker image name to deploy it to Docker Hub for when you start a GitHub release build.</p>
+<p>Head over to GitHub browser tab and edit the <code>deploy.ps1</code> script.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-edit-deploy-ps1.png" alt="github-edit-deploy-ps1"></p>
+<p>In line 8 you have to adjust the <code>$image</code> variable to fit your needs.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-commit-changes-deploy-ps1.png" alt="github-commit-changes-deploy-ps1"></p>
+<p>After that commit the changes, a second build will be triggered. But nothing more happens in the second build.</p>
+<h2 id="tellmeasecret">Tell me a secret</h2>
+<p>The <code>appveyor.yml</code> is configured to deploy the Docker image only during a release build. For such releases AppVeyor needs access to your Docker registry you want to push to. In our case it's the Docker Hub.</p>
+<p>This is done with secret environment variables. You can either use secrets in the <code>appveyor.yml</code> or just edit the environment variables in the AppVeyor browser tab. I'll show you the latter how to do it.</p>
+<p>Go to &quot;SETTINGS&quot; and click the &quot;Environment&quot; tab. We need to add two environment variables</p>
+<ul>
+<li>DOCKER_USER</li>
+<li>DOCKER_PASS</li>
+</ul>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-project-settings-environment.png" alt="appveyor-project-settings-environment"></p>
+<p>Then scroll down and <strong>click on &quot;Save&quot;</strong>. This is the second thing that could be improved in the UI. You often don't see this &quot;Save&quot; button.</p>
+<p>If you don't like to add your real Docker Hub account a good practise is to use another Docker Hub account for just the pushes and grant that account write access to only the Docker Hub images you want to.</p>
+<h2 id="releaseit">Release it!</h2>
+<p>Now, the build pipeline is set up in AppVeyor, as you have seen, the build and minimal tests were green. Now it's time to release the first Docker image.</p>
+<p>Go to your forked GitHub repo again. There is a link to the &quot;releases&quot;. Click on &quot;releases&quot;.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-go-to-releases.png" alt="github-go-to-releases"></p>
+<p>You have forked all the tags, but not the releases. Now let's &quot;Draft a new release&quot; to trigger a build.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-releases-draft-new-release.png" alt="github-releases-draft-new-release"></p>
+<p>Use for example &quot;2.0.0&quot; as new release and tag name, enter some useful description.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-draft-release-2.png" alt="github-draft-release-2"></p>
+<p>Then press &quot;Publish release&quot;. This also triggers a new build in AppVeyor, this time a tagged build.</p>
+<p>In AppVeyor you can see the tag name &quot;2.0.0&quot;<br>
+<img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-release-build.png" alt="appveyor-release-build"></p>
+<p>You now also can follow the build, but I'll explain it in more detail in the next blog post. After some minutes the build is completed and green.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/appveyor-release-build-finished-1.png" alt="appveyor-release-build-finished-1"></p>
+<p>Now, do we really have a Docker image pushed to Docker Hub? Let's check. Go back to your GitHub repo and check if the Docker Hub badge also works.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-dockerhub-badges.png" alt="github-dockerhub-badges"></p>
+<p>And yes, there it is. You have successfully published a Docker image from an application you don't really have to understand the language or how to setup the build steps for that.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/dockerhub-whoami.png" alt="dockerhub-whoami"></p>
+<p>That's the &quot;let me do it&quot; first approach. Now you have time to look at all the files. Start with the <code>appveyor.yml</code>, the YAML is the start of the build pipeline.</p>
+<p>Or start with the application code which is written in Golang.</p>
+<h1 id="tldrshareyouryaml">TL/DR: Share your YAML</h1>
+<p>In this blog post you have seen how important it is to share not only the code, but also the build pipeline. You have learned to watch out for YAML files. There are other CI services out there, but the pattern is almost the same. Look for <code>.travis.yml</code>, <code>.circleci/config.yml</code> and similar names.</p>
+<p>If you liked this blog post please share it with your friends. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> as well.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Ship happens. Secrets leaked to GitHub, what next?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I</p></div>]]></description><link>https://stefanscherer.github.io/ship-happens-secrets-leaked-to-github/</link><guid isPermaLink="false">5b1288ffd71f9600016d99e0</guid><category><![CDATA[GitHub]]></category><category><![CDATA[secrets]]></category><category><![CDATA[ubiquity]]></category><category><![CDATA[unify]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 13:15:26 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I use my mistake to talk about how to fix this and how to prevent it from happening in the future again.</p>
 <h1 id="thebadmistake">The bad mistake</h1>
 <p>Well, I edited some code of my flash script to flash Raspberry Pi SD cards. This tool can also inject configuration to boot your Pi without any manual interaction to a specified hostname, or add your WiFi settings so it can join your wireless network automatically.</p>
 <p>I pushed some code to a work-in-progress pull request when I saw my mistake on GitHub:</p>
@@ -1453,93 +1560,5 @@ entryPoint = &quot;https&quot;
 <h2 id="conclusion">Conclusion</h2>
 <p>What we have learned is that Træfɪk works pretty good on Windows. It helps us securing our websites with TLS certificates. In combination with Docker Compose you can add or remove new websites on the fly or even scale some services with the built-in load balancer of Træfɪk.</p>
 <p>Read more details in the <a href="https://docs.traefik.io">Træfɪk documentation</a> as I can give you only a short intro of its capabilities.</p>
-<p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Setup a Windows Docker CI with AppVeyor]]></title><description><![CDATA[<div class="kg-card-markdown"><p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to</p></div>]]></description><link>https://stefanscherer.github.io/setup-windows-docker-ci-appveyor/</link><guid isPermaLink="false">5986d4ec688a49000154096f</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[GitHub]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[CI]]></category><category><![CDATA[Docker-Compose]]></category><category><![CDATA[Docker-Swarm]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Fri, 10 Mar 2017 05:54:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>I love GitHub and all the services around it. It enables you to work from anywhere or <a href="https://stefanscherer.github.io/content/images/2016/02/boot2docker-ipad.jpg">any device</a> and still have your complete CI pipeline in your pocket. Every thing is done with a <code>git push</code>. You can add services like <a href="https://codeship.com">Codeship</a>, <a href="https://travis-ci.org">Travis</a>, <a href="https://circleci.com">Circle</a> and lots of others to build and test your code and even the pull requests you get from others.</p>
-<h2 id="butimonwindows">But I'm on Windows</h2>
-<p>To build applications for Windows there is a similar cloud based CI service, called <a href="https://www.appveyor.com">AppVeyor</a>.</p>
-<p>And it works pretty similar to the other well known services for Linux:</p>
-<ol>
-<li>Put a YAML file into your repo with the build, test and deploy steps</li>
-<li>Connect your repo to the cloud CI service</li>
-<li>From now on a <code>git push</code> will do a lot for you.</li>
-</ol>
-<p>Your CI pipeline is set up in a few clicks.</p>
-<h2 id="appveyoryml">appveyor.yml</h2>
-<p>Here is an example how such a YAML file looks like for AppVeyor. This is from a <a href="https://github.com/StefanScherer/win-getaddrinfo">small C/C++ project</a> I made long time ago during holiday without Visual Studio at hand. I just created that GitHub repo, added the <code>appveyor.yml</code> and voila - I got a compiled and statically linked <a href="https://github.com/StefanScherer/win-getaddrinfo/releases">Windows binary at GitHub releases</a>.</p>
-<pre><code class="language-yaml">version: 1.0.{build}
-configuration: Release
-platform: x64
-build:
-  project: myfavoriteproject.sln
-  verbosity: minimal
-test: off
-artifacts:
-- path: x64/Release/myfavoriteproject.exe
-  name: Release
-deploy:
-- provider: GitHub
-  auth_token:
-    secure: xxxxx
-</code></pre>
-<p>The build worker in AppVeyor is fully armed with <a href="https://www.appveyor.com/docs/installed-software/">lots of development tools</a>, so you can build projects for serveral languages like Node.js, .NET, Ruby, Python, Java ...</p>
-<h2 id="dockerbuild">Docker build</h2>
-<p>AppVeyor now has released a new build worker with Windows Server 2016 and <strong>Docker Enterprise Edition</strong> 17.03.0-ee-1 pre-installed. That instantly enables you to build, test and publish Windows Docker images in the same lightweight way.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/github_appveyor_docker.png" alt="Docker build with AppVeyor"></p>
-<p>All you have to do is to select the new build worker by adding <code>image: Visual Studio 2017</code> to your <code>appveyor.yml</code>. No more work to do to get a fully Windows Docker engine for your build.</p>
-<p>The following <code>appveyor.yml</code> gives you an idea how easy an automated Docker build for Windows can be:</p>
-<pre><code class="language-yaml">version: 1.0.{build}
-image: Visual Studio 2017
-
-environment:
-  DOCKER_USER:
-    secure: xxxxxxx
-  DOCKER_PASS:
-    secure: yyyyyyy
-install:
-  - docker version
-
-build_script:
-  - docker build -t me/myfavoriteapp .
-
-test_script:
-  - docker run me/myfavoriteapp
-
-deploy_script:
-  - docker login -u=&quot;$env:DOCKER_USER&quot; -p=&quot;$env:DOCKER_PASS&quot;
-  - docker push me/myfavoriteapp
-</code></pre>
-<p>This is a very simple example. For the tests you can think of some more sophisticated tests like using Pester, Serverspec or Cucumber. For the deploy steps you can decide when to run these, eg. only for a tagged build to push a new release.</p>
-<h2 id="dockercompose">Docker Compose</h2>
-<p>You are not limited to build a single Docker image and run one container. Your build agent is a full Windows Docker host, so you also can install Docker Compose and spin up a multi-container application. The nice thing about AppVeyor is that the builders also have <a href="https://chocolatey.org">Chocolatey</a> preinstalled. So you only have to add a short single command to your <code>appveyor.yml</code> to download and install Docker Compose.</p>
-<pre><code class="language-powershell">choco install docker-compose
-</code></pre>
-<h2 id="dockerswarm">Docker Swarm</h2>
-<p>You also might turn the Docker engine into a single node Docker swarm manager to work with the new commands <code>docker stack deploy</code>. You can create a Docker Swarm with this command</p>
-<pre><code class="language-powershell">docker swarm init
-</code></pre>
-<h2 id="addprojecttobuild">Add project to build</h2>
-<p>Adding AppVeyor to one of your GitHub repos is very simple. Sign in to AppVeyor with your GitHub account and select your project to add.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-add-project.png" alt="AppVeyor add project"></p>
-<p>Now you can also check the pull requests you or others create on GitHub.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/github-pr-green.png" alt="GitHub pull request checks green"></p>
-<p>You can click on the green checkmark to view the console output of the build.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-build-green.png" alt="AppVeyor pull request build green"></p>
-<h2 id="tellmeasecret">Tell me a secret</h2>
-<p>To push to the Docker Hub we need to configure some secrets in AppVeyor. After you are logged in to AppVeyor you can select the &quot;Encrypt data&quot; menu item from the drop down menu or use the link <a href="https://ci.appveyor.com/tools/encrypt">https://ci.appveyor.com/tools/encrypt</a></p>
-<p>There you can enter your cleartext secret and it creates the encrypted configuration data you can use in your <code>appveyor.yml</code>.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-encrypt-data.png" alt="Appveyor encrypt configuration data"></p>
-<p>These secret variables don't get injected in pull request builds, so nobody can fork your repo and send you an <code>ls env:</code> pull request to expose that variables in the output.</p>
-<h2 id="immutablebuilds">Immutable builds</h2>
-<p>One of the biggest advantages over self-hosting a CI pipeline is that you get immutable builds. You just do not have to care about the dirt and dust your build left on the build worker. AppVeyor - like all other cloud based CI systems - just throws away the build worker and you get another empty one for the next build.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/02/appveyor-docker-build.png" alt="AppVeyor immutable build"></p>
-<p>Even if you build Windows Docker images you don't have to cleanup your Docker host. You can concentrate on your code, the build and your tests, and forget about maintain your CI workers.</p>
-<h2 id="examples">Examples</h2>
-<p>I have some GitHub repos that already use AppVeyor to build Windows Docker images, so you can have a look how my setup works:</p>
-<ul>
-<li><a href="https://github.com/StefanScherer/dockerfiles-windows">github.com/StefanScherer/dockerfiles-windows</a></li>
-<li><a href="https://github.com/StefanScherer/winspector">github.com/StefanScherer/winspector</a></li>
-</ul>
-<h2 id="conclusion">Conclusion</h2>
-<p>AppVeyor is my #1 when it comes to automated Windows builds. With the Docker support built-in it becomes even more interesting.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>
