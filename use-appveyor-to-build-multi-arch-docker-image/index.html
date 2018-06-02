@@ -24,7 +24,7 @@
     <meta property="og:description" content="After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature. In my previous blog post I showed how you can fork the example repo and build" />
     <meta property="og:url" content="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/" />
     <meta property="article:published_time" content="2018-06-02T18:13:19.000Z" />
-    <meta property="article:modified_time" content="2018-06-02T18:23:04.000Z" />
+    <meta property="article:modified_time" content="2018-06-02T18:34:14.000Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Docker Hub" />
     <meta property="article:tag" content="AppVeyor" />
@@ -68,7 +68,7 @@
     "headline": "How to use AppVeyor to build a multi-arch Docker image for Linux and Windows",
     "url": "https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/",
     "datePublished": "2018-06-02T18:13:19.000Z",
-    "dateModified": "2018-06-02T18:23:04.000Z",
+    "dateModified": "2018-06-02T18:34:14.000Z",
     "keywords": "Docker, Docker Hub, AppVeyor, multi-arch",
     "description": "After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature. In my previous blog post I showed how you can fork the example repo and build",
     "mainEntityOfPage": {
@@ -352,6 +352,7 @@ Image: stefanscherer/whoami
 <p>Now try this image on any platform with</p>
 <pre><code>docker run -d -p 8080:8080 stefanscherer/whoami
 </code></pre>
+<p>It will work on your Raspberry Pi, running <a href="https://blog.hypriot.com">HypriotOS</a> or manually installed Docker. It will work on any Linux cloud machine, it will work in Docker for Mac or Docker 4 Windows.</p>
 <p>Then access the published port 8080 with a browser. You will see that it shows the container name and the OS and CPU architecture name of the compiled binary.</p>
 <p>If you have a use-case for such a multi-arch / multi-os image and want to provide it to your community, <a href="https://github.com/StefanScherer/whoami">fork my GitHub repo</a> and also <a href="https://stefanscherer.github.io/fork-appveyor-buildpipeline/">fork the AppVeyor build pipeline</a>. It's really easy to get started.</p>
 <p>I hope you enjoyed this blog post and I would be happy if you share it with your friends. I'm <a href="https://twitter.com/stefscherer">@stefscherer</a> on Twitter.</p>
