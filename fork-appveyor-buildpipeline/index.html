@@ -24,7 +24,7 @@
     <meta property="og:description" content="Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don&#x27;t have locally. Of" />
     <meta property="og:url" content="https://stefanscherer.github.io/fork-appveyor-buildpipeline/" />
     <meta property="article:published_time" content="2018-06-02T16:45:00.000Z" />
-    <meta property="article:modified_time" content="2018-06-02T16:59:45.000Z" />
+    <meta property="article:modified_time" content="2018-06-02T18:28:09.000Z" />
     <meta property="article:tag" content="AppVeyor" />
     <meta property="article:tag" content="GitHub" />
     <meta property="article:tag" content="Docker Hub" />
@@ -68,7 +68,7 @@
     "headline": "How to build a forked GitHub repo: Spot the YAML",
     "url": "https://stefanscherer.github.io/fork-appveyor-buildpipeline/",
     "datePublished": "2018-06-02T16:45:00.000Z",
-    "dateModified": "2018-06-02T16:59:45.000Z",
+    "dateModified": "2018-06-02T18:28:09.000Z",
     "keywords": "AppVeyor, GitHub, Docker Hub, Docker",
     "description": "Maybe you find an interesting project on GitHub and want to build it your own. How can you do that? Maybe the project is written in a programming language that you are not familiar with. Or it uses a lot of tools to build that you don&#x27;t have locally. Of",
     "mainEntityOfPage": {
@@ -193,7 +193,7 @@ Now you can see the build status of my repo. This is not your fork yet, but we n
 <p><img src="../content/images/2018/06/github-commit-readme-changes.png" alt="github-commit-readme-changes"></p>
 <p>Head back to AppVeyor and you will see your first build running.</p>
 <p><img src="../content/images/2018/06/appveyor-first-build-running.png" alt="appveyor-first-build-running"></p>
-<p>Isn't that fantastic? You just triggered a build from your browser. You can follow the build (it's a matrix build, we will have a closer look in the next blog post).</p>
+<p>Isn't that fantastic? You just triggered a build from your browser. You can follow the build (it's a matrix build, we will have a closer look <a href="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/">in the next blog post</a>).</p>
 <p>After a while the build is green.</p>
 <p><img src="../content/images/2018/06/Bildschirmfoto-2018-06-02-um-17.42.57.png" alt="Bildschirmfoto-2018-06-02-um-17.42.57"></p>
 <h3 id="adjustdeployps1">Adjust deploy.ps1</h3>
@@ -225,7 +225,7 @@ Now you can see the build status of my repo. This is not your fork yet, but we n
 <p>Then press &quot;Publish release&quot;. This also triggers a new build in AppVeyor, this time a tagged build.</p>
 <p>In AppVeyor you can see the tag name &quot;2.0.0&quot;<br>
 <img src="../content/images/2018/06/appveyor-release-build.png" alt="appveyor-release-build"></p>
-<p>You now also can follow the build, but I'll explain it in more detail in the next blog post. After some minutes the build is completed and green.</p>
+<p>You now also can follow the build, but I'll explain it in more detail <a href="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/">in the next blog post</a>. After some minutes the build is completed and green.</p>
 <p><img src="../content/images/2018/06/appveyor-release-build-finished-1.png" alt="appveyor-release-build-finished-1"></p>
 <p>Now, do we really have a Docker image pushed to Docker Hub? Let's check. Go back to your GitHub repo and check if the Docker Hub badge also works.</p>
 <p><img src="../content/images/2018/06/github-dockerhub-badges.png" alt="github-dockerhub-badges"></p>
