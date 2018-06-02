@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>How to use AppVeyor to build a multi-arch Docker image for Linux and Windows</title>
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/amp/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to use AppVeyor to build a multi-arch Docker image for Linux and Windows" />
+    <meta property="og:description" content="After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature. In my previous blog post I showed how you can fork the example repo and build" />
+    <meta property="og:url" content="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/" />
+    <meta property="article:published_time" content="2018-06-02T18:13:19.000Z" />
+    <meta property="article:modified_time" content="2018-06-02T18:23:04.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Docker Hub" />
+    <meta property="article:tag" content="AppVeyor" />
+    <meta property="article:tag" content="multi-arch" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to use AppVeyor to build a multi-arch Docker image for Linux and Windows" />
+    <meta name="twitter:description" content="After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature. In my previous blog post I showed how you can fork the example repo and build" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Docker Hub, AppVeyor, multi-arch" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "How to use AppVeyor to build a multi-arch Docker image for Linux and Windows",
+    "url": "https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/",
+    "datePublished": "2018-06-02T18:13:19.000Z",
+    "dateModified": "2018-06-02T18:23:04.000Z",
+    "keywords": "Docker, Docker Hub, AppVeyor, multi-arch",
+    "description": "After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature. In my previous blog post I showed how you can fork the example repo and build",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template tag-docker tag-docker-hub tag-appveyor tag-multi-arch nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-docker-hub tag-appveyor tag-multi-arch">
+
+        <header class="post-header">
+            <h1 class="post-title">How to use AppVeyor to build a multi-arch Docker image for Linux and Windows</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2018-06-02">02 June 2018</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/docker-hub/">Docker Hub</a>, <a href="../tag/appveyor/">AppVeyor</a>, <a href="../tag/multi-arch/">multi-arch</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature.</p>
+<p>In <a href="https://stefanscherer.github.io/fork-appveyor-buildpipeline/">my previous blog post</a> I showed how you can fork the example repo and build it your own, adjust it and learn all the details of the application, the Dockerfiles and the build steps.</p>
+<p>This blog post shows the details about a Linux and Windows builds and how you can combine that to a multi-arch Docker image.</p>
+<h1 id="whatisappveyor">What is AppVeyor?</h1>
+<p>But first we have to start with AppVeyor. The GitHub market place shows a lot of offerings for <a href="https://github.com/marketplace/category/continuous-integration">continuous integration</a>. This is what you normally want to have automatic tests for each Git commit or pull request you receive.</p>
+<p>AppVeyor is my #1 place to go if I want Windows builds. I use it for several years now, you can do your .NET builds, native C/C++ builds and even Windows Containers with it. It is really easy to attach it to your GitHub repo with a YAML file.</p>
+<h1 id="whoami">Whoami</h1>
+<p>After the announcement for the new Linux build agents I looked into my sample <a href="https://github.com/StefanScherer/whoami">whoami repo</a> that builds a multi-arch Docker image that works both for Linux and Windows. I was curious to find out how the Linux builds work on AppVeyor. Because then I can just use one CI provider instead of two different.</p>
+<p>The CI pipeline before that evening looked like this.</p>
+<p><img src="../content/images/2018/06/pipeline-old.png" alt="pipeline-old"></p>
+<p>I used <a href="https://travis-ci.org">Travis CI</a> for all the Linux builds. There was a build matrix to build Linux Docker images for three different CPU architectures: x64, arm and arm64.</p>
+<p>For the Windows builds I already used <a href="https://www.appveyor.com">AppVeyor</a> as they provider Docker builds as well.</p>
+<p>The difficult part was to synchronise all builds to run the final step to create a Docker manifest that combines all Docker images to just one manifest.</p>
+<h1 id="twoyamls">Two YAMLs</h1>
+<p>I opened the two YAML files that describe the CI pipeline for each service:</p>
+<ul>
+<li><code>appveyor.yml</code> for Windows on the left side</li>
+<li><code>.travis.yml</code> for Linux on the right side</li>
+</ul>
+<p><img src="../content/images/2018/06/migrate-travis-to-appveyor-01.png" alt="migrate-travis-to-appveyor-01"></p>
+<p>The YAML have a similar structure. There are three steps</p>
+<ul>
+<li>build</li>
+<li>test</li>
+<li>deploy (if it's a tagged release build)</li>
+</ul>
+<p>And the Travis build has a build matrix for three variants.</p>
+<p>I started to draft the updated <code>appveyor.yml</code> how it could look like when the Linux build gets migrated from the <code>.travis.yml</code> into it.</p>
+<h1 id="powershellandbashmixture">PowerShell and BASH mixture</h1>
+<p>The first idea was to just re-use the Windows PowerShell scripts and the Linux BASH scripts and call in from one YAML.</p>
+<p><img src="../content/images/2018/06/migrate-travis-to-appveyor-ps-and-sh.png" alt="migrate-travis-to-appveyor-ps-and-sh"></p>
+<p>Hm, now the <code>appveyor.yml</code> looked messy. You can tell with <code>ps:</code> that you want to run PowerShell, with <code>sh:</code> you can choose BASH.</p>
+<p>With the environment variable <code>APPVEYOR_YML_DISABLE_PS_LINUX: true</code> you can turn off PowerShell support for Linux.</p>
+<p>But it really looked ugly.</p>
+<h1 id="powershellonlinuxreally">PowerShell on Linux, really?</h1>
+<p>Microsoft has announced PowerShell support on Linux months ago. But I only smiled upto now. What should I do with just another script language on Linux, I thought? It only made sense when you come from Windows and don't want to learn BASH.</p>
+<p>But looking at this mixed YAML mixture I thought: &quot;Hey, let's try PowerShell on Linux here&quot; to have a platform independent script.</p>
+<p>I just edited the YAML file how it should look like.</p>
+<p><img src="../content/images/2018/06/migrate-travis-to-appveyor-only-ps.png" alt="migrate-travis-to-appveyor-only-ps"></p>
+<p>Much cleaner. Oh, what about these Unix slashes? But cool, they really work in PowerShell, even on Windows.</p>
+<p>The only tricky part was integrating the Travis build matrix into the AppVeyor build matrix. My use-case is running one Windows build, but three Linux builds configured by an environment variable.</p>
+<p>With some excludes (thanks to AppVeyor support) the YAML now looks like this</p>
+<p><img src="../content/images/2018/06/migrate-travsi-to-appveyor-excludes.png" alt="migrate-travsi-to-appveyor-excludes"></p>
+<p>And hey, the build matrix in AppVeyor looked promising.</p>
+<ul>
+<li>Windows, amd64</li>
+<li>Linux, arm</li>
+<li>Linux, arm64</li>
+<li>Linux, amd64</li>
+</ul>
+<p><img src="../content/images/2018/06/appveyor-matrix-build.png" alt="appveyor-matrix-build"></p>
+<p>The updated AppVeyor only CI pipeline now looks like this.</p>
+<p><img src="../content/images/2018/06/appveyor-pipeline.png" alt="appveyor-pipeline"></p>
+<p>The three Windows images are done in a different way. Once there are different Docker build agents to support 1709 and 1803 images I can move that to the build matrix as well.</p>
+<h1 id="appveyoryml">appveyor.yml</h1>
+<p>This is the <code>appveyor.yml</code> to define a matrix build for three Linux builds and one Windows build.</p>
+<pre><code>version: 1.0.{build}
+image:
+- Visual Studio 2017
+- Ubuntu
+
+environment:
+  matrix:
+    - ARCH: arm
+    - ARCH: arm64
+    - ARCH: amd64
+
+matrix:
+  exclude:
+    - image: Visual Studio 2017
+      ARCH: arm
+    - image: Visual Studio 2017
+      ARCH: arm64
+
+build_script:
+  - ps: ./build.ps1
+
+test_script:
+  - ps: ./test.ps1
+
+deploy_script:
+  - ps: ./deploy.ps1
+</code></pre>
+<h1 id="buildps1">build.ps1</h1>
+<p>The platform independent build script has the <code>docker build</code> command. As the <code>Dockerfile</code> differs for Windows I have to choose a different name as well add the build argument for the Linux build. But with the <code>$isWindows</code> variable you can easily check whether this script runs in the Windows agent or the Linux agent.</p>
+<pre><code>$ErrorActionPreference = 'Stop';
+Write-Host Starting build
+
+if ($isWindows) {
+  docker build --pull -t whoami -f Dockerfile.windows .
+} else {
+  docker build -t whoami --build-arg &quot;arch=$env:ARCH&quot; .
+}
+
+docker images
+</code></pre>
+<h1 id="testps1">test.ps1</h1>
+<p>The platform independent test script skips the ARM images, I haven't tested QEMU in the Linux builder that could help to even run the ARM images in the x64 Linux build agent.</p>
+<p>The test starts the container. We could add a Invoke-WebRequest call to check if the web server responds with 200 OK. But this test is enough for now.</p>
+<pre><code>Write-Host Starting test
+
+if ($env:ARCH -ne &quot;amd64&quot;) {
+  Write-Host &quot;Arch $env:ARCH detected. Skip testing.&quot;
+  exit 0
+}
+
+$ErrorActionPreference = 'SilentlyContinue';
+docker kill whoamitest
+docker rm -f whoamitest
+
+$ErrorActionPreference = 'Stop';
+Write-Host Starting container
+docker run --name whoamitest -p 8080:8080 -d whoami
+Start-Sleep 10
+
+docker logs whoamitest
+
+$ErrorActionPreference = 'SilentlyContinue';
+docker kill whoamitest
+docker rm -f whoamitest
+</code></pre>
+<h1 id="deployps1">deploy.ps1</h1>
+<p>The platform independent deploy script first pushes each platform specific image from each build agent.</p>
+<p>The last build agent in the matrix, it's the Linux amd64 variant, then creates the manifest list and also pushes the manifest list to Docker Hub.</p>
+<p>It first stops if there is no tagged build. So only GitHub releases will be pushed to Docker Hub.</p>
+<pre><code>$ErrorActionPreference = 'Stop';
+
+if (! (Test-Path Env:\APPVEYOR_REPO_TAG_NAME)) {
+  Write-Host &quot;No version tag detected. Skip publishing.&quot;
+  exit 0
+}
+</code></pre>
+<p>Then we define the Docker image name for the final Docker image (the manifest list, to be exact):</p>
+<pre><code>$image = &quot;stefanscherer/whoami&quot;
+
+Write-Host Starting deploy
+</code></pre>
+<h1 id="experimentalbatteriesincluded">(Experimental) batteries included</h1>
+<p>To create the manifest list I use the Docker CLI to avoid downloading extra tools. But we have to enable experimental features in Docker CLI first:</p>
+<pre><code>if (!(Test-Path ~/.docker)) { mkdir ~/.docker }
+'{ &quot;experimental&quot;: &quot;enabled&quot; }' | Out-File ~/.docker/config.json -Encoding Ascii
+</code></pre>
+<p>I showed these experimental feature <a href="https://www.slideshare.net/stefscherer/azure-meetup-stuttgart-multiarch-docker-images">in several talks</a>. But here is a small overview. In addition to <code>docker push</code> - or <code>docker image push</code> there are two new commands: <code>docker manifest create</code> and <code>docker manifest push</code>:</p>
+<p><img src="../content/images/2018/06/docker-manifest-create-push.png" alt="docker-manifest-create-push"></p>
+<p>For the next steps we need to be logged in with the Docker Hub account.</p>
+<pre><code>docker login -u=&quot;$env:DOCKER_USER&quot; -p=&quot;$env:DOCKER_PASS&quot;
+</code></pre>
+<h1 id="pushtheplatformspecificimage">Push the platform specific image</h1>
+<p>Now the script tags and pushes the platform specific Docker image with a correpsonding tag name.</p>
+<pre><code>$os = If ($isWindows) {&quot;windows&quot;} Else {&quot;linux&quot;}
+docker tag whoami &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME&quot;
+docker push &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME&quot;
+</code></pre>
+<h1 id="windowsbuildrebasedockerimage">Windows build: rebase-docker-image</h1>
+<p>For the Windows build I additionally run my <code>rebase-docker-image</code> tool. This is a hacker tool to replace the Windows base image from a given image with another version of the Windows base image. This works only in a few cases, but the whoami Golang binary and Dockerfile is safe for such hacks as this app really doesn't depend on the specific underlying base image. You can read more about that tool in my blog post <a href="https://stefanscherer.github.io/poc-build-images-for-1709-without-1709/">PoC: How to build images for 1709 without 1709</a>.</p>
+<p>We create both a 1709 and 1803 variant as long as there is no AppVeyor build agent that is able to produce 'native' Docker builds for that.</p>
+<pre><code>if ($isWindows) {
+  # Windows
+  Write-Host &quot;Rebasing image to produce 1709 variant&quot;
+  npm install -g rebase-docker-image
+  rebase-docker-image `
+    &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+    -t &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME-1709&quot; `
+    -b microsoft/nanoserver:1709
+
+  Write-Host &quot;Rebasing image to produce 1803 variant&quot;
+  npm install -g rebase-docker-image
+  rebase-docker-image `
+    &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+    -t &quot;$($image):$os-$env:ARCH-$env:APPVEYOR_REPO_TAG_NAME-1803&quot; `
+    -b microsoft/nanoserver:1803
+
+}
+</code></pre>
+<h1 id="linuxbuildcreateandpushmanifestlist">Linux build: Create and push manifest list</h1>
+<p>The Linux amd64 build agent runs as the last one in the matrix build, so it's easy to create the manifest list. All platform specific Docker images are already pushed to Docker Hub.</p>
+<p>We run <code>docker manifest create</code> and then <code>docker manifest push</code> for the target image name.</p>
+<pre><code>else {
+  # Linux
+  if ($env:ARCH -eq &quot;amd64&quot;) {
+    # The last in the build matrix
+    docker -D manifest create &quot;$($image):$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):linux-amd64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):linux-arm-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):linux-arm64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME-1709&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME-1803&quot;
+    docker manifest annotate &quot;$($image):$env:APPVEYOR_REPO_TAG_NAME&quot; &quot;$($image):linux-arm-$env:APPVEYOR_REPO_TAG_NAME&quot; --os linux --arch arm --variant v6
+    docker manifest annotate &quot;$($image):$env:APPVEYOR_REPO_TAG_NAME&quot; &quot;$($image):linux-arm64-$env:APPVEYOR_REPO_TAG_NAME&quot; --os linux --arch arm64 --variant v8
+    docker manifest push &quot;$($image):$env:APPVEYOR_REPO_TAG_NAME&quot;
+
+    Write-Host &quot;Pushing manifest $($image):latest&quot;
+    docker -D manifest create &quot;$($image):latest&quot; `
+      &quot;$($image):linux-amd64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):linux-arm-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):linux-arm64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME-1709&quot; `
+      &quot;$($image):windows-amd64-$env:APPVEYOR_REPO_TAG_NAME-1803&quot;
+    docker manifest annotate &quot;$($image):latest&quot; &quot;$($image):linux-arm-$env:APPVEYOR_REPO_TAG_NAME&quot; --os linux --arch arm --variant v6
+    docker manifest annotate &quot;$($image):latest&quot; &quot;$($image):linux-arm64-$env:APPVEYOR_REPO_TAG_NAME&quot; --os linux --arch arm64 --variant v8
+    docker manifest push &quot;$($image):latest&quot;
+  }
+}
+</code></pre>
+<h1 id="checktheresultingimage">Check the resulting image</h1>
+<p>With the Docker image <code>mplatform/mquery</code> from Docker Captain Phil Estes you can inspect such multi-arch images.</p>
+<pre><code>$ docker run --rm mplatform/mquery stefanscherer/whoami
+Image: stefanscherer/whoami
+ * Manifest List: Yes
+ * Supported platforms:
+   - linux/amd64
+   - linux/arm/v6
+   - linux/arm64/v8
+   - windows/amd64:10.0.14393.2248
+   - windows/amd64:10.0.16299.431
+   - windows/amd64:10.0.17134.48
+</code></pre>
+<p>As you can see this image provides three Linux and three Windows variants. Windows can choose the best fit to the Windows kernel version to avoid running Windows Containers in Hyper-V mode.</p>
+<p>Now try this image on any platform with</p>
+<pre><code>docker run -d -p 8080:8080 stefanscherer/whoami
+</code></pre>
+<p>Then access the published port 8080 with a browser. You will see that it shows the container name and the OS and CPU architecture name of the compiled binary.</p>
+<p>If you have a use-case for such a multi-arch / multi-os image and want to provide it to your community, <a href="https://github.com/StefanScherer/whoami">fork my GitHub repo</a> and also <a href="https://stefanscherer.github.io/fork-appveyor-buildpipeline/">fork the AppVeyor build pipeline</a>. It's really easy to get started.</p>
+<p>I hope you enjoyed this blog post and I would be happy if you share it with your friends. I'm <a href="https://twitter.com/stefscherer">@stefscherer</a> on Twitter.</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20use%20AppVeyor%20to%20build%20a%20multi-arch%20Docker%20image%20for%20Linux%20and%20Windows&amp;url=https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../fork-appveyor-buildpipeline/">
+        <section class="post">
+            <h2>How to build a forked GitHub repo: Spot the YAML</h2>
+            <p>Maybe you find an interesting project on GitHub and want to build it your own. How can you do&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
+
+</body>
+</html>
