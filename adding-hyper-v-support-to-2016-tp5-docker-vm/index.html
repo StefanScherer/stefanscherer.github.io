@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>Adding Hyper-V support to 2016 TP5 Docker VM</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="Adding Hyper-V support to 2016 TP5 Docker VM">
-    <meta property="og:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine. Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond">
-    <meta property="og:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/">
-    <meta property="article:published_time" content="2016-08-04T19:59:37.000Z">
-    <meta property="article:modified_time" content="2016-08-04T20:31:16.000Z">
-    <meta property="article:tag" content="Packer">
-    <meta property="article:tag" content="Vagrant">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Windows">
-    <meta property="article:tag" content="Hyper-V">
-    <meta property="article:tag" content="DockerCon">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Adding Hyper-V support to 2016 TP5 Docker VM" />
+    <meta property="og:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine. Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond" />
+    <meta property="og:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    <meta property="article:published_time" content="2016-08-04T19:59:37.000Z" />
+    <meta property="article:modified_time" content="2016-08-04T20:31:16.000Z" />
+    <meta property="article:tag" content="Packer" />
+    <meta property="article:tag" content="Vagrant" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Windows" />
+    <meta property="article:tag" content="Hyper-V" />
+    <meta property="article:tag" content="DockerCon" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Adding Hyper-V support to 2016 TP5 Docker VM">
-    <meta name="twitter:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine. Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="Packer, Vagrant, Docker, Windows, Hyper-V, DockerCon">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Adding Hyper-V support to 2016 TP5 Docker VM" />
+    <meta name="twitter:description" content="Back in June I have attended the DockerCon in Seattle. Beside lots of new features in Docker 1.12 we heard about Windows Server and Docker and upcoming features in the Windows Docker engine. Another highlight for me after the conference was a visit at the Microsoft Campus in Redmond" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Packer, Vagrant, Docker, Windows, Hyper-V, DockerCon" />
     
     <script type="application/ld+json">
 {
@@ -80,15 +80,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-packer tag-vagrant tag-docker tag-windows tag-hyper-v tag-dockercon nav-closed">
 
@@ -103,7 +103,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -161,33 +161,33 @@ vagrant up
 <li>How to login into the VM</li>
 </ul>
 <pre><code class="language-json">    {
-      "vm_name":"WindowsServer2016TP5Docker",
-      "type": "hyperv-iso",
-      "disk_size": 41440,
-      "boot_wait": "0s",
-      "headless": false,
-      "guest_additions_mode":"disable",
-      "iso_url": "{{user `iso_url`}}",
-      "iso_checksum_type": "{{user `iso_checksum_type`}}",
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "floppy_files": [
-        "./answer_files/2016/Autounattend.xml",
-        "./floppy/WindowsPowershell.lnk",
-        "./floppy/PinTo10.exe",
-        "./scripts/disable-winrm.ps1",
-        "./scripts/docker/enable-winrm.ps1",
-        "./scripts/microsoft-updates.bat",
-        "./scripts/win-updates.ps1"
+      &quot;vm_name&quot;:&quot;WindowsServer2016TP5Docker&quot;,
+      &quot;type&quot;: &quot;hyperv-iso&quot;,
+      &quot;disk_size&quot;: 41440,
+      &quot;boot_wait&quot;: &quot;0s&quot;,
+      &quot;headless&quot;: false,
+      &quot;guest_additions_mode&quot;:&quot;disable&quot;,
+      &quot;iso_url&quot;: &quot;{{user `iso_url`}}&quot;,
+      &quot;iso_checksum_type&quot;: &quot;{{user `iso_checksum_type`}}&quot;,
+      &quot;iso_checksum&quot;: &quot;{{user `iso_checksum`}}&quot;,
+      &quot;floppy_files&quot;: [
+        &quot;./answer_files/2016/Autounattend.xml&quot;,
+        &quot;./floppy/WindowsPowershell.lnk&quot;,
+        &quot;./floppy/PinTo10.exe&quot;,
+        &quot;./scripts/disable-winrm.ps1&quot;,
+        &quot;./scripts/docker/enable-winrm.ps1&quot;,
+        &quot;./scripts/microsoft-updates.bat&quot;,
+        &quot;./scripts/win-updates.ps1&quot;
       ],
-      "communicator":"winrm",
-      "winrm_username": "vagrant",
-      "winrm_password": "vagrant",
-      "winrm_timeout" : "4h",
-      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
-      "ram_size_mb": 2048,
-      "cpu": 2,
-      "switch_name":"{{user `hyperv_switchname`}}",
-      "enable_secure_boot":true
+      &quot;communicator&quot;:&quot;winrm&quot;,
+      &quot;winrm_username&quot;: &quot;vagrant&quot;,
+      &quot;winrm_password&quot;: &quot;vagrant&quot;,
+      &quot;winrm_timeout&quot; : &quot;4h&quot;,
+      &quot;shutdown_command&quot;: &quot;shutdown /s /t 10 /f /d p:4:1 /c \&quot;Packer Shutdown\&quot;&quot;,
+      &quot;ram_size_mb&quot;: 2048,
+      &quot;cpu&quot;: 2,
+      &quot;switch_name&quot;:&quot;{{user `hyperv_switchname`}}&quot;,
+      &quot;enable_secure_boot&quot;:true
     },
 </code></pre>
 <p>Packer can also download ISO files from a download link to make automation very easy.</p>
@@ -228,7 +228,7 @@ vagrant up --provider virtualbox
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -244,13 +244,16 @@ vagrant up --provider virtualbox
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Adding%20Hyper-V%20support%20to%202016%20TP5%20Docker%20VM&amp;url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Adding%20Hyper-V%20support%20to%202016%20TP5%20Docker%20VM&amp;url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/adding-hyper-v-support-to-2016-tp5-docker-vm/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -286,13 +289,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../run-linux-and-windows-containers-on-windows-10/">
         <section class="post">
             <h2>Run Linux and Windows Containers on Windows 10</h2>
-            <p>At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work…</p>
+            <p>At DockerCon 2016 in Seattle Docker announced the public beta of Docker for Windows. With this you can work&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../how-to-build-nodejs-nanoserver-image/">
         <section class="post">
             <h2>How to build a Node.js Nano Server Docker base image</h2>
-            <p>Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to…</p>
+            <p>Beginning with Windows 10 Insider 14342 you can enable the new Containers feature in Windows. This allows you to&hellip;</p>
         </section>
     </a>
 </aside>
@@ -300,7 +303,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -309,8 +312,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[unify - Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>unify - Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 02 Jun 2018 13:23:49 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/tag/unify/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Ship happens. Secrets leaked to GitHub, what next?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I</p></div>]]></description><link>https://stefanscherer.github.io/ship-happens-secrets-leaked-to-github/</link><guid isPermaLink="false">5b1288ffd71f9600016d99e0</guid><category><![CDATA[GitHub]]></category><category><![CDATA[secrets]]></category><category><![CDATA[ubiquity]]></category><category><![CDATA[unify]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 13:15:26 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I use my mistake to talk about how to fix this and how to prevent it from happening in the future again.</p>
+<h1 id="thebadmistake">The bad mistake</h1>
+<p>Well, I edited some code of my flash script to flash Raspberry Pi SD cards. This tool can also inject configuration to boot your Pi without any manual interaction to a specified hostname, or add your WiFi settings so it can join your wireless network automatically.</p>
+<p>I pushed some code to a work-in-progress pull request when I saw my mistake on GitHub:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/my-pull-request.png" alt="OMG, my pull request shows my WiFi PSK"></p>
+<p>WTF, how did I ... ?</p>
+<p>Well, for convenience reasons I kept a configuration file in the repo to easily flash a new SD card image with WiFi settings. And I can't really remember, but I eventually typed <code>git add .</code> and <code>git push</code> some minutes ago without recognising that this was a really, really bad idea.</p>
+<h1 id="panicwhatnext">Panic, what next?</h1>
+<p>I immediatelly went to my Ubiquity Cloud controller and changed the Wireless Network Security Key.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/unify2.png" alt="Unify Wireless Network settings"></p>
+<p>But that was the next mistake. OK, I've changed the security key. But after a moment I realized that I also have some unattended boxes lying around in my house that use the old key to connect to my WiFi. My AirPort Express boxes for example are connected wirelessly.</p>
+<h2 id="calmdownthinkandorganize">Calm down, think, and organize</h2>
+<p>OK, changing the Security Key as first step is probably not the best idea. I don't want to run to each box with a patch cable to reconfigure it. Instead I've changed the key back to the old, compromised one and reconfigured all my wireless devices that I can reach through WiFi.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport1.png" alt="AirPort devices"></p>
+<h2 id="reconfigurewirelessdevicesfirst">Reconfigure wireless devices first</h2>
+<p>The devices with the dotted lines are connected through WiFi. Edit the wireless network password with the AirPort app on your Mac.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport2.png" alt="Change AirPort wireless network password"></p>
+<p>After that change they will drop out of WiFi as they now have the new, but not actually working password.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport-unreachable.png" alt="AirPort devices unreachable"></p>
+<p>Repeat that for all devices and think of other wireless devices that you can update without climbing up ladders or other hidden places.</p>
+<h2 id="changeyourwifisecuritykey">Change your WiFi security key</h2>
+<p>After that I changed the wireless security key in the Unify cloud controller. Save the new WiFi key in your password manager, I use 1Password</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/uniqif-change-security-key2.png" alt="Change wireless security key in Unify cloud controller"></p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/1password-1.png" alt="Update key in 1Password password manager"></p>
+<p>After reconnecting to the new and now secure WiFi with the updated key I thought of the next steps. OK, the whole family has to update their smartphones and tables to connect to the WiFi again. That is managable. Now I'm coming to the next phase.</p>
+<h1 id="cleaningup">Cleaning up</h1>
+<p>The next steps was to clean up the pull request to get rid of the accidentally added files. You might think when you are quick nobody has seen your change and you can skip changing your WiFi secret at all. I'll prove you wrong in the next few minutes.</p>
+<p>First I commented on my mistake to laugh at it, that's just relieving.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-pr-leak.png" alt="Comment your mistake on GitHub"></p>
+<h2 id="removefilesremovecommits">Remove files, remove commits</h2>
+<p>Now it's time to clean up the pull request branch and remove the unwanted files. We could just do <code>git rm wifi.yml</code>, but this will be added as a new commit to Git. Git has a history of each commit. I also want to get rid of these old commits.</p>
+<p>These were my steps to cleanup the pull request branch.</p>
+<p>I first squashed the pull request to one commit.</p>
+<pre><code>git rebase -i $(git merge-base $(git rev-parse --abbrev-ref HEAD) master)
+</code></pre>
+<p>Then in the editor just <code>pick</code> the first commit and change all other commits to <code>squash</code>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-squash.png" alt="git squash"></p>
+<p>Now I have only one commit. This commit can be easily undone with</p>
+<pre><code>git reset HEAD~1
+</code></pre>
+<p>Then add your secret files to the <code>.gitignore</code> file and add everything and commit it again.</p>
+<p>Now your local pull request branch has only the files wanted in one single commit. But GitHub still stores the secret files. With the next command we'll fix that.</p>
+<h2 id="gitpushf">git push -f</h2>
+<p>When things went bad sometimes a <code>git push -f</code> is needed. But beware: This will overwrite the history in your Git repo. You really have to know what are you doing here. Don't use <code>git push -f</code> in a panic. Calm down first. Otherwise you will make it even worse.</p>
+<p>But to remove the unwanted commits you need to overwrite the pull request branch.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-push-f-pr.png" alt="Dangerous: git push -f"></p>
+<pre><code>git push -f origin add-version 
+</code></pre>
+<h2 id="everythingconcealednoway">Everything concealed? No way</h2>
+<p>When you now look at the GitHub pull request you might think that every secret vanished and it's safe to keep the old WiFi password. No, GitHub has an incredible database, don't think that that this information was removed.</p>
+<p>Each pull request can be commented and even after a <code>git push -f</code> some of the comments got outdated on source that no longer exist. But this is still visible and retrievable.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-show-outdated-1.png" alt="GitHub show outdated comments"></p>
+<p>Look closer, there is a &quot;Show outdated&quot; link. You can open this</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-show-outdated-2.png" alt="GitHub show outdated comments still visible"></p>
+<p>So whenever such a data breach happens, be prepared to change your secrets. <strong>If it hurts, do it more often.</strong></p>
+<h1 id="understandingthecause">Understanding the cause</h1>
+<p>After all this disaster recovery and cleanup there is still something to learn. What was the root cause and how can I prevent to make the same mistake again?</p>
+<h2 id="gitadd">git add .</h2>
+<p>The <code>git add .</code> command adds all modified and also untracked files and <code>git push</code> pushes all this code to GitHub into your already open pull request branch.<br>
+Yes, I'm lazy and often commit everything as I'm normally work on one thing in a project.</p>
+<p>I normally recognize such secret files from adding them, but as I realised the hard way is that you will type <code>git add .</code> at some point in a hurry without even recognizing it.</p>
+<p>I scrolled up my terminal and found the situation where everything went wrong very soon.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-untracked-files.png" alt="Git repo with untracked files"></p>
+<p>This is a bad smell having untracked files.</p>
+<p>What can this be fixed?</p>
+<ul>
+<li>Learn to not use <code>git add .</code>. I don't think that will work as I'm trained to type this and it's hard to break a habit.</li>
+<li>Maybe prevent <code>git add .</code>?, see <a href="https://stackoverflow.com/questions/25884007/disable-git-add-command">Stack Overflow</a> I'm not going this hard way.</li>
+<li>Don't leave untracked files in your repo, yeah that sounds better.</li>
+<li>Add local secret files to your <code>.gitignore</code> file. So a <code>git add .</code> is harmless.</li>
+<li>Don't create such local secret files at all. Well you want something automated and just need config files with secrets.</li>
+<li>Create local files without the secrets and inject secrets on the fly. That also sounds like a good plan.</li>
+</ul>
+<p>I'll look closer into the last idea to inject secrets on the fly. Don't leave secrets unprotected on your harddrive. Use command line interfaces for your password managers.</p>
+<ul>
+<li>Use <a href="https://www.passwordstore.org">Pass: The Standard Unix Password Manager</a> that keeps secrets in GPG encrypted files which are also under version control in a separate Git repo.</li>
+</ul>
+<p>You cannot change the past, you only can learn to make it better in the future.</p>
+<p>I hope you find this blog post useful and I love to hear your feedback and experience about similar mistakes or better tips how to protect yourself from doing mistakes. Just drop a comment below or ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item></channel></rss>

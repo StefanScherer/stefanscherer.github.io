@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>How to run encrypted Windows websites with Docker and Træfɪk</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="How to run encrypted Windows websites with Docker and Træfɪk">
-    <meta property="og:description" content="Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like">
-    <meta property="og:url" content="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/">
-    <meta property="article:published_time" content="2017-03-10T22:21:00.000Z">
-    <meta property="article:modified_time" content="2017-03-11T00:13:41.000Z">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Windows">
-    <meta property="article:tag" content="Azure">
-    <meta property="article:tag" content="Traefik">
-    <meta property="article:tag" content="Portainer">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to run encrypted Windows websites with Docker and Træfɪk" />
+    <meta property="og:description" content="Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don&#x27;t run public websites on a regular basis, so I - like" />
+    <meta property="og:url" content="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" />
+    <meta property="article:published_time" content="2017-03-10T22:21:00.000Z" />
+    <meta property="article:modified_time" content="2017-03-11T00:13:41.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Windows" />
+    <meta property="article:tag" content="Azure" />
+    <meta property="article:tag" content="Traefik" />
+    <meta property="article:tag" content="Portainer" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="How to run encrypted Windows websites with Docker and Træfɪk">
-    <meta name="twitter:description" content="Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don't run public websites on a regular basis, so I - like">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="Docker, Windows, Azure, Traefik, Portainer">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to run encrypted Windows websites with Docker and Træfɪk" />
+    <meta name="twitter:description" content="Nowadays we read it all the time that every website should be encrytped. Adding TLS certificates to your web server sounds like a hard task to do. You have to update your certificates before they get invalid. I don&#x27;t run public websites on a regular basis, so I - like" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Windows, Azure, Traefik, Portainer" />
     
     <script type="application/ld+json">
 {
@@ -79,15 +79,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-docker tag-windows tag-azure tag-traefik tag-portainer nav-closed">
 
@@ -102,7 +102,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -139,11 +139,11 @@ ghost.init({
 <p>Normally Træfɪk is running inside a container and it is well known in the Linux Docker community. A few weeks ago I have seen that there also are Windows binaries available. Let's see if we can use Træfɪk in a Windows container to provide us encrypted HTTPS traffic to other Windows containers running our IIS website, or other web service.</p>
 <h2 id="step1createawindowsdockerhostinazure">Step 1: Create a Windows Docker host in Azure</h2>
 <p>First of all we need a Windows Server 2016 machine with Docker in the cloud. I will use Azure as Microsoft provides a VM template for that. This server will be our webserver later on with an own DNS name and TLS certs running our website.</p>
-<p>Go to the <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-server">Windows Containers quick start guide</a> at <a href="http://docs.microsoft.com">docs.microsoft.com</a> and press the "Deploy to Azure" button.</p>
+<p>Go to the <a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-server">Windows Containers quick start guide</a> at <a href="http://docs.microsoft.com">docs.microsoft.com</a> and press the &quot;Deploy to Azure&quot; button.</p>
 <p><img src="../content/images/2017/03/01-deploy-to-azure-1.png" alt="Deploy to Azure"></p>
 <p>This will bring you to the Azure portal where you can customize the virtual machine. Create a new resource group, choose the location where the server should be running a and public DNS name, as well as the size of the VM.</p>
 <p><img src="../content/images/2017/03/02-customize.png" alt="Customize machine"></p>
-<p>After you click on "Purchase" the deployment starts which should take only a few minutes.</p>
+<p>After you click on &quot;Purchase&quot; the deployment starts which should take only a few minutes.</p>
 <p><img src="../content/images/2017/03/03-deployment-started.png" alt="Azure starts deployment"></p>
 <p>In the meantime click on the cube symbol on the left. That will show you all resource groups you have.</p>
 <p>This Windows + Docker template already creates inbound security rules for HTTPS port 443 as well as the Docker TLS port 2376. So for our purposes we don't need to add more inbound rules.</p>
@@ -178,8 +178,8 @@ ghost.init({
 <pre><code>docker run --rm `
   -e SERVER_NAME=schererstefan.xyz `
   -e IP_ADDRESSES=$ips,52.XXXXXXX.198 `
-  -v "C:\ProgramData\docker:C:\ProgramData\docker" `
-  -v "$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker" `
+  -v &quot;C:\ProgramData\docker:C:\ProgramData\docker&quot; `
+  -v &quot;$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker&quot; `
   stefanscherer/dockertls-windows
 </code></pre>
 <p><img src="../content/images/2017/03/12-mkdir-and-run-dockertls.png-shadow.png" alt="Run dockertls"></p>
@@ -206,7 +206,7 @@ ghost.init({
 <h4 id="installdockercompose">Install Docker Compose</h4>
 <p>To spin up all our containers I use Docker Compose and a <code>docker-compose.yml</code> file that describes all services.</p>
 <p>The Windows VM does not come with Docker Compose. So we have to install Docker Compose first. If you are working remotely you can use your local installation of Compose and skip this step.</p>
-<pre><code>Invoke-WebRequest "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Windows-x86_64.exe" `
+<pre><code>Invoke-WebRequest &quot;https://github.com/docker/compose/releases/download/1.11.2/docker-compose-Windows-x86_64.exe&quot; `
   -UseBasicParsing -OutFile $Env:ProgramFiles\docker\docker-compose.exe
 </code></pre>
 <p>If you prefer Chocolatey, use <code>choco install docker-compose</code> instead.</p>
@@ -227,8 +227,8 @@ services:
   traefik:
     image: stefanscherer/traefik-windows
     ports:
-      - "8080:8080"
-      - "443:443"
+      - &quot;8080:8080&quot;
+      - &quot;443:443&quot;
     volumes:
       - ./traefikdata:C:/etc/traefik
       - ${USERPROFILE}/.docker:C:/etc/ssl:ro
@@ -238,9 +238,9 @@ services:
     depends_on:
       - traefik
     labels:
-      - "traefik.backend=whoami"
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.frontend.rule=Host:whoami.schererstefan.xyz"
+      - &quot;traefik.backend=whoami&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:whoami.schererstefan.xyz&quot;
 
 networks:
   default:
@@ -257,20 +257,20 @@ VOLUME C:/etc/traefik
 VOLUME C:/etc/ssl
 
 EXPOSE 80
-ENTRYPOINT ["/traefik", "--configfile=C:/etc/traefik/traefik.toml"]
+ENTRYPOINT [&quot;/traefik&quot;, &quot;--configfile=C:/etc/traefik/traefik.toml&quot;]
 
 # Metadata
-LABEL org.label-schema.vendor="Containous" \
-      org.label-schema.url="https://traefik.io" \
-      org.label-schema.name="Traefik" \
-      org.label-schema.description="A modern reverse-proxy" \
-      org.label-schema.version="v1.2.0-rc2" \
-      org.label-schema.docker.schema-version="1.0"
+LABEL org.label-schema.vendor=&quot;Containous&quot; \
+      org.label-schema.url=&quot;https://traefik.io&quot; \
+      org.label-schema.name=&quot;Traefik&quot; \
+      org.label-schema.description=&quot;A modern reverse-proxy&quot; \
+      org.label-schema.version=&quot;v1.2.0-rc2&quot; \
+      org.label-schema.docker.schema-version=&quot;1.0&quot;
 </code></pre>
 <h4 id="traefiktoml">traefik.toml</h4>
 <p>Træfɪk needs a configuration file where you specify your email address for the Let's Encrypt certificate requests. You will also need the IP address of the container network so that Træfɪk can contact your Docker engine.</p>
 <pre><code>$ip=(Get-NetIPAddress -AddressFamily IPv4 `
-   | Where-Object -FilterScript { $_.InterfaceAlias -Eq "vEthernet (HNS Internal NIC)" } `
+   | Where-Object -FilterScript { $_.InterfaceAlias -Eq &quot;vEthernet (HNS Internal NIC)&quot; } `
    ).IPAddress
 Write-Host $ip
 </code></pre>
@@ -279,22 +279,22 @@ Write-Host $ip
 </code></pre>
 <p>Enter that IP address at the <code>endpoint</code> of the <code>[docker]</code> section. Also adjust the domain names</p>
 <pre><code class="language-toml">[web]
-address = ":8080"
+address = &quot;:8080&quot;
 
 [docker]
-domain = "schererstefan.xyz"
-endpoint = "tcp://172.24.128.1:2376"
+domain = &quot;schererstefan.xyz&quot;
+endpoint = &quot;tcp://172.24.128.1:2376&quot;
 watch = true
 
 [docker.tls]
-ca = "C:/etc/ssl/ca.pem"
-cert = "C:/etc/ssl/cert.pem"
-key = "C:/etc/ssl/key.pem"
+ca = &quot;C:/etc/ssl/ca.pem&quot;
+cert = &quot;C:/etc/ssl/cert.pem&quot;
+key = &quot;C:/etc/ssl/key.pem&quot;
 
 # Sample entrypoint configuration when using ACME
 [entryPoints]
   [entryPoints.https]
-  address = ":443"
+  address = &quot;:443&quot;
     [entryPoints.https.tls]
 
 [acme]
@@ -303,14 +303,14 @@ key = "C:/etc/ssl/key.pem"
 #
 # Required
 #
-email = "you@yourmailprovider.com"
+email = &quot;you@yourmailprovider.com&quot;
 
-storage = "c:/etc/traefik/acme.json"
-entryPoint = "https"
+storage = &quot;c:/etc/traefik/acme.json&quot;
+entryPoint = &quot;https&quot;
 
 [[acme.domains]]
-   main = "schererstefan.xyz"
-   sans = ["whoami.schererstefan.xyz", "portainer.schererstefan.xyz", "www.schererstefan.xyz"]
+   main = &quot;schererstefan.xyz&quot;
+   sans = [&quot;whoami.schererstefan.xyz&quot;, &quot;portainer.schererstefan.xyz&quot;, &quot;www.schererstefan.xyz&quot;]
 </code></pre>
 <h4 id="openfirewallforallcontainerportsused">Open firewall for all container ports used</h4>
 <p>Please notice that the Windows firewall is also active for the container network. The <code>whoami</code> service listens on port 8000 in each container. To make Træfɪk connect to the <code>whoami</code> containers you have to add a firewall exception for port 8000.</p>
@@ -342,9 +342,9 @@ entryPoint = "https"
     depends_on:
       - traefik
     labels:
-      - "traefik.backend=www"
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.frontend.rule=Host:www.schererstefan.xyz"
+      - &quot;traefik.backend=www&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:www.schererstefan.xyz&quot;
 </code></pre>
 <p>Remember to add a firewall exception for port 80 manually. After that spin up the IIS container with</p>
 <pre><code>docker-compose up -d www
@@ -363,9 +363,9 @@ entryPoint = "https"
     depends_on:
       - traefik
     labels:
-      - "traefik.backend=portainer"
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.frontend.rule=Host:portainer.schererstefan.xyz"
+      - &quot;traefik.backend=portainer&quot;
+      - &quot;traefik.frontend.entryPoints=https&quot;
+      - &quot;traefik.frontend.rule=Host:portainer.schererstefan.xyz&quot;
 </code></pre>
 <p>Portainer also needs the client certs to communicate with the Docker engine. Another volume mount point is used to persist data like your admin login outside the container.</p>
 <p>Now run Portainer with</p>
@@ -387,7 +387,7 @@ entryPoint = "https"
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -403,13 +403,16 @@ entryPoint = "https"
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20run%20encrypted%20Windows%20websites%20with%20Docker%20and%20Tr%C3%A6f%C9%AAk&amp;url=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20run%20encrypted%20Windows%20websites%20with%20Docker%20and%20Tr%C3%A6f%C9%AAk&amp;url=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/how-to-run-encrypted-windows-websites-with-docker-and-traefik/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -445,13 +448,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../7-reasons-to-attend-dockercon/">
         <section class="post">
             <h2>7 Reasons to attend DockerCon</h2>
-            <p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few…</p>
+            <p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../setup-windows-docker-ci-appveyor/">
         <section class="post">
             <h2>Setup a Windows Docker CI with AppVeyor</h2>
-            <p>I love GitHub and all the services around it. It enables you to work from anywhere or any device…</p>
+            <p>I love GitHub and all the services around it. It enables you to work from anywhere or any device&hellip;</p>
         </section>
     </a>
 </aside>
@@ -459,7 +462,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -468,8 +471,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

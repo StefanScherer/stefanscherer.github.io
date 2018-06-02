@@ -1,4 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 14 Feb 2018 23:34:20 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to find dependencies of containerized Windows apps]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's</p></div>]]></description><link>https://stefanscherer.github.io/find-dependencies-in-windows-containers/</link><guid isPermaLink="false">5a84a3660f689f0001bafe61</guid><category><![CDATA[windows-containers]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[process-monitor]]></category><category><![CDATA[sysinternals]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 14 Feb 2018 23:01:47 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's missing.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 02 Jun 2018 13:25:45 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Ship happens. Secrets leaked to GitHub, what next?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I</p></div>]]></description><link>https://stefanscherer.github.io/ship-happens-secrets-leaked-to-github/</link><guid isPermaLink="false">5b1288ffd71f9600016d99e0</guid><category><![CDATA[GitHub]]></category><category><![CDATA[secrets]]></category><category><![CDATA[ubiquity]]></category><category><![CDATA[unify]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 13:15:26 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened. I totally screwed it up, I accidentally pushed some secrets to a GitHub pull request. Yes, ship happens. We're all humans and make mistakes. We normally blog about success, but I use my mistake to talk about how to fix this and how to prevent it from happening in the future again.</p>
+<h1 id="thebadmistake">The bad mistake</h1>
+<p>Well, I edited some code of my flash script to flash Raspberry Pi SD cards. This tool can also inject configuration to boot your Pi without any manual interaction to a specified hostname, or add your WiFi settings so it can join your wireless network automatically.</p>
+<p>I pushed some code to a work-in-progress pull request when I saw my mistake on GitHub:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/my-pull-request.png" alt="OMG, my pull request shows my WiFi PSK"></p>
+<p>WTF, how did I ... ?</p>
+<p>Well, for convenience reasons I kept a configuration file in the repo to easily flash a new SD card image with WiFi settings. And I can't really remember, but I eventually typed <code>git add .</code> and <code>git push</code> some minutes ago without recognising that this was a really, really bad idea.</p>
+<h1 id="panicwhatnext">Panic, what next?</h1>
+<p>I immediatelly went to my Ubiquity Cloud controller and changed the Wireless Network Security Key.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/unify2.png" alt="Unify Wireless Network settings"></p>
+<p>But that was the next mistake. OK, I've changed the security key. But after a moment I realized that I also have some unattended boxes lying around in my house that use the old key to connect to my WiFi. My AirPort Express boxes for example are connected wirelessly.</p>
+<h2 id="calmdownthinkandorganize">Calm down, think, and organize</h2>
+<p>OK, changing the Security Key as first step is probably not the best idea. I don't want to run to each box with a patch cable to reconfigure it. Instead I've changed the key back to the old, compromised one and reconfigured all my wireless devices that I can reach through WiFi.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport1.png" alt="AirPort devices"></p>
+<h2 id="reconfigurewirelessdevicesfirst">Reconfigure wireless devices first</h2>
+<p>The devices with the dotted lines are connected through WiFi. Edit the wireless network password with the AirPort app on your Mac.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport2.png" alt="Change AirPort wireless network password"></p>
+<p>After that change they will drop out of WiFi as they now have the new, but not actually working password.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/airport-unreachable.png" alt="AirPort devices unreachable"></p>
+<p>Repeat that for all devices and think of other wireless devices that you can update without climbing up ladders or other hidden places.</p>
+<h2 id="changeyourwifisecuritykey">Change your WiFi security key</h2>
+<p>After that I changed the wireless security key in the Unify cloud controller. Save the new WiFi key in your password manager, I use 1Password</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/uniqif-change-security-key2.png" alt="Change wireless security key in Unify cloud controller"></p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/1password-1.png" alt="Update key in 1Password password manager"></p>
+<p>After reconnecting to the new and now secure WiFi with the updated key I thought of the next steps. OK, the whole family has to update their smartphones and tables to connect to the WiFi again. That is managable. Now I'm coming to the next phase.</p>
+<h1 id="cleaningup">Cleaning up</h1>
+<p>The next steps was to clean up the pull request to get rid of the accidentally added files. You might think when you are quick nobody has seen your change and you can skip changing your WiFi secret at all. I'll prove you wrong in the next few minutes.</p>
+<p>First I commented on my mistake to laugh at it, that's just relieving.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-pr-leak.png" alt="Comment your mistake on GitHub"></p>
+<h2 id="removefilesremovecommits">Remove files, remove commits</h2>
+<p>Now it's time to clean up the pull request branch and remove the unwanted files. We could just do <code>git rm wifi.yml</code>, but this will be added as a new commit to Git. Git has a history of each commit. I also want to get rid of these old commits.</p>
+<p>These were my steps to cleanup the pull request branch.</p>
+<p>I first squashed the pull request to one commit.</p>
+<pre><code>git rebase -i $(git merge-base $(git rev-parse --abbrev-ref HEAD) master)
+</code></pre>
+<p>Then in the editor just <code>pick</code> the first commit and change all other commits to <code>squash</code>.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-squash.png" alt="git squash"></p>
+<p>Now I have only one commit. This commit can be easily undone with</p>
+<pre><code>git reset HEAD~1
+</code></pre>
+<p>Then add your secret files to the <code>.gitignore</code> file and add everything and commit it again.</p>
+<p>Now your local pull request branch has only the files wanted in one single commit. But GitHub still stores the secret files. With the next command we'll fix that.</p>
+<h2 id="gitpushf">git push -f</h2>
+<p>When things went bad sometimes a <code>git push -f</code> is needed. But beware: This will overwrite the history in your Git repo. You really have to know what are you doing here. Don't use <code>git push -f</code> in a panic. Calm down first. Otherwise you will make it even worse.</p>
+<p>But to remove the unwanted commits you need to overwrite the pull request branch.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-push-f-pr.png" alt="Dangerous: git push -f"></p>
+<pre><code>git push -f origin add-version 
+</code></pre>
+<h2 id="everythingconcealednoway">Everything concealed? No way</h2>
+<p>When you now look at the GitHub pull request you might think that every secret vanished and it's safe to keep the old WiFi password. No, GitHub has an incredible database, don't think that that this information was removed.</p>
+<p>Each pull request can be commented and even after a <code>git push -f</code> some of the comments got outdated on source that no longer exist. But this is still visible and retrievable.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-show-outdated-1.png" alt="GitHub show outdated comments"></p>
+<p>Look closer, there is a &quot;Show outdated&quot; link. You can open this</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/github-show-outdated-2.png" alt="GitHub show outdated comments still visible"></p>
+<p>So whenever such a data breach happens, be prepared to change your secrets. <strong>If it hurts, do it more often.</strong></p>
+<h1 id="understandingthecause">Understanding the cause</h1>
+<p>After all this disaster recovery and cleanup there is still something to learn. What was the root cause and how can I prevent to make the same mistake again?</p>
+<h2 id="gitadd">git add .</h2>
+<p>The <code>git add .</code> command adds all modified and also untracked files and <code>git push</code> pushes all this code to GitHub into your already open pull request branch.<br>
+Yes, I'm lazy and often commit everything as I'm normally work on one thing in a project.</p>
+<p>I normally recognize such secret files from adding them, but as I realised the hard way is that you will type <code>git add .</code> at some point in a hurry without even recognizing it.</p>
+<p>I scrolled up my terminal and found the situation where everything went wrong very soon.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/06/git-untracked-files.png" alt="Git repo with untracked files"></p>
+<p>This is a bad smell having untracked files.</p>
+<p>What can this be fixed?</p>
+<ul>
+<li>Learn to not use <code>git add .</code>. I don't think that will work as I'm trained to type this and it's hard to break a habit.</li>
+<li>Maybe prevent <code>git add .</code>?, see <a href="https://stackoverflow.com/questions/25884007/disable-git-add-command">Stack Overflow</a> I'm not going this hard way.</li>
+<li>Don't leave untracked files in your repo, yeah that sounds better.</li>
+<li>Add local secret files to your <code>.gitignore</code> file. So a <code>git add .</code> is harmless.</li>
+<li>Don't create such local secret files at all. Well you want something automated and just need config files with secrets.</li>
+<li>Create local files without the secrets and inject secrets on the fly. That also sounds like a good plan.</li>
+</ul>
+<p>I'll look closer into the last idea to inject secrets on the fly. Don't leave secrets unprotected on your harddrive. Use command line interfaces for your password managers.</p>
+<ul>
+<li>Use <code>pass</code> - <a href="https://www.passwordstore.org">Pass: The Standard Unix Password Manager</a> that keeps secrets in GPG encrypted files which are also under version control in a separate Git repo.</li>
+<li>I'll also have a look at the <a href="https://stefanscherer.github.io/ship-happens-secrets-leaked-to-github/(https://support.1password.com/command-line/)">1Password command line tool</a> <code>op</code>.</li>
+</ul>
+<p>You cannot change the past, you only can learn to make it better in the future.</p>
+<p>I hope you find this blog post useful and I love to hear your feedback and experience about similar mistakes or better tips how to protect yourself from doing mistakes. Just drop a comment below or ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[How to find dependencies of containerized Windows apps]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's</p></div>]]></description><link>https://stefanscherer.github.io/find-dependencies-in-windows-containers/</link><guid isPermaLink="false">5a84a3660f689f0001bafe61</guid><category><![CDATA[windows-containers]]></category><category><![CDATA[Docker]]></category><category><![CDATA[Hyper-V]]></category><category><![CDATA[process-monitor]]></category><category><![CDATA[sysinternals]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 14 Feb 2018 23:01:47 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's missing.</p>
 <h1 id="processmonitor">Process Monitor</h1>
 <p>To find out what's going on in a Windows Container I often use the <a href="https://sysinternals.com">Sysinternals</a> Process Monitor. It can capture all major syscalls in Windows such as file activity, starting processes, registry and networking activity.</p>
 <p>But how can we use procmon to monitor inside a Windows container?</p>
@@ -1462,57 +1542,4 @@ deploy_script:
 <h2 id="conclusion">Conclusion</h2>
 <p>AppVeyor is my #1 when it comes to automated Windows builds. With the Docker support built-in it becomes even more interesting.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[Is there a Windows Docker image for ...?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
-<p>These Docker images are well maintained and you can just start and put</p></div>]]></description><link>https://stefanscherer.github.io/is-there-a-windows-docker-image-for/</link><guid isPermaLink="false">5986d4ec688a490001540970</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows]]></category><category><![CDATA[Golang]]></category><category><![CDATA[Python]]></category><category><![CDATA[Node.js]]></category><category><![CDATA[Java]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Tue, 21 Feb 2017 23:56:58 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Do you want to try out Windows containers, but don't want to start too low level? If you are using one of the following programming languages you can benefit of already available official Docker images for Windows.</p>
-<p>These Docker images are well maintained and you can just start and put your application code inside and run your application easily in a Windows container.</p>
-<p>Someone else did the hard work how to install the runtime or compiler for language XYZ into Windows Server Core container or even a Nanoserver container.</p>
-<h2 id="prefernanoserver">Prefer NanoServer</h2>
-<p>So starting to work with NanoServer is really easy with Docker as you only choose the right image for the <code>FROM</code> instruction in your <code>Dockerfile</code>. You can start with windowsservercore images, but I encourage you to test with nanoserver as well. For these languages it is easy to switch and the final Docker images are much smaller.</p>
-<p>So let's have a look which languages are already available. The corresponding Docker Hub page normally has a short intro how to use these Docker images.</p>
-<h2 id="go">Go</h2>
-<p>The Go programming language is available on the Docker Hub as image <a href="https://hub.docker.com/_/golang/"><code>golang</code></a>. To get the latest Go 1.8 for either Windows Server Core or NanoServer you choose one of these.</p>
-<ul>
-<li><code>FROM golang:windowsservercore</code></li>
-<li><code>FROM golang:nanoserver</code></li>
-</ul>
-<p>Have a look at the <a href="https://hub.docker.com/_/golang/">tags page</a> if you want another version or if you want to pin a specific version of Golang.</p>
-<h2 id="java">Java</h2>
-<p>When you hear Java you might immediately think of Oracle Java. But searching for alternatives I found three OpenJDK distros for Windows. One of them recently made it into the official <a href="https://hub.docker.com/_/openjdk/"><code>openjdk</code></a> Docker images. Both Windows Server Core and NanoServer are supported.</p>
-<ul>
-<li><code>FROM openjdk:windowsservercore</code></li>
-<li><code>FROM openjdk:nanoserver</code></li>
-</ul>
-<p>If you prefer Oracle Java for private installations, you can build a Docker image with the Dockerfiles provided in the <a href="https://github.com/oracle/docker-images/tree/master/OracleJava/windows-java-8">oracle/docker-images</a> repository.</p>
-<h2 id="nodejs">Node.JS</h2>
-<p>For Node.js there are pull requests awaiting a CI build agent for Windows to make it into the official <a href="https://hub.docker.com/_/node/"><code>node</code></a> images.</p>
-<p>In the meantime you can use one of my maintained images, for example the latest Node LTS version for both Windows Server Core and NanoServer:</p>
-<ul>
-<li><code>FROM stefanscherer/node-windows:6</code></li>
-<li><code>FROM stefanscherer/node-windows:6-nano</code></li>
-</ul>
-<p>You also can find more tags and versions at the <a href="https://hub.docker.com/r/stefanscherer/node-windows/">Docker Hub</a>.</p>
-<h2 id="python">Python</h2>
-<p>The script language Python is available as Windows Server Core Docker image at the official <a href="https://hub.docker.com/_/python/"><code>python</code></a> images. Both major versions of Python are available.</p>
-<ul>
-<li><code>FROM python:3-windowsservercore</code></li>
-<li><code>FROM python:2-windowsservercore</code></li>
-</ul>
-<p>I also have a Python Docker image <a href="https://hub.docker.com/r/stefanscherer/python-windows/">for NanoServer</a> with Python 3.6 to create smaller Docker images.</p>
-<ul>
-<li><code>FROM stefanscherer/python-windows:nano</code></li>
-</ul>
-<h2 id="netcore">.NET Core</h2>
-<p>Microsoft provides Linux and Windows Docker images for .NET Core at <a href="https://hub.docker.com/r/microsoft/dotnet/"><code>microsoft/dotnet</code></a>. For Windows it is NanoServer only, but this is no disadvantage as you should plan for the smaller NanoServer images.</p>
-<ul>
-<li><code>FROM microsoft/dotnet:nanoserver</code></li>
-</ul>
-<h2 id="aspnet"><a href="http://ASP.NET">ASP.NET</a></h2>
-<p>For <a href="http://ASP.NET">ASP.NET</a> there are Windows Server Core Docker images for the major versions 3 and 4 with IIS installed at <a href="https://hub.docker.com/r/microsoft/aspnet/"><code>microsoft/aspnet</code></a>.</p>
-<ul>
-<li><code>FROM microsoft/aspnet:4.6.2-windowsservercore</code></li>
-<li><code>FROM microsoft/aspnet:3.5-windowsservercore</code></li>
-</ul>
-<h2 id="conclusion">Conclusion</h2>
-<p>The number of programming languages provided in Windows Docker images is growing. This makes it relatively easy to port Linux applications to Windows or use Docker images to distribute apps for both platforms.</p>
-<p>Haven't found an image for your language? Have I missed something? Please let me know, and use the comments below if you have questions how to get started. Thanks for your interest. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>

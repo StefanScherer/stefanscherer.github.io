@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>How to find dependencies of containerized Windows apps</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/find-dependencies-in-windows-containers/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/find-dependencies-in-windows-containers/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/find-dependencies-in-windows-containers/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/find-dependencies-in-windows-containers/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="How to find dependencies of containerized Windows apps">
-    <meta property="og:description" content="Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's">
-    <meta property="og:url" content="https://stefanscherer.github.io/find-dependencies-in-windows-containers/">
-    <meta property="article:published_time" content="2018-02-14T23:01:47.000Z">
-    <meta property="article:modified_time" content="2018-02-14T23:33:50.000Z">
-    <meta property="article:tag" content="windows-containers">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Hyper-V">
-    <meta property="article:tag" content="process-monitor">
-    <meta property="article:tag" content="sysinternals">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="How to find dependencies of containerized Windows apps" />
+    <meta property="og:description" content="Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL&#x27;s. But sometimes it&#x27;s hard to figure out why an application doesn&#x27;t run in a container. Here&#x27;s my way to find out what&#x27;s" />
+    <meta property="og:url" content="https://stefanscherer.github.io/find-dependencies-in-windows-containers/" />
+    <meta property="article:published_time" content="2018-02-14T23:01:47.000Z" />
+    <meta property="article:modified_time" content="2018-02-14T23:33:50.000Z" />
+    <meta property="article:tag" content="windows-containers" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Hyper-V" />
+    <meta property="article:tag" content="process-monitor" />
+    <meta property="article:tag" content="sysinternals" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="How to find dependencies of containerized Windows apps">
-    <meta name="twitter:description" content="Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL's. But sometimes it's hard to figure out why an application doesn't run in a container. Here's my way to find out what's">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/find-dependencies-in-windows-containers/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="windows-containers, Docker, Hyper-V, process-monitor, sysinternals">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="How to find dependencies of containerized Windows apps" />
+    <meta name="twitter:description" content="Running applications in Windows containers keeps your server clean. The container image must contain all the dependencies that the application needs to run, for example all its DLL&#x27;s. But sometimes it&#x27;s hard to figure out why an application doesn&#x27;t run in a container. Here&#x27;s my way to find out what&#x27;s" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/find-dependencies-in-windows-containers/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="windows-containers, Docker, Hyper-V, process-monitor, sysinternals" />
     
     <script type="application/ld+json">
 {
@@ -79,15 +79,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-windows-containers tag-docker tag-hyper-v tag-process-monitor tag-sysinternals nav-closed">
 
@@ -102,7 +102,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -136,10 +136,10 @@ ghost.init({
 <p>But how can we use procmon to monitor inside a Windows container?</p>
 <p>Well, I heard today that you can run procmon from command line to start and stop capturing events. I tried <a href="https://github.com/StefanScherer/dockerfiles-windows/tree/master/procmon">running procmon in a Windows container</a>, but it doesn't work correctly at the moment.</p>
 <p>So the next possibilty is to run procmon on the container host.</p>
-<p>On Windows 10 you only have Hyper-V containers. These are "black boxes" from your host operating system. The Process Monitor cannot look inside Hyper-V containers.</p>
+<p>On Windows 10 you only have Hyper-V containers. These are &quot;black boxes&quot; from your host operating system. The Process Monitor cannot look inside Hyper-V containers.</p>
 <p><img src="../content/images/2018/02/procmon_windows10_hyperv_container.png" alt="procmon_windows10_hyperv_container"></p>
-<p>To investigate a Windows container we need the "normal" Windows containers without running in Hyper-V isolation. The best solution I came up with is to run a Windows Server 2016 VM and install Process Monitor inside that VM.</p>
-<p>When you run a Windows container you can see the container processes in the Task Manager of the Server 2016 VM. And Process Monitor can also see what these processes are doing. We have made some containers out of "glass" to look inside.</p>
+<p>To investigate a Windows container we need the &quot;normal&quot; Windows containers without running in Hyper-V isolation. The best solution I came up with is to run a Windows Server 2016 VM and install Process Monitor inside that VM.</p>
+<p>When you run a Windows container you can see the container processes in the Task Manager of the Server 2016 VM. And Process Monitor can also see what these processes are doing. We have made some containers out of &quot;glass&quot; to look inside.</p>
 <p><img src="../content/images/2018/02/procmon_windows_container_glass.png" alt="procmon_windows_container_glass"></p>
 <h1 id="examplepostgresql">Example: PostgreSQL</h1>
 <p>Let's try this out and put the PostgreSQL database server into a Windows container.</p>
@@ -147,7 +147,7 @@ ghost.init({
 <pre><code># escape=`
 FROM microsoft/windowsservercore:10.0.14393.2007 AS download
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+SHELL [&quot;powershell&quot;, &quot;-Command&quot;, &quot;$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';&quot;]
 
 ENV PG_VERSION 10.2-1
 
@@ -196,10 +196,10 @@ COPY --from=download /windows/system32/msvcp120.dll /pgsql/bin/msvcp120.dll
 COPY --from=download /windows/system32/msvcr120.dll /pgsql/bin/msvcr120.dll
 </code></pre>
 <p>Set the <code>PATH</code> variable to have all tools accessible, expose the standard port and define a command.</p>
-<pre><code>RUN setx /M PATH "C:\pgsql\bin;%PATH%"
+<pre><code>RUN setx /M PATH &quot;C:\pgsql\bin;%PATH%&quot;
 
 EXPOSE 5432
-CMD ["postgres"]
+CMD [&quot;postgres&quot;]
 </code></pre>
 <p>Now build the image again and try it out with</p>
 <pre><code>docker run postgres postgres.exe --help
@@ -217,7 +217,7 @@ If you do this with a NanoServer 1709 or Insider image the sizes is even smaller
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -233,13 +233,16 @@ If you do this with a NanoServer 1709 or Insider image the sizes is even smaller
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20find%20dependencies%20of%20containerized%20Windows%20apps&amp;url=https://stefanscherer.github.io/find-dependencies-in-windows-containers/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=How%20to%20find%20dependencies%20of%20containerized%20Windows%20apps&amp;url=https://stefanscherer.github.io/find-dependencies-in-windows-containers/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/find-dependencies-in-windows-containers/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/find-dependencies-in-windows-containers/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/find-dependencies-in-windows-containers/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/find-dependencies-in-windows-containers/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -272,10 +275,16 @@ s.setAttribute('data-timestamp', +new Date());
 </main>
 
 <aside class="read-next">
+    <a class="read-next-story no-cover" href="../ship-happens-secrets-leaked-to-github/">
+        <section class="post">
+            <h2>Ship happens. Secrets leaked to GitHub, what next?</h2>
+            <p>What a wonderful day. I just changed some code in one of my weekend projects and then it happened.&hellip;</p>
+        </section>
+    </a>
     <a class="read-next-story prev no-cover" href="../terraforming-a-windows-insider-server-in-azure/">
         <section class="post">
             <h2>Terraforming a Windows Insider Server in Azure</h2>
-            <p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to…</p>
+            <p>There may be different ways to run the Windows Insider Server Preview builds in Azure. Here's my approach to&hellip;</p>
         </section>
     </a>
 </aside>
@@ -283,7 +292,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -292,8 +301,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

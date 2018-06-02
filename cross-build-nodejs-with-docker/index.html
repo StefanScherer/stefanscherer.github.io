@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>Cross-build a Node.js app with Docker and deploy to IBM Cloud</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/cross-build-nodejs-with-docker/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud">
-    <meta property="og:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
-    <meta property="og:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">
-    <meta property="article:published_time" content="2017-10-30T22:37:03.000Z">
-    <meta property="article:modified_time" content="2017-10-31T08:04:52.000Z">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Node.js">
-    <meta property="article:tag" content="multi-arch">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud" />
+    <meta property="og:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain&#x27;s Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them" />
+    <meta property="og:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/" />
+    <meta property="article:published_time" content="2017-10-30T22:37:03.000Z" />
+    <meta property="article:modified_time" content="2017-10-31T08:04:52.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Node.js" />
+    <meta property="article:tag" content="multi-arch" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud">
-    <meta name="twitter:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="Docker, Node.js, multi-arch">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Cross-build a Node.js app with Docker and deploy to IBM Cloud" />
+    <meta name="twitter:description" content="After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain&#x27;s Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas. &amp;quot;Put all Captains available into a room, feed them" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/cross-build-nodejs-with-docker/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Node.js, multi-arch" />
     
     <script type="application/ld+json">
 {
@@ -77,15 +77,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-docker tag-node-js tag-multi-arch nav-closed">
 
@@ -100,7 +100,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -130,7 +130,7 @@ ghost.init({
         <section class="post-content">
             <div class="kg-card-markdown"><p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's Hack Day. After introducing our current projects to the other Captains we also had time to work together on some ideas.</p>
 <blockquote>
-<p><em>"Put all Captains available into a room, feed them well and see what's happening."</em></p>
+<p><em>&quot;Put all Captains available into a room, feed them well and see what's happening.&quot;</em></p>
 </blockquote>
 <p><img src="../content/images/2017/10/captains-hack-day.jpg" alt="captains-hack-day"></p>
 <h2 id="modernizingswarmvisualizer">Modernizing Swarm Visualizer</h2>
@@ -188,7 +188,7 @@ CMD node /app/dist/index.js
 <p>lines into</p>
 <pre><code>FROM stefanscherer/node-windows:1709
 </code></pre>
-<p>But now we have duplicated the Dockerfile "code" for only this little difference.</p>
+<p>But now we have duplicated the Dockerfile &quot;code&quot; for only this little difference.</p>
 <p>Fortunately you now can use build arguments for the <code>FROM</code> instruction. So with only a little change we can have <strong>ONE</strong> Dockerfile for Linux and Windows.</p>
 <pre><code>ARG node=node:8.7-alpine
 FROM $node as frontend
@@ -260,13 +260,13 @@ script:
 <h3 id="deploy">deploy</h3>
 <p>As a final step in the .travis.yml we push every image to Docker Hub and tag it with the Git commit id. At this early stage of the project this is good enough. Later on you can think of tagged release builds etc.</p>
 <p>The <a href="https://github.com/mikesir87/swarm-viz/blob/master/travis-deploy.sh">travis-deploy.sh</a> pushes the Docker image for each architecture to the Docker Hub with a different tag using the <code>$ARCH</code> variable we get from the matrix build.</p>
-<pre><code>docker image push "$image:linux-$ARCH-$TRAVIS_COMMIT"
+<pre><code>docker image push &quot;$image:linux-$ARCH-$TRAVIS_COMMIT&quot;
 </code></pre>
 <p>In the amd64 build we additionally download and use the manifest-tool to push a manifest list with the final tag.</p>
 <pre><code>manifest-tool push from-args \
     --platforms linux/amd64,linux/s390x \
-    --template "$image:OS-ARCH-$TRAVIS_COMMIT" \
-    --target "$image:latest"
+    --template &quot;$image:OS-ARCH-$TRAVIS_COMMIT&quot; \
+    --target &quot;$image:latest&quot;
 </code></pre>
 <p>You can verify that the <code>latest</code> tag is already a manifest list with another Docker image provided by Phil</p>
 <pre><code>$ docker container run --rm mplatform/mquery mikesir87/swarm-viz
@@ -304,7 +304,7 @@ Image: node:8.7-alpine
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -320,13 +320,16 @@ Image: node:8.7-alpine
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Cross-build%20a%20Node.js%20app%20with%20Docker%20and%20deploy%20to%20IBM%20Cloud&amp;url=https://stefanscherer.github.io/cross-build-nodejs-with-docker/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Cross-build%20a%20Node.js%20app%20with%20Docker%20and%20deploy%20to%20IBM%20Cloud&amp;url=https://stefanscherer.github.io/cross-build-nodejs-with-docker/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/cross-build-nodejs-with-docker/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/cross-build-nodejs-with-docker/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/cross-build-nodejs-with-docker/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/cross-build-nodejs-with-docker/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -362,13 +365,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../docker-on-windows-server-1709/">
         <section class="post">
             <h2>A closer look at Docker on Windows Server 1709</h2>
-            <p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription…</p>
+            <p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../dockercon-lcow-and-windows-server-1709/">
         <section class="post">
             <h2>DockerCon: LCOW and Windows Server 1709</h2>
-            <p>Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU…</p>
+            <p>Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU&hellip;</p>
         </section>
     </a>
 </aside>
@@ -376,7 +379,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -385,8 +388,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

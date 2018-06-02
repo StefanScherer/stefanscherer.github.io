@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <title>Yes, you can "Docker" on Windows 7</title>
+    <title>Yes, you can &quot;Docker&quot; on Windows 7</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content='Yes, you can "Docker" on Windows 7'>
-    <meta property="og:description" content="This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use Vagrant">
-    <meta property="og:url" content="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/">
-    <meta property="article:published_time" content="2017-03-31T17:02:07.000Z">
-    <meta property="article:modified_time" content="2017-07-25T12:09:13.000Z">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Chocolatey">
-    <meta property="article:tag" content="Windows 7">
-    <meta property="article:tag" content="Docker Machine">
-    <meta property="article:tag" content="VMware">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Yes, you can &quot;Docker&quot; on Windows 7" />
+    <meta property="og:description" content="This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use Vagrant" />
+    <meta property="og:url" content="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" />
+    <meta property="article:published_time" content="2017-03-31T17:02:07.000Z" />
+    <meta property="article:modified_time" content="2017-07-25T12:09:13.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Chocolatey" />
+    <meta property="article:tag" content="Windows 7" />
+    <meta property="article:tag" content="Docker Machine" />
+    <meta property="article:tag" content="VMware" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content='Yes, you can "Docker" on Windows 7'>
-    <meta name="twitter:description" content="This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use Vagrant">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="Docker, Chocolatey, Windows 7, Docker Machine, VMware">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Yes, you can &quot;Docker&quot; on Windows 7" />
+    <meta name="twitter:description" content="This week I was asked to help automating a task to get some Linux binaries and files packaged into a tarball. Some developers tried to spin up a Linux virtual machine and run a script to install tools and then do the packaging. Although I also like and use Vagrant" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Chocolatey, Windows 7, Docker Machine, VMware" />
     
     <script type="application/ld+json">
 {
@@ -79,15 +79,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-docker tag-chocolatey tag-windows-7 tag-docker-machine tag-vmware nav-closed">
 
@@ -102,7 +102,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -123,7 +123,7 @@ ghost.init({
     <article class="post tag-docker tag-chocolatey tag-windows-7 tag-docker-machine tag-vmware">
 
         <header class="post-header">
-            <h1 class="post-title">Yes, you can "Docker" on Windows 7</h1>
+            <h1 class="post-title">Yes, you can &quot;Docker&quot; on Windows 7</h1>
             <section class="post-meta">
                 <time class="post-date" datetime="2017-03-31">31 March 2017</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/chocolatey/">Chocolatey</a>, <a href="../tag/windows-7/">Windows 7</a>, <a href="../tag/docker-machine/">Docker Machine</a>, <a href="../tag/vmware/">VMware</a>
             </section>
@@ -137,7 +137,7 @@ ghost.init({
 <h2 id="lockedinhypervisor">Locked-in Hypervisor</h2>
 <p>Next obstacle was that for Vagrant it is better to use <strong>VMware Workstation</strong> on Windows 7 instead of VirtualBox. There also may be a company policy to use one specific hypervisor as the knowledge is already there using other server products in the datacenter.</p>
 <p>So going down to the <a href="https://www.docker.com/products/docker-toolbox">Docker Toolbox</a> also was no option as it comes with VirtualBox to run the Linux boot2docker VM.</p>
-<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Can't Believe this..GOT THIS GIF from my Kid :) <a href="https://twitter.com/docker">@docker</a> ..Amazing ! <a href="https://t.co/f09henl5Ta">pic.twitter.com/f09henl5Ta</a></p>— Ajeet Singh Raina (@ajeetsraina) <a href="https://twitter.com/ajeetsraina/status/847737267510591488">31. März 2017</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr">Can&#39;t Believe this..GOT THIS GIF from my Kid :) <a href="https://twitter.com/docker">@docker</a> ..Amazing ! <a href="https://t.co/f09henl5Ta">pic.twitter.com/f09henl5Ta</a></p>&mdash; Ajeet Singh Raina (@ajeetsraina) <a href="https://twitter.com/ajeetsraina/status/847737267510591488">31. März 2017</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <h2 id="embraceyourenvironment">Embrace your environment</h2>
 <p>So we went with a manual installation of some Docker tools to get a Linux Docker VM running on the Windows 7 machine. Luckily the developers already had the <a href="https://chocolatey.org">Chocolatey</a> package manager installed.</p>
 <p>Let's recap what I found on the notebooks</p>
@@ -154,7 +154,7 @@ choco install -y docker-machine-vmwareworkstation
 <p>Then we closed the administrator terminal as the next commands can be done in normal user mode.</p>
 <h2 id="myhostismycastle">My host is my castle</h2>
 <p>Every developer installs tools that they need for their work. Installing that on the host machine - your desktop or notebook - leads to different machines.</p>
-<p>Creating the Docker Machine we ran into a "works on my machine, but doesn't work on your machine" problem I hadn't seen before.</p>
+<p>Creating the Docker Machine we ran into a &quot;works on my machine, but doesn't work on your machine&quot; problem I hadn't seen before.</p>
 <p>Something while setting up the Linux VM just went wrong. It turned out that copying the Docker TLS certs with SSH just didn't work. A deeper look on what else is installed on the host we found that some implementations of SSH clients just doesn't work very well.</p>
 <p>Luckily there is a less known option in the <code>docker-machine</code> binary to ignore external SSH client and use the built-in implementation.</p>
 <p>With that knowledge we were able to create a VMware Docker Machine on that laptop with</p>
@@ -202,7 +202,7 @@ docker-machine env | iex
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -218,13 +218,16 @@ docker-machine env | iex
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Yes%2C%20you%20can%20%22Docker%22%20on%20Windows%207&amp;url=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Yes%2C%20you%20can%20%22Docker%22%20on%20Windows%207&amp;url=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -260,13 +263,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../use-multi-stage-builds-for-smaller-windows-images/">
         <section class="post">
             <h2>Use multi-stage builds for smaller Windows images</h2>
-            <p>I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements…</p>
+            <p>I'm still here in Austin, TX at DockerCon 2017 and I want to show you one of the announcements&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../7-reasons-to-attend-dockercon/">
         <section class="post">
             <h2>7 Reasons to attend DockerCon</h2>
-            <p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few…</p>
+            <p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few&hellip;</p>
         </section>
     </a>
 </aside>
@@ -274,7 +277,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -283,8 +286,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

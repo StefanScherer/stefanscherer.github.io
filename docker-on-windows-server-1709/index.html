@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>A closer look at Docker on Windows Server 1709</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/docker-on-windows-server-1709/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/docker-on-windows-server-1709/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/docker-on-windows-server-1709/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/docker-on-windows-server-1709/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="A closer look at Docker on Windows Server 1709">
-    <meta property="og:description" content="Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people. So let's go to Azure and create a new machine. The interesting VM for me">
-    <meta property="og:url" content="https://stefanscherer.github.io/docker-on-windows-server-1709/">
-    <meta property="article:published_time" content="2017-10-31T23:18:14.000Z">
-    <meta property="article:modified_time" content="2017-11-01T09:23:58.000Z">
-    <meta property="article:tag" content="Docker">
-    <meta property="article:tag" content="Windows Server 1709">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="A closer look at Docker on Windows Server 1709" />
+    <meta property="og:description" content="Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM&#x27;s. But spinning up a cloud VM makes it easier for more people. So let&#x27;s go to Azure and create a new machine. The interesting VM for me" />
+    <meta property="og:url" content="https://stefanscherer.github.io/docker-on-windows-server-1709/" />
+    <meta property="article:published_time" content="2017-10-31T23:18:14.000Z" />
+    <meta property="article:modified_time" content="2017-11-01T09:23:58.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Windows Server 1709" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="A closer look at Docker on Windows Server 1709">
-    <meta name="twitter:description" content="Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people. So let's go to Azure and create a new machine. The interesting VM for me">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/docker-on-windows-server-1709/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="Docker, Windows Server 1709">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="A closer look at Docker on Windows Server 1709" />
+    <meta name="twitter:description" content="Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM&#x27;s. But spinning up a cloud VM makes it easier for more people. So let&#x27;s go to Azure and create a new machine. The interesting VM for me" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/docker-on-windows-server-1709/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Windows Server 1709" />
     
     <script type="application/ld+json">
 {
@@ -76,15 +76,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-docker tag-windows-server-1709 nav-closed">
 
@@ -99,7 +99,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -128,18 +128,18 @@ ghost.init({
 
         <section class="post-content">
             <div class="kg-card-markdown"><p>Today Microsoft has released Windows Server 1709 in Azure. The ISO file is also available in the MSDN subscription to build local VM's. But spinning up a cloud VM makes it easier for more people.</p>
-<p>So let's go to Azure and create a new machine. The interesting VM for me is "Windows Server, version 1709 with Containers" as it comes with Docker preinstalled.</p>
+<p>So let's go to Azure and create a new machine. The interesting VM for me is &quot;Windows Server, version 1709 with Containers&quot; as it comes with Docker preinstalled.</p>
 <p><img src="../content/images/2017/10/Bildschirmfoto-2017-10-31-um-22.22.35.png" alt="azure search for 1709"></p>
 <p>After a few minutes you can RDP into the machine. But watch out, it is only a Windows Server Core, so there is no full desktop. But for a Docker host this is good enough.</p>
 <p><img src="../content/images/2017/10/docker1709-01.png-shadow.png" alt="Docker 17.06.1 EE preinstalled"></p>
 <p>As you can see the VM comes with the latest Docker 17.06.1 EE and the new 1709 base images installed.</p>
-<h2 id="smaller1709baseimages">Smaller "1709" base images</h2>
+<h2 id="smaller1709baseimages">Smaller &quot;1709&quot; base images</h2>
 <p>On great news is that the base images got smaller. For comparison here are the images of a Windows Server 2016:</p>
 <p><img src="../content/images/2017/10/docker2016-01.png-shadow.png" alt="Windows Server 2016 images"></p>
 <p>So with Windows Server 1709 the WindowsServerCore image is only 1/2 the size of the original. And for the NanoServer image is about 1/4 with only 93 MB on the Docker Hub.</p>
 <p><img src="../content/images/2017/10/docker-hub-nanoserver.png" alt="docker-hub-nanoserver"></p>
-<p>That makes the NanoServer image really attractive to deploy modern microservices with it. As you can see, the "latest" tag is still pointing to the old image. As the 1709 release is a semi-annual release supported for the next 18 months and the current Windows Server 2016 is the LTS version, the latest tags still remain to the older, thicker images.</p>
-<p>So when you want to go small, then use the "1709" tags:</p>
+<p>That makes the NanoServer image really attractive to deploy modern microservices with it. As you can see, the &quot;latest&quot; tag is still pointing to the old image. As the 1709 release is a semi-annual release supported for the next 18 months and the current Windows Server 2016 is the LTS version, the latest tags still remain to the older, thicker images.</p>
+<p>So when you want to go small, then use the &quot;1709&quot; tags:</p>
 <ul>
 <li>microsoft/windowsservercore:1709</li>
 <li>microsoft/nanoserver:1709</li>
@@ -198,7 +198,7 @@ ghost.init({
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -214,13 +214,16 @@ ghost.init({
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=A%20closer%20look%20at%20Docker%20on%20Windows%20Server%201709&amp;url=https://stefanscherer.github.io/docker-on-windows-server-1709/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=A%20closer%20look%20at%20Docker%20on%20Windows%20Server%201709&amp;url=https://stefanscherer.github.io/docker-on-windows-server-1709/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/docker-on-windows-server-1709/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/docker-on-windows-server-1709/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/docker-on-windows-server-1709/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/docker-on-windows-server-1709/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -256,13 +259,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../poc-build-images-for-1709-without-1709/">
         <section class="post">
             <h2>PoC: How to build images for 1709 without 1709</h2>
-            <p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I…</p>
+            <p>First of all: Happy Halloween! In this blog post you'll see some spooky things - or magic? Anyway I&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../cross-build-nodejs-with-docker/">
         <section class="post">
             <h2>Cross-build a Node.js app with Docker and deploy to IBM Cloud</h2>
-            <p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's…</p>
+            <p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's&hellip;</p>
         </section>
     </a>
 </aside>
@@ -270,7 +273,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -279,8 +282,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>

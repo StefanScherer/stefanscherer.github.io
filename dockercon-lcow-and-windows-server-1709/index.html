@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <title>DockerCon: LCOW and Windows Server 1709</title>
 
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=81e6bbdd78">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=0134792829" />
 
 
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="canonical" href="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <link rel="amphtml" href="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/amp/">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/amp/" />
     
-    <meta property="og:site_name" content="Stefan Scherer's Blog">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="DockerCon: LCOW and Windows Server 1709">
-    <meta property="og:description" content="Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers. Docker on Windows Workshop On Monday">
-    <meta property="og:url" content="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/">
-    <meta property="article:published_time" content="2017-10-28T00:18:11.000Z">
-    <meta property="article:modified_time" content="2017-10-28T00:24:07.000Z">
-    <meta property="article:tag" content="DockerCon">
-    <meta property="article:tag" content="windows-containers">
-    <meta property="article:tag" content="LCOW">
-    <meta property="article:tag" content="Windows Server 1709">
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="DockerCon: LCOW and Windows Server 1709" />
+    <meta property="og:description" content="Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers. Docker on Windows Workshop On Monday" />
+    <meta property="og:url" content="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" />
+    <meta property="article:published_time" content="2017-10-28T00:18:11.000Z" />
+    <meta property="article:modified_time" content="2017-10-28T00:24:07.000Z" />
+    <meta property="article:tag" content="DockerCon" />
+    <meta property="article:tag" content="windows-containers" />
+    <meta property="article:tag" content="LCOW" />
+    <meta property="article:tag" content="Windows Server 1709" />
     
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="DockerCon: LCOW and Windows Server 1709">
-    <meta name="twitter:description" content="Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers. Docker on Windows Workshop On Monday">
-    <meta name="twitter:url" content="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/">
-    <meta name="twitter:label1" content="Written by">
-    <meta name="twitter:data1" content="Stefan Scherer">
-    <meta name="twitter:label2" content="Filed under">
-    <meta name="twitter:data2" content="DockerCon, windows-containers, LCOW, Windows Server 1709">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="DockerCon: LCOW and Windows Server 1709" />
+    <meta name="twitter:description" content="Last week was a busy week as a Docker Captain. Many of us came to Copenhagen to DockerCon EU 2017. You may have heard of the surprising news about Kubernetes coming to Docker. But there were also some other new announcements about Windows Containers. Docker on Windows Workshop On Monday" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="DockerCon, windows-containers, LCOW, Windows Server 1709" />
     
     <script type="application/ld+json">
 {
@@ -78,15 +78,15 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=0134792829"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
 	clientSecret: "fcf9918858bf"
 });
 </script>
-    <meta name="generator" content="Ghost 1.8">
-    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer's Blog" href="https://stefanscherer.github.io/rss/index.rss">
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
 </head>
 <body class="post-template tag-dockercon tag-windows-containers tag-lcow tag-windows-server-1709 nav-closed">
 
@@ -101,7 +101,7 @@ ghost.init({
             <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
             <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
     </ul>
-        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/index.rss">Subscribe</a>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
 </div>
 <span class="nav-cover"></span>
 
@@ -175,7 +175,7 @@ ghost.init({
 
 
             <figure class="author-image">
-                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&amp;)"><span class="hidden">Stefan Scherer's Picture</span></a>
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
             </figure>
 
             <section class="author">
@@ -191,13 +191,16 @@ ghost.init({
 
             <section class="share">
                 <h4>Share this post</h4>
-                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=DockerCon%3A%20LCOW%20and%20Windows%20Server%201709&amp;url=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=DockerCon%3A%20LCOW%20and%20Windows%20Server%201709&amp;url=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
                     <span class="hidden">Twitter</span>
                 </a>
-                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
                     <span class="hidden">Facebook</span>
                 </a>
-                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/dockercon-lcow-and-windows-server-1709/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
                     <span class="hidden">Google+</span>
                 </a>
             </section>
@@ -233,13 +236,13 @@ s.setAttribute('data-timestamp', +new Date());
     <a class="read-next-story no-cover" href="../cross-build-nodejs-with-docker/">
         <section class="post">
             <h2>Cross-build a Node.js app with Docker and deploy to IBM Cloud</h2>
-            <p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's…</p>
+            <p>After the DockerCon EU and the Moby Summit in Copenhagen last week we also had an additional Docker Captain's&hellip;</p>
         </section>
     </a>
     <a class="read-next-story prev no-cover" href="../use-docker-to-search-in-320-million-pwned-passwords/">
         <section class="post">
             <h2>Use Docker to Search in 320 Million Pwned Passwords</h2>
-            <p>This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator…</p>
+            <p>This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator&hellip;</p>
         </section>
     </a>
 </aside>
@@ -247,7 +250,7 @@ s.setAttribute('data-timestamp', +new Date());
 
 
         <footer class="site-footer clearfix">
-            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer's Blog</a> © 2018</section>
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
             <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
         </footer>
 
@@ -256,8 +259,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=81e6bbdd78"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=81e6bbdd78"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=0134792829"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=0134792829"></script>
 
 </body>
 </html>
