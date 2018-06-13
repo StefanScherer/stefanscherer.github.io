@@ -32,6 +32,7 @@ if [ -d /opt/vagrant/embedded/gems/${VAGRANT_VERSION} ]; then
   wget https://raw.githubusercontent.com/StefanScherer/dotfiles/master/bin/vmrun.exe-helper
   chmod +x vmrun.exe-helper
   sudo cp vmrun.exe-helper "/usr/bin/C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe"
+  sudo ln -s '/usr/bin/C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe' /usr/bin/vmrun
   rm vmrun.exe-helper
 fi
 
