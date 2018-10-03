@@ -1,4 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Thu, 14 Jun 2018 22:23:53 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to use AppVeyor to build a multi-arch Docker image for Linux and Windows]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 03 Oct 2018 14:41:15 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[What's new for Docker on Windows Server 2019?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
+<p>Since the last two years after Windows</p></div>]]></description><link>https://stefanscherer.github.io/docker-on-windows-server-2019/</link><guid isPermaLink="false">5ba63112078c7c0001c0a3e8</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows Server 2019]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 03 Oct 2018 14:00:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
+<p>Since the last two years after Windows Server 2016 first introduced Windows Container support a lot of things have improved. We have seen some of that changes in the semi-annual releases of 1709 and 1803, and now the long-term supported release has all the latest and greatest updates available.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-11.18.17.png" alt="Windows Server 2019 with Docker installed"></p>
+<h2 id="inplaceupdatefrom2012r22016">In-Place update from 2012 R2 / 2016</h2>
+<p>First of all if you have older Windows Servers running it is possible to install an in-place update to this new release. So it is possible to run Windows Containers after updating your server, adding the <strong>Containers feature</strong> and <strong>installing Docker</strong> on your server. I normally create fresh machines with the new operating system, but this update really looks interesting to get access to these new technology.</p>
+<h2 id="smallerbasedockerimages">Smaller base Docker images</h2>
+<p>The containers team at Microsoft has improved the size of the Windows base images. The container images have been shrunk down to 1/3 to 1/4 of the equivalent 2016 images. The sizes in the diagram below are the sizes after downloading and expanding the Docker images and running the <code>docker images</code> command.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-15.46.33.png" alt="Comparison of Docker image sizes for 2016 and 2019"></p>
+<p>With the very small <code>mcr.microsoft.com/nanoserver:sac2019</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
+<h2 id="anewwindowsbaseimage">A new windows base image</h2>
+<p>In addition to the two known Windows base images for <strong>Windows Server Core</strong> and <strong>Nano Server</strong> there is now a third base image: <strong>Windows</strong></p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.03.46.png" alt="Three Windows base OS images"></p>
+<p>This image gives you an even broader support for your Windows applications than just the core image. One use-case is for automation workloads like automated UI tests. But notice you still cannot RDP into such Windows containers.</p>
+<h2 id="transitiontomcrmicrosoftcom">Transition to <code>mcr.microsoft.com</code></h2>
+<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name.</p>
+<pre><code>FROM microsoft/windowsservercore
+</code></pre>
+<p>to</p>
+<pre><code>FROM mcr.microsoft.com/windowsservercore
+</code></pre>
+<p>The tags on Docker Hub are still there and you still will be able to pull the images with the old image name for a while.</p>
+<p>The Windows base images has always been hosted on Microsoft CDN as &quot;foreign layers&quot;, so really only the tag names changes.</p>
+<p>A good question is where can you find the new images. The <code>mcr.microsoft.com</code> registry does not have an UI.</p>
+<p>At the time of writing this blog post the new Docker images are not available. The latest information that can be found is on Docker Hub for the Insider images:</p>
+<p><a href="https://hub.docker.com/r/microsoft/nanoserver-insider/">https://hub.docker.com/r/microsoft/nanoserver-insider/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windowsservercore-insider/">https://hub.docker.com/r/microsoft/windowsservercore-insider/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windows-insider/">https://hub.docker.com/r/microsoft/windows-insider/</a></p>
+<p>My assumption is to see the new tags described on Docker Hub here:</p>
+<p><a href="https://hub.docker.com/r/microsoft/nanoserver/">https://hub.docker.com/r/microsoft/nanoserver/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windowsservercore/">https://hub.docker.com/r/microsoft/windowsservercore/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windows/">https://hub.docker.com/r/microsoft/windows/</a>  (still 404)</p>
+<p>I'll update the blog post once the new images have arrived.</p>
+<h2 id="portsbindtolocalhost">Ports bind to localhost</h2>
+<p>When you bind a container port to a host port your containerized application can be accessed with localhost from the host. This is what we are used with Linux containers since the beginning and now you no longer have to find out the container IP address to access your application.</p>
+<pre><code>docker run -p 80:80 mcr.microsoft.com/iis
+start http://localhost:80
+</code></pre>
+<h2 id="ingressnetworking">Ingress networking</h2>
+<p>I have tried one of the latest Insider builds to create a <strong>Docker Swarm</strong> with multiple Windows machines. And I'm happy to see that you can create a Windows-only Docker Swarm with manager nodes and worker nodes.<br>
+I was also able to access the published port of a web server running in Windows containers.</p>
+<p>After scaling that service up to have it running multiple times spread over all swarm nodes I also could see the load-balancing is working in such a Windows-only cluster.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.28.26.png" alt="Service running in Windows-only docker swarm"></p>
+<h2 id="namedpipesinwindowscontainers">Named pipes in Windows containers</h2>
+<p>Another nice improvement is that you can bind Windows named pipes from the host into Windows containers.</p>
+<p>Some tools like Traefik, Portainer UI or another Docker client want to access the Docker API and we know we could bind the Unix socket into Linux containers. With Windows Server 2019 it is possible to do the same with the Docker named pipe.</p>
+<p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.25.39.png" alt="Portainer and local Docker named pipe"></p>
+<h2 id="lcow">LCOW?</h2>
+<p>I could not find any announcement at MS Ignite about Linux Containers on Windows.</p>
+<p>So I tried the steps to manually install the LinuxKit kernel and updated to the latest Docker EE 18.03.1-ee-3 version.</p>
+<p>In this combination LCOW really works</p>
+<h2 id="getitnow">Get it now</h2>
+<p>Go and get in touch with the new Windows Server 2019.</p>
+<ul>
+<li>Spin up a Windows Server 2019 from the Azure Marketplace.</li>
+<li>Go to your MSDN subscription and download the ISO.</li>
+<li>Go to the Evaluation Center <a href="https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019">https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019</a> and download the VHD or ISO.</li>
+<li>Pick my Vagrant box from <a href="https://app.vagrantup.com/StefanScherer/boxes/windows_2019">Vagrant Cloud</a> suitable for VMware Workstation/Fusion, Hyper-V and VirtualBox.</li>
+</ul>
+<h2 id="tldr">TL/DR</h2>
+<p>When you work with Windows Containers I recommand to switch over to the new Windows Server 2019 release. It is much simpler now to work with Windows containers. With the smaller images you can deploy your application even faster.</p>
+<p>You still can run your old containers from 2016 in Hyper-V isolation mode, but I recommend to rebuild them with the new Windows base images to experience faster downloads and start times.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[How to use AppVeyor to build a multi-arch Docker image for Linux and Windows]]></title><description><![CDATA[<div class="kg-card-markdown"><p>After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature.</p>
 <p>In <a href="https://stefanscherer.github.io/fork-appveyor-buildpipeline/">my previous blog post</a> I showed how you can fork the example repo and build</p></div>]]></description><link>https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/</link><guid isPermaLink="false">5b12c82dd71f9600016d99ed</guid><category><![CDATA[Docker]]></category><category><![CDATA[Docker Hub]]></category><category><![CDATA[AppVeyor]]></category><category><![CDATA[multi-arch]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 02 Jun 2018 18:13:19 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this blog post I want to show you what we can do with this new feature.</p>
 <p>In <a href="https://stefanscherer.github.io/fork-appveyor-buildpipeline/">my previous blog post</a> I showed how you can fork the example repo and build it your own, adjust it and learn all the details of the application, the Dockerfiles and the build steps.</p>
 <p>This blog post shows the details about a Linux and Windows builds and how you can combine that to a multi-arch Docker image.</p>
@@ -1512,31 +1574,4 @@ docker-machine env | iex
 <p>Using Windows 10 Enterprise with the built-in Hyper-V would be easier. You can run <strong>native Windows containers</strong> with it and use <strong>Docker for Windows</strong> to switch between Linux and Windows containers. Using Vagrant with Hyper-V also gets better and better.</p>
 <p>But if company policy still restricts you to use eg. VMware then you also can use the steps above to create a Linux Docker machine. You also cannot use Windows containers directly on Windows 10 machine as Hyper-V does not work in parallel with other hypervisors. In that case you might spin up a Windows Server 2016 VM using my <a href="https://github.com/StefanScherer/windows-docker-machine">Windows Docker Machine</a> setup. With that you can easily switch between Linux and Windows containers using the <code>docker-machine env</code> command.</p>
 <p>As always, please leave a comment if you have questions or improvements or want to share your thoughts. I love to hear about your enterprise setup and how to make Docker work on your developer's machines. You can follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
-</div>]]></content:encoded></item><item><title><![CDATA[7 Reasons to attend DockerCon]]></title><description><![CDATA[<div class="kg-card-markdown"><p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10%</p></div>]]></description><link>https://stefanscherer.github.io/7-reasons-to-attend-dockercon/</link><guid isPermaLink="false">5986d4ec688a490001540972</guid><category><![CDATA[DockerCon]]></category><category><![CDATA[Docker]]></category><category><![CDATA[ARM]]></category><category><![CDATA[windows-containers]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 29 Mar 2017 22:43:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>I'm more than happy that I can make it to DockerCon in Austin, Texas. It is only a few weeks until the workshops and conference starts April, 17th. If you still need some good reasons why you should attend I can give you some ideas. And you will get 10% discount with the code <strong>CaptainStefan</strong>.</p>
-<h2 id="workshops">Workshops</h2>
-<p>On Monday I'll be at the workshop <strong>Modernizing monolithic <a href="http://ASP.NET">ASP.NET</a> applications with Docker</strong> where you can get some hands-on experience with Windows containers. You cannot have a better place if you want to get started with Docker on Windows. Michael Friis and Elton Stoneman from Docker and myself can answer all your questions.</p>
-<h2 id="seesomedockerswarmdemos">See some Docker Swarm demos</h2>
-<p>Come to the Community Theater on Tuesday, Apr 18th, 1:00 PM to see my live demo <a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=109712"><strong>Swarm 2 Go</strong></a> and how our team at SEAL Systems has built a portable multi-arch data center with Raspberry Pi and UP boards.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/03/picloud.jpg" alt="picloud"></p>
-<p>You will have the chance to play the chaos monkey and unplug cables to see Docker swarm mode in action. With the help of LED's we can visualise failures and how Docker swarm gets healthy again. All steps to build such a cluster is available in an <a href="https://github.com/sealsystems/tiny-cloud">open source repo</a>.</p>
-<h2 id="learnaboutdockeronwindows">Learn about Docker on Windows</h2>
-<p>Docker is no longer a thing only on Linux. There are several talks about Docker on the Windows platform that I want to see.</p>
-<ul>
-<li><a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=107846"><strong>Docker for .NET developers</strong></a> with Michele Leroux Bustamante, CIO, Solliance</li>
-<li><a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=107848"><strong>Escape your VMs with Image2Docker</strong></a> with Elton Stoneman from Docker and Docker Captain Jeff Nickoloff</li>
-<li><a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=109233"><strong>Beyond \ - the path to Windows and Linux parity in Docker</strong></a> with Taylor Brown, Principal Lead Program Manager, Microsoft</li>
-<li><a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=106041"><strong>Creating Effective Images</strong></a> with Abby Fuller, Technical Evangelist, AWS</li>
-</ul>
-<p>And I also recommend to visit the Microsoft booth to hopefully see some Docker swarm mode on Windows Servers. I really look forward to see the latest news and talking with some of the Microsoft Container and Networking team.</p>
-<h2 id="multipleplatforms">Multiple platforms</h2>
-<p>If you think Docker is only Linux on Intel machines, then comparing it to an instrument it may look like this.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/03/keyboard-535254_1920.jpg" alt="keyboard"></p>
-<p>But as you can see the talks above, Docker is available on multiple platforms: Linux, Windows, from small ARM devices like the Raspberry Pi to big IBM machines.</p>
-<p>So the whole spectrum of Docker more looks like this, and once you learned the Docker commands you are able to play this:</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/03/pipe-organ-669589_1920.jpg" alt="organ"></p>
-<p>So it is time to learn how easy it is to deploy your applications for more than one platform.</p>
-<ul>
-<li><a href="https://dockercon.smarteventscloud.com/connect/sessionDetail.ww?SESSION_ID=106642"><strong>From Arm to Z: Building, Shipping, and Running a Multi-platform Docker Swarm</strong></a> with Christopher Jones and Christy Perez from IBM</li>
-</ul>
-<p>See you at DockerCon! Ping me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a> or with the DockerCon app to get in touch with me during that conference week.</p>
 </div>]]></content:encoded></item></channel></rss>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>What&#x27;s new for Docker on Windows Server 2019?</title>
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=66a3f2d884" />
+
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://stefanscherer.github.io/docker-on-windows-server-2019/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://stefanscherer.github.io/docker-on-windows-server-2019/amp/" />
+    
+    <meta property="og:site_name" content="Stefan Scherer&#x27;s Blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="What&#x27;s new for Docker on Windows Server 2019?" />
+    <meta property="og:description" content="Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows" />
+    <meta property="og:url" content="https://stefanscherer.github.io/docker-on-windows-server-2019/" />
+    <meta property="article:published_time" content="2018-10-03T14:00:00.000Z" />
+    <meta property="article:modified_time" content="2018-10-03T14:39:15.000Z" />
+    <meta property="article:tag" content="Docker" />
+    <meta property="article:tag" content="Windows Server 2019" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="What&#x27;s new for Docker on Windows Server 2019?" />
+    <meta name="twitter:description" content="Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows" />
+    <meta name="twitter:url" content="https://stefanscherer.github.io/docker-on-windows-server-2019/" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Stefan Scherer" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="Docker, Windows Server 2019" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Stefan Scherer&#x27;s Blog",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://stefanscherer.github.io/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Stefan Scherer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://stefanscherer.github.io/author/stefan/",
+        "sameAs": []
+    },
+    "headline": "What&#x27;s new for Docker on Windows Server 2019?",
+    "url": "https://stefanscherer.github.io/docker-on-windows-server-2019/",
+    "datePublished": "2018-10-03T14:00:00.000Z",
+    "dateModified": "2018-10-03T14:39:15.000Z",
+    "keywords": "Docker, Windows Server 2019",
+    "description": "Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://stefanscherer.github.io/"
+    }
+}
+    </script>
+
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=66a3f2d884"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fcf9918858bf"
+});
+</script>
+    <meta name="generator" content="Ghost 1.8" />
+    <link rel="alternate" type="application/rss+xml" title="Stefan Scherer&#x27;s Blog" href="https://stefanscherer.github.io/rss/" />
+</head>
+<body class="post-template tag-docker tag-windows-server-2019 nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="index.html#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav-home"><a href="https://stefanscherer.github.io/">Home</a></li>
+            <li class="nav-talks"><a href="https://stefanscherer.github.io/talks/">Talks</a></li>
+            <li class="nav-twitter"><a href="https://twitter.com/stefscherer">Twitter</a></li>
+            <li class="nav-github"><a href="https://github.com/StefanScherer">GitHub</a></li>
+    </ul>
+        <a class="subscribe-button icon-feed" href="https://stefanscherer.github.io/rss/">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        
+            <a class="menu-button icon-menu" href="index.html#"><span class="word">Menu</span></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-docker tag-windows-server-2019">
+
+        <header class="post-header">
+            <h1 class="post-title">What&#x27;s new for Docker on Windows Server 2019?</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2018-10-03">03 October 2018</time>  on <a href="../tag/docker/">Docker</a>, <a href="../tag/windows-server-2019/">Windows Server 2019</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
+<p>Since the last two years after Windows Server 2016 first introduced Windows Container support a lot of things have improved. We have seen some of that changes in the semi-annual releases of 1709 and 1803, and now the long-term supported release has all the latest and greatest updates available.</p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-11.18.17.png" alt="Windows Server 2019 with Docker installed"></p>
+<h2 id="inplaceupdatefrom2012r22016">In-Place update from 2012 R2 / 2016</h2>
+<p>First of all if you have older Windows Servers running it is possible to install an in-place update to this new release. So it is possible to run Windows Containers after updating your server, adding the <strong>Containers feature</strong> and <strong>installing Docker</strong> on your server. I normally create fresh machines with the new operating system, but this update really looks interesting to get access to these new technology.</p>
+<h2 id="smallerbasedockerimages">Smaller base Docker images</h2>
+<p>The containers team at Microsoft has improved the size of the Windows base images. The container images have been shrunk down to 1/3 to 1/4 of the equivalent 2016 images. The sizes in the diagram below are the sizes after downloading and expanding the Docker images and running the <code>docker images</code> command.</p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-15.46.33.png" alt="Comparison of Docker image sizes for 2016 and 2019"></p>
+<p>With the very small <code>mcr.microsoft.com/nanoserver:sac2019</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
+<h2 id="anewwindowsbaseimage">A new windows base image</h2>
+<p>In addition to the two known Windows base images for <strong>Windows Server Core</strong> and <strong>Nano Server</strong> there is now a third base image: <strong>Windows</strong></p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.03.46.png" alt="Three Windows base OS images"></p>
+<p>This image gives you an even broader support for your Windows applications than just the core image. One use-case is for automation workloads like automated UI tests. But notice you still cannot RDP into such Windows containers.</p>
+<h2 id="transitiontomcrmicrosoftcom">Transition to <code>mcr.microsoft.com</code></h2>
+<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name.</p>
+<pre><code>FROM microsoft/windowsservercore
+</code></pre>
+<p>to</p>
+<pre><code>FROM mcr.microsoft.com/windowsservercore
+</code></pre>
+<p>The tags on Docker Hub are still there and you still will be able to pull the images with the old image name for a while.</p>
+<p>The Windows base images has always been hosted on Microsoft CDN as &quot;foreign layers&quot;, so really only the tag names changes.</p>
+<p>A good question is where can you find the new images. The <code>mcr.microsoft.com</code> registry does not have an UI.</p>
+<p>At the time of writing this blog post the new Docker images are not available. The latest information that can be found is on Docker Hub for the Insider images:</p>
+<p><a href="https://hub.docker.com/r/microsoft/nanoserver-insider/">https://hub.docker.com/r/microsoft/nanoserver-insider/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windowsservercore-insider/">https://hub.docker.com/r/microsoft/windowsservercore-insider/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windows-insider/">https://hub.docker.com/r/microsoft/windows-insider/</a></p>
+<p>My assumption is to see the new tags described on Docker Hub here:</p>
+<p><a href="https://hub.docker.com/r/microsoft/nanoserver/">https://hub.docker.com/r/microsoft/nanoserver/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windowsservercore/">https://hub.docker.com/r/microsoft/windowsservercore/</a><br>
+<a href="https://hub.docker.com/r/microsoft/windows/">https://hub.docker.com/r/microsoft/windows/</a>  (still 404)</p>
+<p>I'll update the blog post once the new images have arrived.</p>
+<h2 id="portsbindtolocalhost">Ports bind to localhost</h2>
+<p>When you bind a container port to a host port your containerized application can be accessed with localhost from the host. This is what we are used with Linux containers since the beginning and now you no longer have to find out the container IP address to access your application.</p>
+<pre><code>docker run -p 80:80 mcr.microsoft.com/iis
+start http://localhost:80
+</code></pre>
+<h2 id="ingressnetworking">Ingress networking</h2>
+<p>I have tried one of the latest Insider builds to create a <strong>Docker Swarm</strong> with multiple Windows machines. And I'm happy to see that you can create a Windows-only Docker Swarm with manager nodes and worker nodes.<br>
+I was also able to access the published port of a web server running in Windows containers.</p>
+<p>After scaling that service up to have it running multiple times spread over all swarm nodes I also could see the load-balancing is working in such a Windows-only cluster.</p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.28.26.png" alt="Service running in Windows-only docker swarm"></p>
+<h2 id="namedpipesinwindowscontainers">Named pipes in Windows containers</h2>
+<p>Another nice improvement is that you can bind Windows named pipes from the host into Windows containers.</p>
+<p>Some tools like Traefik, Portainer UI or another Docker client want to access the Docker API and we know we could bind the Unix socket into Linux containers. With Windows Server 2019 it is possible to do the same with the Docker named pipe.</p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.25.39.png" alt="Portainer and local Docker named pipe"></p>
+<h2 id="lcow">LCOW?</h2>
+<p>I could not find any announcement at MS Ignite about Linux Containers on Windows.</p>
+<p>So I tried the steps to manually install the LinuxKit kernel and updated to the latest Docker EE 18.03.1-ee-3 version.</p>
+<p>In this combination LCOW really works</p>
+<h2 id="getitnow">Get it now</h2>
+<p>Go and get in touch with the new Windows Server 2019.</p>
+<ul>
+<li>Spin up a Windows Server 2019 from the Azure Marketplace.</li>
+<li>Go to your MSDN subscription and download the ISO.</li>
+<li>Go to the Evaluation Center <a href="https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019">https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019</a> and download the VHD or ISO.</li>
+<li>Pick my Vagrant box from <a href="https://app.vagrantup.com/StefanScherer/boxes/windows_2019">Vagrant Cloud</a> suitable for VMware Workstation/Fusion, Hyper-V and VirtualBox.</li>
+</ul>
+<h2 id="tldr">TL/DR</h2>
+<p>When you work with Windows Containers I recommand to switch over to the new Windows Server 2019 release. It is much simpler now to work with Windows containers. With the smaller images you can deploy your application even faster.</p>
+<p>You still can run your old containers from 2016 in Hyper-V isolation mode, but I recommend to rebuild them with the new Windows base images to experience faster downloads and start times.</p>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="../author/stefan/" style="background-image: url(http://www.gravatar.com/avatar/0c09487dd4b63737bd5004333230a77b?s&)"><span class="hidden">Stefan Scherer's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="../author/stefan/">Stefan Scherer</a></h4>
+
+                    <p>Read <a href="../author/stefan/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=What's%20new%20for%20Docker%20on%20Windows%20Server%202019%3F&amp;url=https://stefanscherer.github.io/docker-on-windows-server-2019/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://stefanscherer.github.io/docker-on-windows-server-2019/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://stefanscherer.github.io/docker-on-windows-server-2019/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+<div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//stefanscherersblog.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+        </footer>
+
+    </article>
+</main>
+
+<aside class="read-next">
+    <a class="read-next-story prev no-cover" href="../use-appveyor-to-build-multi-arch-docker-image/">
+        <section class="post">
+            <h2>How to use AppVeyor to build a multi-arch Docker image for Linux and Windows</h2>
+            <p>After some months of private beta AppVeyor recently has announced general availability of their Linux build agents. In this&hellip;</p>
+        </section>
+    </a>
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://stefanscherer.github.io">Stefan Scherer&#x27;s Blog</a> &copy; 2018</section>
+            <section class="poweredby">Proudly published with <a href="https://ghost.org">Ghost</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- You can safely delete this line if your theme does not require jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=66a3f2d884"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=66a3f2d884"></script>
+
+</body>
+</html>
