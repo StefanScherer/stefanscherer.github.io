@@ -24,7 +24,7 @@
     <meta property="og:description" content="Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows" />
     <meta property="og:url" content="https://stefanscherer.github.io/docker-on-windows-server-2019/" />
     <meta property="article:published_time" content="2018-10-03T14:00:00.000Z" />
-    <meta property="article:modified_time" content="2018-10-03T14:39:15.000Z" />
+    <meta property="article:modified_time" content="2018-10-03T14:55:43.000Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows Server 2019" />
     
@@ -66,7 +66,7 @@
     "headline": "What&#x27;s new for Docker on Windows Server 2019?",
     "url": "https://stefanscherer.github.io/docker-on-windows-server-2019/",
     "datePublished": "2018-10-03T14:00:00.000Z",
-    "dateModified": "2018-10-03T14:39:15.000Z",
+    "dateModified": "2018-10-03T14:55:43.000Z",
     "keywords": "Docker, Windows Server 2019",
     "description": "Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows",
     "mainEntityOfPage": {
@@ -168,15 +168,15 @@ start http://localhost:80
 <p>I have tried one of the latest Insider builds to create a <strong>Docker Swarm</strong> with multiple Windows machines. And I'm happy to see that you can create a Windows-only Docker Swarm with manager nodes and worker nodes.<br>
 I was also able to access the published port of a web server running in Windows containers.</p>
 <p>After scaling that service up to have it running multiple times spread over all swarm nodes I also could see the load-balancing is working in such a Windows-only cluster.</p>
-<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.28.26.png" alt="Service running in Windows-only docker swarm"></p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.44.58.png" alt="Service running in Windows-only docker swarm"></p>
 <h2 id="namedpipesinwindowscontainers">Named pipes in Windows containers</h2>
 <p>Another nice improvement is that you can bind Windows named pipes from the host into Windows containers.</p>
 <p>Some tools like Traefik, Portainer UI or another Docker client want to access the Docker API and we know we could bind the Unix socket into Linux containers. With Windows Server 2019 it is possible to do the same with the Docker named pipe.</p>
-<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.25.39.png" alt="Portainer and local Docker named pipe"></p>
+<p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.48.07.png" alt="Portainer and local Docker named pipe"></p>
 <h2 id="lcow">LCOW?</h2>
 <p>I could not find any announcement at MS Ignite about Linux Containers on Windows.</p>
 <p>So I tried the steps to manually install the LinuxKit kernel and updated to the latest Docker EE 18.03.1-ee-3 version.</p>
-<p>In this combination LCOW really works</p>
+<p>In this combination LCOW really works, but I cannot say how stable it is and if it's officially supported. Probably we have to wait a little longer to see a better experience to install this feature.</p>
 <h2 id="getitnow">Get it now</h2>
 <p>Go and get in touch with the new Windows Server 2019.</p>
 <ul>
@@ -184,6 +184,8 @@ I was also able to access the published port of a web server running in Windows 
 <li>Go to your MSDN subscription and download the ISO.</li>
 <li>Go to the Evaluation Center <a href="https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019">https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019</a> and download the VHD or ISO.</li>
 <li>Pick my Vagrant box from <a href="https://app.vagrantup.com/StefanScherer/boxes/windows_2019">Vagrant Cloud</a> suitable for VMware Workstation/Fusion, Hyper-V and VirtualBox.</li>
+<li>Watch the videos from <a href="https://myignite.techcommunity.microsoft.com/videos?q=windows%2520container&amp;t=%257B%2522from%2522%253A%25222018-09-23T08%253A00%253A00-04%253A00%2522%252C%2522to%2522%253A%25222018-09-28T19%253A00%253A00-04%253A00%2522%257D#ignite-html-anchor">last weeks MS Ignite</a> about Windows Server 2019 and Windows Containers.</li>
+<li>Go to <a href="https://chocolateyfest.com">Chocolatey Fest 2018</a> next week in San Francisco where you can attend a hands-on workshop. Use the code <strong>Speaker50</strong> when you register.</li>
 </ul>
 <h2 id="tldr">TL/DR</h2>
 <p>When you work with Windows Containers I recommand to switch over to the new Windows Server 2019 release. It is much simpler now to work with Windows containers. With the smaller images you can deploy your application even faster.</p>
