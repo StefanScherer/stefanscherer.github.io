@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Wed, 03 Oct 2018 14:56:16 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[What's new for Docker on Windows Server 2019?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Thu, 04 Oct 2018 07:09:12 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[What's new for Docker on Windows Server 2019?]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
 <p>Since the last two years after Windows</p></div>]]></description><link>https://stefanscherer.github.io/docker-on-windows-server-2019/</link><guid isPermaLink="false">5ba63112078c7c0001c0a3e8</guid><category><![CDATA[Docker]]></category><category><![CDATA[Windows Server 2019]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Wed, 03 Oct 2018 14:00:00 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes.</p>
 <p>Since the last two years after Windows Server 2016 first introduced Windows Container support a lot of things have improved. We have seen some of that changes in the semi-annual releases of 1709 and 1803, and now the long-term supported release has all the latest and greatest updates available.</p>
 <p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-11.18.17.png" alt="Windows Server 2019 with Docker installed"></p>
@@ -7,17 +7,17 @@
 <h2 id="smallerbasedockerimages">Smaller base Docker images</h2>
 <p>The containers team at Microsoft has improved the size of the Windows base images. The container images have been shrunk down to 1/3 to 1/4 of the equivalent 2016 images. The sizes in the diagram below are the sizes after downloading and expanding the Docker images and running the <code>docker images</code> command.</p>
 <p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-15.46.33.png" alt="Comparison of Docker image sizes for 2016 and 2019"></p>
-<p>With the very small <code>mcr.microsoft.com/nanoserver:sac2019</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
+<p>With the very small <code>mcr.microsoft.com/windows/nanoserver:1809</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
 <h2 id="anewwindowsbaseimage">A new windows base image</h2>
 <p>In addition to the two known Windows base images for <strong>Windows Server Core</strong> and <strong>Nano Server</strong> there is now a third base image: <strong>Windows</strong></p>
 <p><img src="https://stefanscherer.github.io/content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.03.46.png" alt="Three Windows base OS images"></p>
 <p>This image gives you an even broader support for your Windows applications than just the core image. One use-case is for automation workloads like automated UI tests. But notice you still cannot RDP into such Windows containers.</p>
 <h2 id="transitiontomcrmicrosoftcom">Transition to <code>mcr.microsoft.com</code></h2>
-<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name.</p>
-<pre><code>FROM microsoft/windowsservercore
+<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name. Watch out the additional slash <code>/</code> for the Windows Server Core image.</p>
+<pre><code>FROM microsoft/windowsservercore:ltsc2016
 </code></pre>
 <p>to</p>
-<pre><code>FROM mcr.microsoft.com/windowsservercore
+<pre><code>FROM mcr.microsoft.com/windows/servercore:ltsc2019
 </code></pre>
 <p>The tags on Docker Hub are still there and you still will be able to pull the images with the old image name for a while.</p>
 <p>The Windows base images has always been hosted on Microsoft CDN as &quot;foreign layers&quot;, so really only the tag names changes.</p>
@@ -26,11 +26,14 @@
 <p><a href="https://hub.docker.com/r/microsoft/nanoserver-insider/">https://hub.docker.com/r/microsoft/nanoserver-insider/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windowsservercore-insider/">https://hub.docker.com/r/microsoft/windowsservercore-insider/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windows-insider/">https://hub.docker.com/r/microsoft/windows-insider/</a></p>
-<p>My assumption is to see the new tags described on Docker Hub here:</p>
+<p><strong>Update:</strong> I found two of the three images in the description on Docker Hub here:</p>
 <p><a href="https://hub.docker.com/r/microsoft/nanoserver/">https://hub.docker.com/r/microsoft/nanoserver/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windowsservercore/">https://hub.docker.com/r/microsoft/windowsservercore/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windows/">https://hub.docker.com/r/microsoft/windows/</a>  (still 404)</p>
-<p>I'll update the blog post once the new images have arrived.</p>
+<pre><code>docker pull mcr.microsoft.com/windows/nanoserver:1809
+docker pull mcr.microsoft.com/windows/servercore:ltsc2019
+</code></pre>
+<p>I'll update the blog post when I found the image name for the full Windows image.</p>
 <h2 id="portsbindtolocalhost">Ports bind to localhost</h2>
 <p>When you bind a container port to a host port your containerized application can be accessed with localhost from the host. This is what we are used with Linux containers since the beginning and now you no longer have to find out the container IP address to access your application.</p>
 <pre><code>docker run -p 80:80 mcr.microsoft.com/iis

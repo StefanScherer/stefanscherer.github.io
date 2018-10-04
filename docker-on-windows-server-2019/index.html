@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
-    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=66a3f2d884" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/screen.css?v=595c61b0c1" />
 
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
@@ -24,7 +24,7 @@
     <meta property="og:description" content="Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows" />
     <meta property="og:url" content="https://stefanscherer.github.io/docker-on-windows-server-2019/" />
     <meta property="article:published_time" content="2018-10-03T14:00:00.000Z" />
-    <meta property="article:modified_time" content="2018-10-03T14:55:43.000Z" />
+    <meta property="article:modified_time" content="2018-10-04T07:08:41.000Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Windows Server 2019" />
     
@@ -66,7 +66,7 @@
     "headline": "What&#x27;s new for Docker on Windows Server 2019?",
     "url": "https://stefanscherer.github.io/docker-on-windows-server-2019/",
     "datePublished": "2018-10-03T14:00:00.000Z",
-    "dateModified": "2018-10-03T14:55:43.000Z",
+    "dateModified": "2018-10-04T07:08:41.000Z",
     "keywords": "Docker, Windows Server 2019",
     "description": "Last week at MS Ignite Microsoft has announced the new Windows Server 2019 which will be general available in October. This is a big new release with a lot of improvements using Docker with Windows Containers. Here is an overview of relevant changes. Since the last two years after Windows",
     "mainEntityOfPage": {
@@ -76,7 +76,7 @@
 }
     </script>
 
-    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=66a3f2d884"></script>
+    <script type="text/javascript" src="../public/ghost-sdk.min.js?v=595c61b0c1"></script>
 <script type="text/javascript">
 ghost.init({
 	clientId: "ghost-frontend",
@@ -135,17 +135,17 @@ ghost.init({
 <h2 id="smallerbasedockerimages">Smaller base Docker images</h2>
 <p>The containers team at Microsoft has improved the size of the Windows base images. The container images have been shrunk down to 1/3 to 1/4 of the equivalent 2016 images. The sizes in the diagram below are the sizes after downloading and expanding the Docker images and running the <code>docker images</code> command.</p>
 <p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-15.46.33.png" alt="Comparison of Docker image sizes for 2016 and 2019"></p>
-<p>With the very small <code>mcr.microsoft.com/nanoserver:sac2019</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
+<p>With the very small <code>mcr.microsoft.com/windows/nanoserver:1809</code> image you will see applications at about 100 MByte (compressed) on Docker Hub.</p>
 <h2 id="anewwindowsbaseimage">A new windows base image</h2>
 <p>In addition to the two known Windows base images for <strong>Windows Server Core</strong> and <strong>Nano Server</strong> there is now a third base image: <strong>Windows</strong></p>
 <p><img src="../content/images/2018/10/Bildschirmfoto-2018-10-03-um-16.03.46.png" alt="Three Windows base OS images"></p>
 <p>This image gives you an even broader support for your Windows applications than just the core image. One use-case is for automation workloads like automated UI tests. But notice you still cannot RDP into such Windows containers.</p>
 <h2 id="transitiontomcrmicrosoftcom">Transition to <code>mcr.microsoft.com</code></h2>
-<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name.</p>
-<pre><code>FROM microsoft/windowsservercore
+<p>Microsoft has started to move its Docker images from the Docker Hub into a own container registry. What you have to know is that the name for the base images will slightly change. You only have to remember to change the <code>microsoft/</code> to <code>mcr.microsoft.com/</code>. The following example shows the old and the new image name. Watch out the additional slash <code>/</code> for the Windows Server Core image.</p>
+<pre><code>FROM microsoft/windowsservercore:ltsc2016
 </code></pre>
 <p>to</p>
-<pre><code>FROM mcr.microsoft.com/windowsservercore
+<pre><code>FROM mcr.microsoft.com/windows/servercore:ltsc2019
 </code></pre>
 <p>The tags on Docker Hub are still there and you still will be able to pull the images with the old image name for a while.</p>
 <p>The Windows base images has always been hosted on Microsoft CDN as &quot;foreign layers&quot;, so really only the tag names changes.</p>
@@ -154,11 +154,14 @@ ghost.init({
 <p><a href="https://hub.docker.com/r/microsoft/nanoserver-insider/">https://hub.docker.com/r/microsoft/nanoserver-insider/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windowsservercore-insider/">https://hub.docker.com/r/microsoft/windowsservercore-insider/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windows-insider/">https://hub.docker.com/r/microsoft/windows-insider/</a></p>
-<p>My assumption is to see the new tags described on Docker Hub here:</p>
+<p><strong>Update:</strong> I found two of the three images in the description on Docker Hub here:</p>
 <p><a href="https://hub.docker.com/r/microsoft/nanoserver/">https://hub.docker.com/r/microsoft/nanoserver/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windowsservercore/">https://hub.docker.com/r/microsoft/windowsservercore/</a><br>
 <a href="https://hub.docker.com/r/microsoft/windows/">https://hub.docker.com/r/microsoft/windows/</a>  (still 404)</p>
-<p>I'll update the blog post once the new images have arrived.</p>
+<pre><code>docker pull mcr.microsoft.com/windows/nanoserver:1809
+docker pull mcr.microsoft.com/windows/servercore:ltsc2019
+</code></pre>
+<p>I'll update the blog post when I found the image name for the full Windows image.</p>
 <h2 id="portsbindtolocalhost">Ports bind to localhost</h2>
 <p>When you bind a container port to a host port your containerized application can be accessed with localhost from the host. This is what we are used with Linux containers since the beginning and now you no longer have to find out the container IP address to access your application.</p>
 <pre><code>docker run -p 80:80 mcr.microsoft.com/iis
@@ -275,8 +278,8 @@ s.setAttribute('data-timestamp', +new Date());
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- You can safely delete this line if your theme does not require jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=66a3f2d884"></script>
-    <script type="text/javascript" src="../assets/js/index.js?v=66a3f2d884"></script>
+    <script type="text/javascript" src="../assets/js/jquery.fitvids.js?v=595c61b0c1"></script>
+    <script type="text/javascript" src="../assets/js/index.js?v=595c61b0c1"></script>
 
 </body>
 </html>
