@@ -23,9 +23,7 @@ background-image: url(assets/mvp_docker_captain.png)
 -->
 
 .small[
-- 17:00-17:30 get together with some Pizza
-- 17:30-21:30 hands-on workshop
-- 21:30-      get some more Pizza
+- 6:30pm - 9:30pm hands-on workshop
 ]
 
 <!--
@@ -42,11 +40,9 @@ background-image: url(assets/mvp_docker_captain.png)
 
 - Docker Fundamentals
 
-- Setup Docker Engine on Windows Server 2016
+- Setup Docker Engine on Windows Server 2019
 
 - Learn about the base OS images
-
-- Secure remote Docker access via TLS
 
 - Networking
 
@@ -54,7 +50,7 @@ background-image: url(assets/mvp_docker_captain.png)
 
 - Persisting data using volumes
 
-- Dockerizing a Windows application into containers
+- Learn basics about Docker Swarm mode
 
 ---
 
@@ -82,9 +78,6 @@ background-image: url(assets/mvp_docker_captain.png)
 - [GitHub](https://github.com/join) account
   <br/>(if you want to fork the repo)
 
-- [Gitter](https://gitter.im/) account
-  <br/>(to join the conversation during the workshop)
-
 - [Docker Hub](https://hub.docker.com) account
   <br/>(it's one way to distribute images on your Docker host)
 
@@ -94,7 +87,7 @@ background-image: url(assets/mvp_docker_captain.png)
 
 - The whole workshop is hands-on
 
-- We will see Docker EE 18.03.1-ee-1 in action
+- We will see Docker EE 18.03.1-ee-3 in action
 
 - You are invited to reproduce all the demos
 
@@ -105,8 +98,7 @@ background-image: url(assets/mvp_docker_captain.png)
 - This is the stuff you're supposed to do!
 - Go to [stefanscherer.github.io/windows-docker-workshop](https://stefanscherer.github.io/windows-docker-workshop/) to view these slides
 
-- Join the chat room on
-  [gitter.im/windows-docker-workshop/Lobby](https://gitter.im/windows-docker-workshop/Lobby)
+- Join the Chocolatey Slack and use `#chocolatey-fest` channel to chat
 
 ]
 
@@ -115,9 +107,7 @@ background-image: url(assets/connect_rdp_docker.png)
 
 ## We will (mostly) interact with RDP only
 
-- We can work through the RDP session
-
-- When we have the TLS certs, we can do it from local machine through the Docker API
+- We will work in the RDP session
 
 ---
 background-image: url(assets/powershell.png)
@@ -139,12 +129,12 @@ You are welcome to use the method that you feel the most comfortable with.
 
 ## Brand new versions!
 
-- Docker Enterprise Edition 18.03.1-ee-1
-- Docker Compose 1.21.2
+- Docker Enterprise Edition 18.03.1-ee-3
+- Docker Compose 1.22.0
 
 .exercise[
 - Log into your Docker host through RDP (user and password is on your card)<br /><br />
-  **`dowba-XX.westeurope.cloudapp.azure.com`**
+  **`dowcf-XX.westus2.cloudapp.azure.com`**
 
 - Open a terminal
 
@@ -187,7 +177,7 @@ background-image: url(assets/what_is_a_container.png)
   distributions
 
 - Containers native to<br/>
-  Windows Server 2016
+  Windows Server 2019
 
 ---
 
@@ -199,6 +189,8 @@ class: title
 
 ## Install Docker
 
+- **You can skip this step with the prepared workshop machines.**
+
 - Install the Containers feature
 
 - Install and start the Docker service
@@ -207,7 +199,8 @@ class: title
 - Install Docker and feature with Microsoft's package:
   ```powershell
   Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
-  Install-Package -Name docker -ProviderName DockerMsftProvider
+  Find-Package -ProviderName DockerMsftProvider -AllVersions
+  Install-Package -Name docker -ProviderName DockerMsftProvider -Min 18.03.1-ee-3
   Restart-Computer -Force
   ```
 
@@ -300,7 +293,7 @@ class: title
 ---
 
 background-image: url(assets/base_images.png)
-# Windows base OS images
+# Windows Server 2016 base OS images
 
 ## FROM microsoft/windowsservercore
   * nearly full Win32 compatible
@@ -318,17 +311,17 @@ background-image: url(assets/base_images.png)
 ---
 
 background-image: url(assets/base_images.png)
-# Upcoming Windows 2019 base OS images
+# Windows Server 2019 base OS images
 
-## FROM mcr.microsoft.com/windows
+## FROM mcr.microsoft.com/windows ?
   * full Win32 compatible
   * 3,5 GByte
 
-## FROM mcr.microsoft.com/windowsservercore
+## FROM mcr.microsoft.com/windows/servercore
   * nearly full Win32 compatible
   * 1,5 GByte
 
-## FROM mcr.microsoft.com/nanoserver
+## FROM mcr.microsoft.com/windows/nanoserver
   * 94 MByte
   * No 32bit, no MSI, no PowerShell
 
@@ -344,8 +337,8 @@ background-image: url(assets/base_images.png)
 - Pull or update to latest Windows base OS images:
   ```powershell
   docker image ls
-  docker image pull microsoft/nanoserver
-  docker image pull microsoft/windowsservercore
+  docker image pull mcr.microsoft.com/windows/nanoserver:1809
+  docker image pull mcr.microsoft.com/windows/servercore:ltsc2019
   ```
 ]
 
@@ -356,13 +349,13 @@ background-image: url(assets/base_images.png)
 .exercise[
 - Inspect an image:
   ```powershell
-  docker image inspect microsoft/windowsservercore
+  docker image inspect mcr.microsoft.com/windows/servercore:ltsc2019
   ```
 
 - Tag an image:
   ```powershell
-  docker image tag microsoft/windowsservercore myimage
-  docker image tag microsoft/windowsservercore myimage:1.0
+  docker image tag mcr.microsoft.com/windows/servercore:ltsc2019 myimage
+  docker image tag mcr.microsoft.com/windows/servercore:ltsc2019 myimage:1.0
   docker image ls
   ```
 ]
@@ -405,10 +398,10 @@ class: title
 .exercise[
 
   ```powershell
-  docker container run microsoft/nanoserver hostname
-  docker container run microsoft/nanoserver ipconfig
-  docker container run microsoft/nanoserver cmd /c set
-  docker container run microsoft/nanoserver cmd /c cd
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 hostname
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 ipconfig
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 cmd /c set
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 cmd /c cd
   ```
 ]
 
@@ -476,7 +469,8 @@ class: title
 - Run a container that creates a file `test1.txt`
 
   ```powershell
-  docker container run microsoft/nanoserver powershell -command Out-File test1.txt
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 powershell `
+    -command Out-File test1.txt
   ```
 
 - Show the differences between the container and the image
@@ -522,7 +516,7 @@ class: title
 - Run a container with a longer running process
 
   ```powershell
-  docker container run microsoft/nanoserver ping -n 30 google.de
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 ping -n 30 google.de
   ```
 
 - Try to abort the container with `[CTRL] + C` and list containers
@@ -546,7 +540,7 @@ class: title
 - Run a container with a longer running process
 
   ```powershell
-  docker container run -it microsoft/nanoserver ping -n 30 google.de
+  docker container run -it mcr.microsoft.com/windows/nanoserver:1809 ping -n 30 google.de
   ```
 
 - Try to abort the container with `[CTRL] + C` and list containers
@@ -568,7 +562,7 @@ class: title
 - Run a shell inside a container
 
   ```powershell
-  docker container run -it microsoft/nanoserver powershell
+  docker container run -it mcr.microsoft.com/windows/nanoserver:1809 powershell
   ls
   cd Users
   exit
@@ -587,7 +581,7 @@ class: title
 - Run a detached "ping service" container
 
   ```powershell
-  docker container run -d microsoft/nanoserver powershell ping -n 300 google.de
+  docker container run -d mcr.microsoft.com/windows/nanoserver:1809 powershell ping -n 300 google.de
   ```
 
 - Now list, log or kill the container
@@ -610,7 +604,7 @@ class: title
 - You can automatically remove containers after exit
 
   ```powershell
-  docker container run --rm microsoft/nanoserver ping google.de
+  docker container run --rm mcr.microsoft.com/windows/nanoserver:1809 ping google.de
   ```
 
 - You can remove containers manually by their names or IDs
@@ -685,44 +679,30 @@ class: title
 - Try to run this PowerShell
 
   ```powershell
-  docker container run -d --name iis -p 80:80 microsoft/iis:nanoserver
+  docker container run -d --name iis -p 80:80 chocolateyfest/iis
   ```
 
 - Now **on your local computer**, open a browser
 
-  - http://dowba-XX.westeurope.cloudapp.azure.com
+  - http://dowcf-XX.westus2.cloudapp.azure.com
 
  ]
 
 ---
 
-## Windows Containers don't do loopback
+## Windows Containers now does loopback
 
-- At the moment you can't reach the published port 80 from the Docker Host
+- With Windows Server 2019 we can use `localhost` to access published ports.
 
 .exercise[
 
-- Try to open the web site **from the Docker Host**
+- Open the web site **from the Docker Host**
 
   ```powershell
   start http://localhost
   ```
 
-- Or use the container IP address from the Docker Host
-
-  ```powershell
-  docker container inspect -f '{{.NetworkSettings.Networks.nat.IPAddress}}' iis
-start http://$(docker inspect -f '{{.NetworkSettings.Networks.nat.IPAddress}}' iis)
-  ```
-
  ]
-
----
-
-## Windows Containers don't do loopback
-
-- https://blog.sixeyed.com/published-ports-on-windows-containers-dont-do-loopback/
-![Right-aligned image](https://blog.sixeyed.com/content/images/2016/10/win-nat-1.png)
 
 ---
 
@@ -818,7 +798,7 @@ start http://$(docker inspect -f '{{.NetworkSettings.Networks.nat.IPAddress}}' i
 
 - Now **on your local computer**, open a browser
 
-  - http://dowba-XX.westeurope.cloudapp.azure.com
+  - http://dowcf-XX.westus2.cloudapp.azure.com
 
 ]
 
@@ -867,7 +847,7 @@ class: title
 - Open an editor and create a `Dockerfile`
 
   ```Dockerfile
-  FROM microsoft/iis:nanoserver
+  FROM chocolateyfest/iis
   COPY iisstart.htm C:\inetpub\wwwroot
   ```
 
@@ -991,193 +971,22 @@ https://docs.docker.com/engine/reference/builder/#/escape
 
 ---
 
-class: title
-
-# Secure remote
-# Docker access via TLS
-
----
-
-## Working with Docker remote API
-
-- Docker remote API on port 2375 is not encrypted
-
-- Protect your Docker Engine
-
-  - nobody else from the Internet can connect to it
-  - no other Container can connect to it
-
-- Use TLS certificates for client and server
-
----
-
-## DockerTLS
-
-- OpenBSD LibreSSL tools
-
-- PowerShell script to automate TLS cert generation
-
-- A small containerized helper to create TLS certs for Docker Engine
-
-https://stefanscherer.github.io/protecting-a-windows-2016-docker-engine-with-tls/
-
----
-
-## DockerTLS
-
-![dockertls](assets/dockertls.png)
-
----
-
-## Preparation steps
-
-.exercise[
-
-- Open a PowerShell terminal as administrator
-
-- Create a folder for the client certs
-
-  ```powershell
-  mkdir ~\.docker
-  ```
-
-- Retrieve all local IP addresses
-
-  ```powershell
-  $ips = ((Get-NetIPAddress -AddressFamily IPv4).IPAddress) -Join ','
-  Write-Output $ips
-  ```
-
-]
-
----
-
-## Run DockerTLS
-
-.exercise[
-
-- Retrieve the public IP address
-
-  ```powershell
-  nslookup dowba-XX.westeurope.cloudapp.azure.com
-  ```
-
-- Run the dockertls container with local and public IP address (replace `x.x.x.x`)
-
-  ```powershell
-  docker container run --rm `
-    -e SERVER_NAME=$env:FQDN `
-    -e IP_ADDRESSES=$ips,$env:PUBIP `
-    -v "C:\ProgramData\docker:C:\ProgramData\docker" `
-    -v "$env:USERPROFILE\.docker:C:\Users\ContainerAdministrator\.docker" `
-    stefanscherer/dockertls-windows
-  ```
-
-]
-
----
-
-## Check what you have created
-
-.exercise[
-
-- Check client certs
-
-  ```powershell
-  dir ~\.docker
-  ```
-
-- Check server certs and `daemon.json`
-
-  ```powershell
-  dir C:\ProgramData\docker\certs.d
-  cat C:\ProgramData\docker\config\daemon.json
-  ```
-
-]
-
----
-
-## Activate TLS and test connection
-
-.exercise[
-
-- Activate the changes in `daemon.json`
-
-  ```powershell
-  Stop-Service docker
-  dockerd --unregister-service   # get rid of -H options in command line
-  dockerd --register-service
-  Start-Service docker
-  ```
-
-- Test the TLS protected connection
-
-  ```powershell
-  docker --tlsverify -H 127.0.0.1:2376 version
-  ```
-
-]
-
----
-
 # Run Portainer
 
 .exercise[
 
-- Get IP address of Ethernet adapter vEthernet (HNS Internal NIC)
-
-  ```powershell
-  ipconfig
-  ```
+- Windows Server 2019 can bind mount named pipes
 
 - Run Portainer as Windows container
 
   ```powershell
   docker run -d -p 9000:9000 --name portainer --restart always `
-    -v $env:USERPROFILE\.docker:C:\certs portainer/portainer `
-    -H tcp://172.x.x.x:2376 --tlsverify
+    -v //./pipe/docker_engine://./pipe/docker_engine `
+    chocolateyfest/portainer
   ```
+  
+- Open the browser at http://localhost:9000
 ]
-
----
-
-## Prepare remote access
-
-.exercise[
-
-- Open firewall
-
-  ```powershell
-  & netsh advfirewall firewall add rule name="Docker TLS" `
-      dir=in action=allow protocol=TCP localport=2376
-  ```
-
-- Copy client certs back to your local machine
-
-  ```powershell
-  docker --tlsverify -H dowba-XX.westeurope.cloudapp.azure.com:2376 version
-  ```
-
-]
-
----
-
-![rdp local resources](assets/rdp-osx.png)
-
-Microsoft Remote Desktop Beta App on OSX
-
----
-
-
-![rdp local resources](assets/rdp-windows.png)
-
-Microsoft Remote Desktop Client on Windows
-
----
-![rdp with local folder](assets/rdp-with-local-folder.png)
-
-Local folder shared in RDP session
 
 ---
 
@@ -1218,13 +1027,13 @@ class: title
 - Run a container with network
 
   ```powershell
-  docker container run microsoft/nanoserver ipconfig
+  docker container run mcr.microsoft.com/windows/nanoserver:1809 ipconfig
   ```
 
 - Run a container without a network
 
   ```powershell
-  docker container run --network none microsoft/nanoserver ipconfig
+  docker container run --network none mcr.microsoft.com/windows/nanoserver:1809 ipconfig
   ```
 
 ]
@@ -1240,8 +1049,8 @@ class: title
 - Run IIS again, as well as an interactive container
 
   ```powershell
-  docker container run --name iis -p 80:80 -d microsoft/iis:nanoserver
-  docker container run -it microsoft/nanoserver powershell
+  docker container run --name iis -p 80:80 -d chocolateyfest/iis
+  docker container run -it mcr.microsoft.com/windows/nanoserver:1809 powershell
   ```
 
 - Now inside the container, try to access the IIS web server by its DNS name
@@ -1268,7 +1077,7 @@ background-image: url(assets/compose.png)
 ## Installing Docker Compose
 
 - Docker for Mac/Docker for Windows already has Docker Compose installed
-- Installation on Windows Server 2016
+- Installation on Windows Server 2019
 
 .exercise[
 
@@ -1293,7 +1102,7 @@ background-image: url(assets/compose.png)
   version: '2.1'
   services:
       web:
-        image: microsoft/iis:nanoserver
+        image: chocolateyfest/iis
         ports:
           - 80:80
   ```
@@ -1330,12 +1139,12 @@ background-image: url(assets/compose.png)
   ```
   services:
       web:
-        image: microsoft/iis:nanoserver
+        image: chocolateyfest/iis
         ports:
           - 80:80
 
       client:
-        image: microsoft/nanoserver
+        image: mcr.microsoft.com/windows/nanoserver:1809
         command: powershell -Command Invoke-WebRequest http://web
   ```
 
@@ -1371,12 +1180,12 @@ background-image: url(assets/compose.png)
   version: '2.1'
   services:
       web:
-        image: microsoft/iis:nanoserver
+        image: chocolateyfest/iis
         ports:
           - 80:80
 
       client:
-        image: microsoft/nanoserver
+        image: mcr.microsoft.com/windows/nanoserver:1809
         command: powershell -Command Sleep 2 ; Invoke-WebRequest http://web
         depends_on:
           - web
@@ -1459,7 +1268,7 @@ class: title
 
   ```Dockerfile
   # escape=`
-  FROM microsoft/iis:nanoserver
+  FROM chocolateyfest/iis
   COPY iisstart.htm C:\inetpub\wwwroot
   ```
 
@@ -1482,7 +1291,7 @@ class: title
 - Example
   ```Dockerfile
   # escape=`
-  FROM microsoft/windowsservercore
+  FROM mcr.microsoft.com/windows/servercore:ltsc2019
   RUN powershell -Command Invoke-WebRequest 'http://foo.com/bar.zip' `
                               -OutFile 'bar.zip' -UseBasicParsing
   RUN powershell -Command Expand-Archive bar.zip -DestinationPath C:\
@@ -1500,7 +1309,7 @@ class: title
 - Use `$ProgressPreference = 'SilentlyContinue'` to improve download speed.
 
   ```Dockerfile
-  FROM microsoft/nanoserver
+  FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
   SHELL ["powershell", "-Command", `
       "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -1514,7 +1323,7 @@ class: title
 
   ```Dockerfile
   # escape=`
-  FROM microsoft/windowsservercore
+  FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
   SHELL ["powershell", "-Command", `
       "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -1544,7 +1353,7 @@ class: title
 
   ```Dockerfile
   # escape=`
-  FROM microsoft/windowsservercore
+  FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
   SHELL ["powershell", "-Command", `
       "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -1620,7 +1429,7 @@ class: title
 
 - Write a small Dockerfile that reads and writes a file at runtime.
   ```Dockerfile
-  FROM microsoft/nanoserver
+  FROM mcr.microsoft.com/windows/nanoserver:1809
   CMD cmd /c dir content.txt & echo hello >content.txt
   ```
 
@@ -1642,7 +1451,7 @@ class: title
 
 - Add a `WORKDIR` to have an empty folder inside the container.
   ```Dockerfile
-  FROM microsoft/nanoserver
+  FROM mcr.microsoft.com/windows/nanoserver:1809
   WORKDIR /data
   CMD cmd /c dir content.txt & echo hello >content.txt
   ```
@@ -1680,87 +1489,13 @@ class: title
 
 ---
 
-## Use the VOLUME instruction
-
-- There is a `VOLUME` instruction in Dockerfiles.
-
-.exercise[
-
-- Add a `VOLUME` to make it more readable.
-  ```Dockerfile
-  # escape=`
-  FROM microsoft/nanoserver
-  VOLUME C:\data
-  CMD cmd /c dir c:\data\content.txt & echo hello >c:\data\content.txt
-  ```
-
-- Build and run the container. Run it again. Does it behave different?
-  ```powershell
-  docker build -t content .
-  docker run content
-  ```
-
-]
-
----
-
 ## Windows volumes in practice
 
 ## Empty directory
 
 - You can mount a volume only into an empty directory.
 
-- The `microsoft/iis` default folder `C:\inetpub\wwwroot` is not empty.
-
-## Real path problem
-
-- Some applications try to get the **real path** of a file.
-- They often fail at the reparse point.
-
-- Use a mapped drive as a workaround.
-
----
-
-## Use a mapped drive
-
-- This is a workaround to run Node.js sources mounted from the host
-
-```Dockerfile
-# escape=`
-FROM stefanscherer/node-windows:10
-
-RUN npm install -g nodemon
-
-VOLUME C:\code
-RUN set-itemproperty -path `
-    'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' `
-    -Name 'G:' -Value '\??\C:\code' -Type String
-WORKDIR G:\
-
-CMD ["nodemon.cmd", "--debug=5858", "app.js"]
-```
-
-- The Node.js app is running in `G:\`, you still use `C:\code` for your volume.
-
----
-
-## Third-party volume driver plugins
-
-- [HPE Nimble Storage Volume driver and plugin](https://www.hpe.com/de/de/storage/containers.html)
-
----
-
-class: title
-
-# Dockerizing a Windows application into containers
-
----
-
-## MusicStore example
-
-- https://github.com/docker/labs/tree/master/windows/modernize-traditional-apps/modernize-aspnet
-
-- https://github.com/aspnet/MusicStore
+- The `chocolatey/iis` default folder `C:\inetpub\wwwroot` is not empty.
 
 ---
 
@@ -1770,11 +1505,146 @@ class: title
 
 Work in progress:
 
-- Kubernetes
+- Kubernetes, currently in beta, planned for 1.13
 
 - OpenShift
 
 ...
+
+---
+
+class: title
+
+# Docker Swarm mode
+
+---
+
+## Docker Swarm
+
+- Use the current RDP session as manager node
+
+- Create a Docker Swarm cluster
+
+.exercise[
+
+- Lookup the IP address of the manager node
+  ```powershell
+  ipconfig | sls IPv4
+  ```
+
+- Initialize a Docker Swarm single node
+  ```powershell
+  docker swarm init --advertise-addr 10.0.xx.xx 
+  ```
+
+]
+
+---
+
+## Docker Swarm
+
+- Add your second machine as worker node
+
+.exercise[
+
+- Copy the docker swarm join command and paste it into second node
+  ```powershell
+  docker swarm join ...
+  ```
+
+]
+
+---
+
+## Docker Swarm
+
+- Go back to the manager node
+
+.exercise[
+
+- List your available nodes in the Docker Swarm cluster
+  ```powershell
+  docker node ls
+  ```
+
+]
+
+---
+
+## Appetizer app: The Stack file
+
+- Docker Stack uses a `docker-compose.yml` file to define multiple services
+
+- Define services in a Compose file
+  ```
+  version: "3.2"
+  services:
+
+    chocolate:
+      image: chocolateyfest/appetizer:1.0.0
+      ports:
+        - 8080:8080
+      deploy:
+        placement:
+          constraints:
+            - node.platform.os == windows
+  ```
+
+---
+
+## Deploy the stack
+
+- Go back to the manager node
+
+.exercise[
+
+- Now deploy the Stack to you Docker Swarm cluster
+  ```powershell
+  docker stack deploy -c docker-compose.yml appetizer
+  ```
+
+]
+
+---
+
+## Open the browser
+
+- Swarm services cannot be access by localhost.
+
+- Use the external name of the Docker Swarm node to access published ports
+
+.exercise[
+
+- Open a browser
+  ```powershell
+  start http://$($env:FQDN):8080
+  ```
+
+- Reload the page in the browser
+
+]
+
+---
+
+## Scale it up
+
+- Scale the service to have more than one replica
+
+.exercise[
+
+- List your deployed services in the Swarm cluster
+  ```powershell
+  docker service ls
+  ```
+
+- Scale the service up
+  ```powershell
+  docker service scale xxx_appetizer=8
+  ```
+
+- Reload the page in the browser
+
+]
 
 ---
 
@@ -1784,7 +1654,8 @@ Work in progress:
   - Docker 4 Windows (using Hyper-V)
 
 - Azure
-  - Windows Server 2016, 1709, 1803, 2019 preview
+  - Windows Server 2016, 1709, 1803, **2019**
+  - Azure Pipeline
 
 - AppVeyor CI
   - [github.com/StefanScherer/dockerfiles-windows](https://github.com/StefanScherer/dockerfiles-windows/pull/344) - collection
