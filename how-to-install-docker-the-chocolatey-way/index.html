@@ -24,7 +24,7 @@
     <meta property="og:description" content="When I&#x27;m working with Windows I love to have a standarized way to install software. Did you remember how we have set up our dev machines a few years ago? Well, about five years ago I found this blog post by security expert Troy Hunt and his 102 simple steps" />
     <meta property="og:url" content="https://stefanscherer.github.io/how-to-install-docker-the-chocolatey-way/" />
     <meta property="article:published_time" content="2018-11-30T07:49:23.000Z" />
-    <meta property="article:modified_time" content="2018-11-30T07:53:27.000Z" />
+    <meta property="article:modified_time" content="2018-11-30T08:08:17.000Z" />
     <meta property="article:tag" content="Docker" />
     <meta property="article:tag" content="Chocolatey" />
     <meta property="article:tag" content="Windows 7" />
@@ -68,7 +68,7 @@
     "headline": "How to install Docker the Chocolatey way",
     "url": "https://stefanscherer.github.io/how-to-install-docker-the-chocolatey-way/",
     "datePublished": "2018-11-30T07:49:23.000Z",
-    "dateModified": "2018-11-30T07:53:27.000Z",
+    "dateModified": "2018-11-30T08:08:17.000Z",
     "keywords": "Docker, Chocolatey, Windows 7, Windows 10",
     "description": "When I&#x27;m working with Windows I love to have a standarized way to install software. Did you remember how we have set up our dev machines a few years ago? Well, about five years ago I found this blog post by security expert Troy Hunt and his 102 simple steps",
     "mainEntityOfPage": {
@@ -149,7 +149,7 @@ This package is usable for people that cannot run the newer Docker Desktop produ
 <p>I worked with VMware Workstation for years so the Docker Toolbox <a href="https://stefanscherer.github.io/yes-you-can-docker-on-windows-7/">wasn't my thing</a>. I knew that there is a tool called <code>docker-machine</code> to create Linux VM's with the boot2docker.iso file. That's why I started with the Choco packages for <code>docker-machine</code>, helped maintaining the <code>docker-compose</code> package and added some Docker Machine drivers as Chocolatey packages <code>docker-machine-vmwareworkstation</code> and <code>docker-machine-vmware</code> as well.</p>
 <p>This is the fine granular approach to install only the tools you need, but still using the <code>choco install</code> experience.</p>
 <h2 id="dockerforwindows">Docker for Windows</h2>
-<p><a href="https://twitter.com/MRiezebosch">Manuel Riezebosch</a> started a Chocolatey package <code>docker-for-windows</code> which is an excellent work. You can install &quot;Docker for Windows&quot; product which is the successor of &quot;Docker Toolbox&quot; with it, but please read the next section to grab the latest version of it.</p>
+<p><a href="https://twitter.com/MRiezebosch">Manuel Riezebosch</a> started a Chocolatey package <code>docker-for-windows</code> which is an excellent work. You can install &quot;Docker for Windows&quot; product with it which is the successor of &quot;Docker Toolbox&quot;. But please read the next section to grab the latest version of it.</p>
 <h2 id="dockerdesktop">Docker Desktop</h2>
 <p>With the new release of Docker Desktop 2.0 for Windows 10 Pro/Enterprise there is also a change in the name. The product &quot;Docker for Windows&quot; has been renamed to &quot;Docker Desktop&quot;. It also gets a new version format.</p>
 <p>That's the reason to start with a new Choco package name. Please unlearn <code>docker-for-windows</code> and just use <code>choco install docker-desktop</code> to get the latest version on your machine.</p>
@@ -164,6 +164,7 @@ This package is usable for people that cannot run the newer Docker Desktop produ
 <p>The best experience with Docker on a Windows 10 machine is using the Docker Desktop product. Try to grab an up-to-date Windows 10 Pro machine to be all set for it and then run</p>
 <pre><code>choco install docker-desktop
 </code></pre>
+<p>Otherwise jump over to <a href="https://chocolatey.org/search?q=docker">https://chocolatey.org/search?q=docker</a> and grab one of the other Docker related Chocolatey packages.</p>
 <p>I hope this overview of all the Chocolatey packages will give you a better understanding of what is right for your needs. I would love to hear your feedback so please leave a comment below or ask me on <a href="https://twitter.com/stefscherer">Twitter</a>.</p>
 </div>
         </section>
