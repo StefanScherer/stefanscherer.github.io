@@ -1,4 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Fri, 01 Feb 2019 09:46:43 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Joining Docker]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Today is my first day working for Docker, Inc. and I'm absolutely excited to be there. After months of prepartions I got this email today morning.</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Stefan Scherer's Blog]]></title><description><![CDATA[Just my techie notes.]]></description><link>https://stefanscherer.github.io/</link><image><url>https://stefanscherer.github.io/favicon.png</url><title>Stefan Scherer&apos;s Blog</title><link>https://stefanscherer.github.io/</link></image><generator>Ghost 1.8</generator><lastBuildDate>Sat, 11 May 2019 17:30:28 GMT</lastBuildDate><atom:link href="https://stefanscherer.github.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[How to configure secrets in Azure Pipelines]]></title><description><![CDATA[<div class="kg-card-markdown"><p>A few weeks ago I tried Azure Pipelines for one of <a href="https://github.com/StefanScherer/azurepipelinetest">my GitHub repos</a>. Azure Pipelines is a cloud service to setup CI/CD pipelines. I'm already using Travis, CircleCI and AppVeyor for years, but I wanted to give Azure Pipelines a try to see how it has evolved.</p>
+<p>It's</p></div>]]></description><link>https://stefanscherer.github.io/how-to-use-secrets-in-azure-pipelines/</link><guid isPermaLink="false">5cd6ebf93e10bf000199b6e7</guid><category><![CDATA[Azure]]></category><category><![CDATA[secrets]]></category><category><![CDATA[pipeline]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 11 May 2019 17:22:27 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>A few weeks ago I tried Azure Pipelines for one of <a href="https://github.com/StefanScherer/azurepipelinetest">my GitHub repos</a>. Azure Pipelines is a cloud service to setup CI/CD pipelines. I'm already using Travis, CircleCI and AppVeyor for years, but I wanted to give Azure Pipelines a try to see how it has evolved.</p>
+<p>It's very easy to hook it to your <a href="https://github.com/marketplace/azure-pipelines/plan/MDIyOk1hcmtldHBsYWNlTGlzdGluZ1BsYW4xMTkz#pricing-and-setup">GitHub project</a>, and it's free for open source projects. You typically add an <a href="https://github.com/StefanScherer/azurepipelinetest/blob/printenvtest/azure-pipelines.yml">azure-pipelines.yml</a> in your GitHub repo to define the CI pipeline. Then this definition is also under version control. And users can easily fork your repo and hook up their own pipeline this the given YML file.</p>
+<p>For a real project to build and push a <a href="https://github.com/StefanScherer/azurepipelinetest/blob/master/azure-pipelines.yml">multi-arch Windows/Linux Docker image</a> I tried to use secret variables for the <code>docker push</code>. But I struggled for an hour <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/?toc=%2Fazure%2Fdevops%2Fpipelines%2Ftoc.json&amp;bc=%2Fazure%2Fdevops%2Fboards%2Fpipelines%2Fbreadcrumb%2Ftoc.json&amp;view=azure-devops">reading the docs</a> again and again and compare it with the actual UI I found from my MacBook. I just couldn't understand where this tiny lock icon should be. I added variables, removed them again, search for other options. Nothing. Is it only available in paid plan? All these thoughts to figure out when you don't have a clue where the developer has added this button.</p>
+<p>Look at my screen:</p>
+<p><img src="https://stefanscherer.github.io/content/images/2019/05/azure-pipelines-variables-where-is-the-lock.jpg" alt="azure pipelines variables where is the lock"></p>
+<p>No lock icon.</p>
+<p>I don't know when it happened, but I &quot;accidentally&quot; two-finger-swiped on the table of variables.</p>
+<p>Oh no, so close but it's really not intuitive for first-time users with a non-24&quot; external display sitting on a chair in the conversatory :-)</p>
+<p><img src="https://stefanscherer.github.io/content/images/2019/05/azure-pipelines-variables-here-my-lock.jpg" alt="azure pipelines variables here my lock"></p>
+<p>Now I know where to look for that lock icon, but please MSFT let the first-time users know better where to put secrets. Otherwise they just add variables that should be secrets but as I just ran a test if it works that forked pull requests don't see these secrets. No the user of the fork can see this variable until you click on that &quot;hidden&quot; lock icon.</p>
+<p>There is so much white space that can be used to have this lock column visible even on smaller displays.</p>
+<p>The rest of the pipeline was straight forward and Azure Pipelines is able to build and push a <a href="https://hub.docker.com/r/stefanscherer/hello">multi-arch image to Docker Hub</a> for several Windows versions as well as Linux for different CPU architectures with some tricks. Thanks Azure Pipelines team, you rock, I like Azure Pipelines so far.</p>
+<p>If you want to give Microsoft feedback, you can <a href="https://developercommunity.visualstudio.com/idea/531856/azure-pipelines-variables-bad-ux-to-find-lock-for.html?childToView=565168#comment-565168">vote up my comment here</a>.</p>
+</div>]]></content:encoded></item><item><title><![CDATA[Joining Docker]]></title><description><![CDATA[<div class="kg-card-markdown"><p>Today is my first day working for Docker, Inc. and I'm absolutely excited to be there. After months of prepartions I got this email today morning.</p>
 <p><img src="https://stefanscherer.github.io/content/images/2019/02/github-docker-join.png" alt="github-docker-join"></p>
 <p>I love the green buttons on GitHub ;-)</p>
 <h1 id="goodbyesealsystems">Goodbye SEAL Systems</h1>
@@ -1276,177 +1290,4 @@ Image: node:8.7-alpine
 <p>That was a fascinating week at DockerCon. Thanks to Jenny, Ashlinn, Victor, Mano ... for making this event so wonderful. I had a lot of hallway tracks to talk with many people about Windows Containers in devolpment and production. Share and learn!</p>
 <p>Stefan<br>
 <a href="https://twitter.com/stefscherer">@stefscherer</a></p>
-</div>]]></content:encoded></item><item><title><![CDATA[Use Docker to Search in 320 Million Pwned Passwords]]></title><description><![CDATA[<div class="kg-card-markdown"><p>This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of <a href="https://haveibeenpwned.com">Have I Been Pwned?</a> website and service that will notify you when one of your registered email addresses have been compromised by a data breach.</p>
-<p>In his latest blog post</p></div>]]></description><link>https://stefanscherer.github.io/use-docker-to-search-in-320-million-pwned-passwords/</link><guid isPermaLink="false">5986d4ec688a490001540976</guid><category><![CDATA[Docker]]></category><category><![CDATA[multi-stage]]></category><category><![CDATA[HaveIBeenPwned]]></category><category><![CDATA[passwords]]></category><category><![CDATA[Security]]></category><dc:creator><![CDATA[Stefan Scherer]]></dc:creator><pubDate>Sat, 05 Aug 2017 00:55:07 GMT</pubDate><content:encoded><![CDATA[<div class="kg-card-markdown"><p>This week Troy Hunt, a security researcher announced a freely downloadable list of pwned passwords. Troy is the creator of <a href="https://haveibeenpwned.com">Have I Been Pwned?</a> website and service that will notify you when one of your registered email addresses have been compromised by a data breach.</p>
-<p>In his latest blog post he introduced <a href="https://www.troyhunt.com/introducing-306-million-freely-downloadable-pwned-passwords/">306 Million Freely Downloadable Pwned Passwords</a> with an update of another 14 Million just on the following day. He also has setup a online search at <a href="https://haveibeenpwned.com/Passwords">https://haveibeenpwned.com/Passwords</a></p>
-<p>You can enter passwords and check if they have been compromised. <strong>But do not enter actively used passwords here</strong>, even if Troy is a nice person living in sunny Australia.</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/pwned-passwords.png" alt="Pwned Passwords online service"></p>
-<p>My recommendation is</p>
-<ol>
-<li>If you are in doubt if your password has been pwned, just <strong>change it first</strong> and then check the old one in the online form.</li>
-<li>Use a <strong>Password manager</strong> like 1Password to create an individual long random password <strong>for each service</strong> you use.</li>
-</ol>
-<p>But the huge password list is still quite interesting to work with.</p>
-<h2 id="letsbuildalocalsearch">Let's build a local search</h2>
-<p>What you can do is download the list of passwords (about 5 GByte compressed) and search locally in a safe place. You won't get the cleartext passwords, but only SHA1 sums of them. But we can create SHA1 sums of the passwords we want to search in this huge list.</p>
-<p>You can download the files that are compressed with 7-Zip. You also need a tool to create a SHA1 sum of a plain text. And then you need another tool, a database or algorithm to quickly search in that text file that has nearly 320 Million lines.</p>
-<h2 id="usedockerforthetask">Use Docker for the task</h2>
-<p>I immediately thought of a Container that has all these tools installed. But I didn't want to add the huge password lists into that container as it would build a Docker image of about 12 GByte or probably 5-6 GB Docker image on the Docker Hub.</p>
-<p>The password files should be persisted locally on your laptop and mounted into the container to search in them with the tools needed for the task.</p>
-<p>And I want to use some simple tools to get the work done. A first idea was born in the comments of Troys blog post where someone showed a small bash script with <code>grep</code> to search in the file.</p>
-<p>I first tried <code>grep</code>, but this took about 2 minutes to find the hash in the file. So I searched a little bit and found <a href="http://sgrep.sourceforge.net"><code>sgrep</code></a> - a tool to grep in sorted files. Luckily the password files are sorted by the SHA1 hash. But I found only the source code and there is no standard package to install it. So we also need a C compiler for that.</p>
-<p>In times before Docker you had a lot of stress installing many tools on your computer. But let's see how Docker can help us with all these steps.</p>
-<h2 id="buildthedockerimage">Build the Docker image</h2>
-<p>I found the Sources of sgrep on <a href="https://github.com/colinscape/sgrep">GitHub</a> and we will need Make and a C compiler to build the <code>sgrep</code> binary.</p>
-<p>I will use a <strong>multi-stage build</strong> Dockerfile and explain every single line. You can build the image line by line and see the benefits of build caches while working on the <code>Dockerfile</code>. So after adding a line to the file you can run <code>docker build -t pwned-passwords .</code> to build and update the image.</p>
-<p>For the beginning let's choose a small Linux base image. We will name the first stage as <code>build</code>. So the <code>Dockerfile</code> starts with</p>
-<pre><code>FROM alpine:3.6 AS build
-</code></pre>
-<p>The next step is we have to install Git, Make and the C compiler with its header files.</p>
-<pre><code>RUN apk update &amp;&amp; apk add git make gcc musl-dev
-</code></pre>
-<p>Now we clone the GitHub repo with the source code of sgrep.</p>
-<pre><code>RUN git clone https://github.com/colinscape/sgrep
-</code></pre>
-<p>In the next line I'll create a bin folder that is needed for the build process. Then we go to the source directory and run the <code>make</code> command as there is a <code>Makefile</code> in that directory.</p>
-<pre><code>RUN mkdir sgrep/bin &amp;&amp; cd sgrep/src &amp;&amp; make
-</code></pre>
-<p>After these steps we have the <code>sgrep</code> binary compiled for Alpine Linux. But we also have installed a ton of other tools.</p>
-<p>Now put all these instructions into a <code>Dockerfile</code> and build the Docker image.</p>
-<pre><code>$ docker build -t pwned-passwords .
-</code></pre>
-<p>Let's inspect all image layers we have created so far.</p>
-<pre><code>$ docker history --format &quot;{{.ID}}\t{{.Size}}\t{{.CreatedBy}}&quot; pwned-passwords
-78171a118279	24.5kB	/bin/sh -c mkdir sgrep/bin &amp;&amp; cd sgrep/src...
-2323bcb14b5f	93.6kB	/bin/sh -c git clone https://github.com/co...
-8ec1470030af	119MB	/bin/sh -c apk update &amp;&amp; apk add git make ...
-7328f6f8b418	0B	/bin/sh -c #(nop)  CMD [&quot;/bin/sh&quot;]
-&lt;missing&gt;	3.97MB	/bin/sh -c #(nop) ADD file:4583e12bf5caec4...
-</code></pre>
-<p>As you can see we now have a Docker image of more than 120 MByte, but the <code>sgrep</code> binary is only 15 KByte. Yes, this is no typo. Yes, we will grep through GByte of data with a tiny 15 KByte binary.</p>
-<h2 id="multistagebuildforthewin">Multi-stage build for the win</h2>
-<p>With Docker 17.05 and newer you can now add another <code>FROM</code> instruction and start with a new stage in your <code>Dockerfile</code>. The last stage will create the final Docker image. So every instruction after the last <code>FROM</code> defines what goes into the image you want to share eg. on Docker Hub.</p>
-<p>So let's start our final stage of our Docker image build with</p>
-<pre><code>FROM alpine:3.6
-</code></pre>
-<p>The last stage does not need a name. Now we have an empty Alpine Linux again, all the 120 MByte of development environment won't make it into the final image. But if you build the Docker image more than once the temporary layers are still there and will be reused if they are unmodified. So the Docker build cache helps you speed up while working on the shell script.</p>
-<p>In the previous build stage we have created the much faster <code>sgrep</code> command. What we now need is a small shell script that converts a plaintext password into a SHA1 sum and runs the <code>sgrep</code> command.</p>
-<p>To create a SHA1 sum I'll use <code>openssl</code> command. And it would be nice if the shell script can download the huge files for us. As the files are compressed with 7-zip we also need <code>wget</code> to download and <code>7z</code> to extract them.</p>
-<p>In the next instruction we install OpenSSL and the 7-Zip tool.</p>
-<pre><code>RUN apk update &amp;&amp; apk add openssl p7zip
-</code></pre>
-<p>The <code>COPY</code> instruction has an option <code>--from</code> where you can specify another named stage of your build. So we copy the compiled <code>sgrep</code> binary from the <code>build</code> stage into the local bin directory.</p>
-<pre><code>COPY --from=build /sgrep/bin/sgrep /usr/local/bin/sgrep
-</code></pre>
-<p>The complete shell script is called <code>search</code> and can be found in <a href="https://github.com/StefanScherer/pwned-passwords">my pwned-passwords</a> GitHub repo. Just assume we have it in the current directory. The next <code>COPY</code> instruction copies it from your real machine into the image layer.</p>
-<pre><code>COPY search /usr/local/bin/search
-</code></pre>
-<p>As the last line of the <code>Dockerfile</code> we define an entrypoint to run this shell script if we run the Docker container.</p>
-<pre><code>ENTRYPOINT [&quot;/usr/local/bin/search&quot;]
-</code></pre>
-<p>Now append these lines to the <code>Dockerfile</code> and build the complete image. You will see that the first layers are already cached and only the last stage will be built.</p>
-<h3 id="thesearchscript">The search script</h3>
-<p>You can find the <a href="https://github.com/StefanScherer/pwned-passwords/blob/master/search"><code>search</code> script</a> in my GitHub repo as well as the <code>Dockerfile</code>. You only need these two tiny files to build the Docker image yourself.</p>
-<pre><code>#!/bin/sh
-set -e
-
-if [ ! -d /data ]; then
-  echo &quot;Please run this container with a volume mounted at /data.&quot;
-  echo &quot;docker run --rm -v \ $(pwd):/data pwned-passwords $*&quot;
-  exit 1
-fi
-
-FILES=&quot;pwned-passwords-1.0.txt pwned-passwords-update-1.txt&quot;
-for i in $FILES
-do
-  if [ ! -f &quot;/data/$i&quot; ]; then
-    echo &quot;Downloading $i&quot;
-    wget -O &quot;/tmp/$i.7z&quot; &quot;https://downloads.pwnedpasswords.com/passwords/$i.7z&quot;
-    echo &quot;Extracting $i to /data&quot;
-    7z x -o/data &quot;/tmp/$i.7z&quot;
-    rm &quot;/tmp/$i.7z&quot;
-  fi
-done
-
-if [[ $1 != &quot;&quot; ]]
-then
-PWD=$1
-else
-PWD=&quot;password&quot;
-echo &quot;checking $PWD&quot;
-fi
-
-hash=`echo -n $PWD | openssl sha1 | awk '{print $2}' | awk 'BEGIN { getline; print toupper($0)  }'`
-echo &quot;Hash is $hash&quot;
-totalcount=0
-for i in $(sgrep -c $hash /data/*.txt)
-do
-  file=$(echo &quot;$i&quot; | cut -f1 -d:)
-  count=$(echo &quot;$i&quot; | cut -f2 -d:)
-  if [[ $count -ne 0 ]]; then
-    echo &quot;Oh no - pwned! Found $count occurences in $file&quot;
-  fi
-  totalcount=$(( $totalcount + $count ))
-done
-if [[ $totalcount -eq 0 ]]; then
-  echo &quot;Good news - no pwnage found!&quot;
-else
-  exit 1
-fi
-</code></pre>
-<h2 id="buildthefinalimage">Build the final image</h2>
-<p>Now with these two files, <code>Dockerfile</code> and <code>search</code> shell script build the small Docker image.</p>
-<pre><code>$ docker build -t pwned-passwords .
-</code></pre>
-<p>Let's have a look at the final image layers with</p>
-<pre><code>$ docker history --format &quot;{{.ID}}\t{{.Size}}\t{{.CreatedBy}}&quot; stefanscherer/pwned-passwords
-24eca60756c8	0B	/bin/sh -c #(nop)  ENTRYPOINT [&quot;/usr/local...
-c1a9fc5fdb78	1.04kB	/bin/sh -c #(nop) COPY file:ea5f7cefd82369...
-a1f4a26a50a4	15.7kB	/bin/sh -c #(nop) COPY file:bf96562251dbd1...
-f99b3a9601ea	10.7MB	/bin/sh -c apk update &amp;&amp; apk add openssl p...
-7328f6f8b418	0B	/bin/sh -c #(nop)  CMD [&quot;/bin/sh&quot;]
-&lt;missing&gt;	3.97MB	/bin/sh -c #(nop) ADD file:4583e12bf5caec4...
-</code></pre>
-<p>As you can see, OpenSSL and 7-Zip take about 10 MByte, the 16 KByte sgrep binary and the 1 KByte shell script are sitting on top of the 4 MByte Alpine base image.</p>
-<p>I also have pushed this image to the <a href="https://hub.docker.com/r/stefanscherer/pwned-passwords/">Docker Hub</a> with a compressed size of about 7 MByte. If you trust me, you can use this Docker image as well. But you will learn more how multi-stage builds feel like if you build the image yourself.</p>
-<h2 id="searchforpwnedpasswords">Search for pwned passwords</h2>
-<p>We now have a small 14.7 MByte Linux Docker image to search for pwned passwords.</p>
-<p>Run the container with a folder mounted to <code>/data</code>. If you forgot this, the script will show you how to run it.</p>
-<p>Running the container for the first time it will download the two password files (5 GByte) which may take some minutes depending on your internet connectivity.</p>
-<p>After the script has downloaded everything two files should appear in the current folder. For me it looks like this:</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/list.png" alt="file list"></p>
-<p>Now search for passwords by adding a plaintext password as an argument</p>
-<pre><code>$ docker run --rm -v $(pwd):/data pwned-passwords troyhunt
-Hash is 0CCE6A0DD219810B5964369F90A94BB52B056494
-Oh no - pwned! Found 1 occurences in /data/pwned-passwords-1.0.txt
-</code></pre>
-<p>If you don't trust my script or the <code>sgrep</code> command, the run the container without network connectivity</p>
-<pre><code>$ docker run --rm -v $(pwd):/data --network none pwned-passwords secret4949
-Hash is 6D26C5C10FF089BFE81AB22152E2C0F31C58E132
-Good news - no pwnage found!
-</code></pre>
-<p>So you have luck, you can securely check that your password <code>secure4949</code> hasn't been breached. But beware this is still no good password :-)</p>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/mac.png" alt="Run pwned-passwords"></p>
-<h2 id="worksonwindows">Works on Windows</h2>
-<p>If you have Docker installed on your Windows machine, you can also use my Docker image or build the image yourself.</p>
-<p>With Docker 4 Windows it only depends on the shell you use.</p>
-<p>For PowerShell the command to run the image is</p>
-<pre><code>docker run --rm -v &quot;$(pwd):/data&quot; pwned-passwords yourpass
-</code></pre>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/ps1.png" alt="PowerShell"></p>
-<p>And if you prefer the classic CMD shell use this command</p>
-<pre><code>docker run --rm -v &quot;%cd%:/data&quot; pwned-passwords yourpass
-</code></pre>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/cmd.png" alt="CMD shell"></p>
-<p>On my Windows 7 machine I have to use Docker Machine, but even here you can easily search for pwned passwords. All you have to do is mount a directory for the password files as <code>/data</code> into the container.</p>
-<pre><code>docker run --rm -v &quot;/c/Users/stefan.scherer/pwned:/data&quot; stefanscherer/pwned-passwords troyhunt
-</code></pre>
-<p><img src="https://stefanscherer.github.io/content/images/2017/08/win7.png" alt="Windows 7 with pwned-passwords image"></p>
-<h2 id="conclusion">Conclusion</h2>
-<p>You now know that there are Millions of passwords out there that may be used in a brute force attack to other online services.</p>
-<p>So please use a password manager instead of predictable patterns how to modify passwords for different services.</p>
-<p>You also have learned how Docker can keep your computer clean but still compile some open source projects from source code.</p>
-<p>You have seen the benefits of multi-stage builds to create and share minimal Docker images without the development environment.</p>
-<p>And you now have the possibility to search your current passwords in a save place without leaking it to the internet. Some other online service may collect all the data entered into a form. So keep your passwords secret and change</p>
-<p>If you want to hear more about Docker, follow me on Twitter <a href="https://twitter.com/stefscherer">@stefscherer</a>.</p>
 </div>]]></content:encoded></item></channel></rss>
