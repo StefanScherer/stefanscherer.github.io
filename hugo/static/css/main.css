@@ -18,6 +18,69 @@ body {
   background: radial-gradient(circle at top right, #ffe8d6, var(--bg));
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1216;
+    --ink: #e6edf1;
+    --brand: #6fc6d9;
+    --brand-alt: #ffb680;
+    --card: #101b21;
+  }
+
+  body {
+    background: radial-gradient(circle at top right, #1b2d33, #0b1216);
+  }
+
+  .site-header {
+    background: rgba(11, 18, 22, 0.88);
+    border-bottom: 2px solid #31515a;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d5256, #2d7c72);
+    color: #e6f7f6;
+  }
+
+  .btn {
+    background: #d8ecf2;
+    color: #102027;
+  }
+
+  .post-list li {
+    border: 1px solid #31515a;
+  }
+
+  .post-item:hover {
+    border-color: #4f7782;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .post-teaser,
+  .step-thumb {
+    border: 1px solid #31515a;
+  }
+
+  .post-summary,
+  .meta,
+  small {
+    color: #b8c8ce;
+  }
+
+  .polarsteps-callout {
+    border: 1px solid #2c5963;
+    border-left: 6px solid #54aebb;
+    background: linear-gradient(135deg, #12242a, #16323a);
+  }
+
+  .polarsteps-callout a {
+    color: #8ed8e5;
+  }
+
+  .site-footer {
+    color: #b8c8ce;
+  }
+}
+
 .site-header {
   display: flex;
   justify-content: space-between;
@@ -279,5 +342,73 @@ body.lightbox-open {
 
   .post-teaser {
     height: 200px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: radial-gradient(circle at top right, #1b2d33, #0b1216);
+    color: #e6edf1;
+  }
+
+  .site-header {
+    background: rgba(11, 18, 22, 0.9);
+    border-bottom-color: #31515a;
+  }
+
+  .brand,
+  nav a {
+    color: #bfe8f1;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d5256, #2d7c72);
+    color: #e6f7f6;
+  }
+
+  .btn {
+    background: #d8ecf2;
+    color: #102027;
+  }
+
+  .post-list li {
+    border-color: #31515a;
+    background: #101b21;
+  }
+
+  .post-item:hover {
+    border-color: #4f7782;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  .post-teaser,
+  .step-thumb {
+    border-color: #31515a;
+  }
+
+  .post-title,
+  .post-summary,
+  .post-date,
+  .meta,
+  small {
+    color: #c8d8de;
+  }
+
+  .polarsteps-callout {
+    border-color: #2c5963;
+    border-left-color: #54aebb;
+    background: linear-gradient(135deg, #12242a, #16323a);
+  }
+
+  .polarsteps-callout p {
+    color: #d7edf2;
+  }
+
+  .polarsteps-callout a {
+    color: #9be4ef;
+  }
+
+  .site-footer {
+    color: #b8c8ce;
   }
 }

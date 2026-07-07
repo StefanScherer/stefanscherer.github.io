@@ -10,6 +10,13 @@ Neu hinzugekommen ist ein Hugo-Quellprojekt unter `hugo/`.
 - alte Blog-URLs unveraendert erreichbar halten
 - Deployment ueber GitHub Actions automatisieren
 
+## Designvorgabe (verbindlich)
+
+- Layouts und CSS muessen in Light- und Dark-Mode gut lesbar sein.
+- Umschaltung erfolgt automatisch ueber die Systemeinstellung (`prefers-color-scheme`).
+- Kein manueller Schalter notwendig.
+- Bei UI-Aenderungen immer beide Modi pruefen (Header, Karten, Teaser, Callout-Boxen, Fliesstext und Links).
+
 ## Wie das Deployment funktioniert
 
 Der Workflow in `.github/workflows/pages.yml` baut Hugo und kombiniert anschliessend:

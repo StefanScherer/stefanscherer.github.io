@@ -12,6 +12,13 @@ Migrate from historical Ghost/Buster static output to Hugo for new content, whil
 - Deployment merges legacy root files with Hugo build output.
 - If paths overlap, Hugo output wins (copied last).
 
+## UI requirements
+
+- All new or changed UI/CSS must be compatible with both light and dark mode.
+- Color/theme switching should happen automatically via system preference (`prefers-color-scheme`).
+- No manual dark/light toggle is required.
+- Validate readability/contrast for header, cards, callout boxes, and link text in both modes.
+
 ## Local development
 
 - Hugo only preview (new content):
