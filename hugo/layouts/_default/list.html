@@ -4,11 +4,7 @@
 
 <ul class="post-list">
   {{ range .Paginator.Pages }}
-  <li>
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-    <small>{{ .Date.Format "02.01.2006" }}</small>
-    {{ with .Summary }}<p>{{ . }}</p>{{ end }}
-  </li>
+  {{ partial "post-list-item.html" . }}
   {{ end }}
 </ul>
 

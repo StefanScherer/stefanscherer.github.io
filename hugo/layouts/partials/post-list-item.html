@@ -1,0 +1,63 @@
+{{ $p := . }}
+{{ $images := $p.Resources.ByType "image" }}
+<li class="post-item{{ if eq (len $images) 0 }} no-image{{ end }}">
+  {{ if gt (len $images) 0 }}
+  {{ $s := newScratch }}
+  {{ $s.Set "hasImg" false }}
+
+  {{ with $p.Params.teaserImage }}
+    {{ $candidate := $p.Resources.GetMatch . }}
+    {{ if not $candidate }}
+      {{ $candidate = $p.Resources.GetMatch (printf "*%s" .) }}
+    {{ end }}
+    {{ if $candidate }}
+      {{ $s.Set "img" $candidate }}
+      {{ $s.Set "hasImg" true }}
+    {{ end }}
+  {{ end }}
+
+  {{ if not ($s.Get "hasImg") }}
+    {{ range (slice "cover.*" "*cover.*" "titelbild.*" "*titelbild.*" "teaser.*" "*teaser.*" "hero.*" "*hero.*" "thumb.*" "*thumb.*") }}
+      {{ if not ($s.Get "hasImg") }}
+        {{ $candidate := $p.Resources.GetMatch . }}
+        {{ if $candidate }}
+          {{ $s.Set "img" $candidate }}
+          {{ $s.Set "hasImg" true }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ if not ($s.Get "hasImg") }}
+    {{ $s.Set "best" (index $images 0) }}
+    {{ $s.Set "score" -1 }}
+    {{ range $images }}
+    {{ $score := mul .Width .Height }}
+    {{ if ge .Width .Height }}
+    {{ $score = add $score 1000000000 }}
+    {{ end }}
+    {{ if and (ge .Width .Height) (lt .Width (mul .Height 2)) }}
+    {{ $score = add $score 100000000 }}
+    {{ end }}
+    {{ if gt $score ($s.Get "score") }}
+    {{ $s.Set "score" $score }}
+    {{ $s.Set "best" . }}
+    {{ end }}
+    {{ end }}
+    {{ $s.Set "img" ($s.Get "best") }}
+    {{ $s.Set "hasImg" true }}
+  {{ end }}
+
+  {{ $img := $s.Get "img" }}
+  {{ $thumb := $img.Fill "240x160" }}
+  <a class="post-teaser-link" href="{{ $p.RelPermalink }}" aria-label="{{ $p.Title }}">
+    <img class="post-teaser" src="{{ $thumb.RelPermalink }}" alt="{{ $p.Title }}" loading="lazy">
+  </a>
+  {{ end }}
+
+  <div class="post-content">
+    <a class="post-title" href="{{ $p.RelPermalink }}">{{ $p.Title }}</a>
+    <small class="post-date">{{ $p.Date.Format "02.01.2006" }}</small>
+    {{ with $p.Summary }}<p class="post-summary">{{ . }}</p>{{ end }}
+  </div>
+</li>

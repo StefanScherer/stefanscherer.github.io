@@ -3,6 +3,8 @@ title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
 slug: "{{ .Name }}"
 summary: "Kurzbeschreibung der Reise"
+# optional: bevorzugtes Teaserbild fuer Listenansichten
+# teaserImage: "cover.jpg"
 ---
 
 ## Überblick

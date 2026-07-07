@@ -6,9 +6,9 @@ Neu hinzugekommen ist ein Hugo-Quellprojekt unter `hugo/`.
 
 ## Ziel
 
-- neue Reisebeiträge mit Hugo pflegen
+- neue Reisebeitraege mit Hugo pflegen
 - alte Blog-URLs unveraendert erreichbar halten
-- Deployment über GitHub Actions automatisieren
+- Deployment ueber GitHub Actions automatisieren
 
 ## Wie das Deployment funktioniert
 
@@ -26,7 +26,7 @@ Wichtig: Wenn Hugo eine Datei mit gleichem Pfad erzeugt (z. B. `index.html`), da
 Voraussetzung: Hugo installiert.
 
 ```bash
-hugo server --source hugo
+make serve-hugo
 ```
 
 Dann ist die neue Hugo-Seite lokal erreichbar, waehrend Legacy-Dateien im Repo weiter bestehen.
@@ -40,6 +40,14 @@ make serve-combined
 ```
 
 Danach sind alte und neue URLs gemeinsam unter `http://localhost:4173/` testbar.
+
+Nur neu bauen (ohne Serverstart):
+
+```bash
+make site-assemble
+```
+
+Das Ergebnis liegt dann unter `.site-test/`.
 
 ## Neue Reiseposts anlegen
 
@@ -68,9 +76,9 @@ Fuer einen schrittweisen Import pro Reise ist ein Helfer-Skript vorhanden:
 make import-trip \
 	SOURCE=/pfad/zum/export-ordner \
 	TITLE="Cabriotour immer der Sonne nach" \
-	DATE=2026-07-07 \
+	DATE=2025-09-20 \
 	SLUG=cabriotour-immer-der-sonne-nach \
-	SUMMARY="Importierte Reise"
+	SUMMARY="Roadtrip vom 20.09.2025 bis 27.09.2025"
 ```
 
 Optional kann ein eigener Markdown-Text uebergeben werden:
@@ -89,7 +97,8 @@ Ergebnis:
 - neues Page-Bundle unter `hugo/content/reiseblog/<slug>/`
 - `index.md` mit Frontmatter und Basistext
 - alle Bilder aus dem Exportordner im selben Bundle
-- automatisch erzeugte Galerie im Beitrag
+- automatisch erzeugte Galerie pro Etappe
+- Lightbox auf derselben Seite (kein neuer Tab)
 
 Wenn dein Export mehrere Reisen enthaelt, liste zuerst passende Reiseordner:
 
@@ -105,7 +114,17 @@ make import-trip \
 	TRIP_MATCH=cabriotour \
 	TITLE="Cabriotour immer der Sonne nach" \
 	DATE=2025-09-20 \
-	SLUG=cabriotour-immer-der-sonne-nach
+	SLUG=cabriotour-immer-der-sonne-nach \
+	SUMMARY="Roadtrip vom 20.09.2025 bis 27.09.2025"
+
+# Oder exakt ueber den Trip-Ordner:
+make import-trip \
+	SOURCE=/pfad/zum/export-root \
+	TRIP_DIR=/pfad/zum/export-root/cabriotour-immer-der-sonne-nach_24486935 \
+	TITLE="Cabriotour immer der Sonne nach" \
+	DATE=2025-09-20 \
+	SLUG=cabriotour-immer-der-sonne-nach \
+	SUMMARY="Roadtrip vom 20.09.2025 bis 27.09.2025"
 
 # Vorhandenen Beitrag mit gleichem Slug ueberschreiben:
 make import-trip \
@@ -114,8 +133,30 @@ make import-trip \
 	TITLE="Cabriotour immer der Sonne nach" \
 	DATE=2025-09-20 \
 	SLUG=cabriotour-immer-der-sonne-nach \
+	SUMMARY="Roadtrip vom 20.09.2025 bis 27.09.2025" \
 	FORCE=1
 ```
+
+Beispiel fuer eine andere Reise:
+
+```bash
+make import-trip \
+	SOURCE=user_data/trip \
+	TRIP_DIR=user_data/trip/grand-tour_25988711 \
+	TITLE="Grand Tour" \
+	DATE=2026-05-23 \
+	SLUG=grand-tour \
+	SUMMARY="Roadtrip vom 23.05.2026 bis 31.05.2026" \
+	FORCE=1
+```
+
+## Bekannte Limitierung Polarsteps-Reihenfolge
+
+Die aktuelle Exportstruktur in diesem Repo liefert pro Step in `trip.json` keine vollstaendige Medienliste (`media_items`) und keine nutzbaren `main_media_item_path`-Werte.
+
+Die Importlogik versucht daher zuerst, Reihenfolgereferenzen direkt aus den Step-Objekten in `trip.json` zu erkennen. Wenn dort keine Referenzen vorhanden sind, verwendet sie eine deterministische Dateinamen-Fallback-Sortierung.
+
+Konsequenz: Die exakte Polarsteps-UI-Reihenfolge kann bei manchen Schritten nicht zu 100% rekonstruiert werden.
 
 ## Legacy-URLs erhalten
 
