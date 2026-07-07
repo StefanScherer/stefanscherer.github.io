@@ -1,0 +1,31 @@
+{{ define "main" }}
+<section class="hero">
+  <h1>Reiseblog-Neustart</h1>
+  <p>Neue Reisen erscheinen hier. Das bestehende Tech-Archiv bleibt unter den bekannten URLs erhalten.</p>
+  <p><a class="btn" href="/reiseblog/">Zu den Reisebeitraegen</a></p>
+</section>
+
+<section>
+  <h2>Neueste Reisebeitraege</h2>
+  {{ $posts := where .Site.RegularPages "Section" "reiseblog" }}
+  {{ if gt (len $posts) 0 }}
+  <ul class="post-list">
+    {{ range first 10 $posts }}
+    <li>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <small>{{ .Date.Format "02.01.2006" }}</small>
+      {{ with .Summary }}<p>{{ . }}</p>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+  {{ else }}
+  <p>Noch keine Reisebeitraege vorhanden.</p>
+  {{ end }}
+</section>
+
+<section>
+  <h2>Legacy-Archiv</h2>
+  <p>Alle frueheren Ghost/Buster-Seiten bleiben erreichbar, inklusive historischer Direktlinks.</p>
+  <p><a href="/page/2/">Zum bestehenden Archiv-Einstieg</a></p>
+</section>
+{{ end }}

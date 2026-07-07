@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  <link rel="stylesheet" href="/css/main.css">
+  {{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .RelPermalink }}">
+  {{ end }}
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">Stefan Scherer</a>
+    <nav>
+      <a href="/reiseblog/">Reiseblog</a>
+      <a href="/">Archiv</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  <footer class="site-footer">
+    <p>Neues Hugo-Frontend, historisches Archiv bleibt unter bestehenden URLs verfuegbar.</p>
+  </footer>
+</body>
+</html>

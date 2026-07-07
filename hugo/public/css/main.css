@@ -1,0 +1,110 @@
+:root {
+  --bg: #fff8ef;
+  --ink: #1f1f1f;
+  --brand: #005f73;
+  --brand-alt: #bb3e03;
+  --card: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Merriweather", Georgia, serif;
+  line-height: 1.6;
+  color: var(--ink);
+  background: radial-gradient(circle at top right, #ffe8d6, var(--bg));
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 2px solid #e9d8a6;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(6px);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--brand);
+  text-decoration: none;
+}
+
+nav a {
+  margin-left: 1rem;
+  color: var(--brand-alt);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0a9396, #94d2bd);
+  color: #001219;
+  padding: 1.2rem;
+  border-radius: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.55rem 0.9rem;
+  background: #001219;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-list li {
+  background: var(--card);
+  border: 1px solid #e9d8a6;
+  border-radius: 10px;
+  margin: 0.7rem 0;
+  padding: 0.8rem;
+}
+
+.post-list a {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.meta,
+small {
+  color: #555;
+}
+
+.site-footer {
+  padding: 1rem 1.25rem 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  nav a {
+    margin-left: 0;
+    margin-right: 0.8rem;
+  }
+}

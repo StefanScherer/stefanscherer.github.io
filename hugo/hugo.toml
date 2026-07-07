@@ -1,0 +1,24 @@
+baseURL = "https://stefanscherer.github.io/"
+locale = "de-DE"
+title = "Stefan Scherer"
+defaultContentLanguage = "de"
+
+[pagination]
+  pagerSize = 10
+
+[permalinks]
+  reiseblog = "/reiseblog/:slug/"
+
+[params]
+  description = "Reiseblog und Tech-Archiv von Stefan Scherer"
+  legacyArchivePath = "/"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  page = ["HTML"]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = false

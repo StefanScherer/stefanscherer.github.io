@@ -1,5 +1,14 @@
 # ghost + buster
 
+## Hugo-Migration (neu)
+
+Das Repo wurde um ein Hugo-Quellprojekt in `hugo/` erweitert.
+
+- Migrationsdetails: `HUGO_MIGRATION.md`
+- Deployment: `.github/workflows/pages.yml`
+
+Der Workflow deployed Legacy-Inhalte plus Hugo-Output gemeinsam, damit bestehende URLs erhalten bleiben.
+
 From http://www.jackpearce.com/post/88675794392/have-a-lightning-fast-blog-and-host-it-for-free
 
 To build your own static [GitHub Pages](https://pages.github.com) with [Ghost](https://ghost.org), just follow these steps.
