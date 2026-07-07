@@ -123,6 +123,29 @@ nav a {
   color: #3e3e3e;
 }
 
+.polarsteps-callout {
+  margin: 0.9rem 0 1.1rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid #c9e7df;
+  border-left: 6px solid #0a9396;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f4fffc, #e8f8f3);
+}
+
+.polarsteps-callout p {
+  margin: 0;
+}
+
+.polarsteps-callout a {
+  color: #005f73;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.polarsteps-callout a:hover {
+  text-decoration: underline;
+}
+
 .post-item:hover {
   border-color: #d8c48b;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
