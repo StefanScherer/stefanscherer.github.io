@@ -20,5 +20,26 @@
 				<guid>http://localhost:1313/reiseblog/neustart-reiseblog-mit-hugo/</guid>
 				<description>Erster Beitrag im neuen Setup.</description>
 			</item>
+			<item>
+				<title>Grand Tour for a week</title>
+				<link>http://localhost:1313/reiseblog/grand-tour-for-a-week/</link>
+				<pubDate>Sat, 23 May 2026 00:00:00 +0000</pubDate>
+				<guid>http://localhost:1313/reiseblog/grand-tour-for-a-week/</guid>
+				<description>Roadtrip über zwei Wochenenden und einer Woche remote work am Caldonazzosee</description>
+			</item>
+			<item>
+				<title>Dreiländereck und Karlsbad</title>
+				<link>http://localhost:1313/reiseblog/dreilaendereck-und-karlsbad/</link>
+				<pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
+				<guid>http://localhost:1313/reiseblog/dreilaendereck-und-karlsbad/</guid>
+				<description>Tagestour mit Cabrio und Fahrrad am Dreiländereck und bis Loket und Karlsbad</description>
+			</item>
+			<item>
+				<title>Cabriotour immer der Sonne nach</title>
+				<link>http://localhost:1313/reiseblog/cabriotour-immer-der-sonne-nach/</link>
+				<pubDate>Sat, 20 Sep 2025 00:00:00 +0000</pubDate>
+				<guid>http://localhost:1313/reiseblog/cabriotour-immer-der-sonne-nach/</guid>
+				<description>Roadtrip immer der Sonne nach: Lago di Caldonazzo, Kaiserjägerstraße, Sarca Schlucht, La Spezia, Cinque Terre</description>
+			</item>
 	</channel>
 </rss>

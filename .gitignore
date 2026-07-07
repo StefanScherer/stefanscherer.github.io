@@ -1,6 +1,8 @@
 # Local combined preview/build output
 .hugo-public-test/
 .site-test/
+hugo/public/
+user_data/
 
 # macOS
 .DS_Store

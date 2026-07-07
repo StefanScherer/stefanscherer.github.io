@@ -9,7 +9,7 @@ PORT="${1:-4173}"
 cd "${ROOT_DIR}"
 
 echo "[1/3] Hugo build -> ${HUGO_OUT}"
-hugo --source hugo --destination "${HUGO_OUT}" --minify
+hugo --source "${ROOT_DIR}/hugo" --destination "${HUGO_OUT}" --minify
 
 echo "[2/3] Merge legacy + hugo -> ${SITE_OUT}"
 rm -rf "${SITE_OUT}"

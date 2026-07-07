@@ -60,6 +60,63 @@ summary: "Kurze Vorschau"
 
 Die URL wird durch `hugo/hugo.toml` als `/reiseblog/:slug/` erzeugt.
 
+## Reise-Import aus externen Tools (z. B. Polarsteps)
+
+Fuer einen schrittweisen Import pro Reise ist ein Helfer-Skript vorhanden:
+
+```bash
+make import-trip \
+	SOURCE=/pfad/zum/export-ordner \
+	TITLE="Cabriotour immer der Sonne nach" \
+	DATE=2026-07-07 \
+	SLUG=cabriotour-immer-der-sonne-nach \
+	SUMMARY="Importierte Reise"
+```
+
+Optional kann ein eigener Markdown-Text uebergeben werden:
+
+```bash
+make import-trip \
+	SOURCE=/pfad/zum/export-ordner \
+	TITLE="Cabriotour immer der Sonne nach" \
+	DATE=2026-07-07 \
+	SLUG=cabriotour-immer-der-sonne-nach \
+	TEXT=/pfad/zur/reise-notiz.md
+```
+
+Ergebnis:
+
+- neues Page-Bundle unter `hugo/content/reiseblog/<slug>/`
+- `index.md` mit Frontmatter und Basistext
+- alle Bilder aus dem Exportordner im selben Bundle
+- automatisch erzeugte Galerie im Beitrag
+
+Wenn dein Export mehrere Reisen enthaelt, liste zuerst passende Reiseordner:
+
+```bash
+make list-trips SOURCE=/pfad/zum/export-root
+```
+
+Danach importierst du gezielt eine Reise ueber `TRIP_MATCH` oder `TRIP_DIR`:
+
+```bash
+make import-trip \
+	SOURCE=/pfad/zum/export-root \
+	TRIP_MATCH=cabriotour \
+	TITLE="Cabriotour immer der Sonne nach" \
+	DATE=2025-09-20 \
+	SLUG=cabriotour-immer-der-sonne-nach
+
+# Vorhandenen Beitrag mit gleichem Slug ueberschreiben:
+make import-trip \
+	SOURCE=/pfad/zum/export-root \
+	TRIP_MATCH=cabriotour \
+	TITLE="Cabriotour immer der Sonne nach" \
+	DATE=2025-09-20 \
+	SLUG=cabriotour-immer-der-sonne-nach \
+	FORCE=1
+```
+
 ## Legacy-URLs erhalten
 
 Alte Pfade bleiben erhalten, solange die Legacy-Dateien im Root nicht geloescht oder verschoben werden.
