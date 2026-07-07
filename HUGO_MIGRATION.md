@@ -41,6 +41,12 @@ make serve-combined
 
 Danach sind alte und neue URLs gemeinsam unter `http://localhost:4173/` testbar.
 
+Schneller Smoke-Test nach dem Build:
+
+1. `http://localhost:4173/` (Hugo-Startseite)
+2. `http://localhost:4173/reiseblog/` (Reise-Liste)
+3. `http://localhost:4173/legacy/` (Legacy-Archiv-Einstieg, mit CSS)
+
 Nur neu bauen (ohne Serverstart):
 
 ```bash

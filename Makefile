@@ -15,6 +15,10 @@ site-assemble: hugo-build
 		--exclude hugo/ \
 		--exclude .site-test/ \
 		--exclude .hugo-public-test/
+	mkdir -p ./.site-test/legacy
+	@test -f ./index.html && cp ./index.html ./.site-test/legacy/index.html || true
+	@test -f ./.site-test/legacy/index.html && perl -0777 -i -pe 's|<head>|<head>\n    <base href="/">| unless /<base href=/' ./.site-test/legacy/index.html || true
+	@test -f ./index.xml && cp ./index.xml ./.site-test/legacy/index.xml || true
 	rsync -a ./.hugo-public-test/ ./.site-test/
 
 serve-hugo:

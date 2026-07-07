@@ -20,6 +20,10 @@ rsync -a ./ "${SITE_OUT}/" \
   --exclude hugo/ \
   --exclude .site-test/ \
   --exclude .hugo-public-test/
+mkdir -p "${SITE_OUT}/legacy"
+test -f "${ROOT_DIR}/index.html" && cp "${ROOT_DIR}/index.html" "${SITE_OUT}/legacy/index.html" || true
+test -f "${SITE_OUT}/legacy/index.html" && perl -0777 -i -pe 's|<head>|<head>\n    <base href="/">| unless /<base href=/' "${SITE_OUT}/legacy/index.html" || true
+test -f "${ROOT_DIR}/index.xml" && cp "${ROOT_DIR}/index.xml" "${SITE_OUT}/legacy/index.xml" || true
 rsync -a "${HUGO_OUT}/" "${SITE_OUT}/"
 
 echo "[3/3] Serve ${SITE_OUT} on http://localhost:${PORT}/"

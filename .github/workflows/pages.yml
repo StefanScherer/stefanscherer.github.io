@@ -39,6 +39,10 @@ jobs:
             --exclude hugo/ \
             --exclude .site/ \
             --exclude .hugo-public/
+          mkdir -p .site/legacy
+          test -f ./index.html && cp ./index.html .site/legacy/index.html || true
+          test -f .site/legacy/index.html && perl -0777 -i -pe 's|<head>|<head>\n    <base href="/">| unless /<base href=/' .site/legacy/index.html || true
+          test -f ./index.xml && cp ./index.xml .site/legacy/index.xml || true
           rsync -a .hugo-public/ .site/
 
       - name: Setup Pages
