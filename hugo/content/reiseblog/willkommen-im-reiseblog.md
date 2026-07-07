@@ -12,3 +12,9 @@ Ziel des Umstiegs:
 - neue Reiseinhalte mit Hugo pflegen
 - alte Ghost/Buster-URLs unverändert erreichbar halten
 - Deployment automatisieren
+
+Fazit:
+
+- kleines und für mich einfaches Setup für lokales Arbeiten
+- keine Abhängigkeiten wie bei Polarsteps
+
