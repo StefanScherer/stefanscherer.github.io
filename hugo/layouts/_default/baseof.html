@@ -11,11 +11,12 @@
   {{ end }}
 </head>
 <body>
+  {{ $legacyArchive := .Site.Params.legacyArchivePath | default "https://stefanscherer.github.io/page/2/" }}
   <header class="site-header">
     <a class="brand" href="/">Stefan Scherer</a>
     <nav>
       <a href="/reiseblog/">Reiseblog</a>
-      <a href="/">Archiv</a>
+      <a href="{{ $legacyArchive }}">Archiv</a>
     </nav>
   </header>
 

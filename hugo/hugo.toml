@@ -11,7 +11,7 @@ defaultContentLanguage = "de"
 
 [params]
   description = "Reiseblog und Tech-Archiv von Stefan Scherer"
-  legacyArchivePath = "/"
+  legacyArchivePath = "https://stefanscherer.github.io/page/2/"
 
 [outputs]
   home = ["HTML", "RSS"]
