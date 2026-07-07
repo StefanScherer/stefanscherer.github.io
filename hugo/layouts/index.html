@@ -2,11 +2,11 @@
 <section class="hero">
   <h1>Reiseblog-Neustart</h1>
   <p>Neue Reisen erscheinen hier. Das bestehende Tech-Archiv bleibt unter den bekannten URLs erhalten.</p>
-  <p><a class="btn" href="/reiseblog/">Zu den Reisebeitraegen</a></p>
+  <p><a class="btn" href="/reiseblog/">Zu den Reisebeiträgen</a></p>
 </section>
 
 <section>
-  <h2>Neueste Reisebeitraege</h2>
+  <h2>Neueste Reisebeiträge</h2>
   {{ $posts := where .Site.RegularPages "Section" "reiseblog" }}
   {{ if gt (len $posts) 0 }}
   <ul class="post-list">
@@ -19,7 +19,7 @@
     {{ end }}
   </ul>
   {{ else }}
-  <p>Noch keine Reisebeitraege vorhanden.</p>
+  <p>Noch keine Reisebeiträge vorhanden.</p>
   {{ end }}
 </section>
 

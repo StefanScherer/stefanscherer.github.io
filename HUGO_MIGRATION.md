@@ -6,9 +6,9 @@ Neu hinzugekommen ist ein Hugo-Quellprojekt unter `hugo/`.
 
 ## Ziel
 
-- neue Reisebeitraege mit Hugo pflegen
+- neue Reisebeiträge mit Hugo pflegen
 - alte Blog-URLs unveraendert erreichbar halten
-- Deployment ueber GitHub Actions automatisieren
+- Deployment über GitHub Actions automatisieren
 
 ## Wie das Deployment funktioniert
 
