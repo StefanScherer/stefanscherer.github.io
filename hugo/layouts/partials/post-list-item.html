@@ -49,9 +49,18 @@
   {{ end }}
 
   {{ $img := $s.Get "img" }}
-  {{ $thumb := $img.Fill "240x160" }}
+  {{ $thumb1x := $img.Fill "240x160" }}
+  {{ $thumb2x := $img.Fill "480x320" }}
   <a class="post-teaser-link" href="{{ $p.RelPermalink }}" aria-label="{{ $p.Title }}">
-    <img class="post-teaser" src="{{ $thumb.RelPermalink }}" alt="{{ $p.Title }}" loading="lazy">
+    <img
+      class="post-teaser"
+      src="{{ $thumb1x.RelPermalink }}"
+      srcset="{{ $thumb1x.RelPermalink }} 1x, {{ $thumb2x.RelPermalink }} 2x"
+      sizes="(max-width: 640px) 100vw, 240px"
+      width="240"
+      height="160"
+      alt="{{ $p.Title }}"
+      loading="lazy">
   </a>
   {{ end }}
 
