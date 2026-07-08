@@ -205,7 +205,7 @@ Also auf den Regenradar geblickt: Richtung Norden ist es besser. Also weiter gef
   </a>
 </div>
 
-#### Etappe: Milan
+#### Etappe: Milano
 
 Weiter ging die Cabriofahrt. Ach nach Mailand könnte ich auch mal. Ich hab das Rad dabei, also einen Parkplatz bei einem Supermarkt genommen und von dort die Innenstadt und den Mailänder Dom angesteuert.
 
