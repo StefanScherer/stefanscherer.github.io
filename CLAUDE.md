@@ -69,7 +69,16 @@ Migrate from historical Ghost/Buster static output to Hugo for new content, whil
 - Local helper script: `scripts/preview-combined.sh`
 - Trip import script: `scripts/import-trip.sh`
 - Lightbox script: `hugo/static/js/lightbox.js`
+- Trip map script: `hugo/static/js/trip-map.js`
+- Main stylesheet: `hugo/static/css/main.css`
 - Migration notes: `HUGO_MIGRATION.md`
+
+## Trip map implementation notes
+
+- Start/end markers (`S`/`Z`) are rendered as Leaflet marker icons with class `leaflet-marker-icon` plus custom class `trip-map-stage-marker`.
+- Do not scope stage-marker CSS to `.leaflet-div-icon`; it may not match these markers and can cause square markers with text in the top-left.
+- Use `.trip-map .trip-map-stage-marker` for shape and centering styles.
+- If local preview looks outdated, rebuild combined output with `make site-assemble` before validating `http://localhost:4173/`.
 
 ## Git ignore
 

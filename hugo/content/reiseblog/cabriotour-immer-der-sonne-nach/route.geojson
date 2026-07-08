@@ -1,0 +1,261 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.9275812,
+          49.6665474
+        ]
+      },
+      "properties": {
+        "order": 1,
+        "name": "Röttenbach",
+        "date": "20.09.2025",
+        "step_id": 220526265
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.264283,
+          46.015703
+        ]
+      },
+      "properties": {
+        "order": 2,
+        "name": "Tenna",
+        "date": "20.09.2025",
+        "step_id": 220526163
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.298933910134707,
+          45.96927843250444
+        ]
+      },
+      "properties": {
+        "order": 3,
+        "name": "Kaiserjägerstraße",
+        "date": "20.09.2025",
+        "step_id": 220526872
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.941663760833904,
+          46.04810598965997
+        ]
+      },
+      "properties": {
+        "order": 4,
+        "name": "Sarca Schlucht",
+        "date": "21.09.2025",
+        "step_id": 220527448
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.8691506,
+          44.5855083
+        ]
+      },
+      "properties": {
+        "order": 5,
+        "name": "Passo della Cisa",
+        "date": "22.09.2025",
+        "step_id": 220527927
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.8217022,
+          44.1033871
+        ]
+      },
+      "properties": {
+        "order": 6,
+        "name": "La Spezia",
+        "date": "22.09.2025",
+        "step_id": 220528231
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.6120397,
+          44.1699056
+        ]
+      },
+      "properties": {
+        "order": 7,
+        "name": "Levanto",
+        "date": "23.09.2025",
+        "step_id": 220528614
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.7386704,
+          44.0989747
+        ]
+      },
+      "properties": {
+        "order": 8,
+        "name": "Cinque Terre",
+        "date": "24.09.2025",
+        "step_id": 220529016
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.229671,
+          44.3511473
+        ]
+      },
+      "properties": {
+        "order": 9,
+        "name": "Rapallo",
+        "date": "25.09.2025",
+        "step_id": 220604047
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1546375,
+          45.1860043
+        ]
+      },
+      "properties": {
+        "order": 10,
+        "name": "Pavia",
+        "date": "25.09.2025",
+        "step_id": 220529251
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.1896346,
+          45.4641943
+        ]
+      },
+      "properties": {
+        "order": 11,
+        "name": "Milan",
+        "date": "25.09.2025",
+        "step_id": 220529444
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.5512888,
+          45.549434
+        ]
+      },
+      "properties": {
+        "order": 12,
+        "name": "Manerba del Garda",
+        "date": "25.09.2025",
+        "step_id": 220529787
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.7607733,
+          45.7710786
+        ]
+      },
+      "properties": {
+        "order": 13,
+        "name": "Tremosine sul Garda",
+        "date": "26.09.2025",
+        "step_id": 220530038
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.415094,
+          46.7806875
+        ]
+      },
+      "properties": {
+        "order": 14,
+        "name": "Sarntal - Penser Joch",
+        "date": "26.09.2025",
+        "step_id": 220530602
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.1867187,
+          47.3289241
+        ]
+      },
+      "properties": {
+        "order": 15,
+        "name": "Seefeld in Tirol",
+        "date": "26.09.2025",
+        "step_id": 220530893
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.1867187,
+          47.3289241
+        ]
+      },
+      "properties": {
+        "order": 16,
+        "name": "Seefeld in Tirol",
+        "date": "27.09.2025",
+        "step_id": 220531163
+      }
+    }
+  ]
+}

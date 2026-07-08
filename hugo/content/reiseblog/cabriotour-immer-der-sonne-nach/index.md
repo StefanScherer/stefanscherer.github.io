@@ -13,6 +13,8 @@ Cabriotour immer der Sonne nach vom 20.09.2025 bis 27.09.2025.
   <p>Zur kompletten Route auf Polarsteps: <a href="https://www.polarsteps.com/StefanScherer10/24486935-cabriotour-immer-der-sonne-nach?mode=track" target="_blank" rel="noopener">Cabriotour immer der Sonne nach auf Polarsteps</a></p>
 </div>
 
+{{< tripmap geojson="route.geojson" >}}
+
 Lago di Caldonazzo, Kaiserjägerstraße, Sarca Schlucht, La Spezia, Cinque Terre
 
 ## Etappen

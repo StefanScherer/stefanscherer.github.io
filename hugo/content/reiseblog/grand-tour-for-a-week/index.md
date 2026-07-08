@@ -13,6 +13,8 @@ Grand Tour for a week vom 23.05.2026 bis 31.05.2026.
   <p>Zur kompletten Route auf Polarsteps: <a href="https://www.polarsteps.com/StefanScherer10/25988711-grand-tour?mode=track" target="_blank" rel="noopener">Grand Tour auf Polarsteps</a></p>
 </div>
 
+{{< tripmap geojson="route.geojson" >}}
+
 ## Etappen
 
 ### Tag 1 - 23.05.2026

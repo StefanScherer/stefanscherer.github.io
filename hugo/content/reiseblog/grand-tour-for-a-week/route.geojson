@@ -1,0 +1,501 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.75427719999999,
+          47.92095559999999
+        ]
+      },
+      "properties": {
+        "order": 1,
+        "name": "Bad Waldsee",
+        "date": "23.05.2026",
+        "step_id": 235768564
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.7472924,
+          47.5025779
+        ]
+      },
+      "properties": {
+        "order": 2,
+        "name": "Bregenz",
+        "date": "23.05.2026",
+        "step_id": 235769275
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.850208199999969,
+          46.81992639999999
+        ]
+      },
+      "properties": {
+        "order": 3,
+        "name": "Davos",
+        "date": "23.05.2026",
+        "step_id": 235771513
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.9476915,
+          46.7500062
+        ]
+      },
+      "properties": {
+        "order": 4,
+        "name": "Flüelapass",
+        "date": "23.05.2026",
+        "step_id": 235772891
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0276199,
+          46.4109262
+        ]
+      },
+      "properties": {
+        "order": 5,
+        "name": "Berninapass",
+        "date": "23.05.2026",
+        "step_id": 235774358
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1731777,
+          46.2156719
+        ]
+      },
+      "properties": {
+        "order": 6,
+        "name": "Tirano",
+        "date": "23.05.2026",
+        "step_id": 235775714
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.298445643677809,
+          46.24790161786382
+        ]
+      },
+      "properties": {
+        "order": 7,
+        "name": "Passo del Mortirolo",
+        "date": "24.05.2026",
+        "step_id": 236009492
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1081901,
+          45.8057312
+        ]
+      },
+      "properties": {
+        "order": 8,
+        "name": "Iseosee",
+        "date": "24.05.2026",
+        "step_id": 236010208
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.5799139,
+          45.8490749
+        ]
+      },
+      "properties": {
+        "order": 9,
+        "name": "Idrosee und Cascada d'Ampola",
+        "date": "24.05.2026",
+        "step_id": 236011665
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.6000511,
+          45.9337024
+        ]
+      },
+      "properties": {
+        "order": 10,
+        "name": "Boniprati",
+        "date": "24.05.2026",
+        "step_id": 236013047
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.8540886,
+          46.052168
+        ]
+      },
+      "properties": {
+        "order": 11,
+        "name": "Stenico",
+        "date": "25.05.2026",
+        "step_id": 236291934
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.9637773,
+          46.1421057
+        ]
+      },
+      "properties": {
+        "order": 12,
+        "name": "Molveno",
+        "date": "25.05.2026",
+        "step_id": 236296521
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.264283,
+          46.015703
+        ]
+      },
+      "properties": {
+        "order": 13,
+        "name": "Tenna",
+        "date": "25.05.2026",
+        "step_id": 236301842
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.242883000000035,
+          46.004240999999986
+        ]
+      },
+      "properties": {
+        "order": 14,
+        "name": "Radtour um den Caldonazzo-See",
+        "date": "26.05.2026",
+        "step_id": 236506458
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.369082999200003,
+          46.002965889407136
+        ]
+      },
+      "properties": {
+        "order": 15,
+        "name": "Arte Sella",
+        "date": "27.05.2026",
+        "step_id": 236695946
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.313069750278796,
+          45.95966656713164
+        ]
+      },
+      "properties": {
+        "order": 16,
+        "name": "Kaiserjägerstraße",
+        "date": "27.05.2026",
+        "step_id": 236749766
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.28668745247262,
+          46.015162758744566
+        ]
+      },
+      "properties": {
+        "order": 17,
+        "name": "Radtour um den Lago di Levico",
+        "date": "28.05.2026",
+        "step_id": 236840594
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.150737349759964,
+          46.073637223439505
+        ]
+      },
+      "properties": {
+        "order": 18,
+        "name": "Orrido di Ponte Alto",
+        "date": "29.05.2026",
+        "step_id": 237118338
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.0332447,
+          46.3652616
+        ]
+      },
+      "properties": {
+        "order": 19,
+        "name": "Cles",
+        "date": "30.05.2026",
+        "step_id": 237454267
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.487536049131194,
+          46.34330821396179
+        ]
+      },
+      "properties": {
+        "order": 20,
+        "name": "Passo di Gavia",
+        "date": "30.05.2026",
+        "step_id": 237455203
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.3721712,
+          46.4692482
+        ]
+      },
+      "properties": {
+        "order": 21,
+        "name": "Bormio",
+        "date": "30.05.2026",
+        "step_id": 237455608
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1359928,
+          46.5381734
+        ]
+      },
+      "properties": {
+        "order": 22,
+        "name": "Livigno",
+        "date": "30.05.2026",
+        "step_id": 237456147
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.452665679527456,
+          46.5284983977524
+        ]
+      },
+      "properties": {
+        "order": 23,
+        "name": "Passo dello Stelvio",
+        "date": "30.05.2026",
+        "step_id": 237457274
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.480144788824646,
+          46.53196977026093
+        ]
+      },
+      "properties": {
+        "order": 24,
+        "name": "Berghotel Franzenshöhe",
+        "date": "31.05.2026",
+        "step_id": 237763225
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.433130416653285,
+          46.541744794834585
+        ]
+      },
+      "properties": {
+        "order": 25,
+        "name": "Umbrailpass",
+        "date": "31.05.2026",
+        "step_id": 237816593
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.2607908,
+          46.777999
+        ]
+      },
+      "properties": {
+        "order": 26,
+        "name": "Tarasp",
+        "date": "31.05.2026",
+        "step_id": 237818103
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.3600844,
+          46.9442417
+        ]
+      },
+      "properties": {
+        "order": 27,
+        "name": "Samnaun",
+        "date": "31.05.2026",
+        "step_id": 237821041
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.5361885,
+          46.9675345
+        ]
+      },
+      "properties": {
+        "order": 28,
+        "name": "Pfunds",
+        "date": "31.05.2026",
+        "step_id": 237826291
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.8313467,
+          47.3626121
+        ]
+      },
+      "properties": {
+        "order": 29,
+        "name": "Fernpass",
+        "date": "31.05.2026",
+        "step_id": 237828744
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.359632702327247,
+          47.814285456879645
+        ]
+      },
+      "properties": {
+        "order": 30,
+        "name": "Ende der Cabriofahrt",
+        "date": "31.05.2026",
+        "step_id": 237830458
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.05792,
+          49.7200789
+        ]
+      },
+      "properties": {
+        "order": 31,
+        "name": "Forchheim",
+        "date": "31.05.2026",
+        "step_id": 237832848
+      }
+    }
+  ]
+}

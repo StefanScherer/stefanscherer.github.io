@@ -13,6 +13,8 @@ Dreiländereck und Karlsbad vom 08.03.2026 bis 08.03.2026.
   <p>Zur kompletten Route auf Polarsteps: <a href="https://www.polarsteps.com/StefanScherer10/24524915-dreilandereck-und-karlsbad?mode=track" target="_blank" rel="noopener">Dreiländereck und Karlsbad auf Polarsteps</a></p>
 </div>
 
+{{< tripmap geojson="route.geojson" >}}
+
 ## Etappen
 
 ### Tag 1 - 08.03.2026

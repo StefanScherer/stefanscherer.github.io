@@ -1,0 +1,133 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.921074138985297,
+          49.66945015222997
+        ]
+      },
+      "properties": {
+        "order": 1,
+        "name": "Röttenbach",
+        "date": "08.03.2026",
+        "step_id": 220909402
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.097306640879092,
+          50.31586776819601
+        ]
+      },
+      "properties": {
+        "order": 2,
+        "name": "Dreiländereck",
+        "date": "08.03.2026",
+        "step_id": 220925252
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.756094498336283,
+          50.184383805106854
+        ]
+      },
+      "properties": {
+        "order": 3,
+        "name": "Loket",
+        "date": "08.03.2026",
+        "step_id": 220944987
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.809557503634306,
+          50.19355042803928
+        ]
+      },
+      "properties": {
+        "order": 4,
+        "name": "Hans-Heiling-Felsen",
+        "date": "08.03.2026",
+        "step_id": 220959487
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.87465965346824,
+          50.22951226162381
+        ]
+      },
+      "properties": {
+        "order": 5,
+        "name": "Karlsbad",
+        "date": "08.03.2026",
+        "step_id": 220959794
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.754110579762498,
+          50.186809737884545
+        ]
+      },
+      "properties": {
+        "order": 6,
+        "name": "Loket",
+        "date": "08.03.2026",
+        "step_id": 221065259
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.851548741238174,
+          50.12971572934286
+        ]
+      },
+      "properties": {
+        "order": 7,
+        "name": "Gaststätte Waldstein",
+        "date": "08.03.2026",
+        "step_id": 221000006
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.795719283333334,
+          50.052908366666664
+        ]
+      },
+      "properties": {
+        "order": 8,
+        "name": "Bischofsgrün",
+        "date": "08.03.2026",
+        "step_id": 221006836
+      }
+    }
+  ]
+}

@@ -264,6 +264,14 @@ def fmt_date(ts):
   except Exception:
     return ''
 
+def short_note(text, max_len=180):
+  if not text:
+    return ''
+  cleaned = ' '.join(str(text).strip().split())
+  if len(cleaned) <= max_len:
+    return cleaned
+  return cleaned[:max_len - 3].rstrip() + '...'
+
 start_date = fmt_date(start_ts)
 end_date = fmt_date(end_ts)
 
@@ -371,6 +379,39 @@ print('')
 
 steps = trip.get('all_steps', []) or []
 steps = sorted(steps, key=lambda s: float(s.get('start_time') or 0.0))
+
+route_features = []
+for i, step in enumerate(steps, start=1):
+  loc = step.get('location') or {}
+  lat = loc.get('lat')
+  lon = loc.get('lon')
+  if lat is None or lon is None:
+    continue
+  try:
+    lat = float(lat)
+    lon = float(lon)
+  except Exception:
+    continue
+  route_features.append({
+    'type': 'Feature',
+    'geometry': {'type': 'Point', 'coordinates': [lon, lat]},
+    'properties': {
+      'order': i,
+      'name': step.get('display_name') or step.get('name') or 'Etappe',
+      'date': fmt_date(step.get('start_time')),
+      'note': short_note(step.get('description') or ''),
+      'step_id': step.get('id'),
+    },
+  })
+
+if route_features:
+  route_geojson_path = os.path.join(dest_dir, 'route.geojson')
+  with open(route_geojson_path, 'w', encoding='utf-8') as f:
+    json.dump({'type': 'FeatureCollection', 'features': route_features}, f, ensure_ascii=False, indent=2)
+    f.write('\n')
+
+  print('{{< tripmap geojson="route.geojson" >}}')
+  print('')
 
 day_index = 0
 current_day = ''
