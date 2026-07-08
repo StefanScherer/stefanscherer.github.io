@@ -250,6 +250,40 @@ nav a {
   text-decoration: underline;
 }
 
+.trip-map .trip-map-city-label.leaflet-tooltip {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 95, 115, 0.25);
+  border-radius: 999px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
+  color: #15343b;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 0.14rem 0.4rem;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.trip-map .trip-map-city-label-hidden {
+  display: none;
+}
+
+.trip-map .trip-map-city-label-hover.leaflet-tooltip {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(10, 111, 130, 0.72);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.24);
+  color: #08252b;
+}
+
+.trip-map .trip-map-point-hover {
+  filter: drop-shadow(0 0 6px rgba(10, 111, 130, 0.45));
+}
+
+.trip-map .trip-map-city-label.leaflet-tooltip::before,
+.trip-map .trip-map-city-label.leaflet-tooltip::after {
+  display: none;
+}
+
 .trip-map .trip-map-stage-marker {
   width: 26px;
   height: 26px;
@@ -517,6 +551,21 @@ body.lightbox-open {
 
   .trip-map-popup-jump {
     color: #9be4ef;
+  }
+
+  .trip-map .trip-map-city-label.leaflet-tooltip {
+    background: rgba(9, 18, 24, 0.92);
+    border-color: rgba(191, 232, 241, 0.28);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.38);
+    color: #e9f6fb;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+  }
+
+  .trip-map .trip-map-city-label-hover.leaflet-tooltip {
+    background: rgba(12, 29, 37, 0.98);
+    border-color: rgba(143, 213, 227, 0.78);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.55);
+    color: #f2fbff;
   }
 
   .trip-map-stage-marker {

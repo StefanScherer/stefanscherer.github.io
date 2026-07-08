@@ -12,6 +12,7 @@
 	{{- end -}}
 {{- end -}}
 {{- $height := .Get "height" | default "420" -}}
+{{- $lang := .Get "lang" | default "de" -}}
 
-<div class="trip-map" data-geojson="{{ $geo }}"{{ with $gpx }} data-gpx="{{ . }}"{{ end }} style="height: {{ $height }}px;"></div>
+<div class="trip-map" data-geojson="{{ $geo }}" data-map-language="{{ $lang }}"{{ with $gpx }} data-gpx="{{ . }}"{{ end }} style="height: {{ $height }}px;"></div>
 <p class="trip-map-note">Karte mit Etappenpunkten{{ with $gpx }} und GPX-Route{{ end }}.</p>

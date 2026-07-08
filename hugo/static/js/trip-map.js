@@ -127,13 +127,30 @@
     return null;
   }
 
-  function tileConfig() {
+  function tileConfig(language) {
+    var lang = String(language || '').toLowerCase();
+
+    // OSM-DE renders many place names in German/local language.
+    if (lang === 'de' || lang.indexOf('de-') === 0) {
+      return {
+        url: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png',
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 18,
+        supportsThemeSwitch: false,
+      };
+    }
+
     var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     var url = dark
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
     var attribution = '&copy; OpenStreetMap contributors &copy; CARTO';
-    return { url: url, attribution: attribution };
+    return {
+      url: url,
+      attribution: attribution,
+      maxZoom: 19,
+      supportsThemeSwitch: true,
+    };
   }
 
   function pointPopup(feature, stageCtx) {
@@ -158,6 +175,182 @@
     return title + stageTag + day + date + extra + jump;
   }
 
+  function rectOverlaps(a, b, gap) {
+    return !(
+      a.right + gap < b.left ||
+      a.left > b.right + gap ||
+      a.bottom + gap < b.top ||
+      a.top > b.bottom + gap
+    );
+  }
+
+  function labelVisibilityStep(totalPoints, zoom) {
+    if (!Number.isFinite(zoom)) {
+      return 99;
+    }
+
+    if (zoom < 6.6) {
+      return 99;
+    }
+    if (zoom < 7.6) {
+      return totalPoints > 20 ? 4 : 3;
+    }
+    if (zoom < 8.6) {
+      return totalPoints > 20 ? 3 : 2;
+    }
+    if (zoom < 9.6) {
+      return 2;
+    }
+    return 1;
+  }
+
+  function setPointHighlight(entry, enabled, requestLayout) {
+    if (!entry || !entry.layer) {
+      return;
+    }
+
+    if (!entry.isEndpoint && entry.layer.setStyle) {
+      if (enabled) {
+        entry.layer.setStyle({
+          weight: 3,
+          color: '#0a6f82',
+          fillColor: '#ffffff',
+          fillOpacity: 1,
+        });
+        if (entry.layer.setRadius) {
+          entry.layer.setRadius(9.5);
+        }
+      } else {
+        entry.layer.setStyle({
+          weight: 2,
+          color: '#0a9396',
+          fillColor: '#e9ffff',
+          fillOpacity: 0.95,
+        });
+        if (entry.layer.setRadius) {
+          entry.layer.setRadius(8);
+        }
+      }
+    }
+
+    var markerEl = entry.layer.getElement && entry.layer.getElement();
+    if (markerEl) {
+      markerEl.classList.toggle('trip-map-point-hover', enabled);
+    }
+
+    var tooltip = entry.layer.getTooltip && entry.layer.getTooltip();
+    var tooltipEl = tooltip && tooltip.getElement && tooltip.getElement();
+    if (!tooltipEl) {
+      return;
+    }
+
+    tooltipEl.classList.toggle('trip-map-city-label-hover', enabled);
+    if (enabled) {
+      tooltipEl.classList.remove('trip-map-city-label-hidden');
+      return;
+    }
+
+    if (typeof requestLayout === 'function') {
+      requestLayout();
+    }
+  }
+
+  function initPointLabels(map, labelEntries, totalPoints) {
+    if (!labelEntries.length) {
+      return;
+    }
+
+    var scheduled = false;
+    var gapPx = 8;
+
+    function scheduleLayout() {
+      if (scheduled) {
+        return;
+      }
+      scheduled = true;
+      window.requestAnimationFrame(layoutLabels);
+    }
+
+    map._tripMapRelayout = scheduleLayout;
+
+    function layoutLabels() {
+      scheduled = false;
+      var mapRect = map.getContainer().getBoundingClientRect();
+      var zoom = map.getZoom();
+      var step = labelVisibilityStep(totalPoints, zoom);
+
+      labelEntries.forEach(function (entry) {
+        var tooltip = entry.layer.getTooltip();
+        if (!tooltip) {
+          return;
+        }
+        var el = tooltip.getElement();
+        if (!el) {
+          return;
+        }
+
+        var keepByZoom = entry.isEndpoint || (entry.order > 0 && entry.order % step === 0);
+        if (!keepByZoom) {
+          el.classList.add('trip-map-city-label-hidden');
+        } else {
+          el.classList.remove('trip-map-city-label-hidden');
+        }
+      });
+
+      var occupied = [];
+      var candidates = labelEntries
+        .filter(function (entry) {
+          var tooltip = entry.layer.getTooltip();
+          var el = tooltip && tooltip.getElement();
+          return el && !el.classList.contains('trip-map-city-label-hidden');
+        })
+        .sort(function (a, b) {
+          return b.priority - a.priority;
+        });
+
+      candidates.forEach(function (entry) {
+        var tooltip = entry.layer.getTooltip();
+        var el = tooltip && tooltip.getElement();
+        if (!el) {
+          return;
+        }
+
+        var r = el.getBoundingClientRect();
+        var box = {
+          left: r.left - mapRect.left,
+          right: r.right - mapRect.left,
+          top: r.top - mapRect.top,
+          bottom: r.bottom - mapRect.top,
+        };
+
+        var outside = box.right < 0 || box.left > mapRect.width || box.bottom < 0 || box.top > mapRect.height;
+        if (outside) {
+          el.classList.add('trip-map-city-label-hidden');
+          return;
+        }
+
+        var hasCollision = occupied.some(function (other) {
+          return rectOverlaps(box, other, gapPx);
+        });
+
+        if (hasCollision) {
+          el.classList.add('trip-map-city-label-hidden');
+          return;
+        }
+
+        occupied.push(box);
+      });
+    }
+
+    map.on('zoomend', scheduleLayout);
+    map.on('moveend', scheduleLayout);
+    map.on('resize', scheduleLayout);
+
+    // Run after initial render and after fitBounds settled.
+    setTimeout(scheduleLayout, 0);
+    setTimeout(scheduleLayout, 120);
+  }
+
   function initMap(el, data) {
     if (!window.L) {
       return;
@@ -167,7 +360,8 @@
       return;
     }
 
-    var cfg = tileConfig();
+    var mapLanguage = el.getAttribute('data-map-language') || 'de';
+    var cfg = tileConfig(mapLanguage);
     var stageCtx = buildStageContext();
     var map = L.map(el, {
       scrollWheelZoom: true,
@@ -181,8 +375,9 @@
     map.setView([0, 0], 2);
 
     var tiles = L.tileLayer(cfg.url, {
-      maxZoom: 19,
+      maxZoom: cfg.maxZoom,
       attribution: cfg.attribution,
+      detectRetina: true,
     }).addTo(map);
 
     var points = [];
@@ -217,6 +412,13 @@
         features: points.map(function (p) { return p[2]; }),
       };
 
+      var labelEntries = [];
+      function requestLabelLayout() {
+        if (typeof map._tripMapRelayout === 'function') {
+          map._tripMapRelayout();
+        }
+      }
+
       var markerLayer = L.geoJSON(geo, {
         pointToLayer: function (feature, latlng) {
           var props = (feature && feature.properties) || {};
@@ -245,6 +447,39 @@
           });
         },
         onEachFeature: function (feature, layer) {
+          var props = (feature && feature.properties) || {};
+          var order = Number(props.order || 0);
+          var isEndpoint = order === 1 || !!props.is_end;
+
+          if (props.name) {
+            var side = order % 2 === 0 ? 'left' : 'right';
+            var direction = isEndpoint ? 'top' : side;
+            var offset = isEndpoint ? [0, -16] : (side === 'left' ? [-14, 0] : [14, 0]);
+
+            layer.bindTooltip(htmlEscape(props.name), {
+              permanent: true,
+              direction: direction,
+              offset: offset,
+              className: 'trip-map-city-label',
+              opacity: 1,
+            });
+
+            labelEntries.push({
+              layer: layer,
+              order: order,
+              isEndpoint: isEndpoint,
+              priority: isEndpoint ? 10000 - order : (1000 - order),
+            });
+
+            var entry = labelEntries[labelEntries.length - 1];
+            layer.on('mouseover', function () {
+              setPointHighlight(entry, true, requestLabelLayout);
+            });
+            layer.on('mouseout', function () {
+              setPointHighlight(entry, false, requestLabelLayout);
+            });
+          }
+
           layer.bindPopup(pointPopup(feature, stageCtx));
         },
       }).addTo(map);
@@ -262,6 +497,7 @@
       markerLayer.bringToFront();
 
       map.fitBounds(markerLayer.getBounds().pad(0.15));
+      initPointLabels(map, labelEntries, totalPoints);
     } else {
       map.setView([51.1657, 10.4515], 5);
     }
@@ -292,10 +528,10 @@
       });
     }
 
-    if (window.matchMedia) {
+    if (cfg.supportsThemeSwitch && window.matchMedia) {
       var mq = window.matchMedia('(prefers-color-scheme: dark)');
       var onChange = function () {
-        var nextCfg = tileConfig();
+        var nextCfg = tileConfig(mapLanguage);
         tiles.setUrl(nextCfg.url);
       };
       if (mq.addEventListener) {

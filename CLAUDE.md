@@ -78,6 +78,9 @@ Migrate from historical Ghost/Buster static output to Hugo for new content, whil
 - Start/end markers (`S`/`Z`) are rendered as Leaflet marker icons with class `leaflet-marker-icon` plus custom class `trip-map-stage-marker`.
 - Do not scope stage-marker CSS to `.leaflet-div-icon`; it may not match these markers and can cause square markers with text in the top-left.
 - Use `.trip-map .trip-map-stage-marker` for shape and centering styles.
+- Shortcode supports map language via `{{< tripmap lang="de" >}}` (default: `de`).
+- For `lang="de"`, tiles come from `tile.openstreetmap.de` to prefer German/local place names.
+- Trade-off: German tile source has no dark variant, so automatic light/dark tile switching is only active for non-`de` tile config.
 - If local preview looks outdated, rebuild combined output with `make site-assemble` before validating `http://localhost:4173/`.
 
 ## Git ignore
