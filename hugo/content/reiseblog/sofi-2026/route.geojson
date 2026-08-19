@@ -1,0 +1,1093 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.9275812,
+          49.6665474
+        ]
+      },
+      "properties": {
+        "order": 1,
+        "name": "Röttenbach",
+        "date": "01.08.2026",
+        "note": "Los geht’s! Abfahrt um 5:30 bei 21 Grad, also gleich mal das Verdeck auf und los. Reiseliteratur ist mit dabei.",
+        "step_id": 253996377
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.855009822959781,
+          47.462378831192524
+        ]
+      },
+      "properties": {
+        "order": 2,
+        "name": "Vorarlberg",
+        "date": "01.08.2026",
+        "note": "Zweites Land für heute: Österreich Ich bin gemütlich über Landstraßen bis Österreich gefahren, um im Cabrio die Tunnels zu vermeiden. Heute ist auch Ferienbeginn in Bayern und d...",
+        "step_id": 254106952
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.52585629292004,
+          47.138917368924325
+        ]
+      },
+      "properties": {
+        "order": 3,
+        "name": "Vaduz",
+        "date": "01.08.2026",
+        "note": "Zweiter Grenzübergang, drittes Land: Liechtenstein Einen kleinen Abstecher gemacht zum Schloss Vaduz des Fürsten. Sehr lohnend ist die Weiterfahrt bergauf nach dem Schloss. Schö...",
+        "step_id": 254105654
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.15944827715438,
+          47.11682965679315
+        ]
+      },
+      "properties": {
+        "order": 4,
+        "name": "Walensee",
+        "date": "01.08.2026",
+        "note": "Land Nummer vier: die Schweiz Das Wetter wird immer schöner, jetzt so um 27 Grad. Oh wow, hier in der Schweiz war ich noch nicht. Aber auch hier abseits der Autobahn hat man vie...",
+        "step_id": 254133476
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.877586516666666,
+          46.87432233333334
+        ]
+      },
+      "properties": {
+        "order": 5,
+        "name": "Klausenpass und Unterschächen",
+        "date": "01.08.2026",
+        "note": "Heutiges Etappenziel war das Hotel Alpina in Unterschächen, nachdem ich noch über den Klausenpass gefahren bin. Der war ja allein schon wunderschön mit zwei großen Wasserfällen....",
+        "step_id": 254228744
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.81764,
+          46.85505
+        ]
+      },
+      "properties": {
+        "order": 6,
+        "name": "Oberalp Beizli",
+        "date": "02.08.2026",
+        "note": "Heute Früh aufgewacht. Mir ging die Luftseilbahn noch im Kopf herum. Eigentlich müsste ich das noch nachholen. Ab 7 Uhr fährt die Äsch - Oberalp Seilbahn. Also aufraffen. Das Rö...",
+        "step_id": 254747815
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.4470669,
+          46.7298636
+        ]
+      },
+      "properties": {
+        "order": 7,
+        "name": "Sustenpass",
+        "date": "02.08.2026",
+        "note": "Nach dem morgentlichen Abstecher hoch zur Oberalp ging es gestärkt von Unterschächen weiter. Bei der Fahrt Richtung Andermatt war ich skeptisch, wie es vom Verkehr wird. Reiseve...",
+        "step_id": 254844565
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.33339,
+          46.57247
+        ]
+      },
+      "properties": {
+        "order": 8,
+        "name": "Grimselpass",
+        "date": "02.08.2026",
+        "note": "Und damit ich weiter südlich komme ging es gleich weiter über den Grimselpass. Bei der Auffahrt waren ein paar Tunnels, aber ich hab auf die Beschilderung rechts geachtet. Das h...",
+        "step_id": 254848516
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.1534,
+          46.13909
+        ]
+      },
+      "properties": {
+        "order": 9,
+        "name": "Rhonetal",
+        "date": "02.08.2026",
+        "note": "Nach zwei spektakulären Bergpässen war das Rhonetal was zum runterkommen. Gemütlich entlang cruisen, puh bis zu 36 Grad, aber die Klimaanlage kühlt von unten 🧊😎. Nächstes Ziel i...",
+        "step_id": 254850741
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.16918,
+          45.86942
+        ]
+      },
+      "properties": {
+        "order": 10,
+        "name": "Großer Sankt Bernhard Pass",
+        "date": "02.08.2026",
+        "note": "Die Tankanzeige meldete sich schon bei der Auffahrt, aber bis nach Italien müsste ich es noch schaffen. Es war dann schon kurz nach 17 Uhr oben am Pass. Also wird es Zeit, sich...",
+        "step_id": 254851528
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.154535,
+          45.701953
+        ]
+      },
+      "properties": {
+        "order": 11,
+        "name": "Arvier",
+        "date": "02.08.2026",
+        "note": "Vom großen Sankt Bernhard geht es runter nach Aosta. Dort einen kurzen Tankstopp und weiter zur Unterkunft in Arvier. Das Aostatal muss man auch auf der Landstraße fahren, da si...",
+        "step_id": 254853968
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.05916,
+          45.61608
+        ]
+      },
+      "properties": {
+        "order": 12,
+        "name": "Valgrisenche",
+        "date": "02.08.2026",
+        "note": "Gut gestärkt im Restaurant (sehr leckere Pasta, ein Steak mit Gemüse, ein Moretti und ein Espresso für 21€) bin ich dann noch die SR 25 hochgefahren. Schöne kleine Straße. Beim...",
+        "step_id": 254854666
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.98148,
+          45.73922
+        ]
+      },
+      "properties": {
+        "order": 13,
+        "name": "Colle San Carlo",
+        "date": "03.08.2026",
+        "note": "Heute war um 9:45 Start vom Quartier in Arvier 🤣 auf zu weiteren Bergpässen und ein weiteres Land. Zuerst ging es noch im Aostatal weiter westlich, direkt auf das Mont Blanc Mas...",
+        "step_id": 254953025
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.88866,
+          45.68795
+        ]
+      },
+      "properties": {
+        "order": 14,
+        "name": "Kleiner Sankt Bernhard Pass",
+        "date": "03.08.2026",
+        "note": "Die Straßen hoch zum Kleinen Sankt Bernhard Pass sind sehr eng und kurvig. Oben auf der Passhöhe habe ich mein sechstes Land erreicht: Frankreich 🇫🇷 Nach zwei Bergpässen heute e...",
+        "step_id": 254954648
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.03819,
+          45.42251
+        ]
+      },
+      "properties": {
+        "order": 15,
+        "name": "Col de l‘Iseran",
+        "date": "03.08.2026",
+        "note": "Und gleich geht es weiter zum höchsten asphaltierten Alpenpass auf 2770hm, dem Col de l‘Iseran. Die karge Landschaft oberhalb der Baumgrenze ist wieder ein ganz anderer Eindruck...",
+        "step_id": 254957139
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.900617174491042,
+          45.259941475113315
+        ]
+      },
+      "properties": {
+        "order": 16,
+        "name": "Col du Mont Cenis",
+        "date": "03.08.2026",
+        "note": "Nach dem Col de l‘Iseran fing es an zu regnen. Ich musste aber weiter Strecke machen und bin über den Col du Mont Cenis wieder Richtung Italien unterwegs. Dieser Pass ist schein...",
+        "step_id": 255073312
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.0392,
+          45.14206
+        ]
+      },
+      "properties": {
+        "order": 17,
+        "name": "Susa",
+        "date": "03.08.2026",
+        "note": "Kurze Durchfahrt durch Susa in Richtung Oulx, um Dort weiter zurück nach Frankreich zu fahren. Das Verdeck ist wieder offen 💪 Bei Susa waren wir vor zwei Jahren, hoch zum Colle...",
+        "step_id": 255074704
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.63344,
+          44.88496
+        ]
+      },
+      "properties": {
+        "order": 18,
+        "name": "Briançon",
+        "date": "03.08.2026",
+        "note": "Bis Briançon war wieder Regen. Aber die Sonne spitzte wieder heraus. Also nochmal das Verdeck trocknen und in der Abendsonne noch bis zum Hotel, ein paar Regentropfen bei offene...",
+        "step_id": 255076438
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.559482766666668,
+          44.80042806666667
+        ]
+      },
+      "properties": {
+        "order": 19,
+        "name": "Briançon",
+        "date": "04.08.2026",
+        "note": "Die Nacht war gut, der Fluss Durance rauschte schön konstant bei offenem Fenster. Ein kleines gutes Frühstück im Hotel, dann ging es um 8 Uhr bereits los. Ein kleines Kuriosum h...",
+        "step_id": 255460577
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.807,
+          44.32051
+        ]
+      },
+      "properties": {
+        "order": 20,
+        "name": "Cime de la Bonette",
+        "date": "04.08.2026",
+        "note": "Ich bin den Col de la Bonette ja schon letztes Jahr gefahren. Komplett „aus versehen“ und bei totaler Dunkelheit 🙈. Ich wollte von Cannes nach Italien, aber halt nicht einfach d...",
+        "step_id": 255465603
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.06595,
+          44.09026
+        ]
+      },
+      "properties": {
+        "order": 21,
+        "name": "Col de la Couillole",
+        "date": "04.08.2026",
+        "note": "Auf dem Weg zu den roten Schluchten musste ich einmal scharf rechts abbiegen. Aber sofort war man auf wenig befahrenen Straßen. Oha, ein Hinweisschild, dass am Samstag hier die...",
+        "step_id": 255586152
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.98191,
+          44.01408
+        ]
+      },
+      "properties": {
+        "order": 22,
+        "name": "Gorges du Cians",
+        "date": "04.08.2026",
+        "note": "Und dann ging es zu einer der roten Felsschluchten, den Gorges du Cians. Davon habe ich spektakuläre Bilder gesehen, nur muss man dazu auch aus dem Auto aussteigen :-) Ich habe...",
+        "step_id": 255586317
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.13271,
+          43.62914
+        ]
+      },
+      "properties": {
+        "order": 23,
+        "name": "La Mer 🌊",
+        "date": "04.08.2026",
+        "note": "Mein Navi hat mich ausgetrickst und während der Fahrt nach Cannes doch die Route bis am Flughafen in Nizza vorbei. Naja, wenn ich nun schon in Meeresnähe weiterfahre, dann bekom...",
+        "step_id": 255587402
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.01091,
+          43.55187
+        ]
+      },
+      "properties": {
+        "order": 24,
+        "name": "Cannes",
+        "date": "04.08.2026",
+        "note": "Puh, der Verkehr bis zu einem der Tiefgaragen war mal wieder sehr zäh. Aber ich hatte ja heute schon so viel schönes erlebt, und das Feuerwerk beginnt ja erst um 22 Uhr. Jedoch...",
+        "step_id": 255587990
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.01066205666266,
+          43.55205341153215
+        ]
+      },
+      "properties": {
+        "order": 25,
+        "name": "Cannes",
+        "date": "05.08.2026",
+        "note": "Ein kleiner Morgenspaziergang in Cannes bei angenehmen Temperaturen und noch leeren Straßen. Die Stadt wird wieder blitzblank gesäubert. Die Patisserie gleich am alten Hafen hat...",
+        "step_id": 255638072
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.953115007677795,
+          43.5062246431439
+        ]
+      },
+      "properties": {
+        "order": 26,
+        "name": "Pointe de l‘Aiguille",
+        "date": "05.08.2026",
+        "note": "Wenn ich nach Cannes komme, halte ich gerne an dieser kleinen Badebucht. Heute waren die Parkplätze oben schon alle belegt, aber am Straßenrand war noch Platz. Ein kleines erfri...",
+        "step_id": 255672813
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.39892,
+          43.79443
+        ]
+      },
+      "properties": {
+        "order": 27,
+        "name": "Verdonschlucht",
+        "date": "05.08.2026",
+        "note": "Nach dem erfrischenden Bad im Meer bei Cannes wollte ich aber doch noch den Abstecher zur Verdonschlucht machen. Erst mal über Landstraßen in die Richtung, und dann nochmal kurz...",
+        "step_id": 256361717
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.227949554603855,
+          43.80210263112828
+        ]
+      },
+      "properties": {
+        "order": 28,
+        "name": "Lac de Sainte-Croix",
+        "date": "06.08.2026",
+        "note": "Nachdem die Runde am zweiten Tag Verdonschlucht schon mal spektakulär war, fuhr ich westlich weiter zu dem See, der ja sehr schön und beliebt sein soll. Und was soll ich sagen,...",
+        "step_id": 256399057
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.98432,
+          43.40494
+        ]
+      },
+      "properties": {
+        "order": 29,
+        "name": "Port-de-Bouc",
+        "date": "06.08.2026",
+        "note": "Tagesziel war ein Hotel am Meer. Kurz vor der Ortschaft hab ich Flamingos 🦩 gesehen. Naja immerhin bin ich ca 230km vorangekommen, gefühlt bin ich hinter meiner geplanten Reiser...",
+        "step_id": 256399957
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.972823999999999,
+          43.43086451666667
+        ]
+      },
+      "properties": {
+        "order": 30,
+        "name": "Fos-sur-Mer",
+        "date": "07.08.2026",
+        "note": "Was für eine gute Idee, die Flamingos ausgeruht und frisch gestärkt zu suchen. Das Auto neben einem Kieswerk geparkt, dann mit dem Fahrrad los, wo ich gestern die Flamingos 🦩 au...",
+        "step_id": 256461583
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.914455227864495,
+          43.478715078612346
+        ]
+      },
+      "properties": {
+        "order": 31,
+        "name": "Die Allee ohne Sinn und Zweck ",
+        "date": "07.08.2026",
+        "note": "Rechts von mir hab ich eine schöne Allee gesehen. Das wäre doch was, Dach auf und im Schatten cruisen? Von wegen 🤣 Seht selbst 🙈 Da schuckeln nur LKW mit Containern drauf rum, s...",
+        "step_id": 256484678
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.842482166666667,
+          43.2982339
+        ]
+      },
+      "properties": {
+        "order": 32,
+        "name": "Auf Nebenstraßen nach Carcassonne",
+        "date": "07.08.2026",
+        "note": "Meine Fahrt heute war hauptsächlich mit geschlosssenem Verdeck, und auch teilweise per Autobahn, um doch mal etwas Strecke zu machen. Ein paar blöde Staus, auch bei Beziers - da...",
+        "step_id": 256852280
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.344761,
+          43.212302
+        ]
+      },
+      "properties": {
+        "order": 33,
+        "name": "Carcassonne",
+        "date": "07.08.2026",
+        "note": "Vollgetankt ging es heute in Richtung Westen. Mein Tagesziel war Carcassonne, damit ich endlich mal gen Spanien komme. Mir kommt meine Reise vor wie der Film „Paris kann warten“...",
+        "step_id": 256857280
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.3172114445726417,
+          43.24453573365221
+        ]
+      },
+      "properties": {
+        "order": 34,
+        "name": "Château de Pennautier / Canal du Midi",
+        "date": "08.08.2026",
+        "note": "Um 10 Uhr ging es heute aus Carcassonne los. Erst noch eine Festplatte kaufen, mein Laptop hat keinen Platz mehr 🙈. Zwischen den Weinbergen hab ich noch Halt gemacht bei einem k...",
+        "step_id": 257078490
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.3566023057031102,
+          43.0715073566299
+        ]
+      },
+      "properties": {
+        "order": 35,
+        "name": "Grotte du Mas-d'Azil",
+        "date": "08.08.2026",
+        "note": "Ein weiteres Highlight hab ich bei leichtem Nieselregen erreicht, aber mit offenem Verdeck. Die Grotte, durch die eine Straße führt. Sieht echt toll aus. Nach der Durchfahrt hab...",
+        "step_id": 257087828
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.3569850571163575,
+          42.92987706666666
+        ]
+      },
+      "properties": {
+        "order": 36,
+        "name": "Col de la Crouzette / Col du Portel",
+        "date": "08.08.2026",
+        "note": "Nach der Grotte wollte ich eigentlich nur noch zum Hotel und den Fahrtag früher beenden. Doch da sah ich ein Schild „Col de …“ - au ja, den Abstecher nimmste noch mit. 😅 Das Gew...",
+        "step_id": 257096380
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.143528,
+          42.987033
+        ]
+      },
+      "properties": {
+        "order": 37,
+        "name": "Saint-Girons",
+        "date": "09.08.2026",
+        "note": "Gut gefrühstückt geht es heute los von einer netten Unterkunft in Saint-Girons in den Pyrenäen. Die Gewitter sind vorbei und der Tag soll schön werden. Beim Frühstück durfte ich...",
+        "step_id": 257242849
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.6071832829536505,
+          42.963952308401645
+        ]
+      },
+      "properties": {
+        "order": 38,
+        "name": "Foix",
+        "date": "09.08.2026",
+        "note": "Ein kurzer Halt in Foix, um die Burg zu fotografieren und noch ein frisches Baguette 🥖 zu kaufen für die Brotzeit unterwegs. Oh schade, die haben dieses Wochenende Afrika Festiv...",
+        "step_id": 257363064
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.5891442912002864,
+          42.568543647989884
+        ]
+      },
+      "properties": {
+        "order": 39,
+        "name": "Port d‘Envalira / Roc del Quer",
+        "date": "09.08.2026",
+        "note": "Ich komme meinem Ziel Spanien 🇪🇸 immer näher. Aber zuerst geht es hoch nach Andorra 🇦🇩. Was für ein schöner Bergpass gleich zu Beginn bis auf über 2400hm. Weiter noch ein Schlen...",
+        "step_id": 257363062
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.5371901161370625,
+          42.60668497791125
+        ]
+      },
+      "properties": {
+        "order": 40,
+        "name": "Ordino",
+        "date": "09.08.2026",
+        "note": "Noch ein paar weitere Abstecher in Andorra gedreht. A paar Brückla stehn rum, und schicke Geländewagen haben sie auch. Dann noch günstig aufgetankt, bevor es weiter Richtung Spa...",
+        "step_id": 257395729
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.3821959,
+          42.32918455000001
+        ]
+      },
+      "properties": {
+        "order": 41,
+        "name": "Endlich in Spanien",
+        "date": "09.08.2026",
+        "note": "Nach einer schönen Runde habe ich heute endlich auch Spanien erreicht 🥳. Land Nummer acht! Im ersten Kreisverkehr stand auch Barcelona, da hab ich wirklich nochmal überlegt, ob...",
+        "step_id": 257394616
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.033356102829562,
+          42.27452479484865
+        ]
+      },
+      "properties": {
+        "order": 42,
+        "name": "Collegats",
+        "date": "09.08.2026",
+        "note": "Ich fahre noch ein bisschen auf der grob geplanten Route. Es kommen einige Tunnels und die Felsen werden plötzlich interessanter. Und es gab links kleine alte Straßen entlang de...",
+        "step_id": 257463582
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.9678598912048783,
+          42.246802795773
+        ]
+      },
+      "properties": {
+        "order": 43,
+        "name": "La Pobla de Segur",
+        "date": "09.08.2026",
+        "note": "Nach der langen Tour und dem ungeplanten Schlenker in dieser Schlucht hab ich mein Quartier in einem alten Hotel in Pobla de Segur aufgeschlagen. Wieder was feines, das Abendmen...",
+        "step_id": 258359694
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.8204107283537387,
+          42.15685042792289
+        ]
+      },
+      "properties": {
+        "order": 44,
+        "name": "Coll de Montllobar",
+        "date": "10.08.2026",
+        "note": "Auf meiner Fahrt zu einer Schlucht in der Nähe erlebe ich schon wieder etwas unerwartetes. Zuerst kreisten dutzende Geier in der Thermik. Und ich kam an einem „Coll de …“ Schild...",
+        "step_id": 258360890
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.6964216311737645,
+          42.096292279638526
+        ]
+      },
+      "properties": {
+        "order": 45,
+        "name": "Congost de Mont-rebei",
+        "date": "10.08.2026",
+        "note": "Heute stand eine Wanderung auf dem Programm, nicht nur Cabriofahren😅. Die Schlucht mit den Wegen in den Felsen gehauen kann man nur zu Fuß erreichen. Zunächst habe ich das Infor...",
+        "step_id": 258361643
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.4086455890189111,
+          42.18270699366499
+        ]
+      },
+      "properties": {
+        "order": 46,
+        "name": "Bardenas Reales",
+        "date": "10.08.2026",
+        "note": "Nach der langen Wanderung blieb nur noch Zeit, zügig zur Unterkunft in der Nähe der Bardenas Reales weiter westlich anzusteuern. Gegen 19 Uhr ein schneller checkin, um den Zimme...",
+        "step_id": 258363164
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.2720177977671172,
+          42.28229755561335
+        ]
+      },
+      "properties": {
+        "order": 47,
+        "name": "Sádaba",
+        "date": "10.08.2026",
+        "note": "Ich hatte ja um 19 Uhr nur schnell eingecheckt in Sádaba. Da fand ich die Atmosphäre in dem Ort und den Hotelweingang sehr seltsam. Stahlwände, dass man kaum mit dem Koffer zur...",
+        "step_id": 258362717
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.354725023140478,
+          42.124610314257176
+        ]
+      },
+      "properties": {
+        "order": 48,
+        "name": "Bardena Negra",
+        "date": "11.08.2026",
+        "note": "Nachdem es in dem Hotel kein Frühstück gab und man den Schlüssel einfach stecken lassen soll, war ich früh flexibel. Ich wollte nochmal zu den Bardenas Reales (über den offiziel...",
+        "step_id": 258368046
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.23398201666666668,
+          40.941795
+        ]
+      },
+      "properties": {
+        "order": 49,
+        "name": "Calanda",
+        "date": "11.08.2026",
+        "note": "Nach der zweiten Bardenas Runde heute morgen ging die Fahrt nach Calanda. Auf dem Weg den Proviant aufstocken, das Auto waschen, tanken, Brotzeit machen. Und immer wieder Fotost...",
+        "step_id": 258371411
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.5670281,
+          40.825817799999996
+        ]
+      },
+      "properties": {
+        "order": 50,
+        "name": "The Silent Route",
+        "date": "12.08.2026",
+        "note": "Heute ist Sonnenfinsternis, aber erst abends. Daher ist noch am Vormittag Zeit für eine Tour. Aber dennoch rattert das Hirn schon, hab ich alle Akkus geladen?, sind die SD Karte...",
+        "step_id": 258619850
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.48634736178402066,
+          40.96349185917784
+        ]
+      },
+      "properties": {
+        "order": 51,
+        "name": "Sonnenfinsternis",
+        "date": "12.08.2026",
+        "note": "Mit mehreren Fotorucksäcken, Stativen im Auto, der Kühlbox, die mal eine halbe/dreiviertel Stunde im Auto ausharren musste ohne Strom) und der noch halbwegs schnellgeladenen Eco...",
+        "step_id": 258619944
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.23219484157918976,
+          40.943217072459994
+        ]
+      },
+      "properties": {
+        "order": 52,
+        "name": "Calanda",
+        "date": "13.08.2026",
+        "note": "So, nach der Sonnenfinsternis fühle ich kurz eine Leere, alles geschafft 😅. Aber es heißt dennoch aufraffen und die Heimreise so langsam in Angriff nehmen. Und ein weiteres i-Tü...",
+        "step_id": 259080494
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.2321564166666668,
+          41.35250105
+        ]
+      },
+      "properties": {
+        "order": 53,
+        "name": "Bergpass bei Montblanc",
+        "date": "13.08.2026",
+        "note": "Wenn man am Telefon sagt, man hat heute früh in Andorra eingekauft und fährt jetzt einen Bergpass bei Montblanc, dann könnte man ganz schön angeben, welche Strecke man da absolv...",
+        "step_id": 259082162
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.7673064232921094,
+          41.60856704399253
+        ]
+      },
+      "properties": {
+        "order": 54,
+        "name": "Coll de Bruc / Montserrat / Barcelona",
+        "date": "13.08.2026",
+        "note": "Zwischenzeitlich wieder auf der Autobahn, wieder etwas Stau wegen Bauarbeiten kam doch da ein Schild \"Coll de Bruc\" mit Autobahnausfahrt extra dafür. Sofort raus und die schönen...",
+        "step_id": 259082924
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.4805296098305707,
+          41.62625630599905
+        ]
+      },
+      "properties": {
+        "order": 55,
+        "name": "Serra del Corredor",
+        "date": "14.08.2026",
+        "note": "Heute steht Strecke machen an, ich hab aber keine Lust🤣. Ein bisschen Schnellstraße, aber ich beobachte, was so auf dem Auto-Navi alles so auftaucht. Ein bisschen ist ja noch: z...",
+        "step_id": 259697714
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.2849339812940457,
+          42.3018020711675
+        ]
+      },
+      "properties": {
+        "order": 56,
+        "name": "Cap de Creus",
+        "date": "14.08.2026",
+        "note": "Nach etwas normalen Straßen wollte ich noch etwas erleben. Bis ganz zum Cap de Creus hab ich es nicht geschafft, dann hätte ich noch aufs Fahrrad umsatteln müssen. Bei 37 Grad u...",
+        "step_id": 259702315
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.640633556570931,
+          43.17191717518036
+        ]
+      },
+      "properties": {
+        "order": 57,
+        "name": "Cap Taillat",
+        "date": "15.08.2026",
+        "note": "Nach einem langen Fahrtag gestern bin ich ja bis Nimes gekommen, das ist schon mal ein gutes Stück und bis Cannes. Damit habe ich mehr Zeit etwas entlang der Strecke zu unterneh...",
+        "step_id": 259712526
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.919994383333333,
+          43.4528855
+        ]
+      },
+      "properties": {
+        "order": 58,
+        "name": "Cap Roux",
+        "date": "15.08.2026",
+        "note": "Weiter ging die Fahrt entlang der Küste, erst ein Abstecher nach Saint-Tropez, da war ich noch nie. In die Stadt selbst hab ich nicht geschaut, da fehlt mir heute die Zeit, nur...",
+        "step_id": 259766133
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.01872447907587,
+          43.55067396851294
+        ]
+      },
+      "properties": {
+        "order": 59,
+        "name": "Cannes",
+        "date": "15.08.2026",
+        "note": "Rechtzeitig war ich in Cannes, es gab noch Parkplätze in den Tiefgaragen. Heute im Hotel Schtak untergekommen - mit Klimaanlage - puh das ist gut zum runterkühlen. War ich ferti...",
+        "step_id": 259768440
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.012342619097218,
+          43.55141717299988
+        ]
+      },
+      "properties": {
+        "order": 60,
+        "name": "Cannes",
+        "date": "16.08.2026",
+        "note": "Etwas ausgeschlafen nach dem tollen Feuerwerk muss ich meine Rückreise planen. Aber erst mal ein wenig durch Cannes eine Runde drehen. Oh das rosa Haus direkt am Hafen, da waren...",
+        "step_id": 259846552
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.316853406192879,
+          43.709768968687975
+        ]
+      },
+      "properties": {
+        "order": 61,
+        "name": "Nice",
+        "date": "16.08.2026",
+        "note": "Von Cannes erst mal ganz brav auf die Autobahn, heute will oder muss ich ja jetzt doch mehr Strecke machen. Aber Zeit für einen Abstecher durch Monaco 🇲🇨 muss drin sein. Ab Nizz...",
+        "step_id": 260165445
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.4257979153791664,
+          43.739103675549664
+        ]
+      },
+      "properties": {
+        "order": 62,
+        "name": "Monaco",
+        "date": "16.08.2026",
+        "note": "Das neunte Land auf dieser Reise - diese Gaudi musste sein, auch wenn der Abstecher auch wieder Zeit kostet. 🤣 Am Casino wurde der Verkehr gestoppt, damit die feine Gesellschaft...",
+        "step_id": 260166940
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.247238733333333,
+          46.0528365
+        ]
+      },
+      "properties": {
+        "order": 63,
+        "name": "Castello di Pergine",
+        "date": "16.08.2026",
+        "note": "Ab Menton ging es auf die Autobahn für den Rest der Fahrt. In Italien geht es ja kurvig und mit vielen Tunnels durch Ligurien bis Genua und dann nördlich weiter. Später wird es...",
+        "step_id": 260170121
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.249580415636466,
+          46.05918936249863
+        ]
+      },
+      "properties": {
+        "order": 64,
+        "name": "Castello di Pergine",
+        "date": "17.08.2026",
+        "note": "Gut geschlafen, absolut ruhig hier droben auf der Burg. Ein gutes Frühstück mit Blick ins Tal. Früh im Innenhof konnte ich noch ein paar Tagebucheinträge machen, so ruhig und di...",
+        "step_id": 260188898
+      }
+    }
+  ]
+}
