@@ -364,6 +364,42 @@ small {
   display: block;
 }
 
+.step-video-link {
+  position: relative;
+}
+
+.step-video-link::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgba(0, 18, 25, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.34);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.step-video-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-38%, -50%);
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-left: 17px solid #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+  z-index: 2;
+}
+
 .step-thumb {
   width: 100%;
   height: 110px;
@@ -371,6 +407,25 @@ small {
   border-radius: 8px;
   border: 1px solid #e9d8a6;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
+.step-thumb-video {
+  background: #0f1720;
+}
+
+.step-video-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 0.14rem 0.42rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(0, 18, 25, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  z-index: 3;
 }
 
 .step-thumb:hover {
@@ -414,6 +469,15 @@ body.lightbox-open {
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
   touch-action: none;
+}
+
+.lightbox-video {
+  display: none;
+  max-width: 100%;
+  max-height: 82vh;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  background: #000;
 }
 
 .lightbox-caption {
@@ -515,6 +579,21 @@ body.lightbox-open {
   .post-teaser,
   .step-thumb {
     border-color: #31515a;
+  }
+
+  .step-video-badge {
+    background: rgba(217, 236, 242, 0.2);
+    border-color: rgba(217, 236, 242, 0.52);
+    color: #d8ecf2;
+  }
+
+  .step-video-link::before {
+    background: rgba(6, 12, 16, 0.62);
+    border-color: rgba(217, 236, 242, 0.65);
+  }
+
+  .step-video-link::after {
+    border-left-color: #e7f6fb;
   }
 
   .post-title,

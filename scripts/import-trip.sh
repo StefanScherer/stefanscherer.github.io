@@ -14,6 +14,7 @@ TRIP_DIR=""
 TRIP_MATCH=""
 LIST_TRIPS=0
 FORCE=0
+FFMPEG_AVAILABLE=0
 
 usage() {
   cat <<'EOF'
@@ -50,6 +51,95 @@ escape_yaml() {
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
   printf '%s' "$s"
+}
+
+is_video_file() {
+  local lower
+  lower="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+  [[ "$lower" == *.mp4 || "$lower" == *.mov || "$lower" == *.m4v || "$lower" == *.webm ]]
+}
+
+file_cache_buster() {
+  local path="$1"
+  if [[ ! -f "$path" ]]; then
+    return 1
+  fi
+
+  if command -v stat >/dev/null 2>&1; then
+    if stat -f "%m" "$path" >/dev/null 2>&1; then
+      stat -f "%m" "$path"
+      return 0
+    fi
+    if stat -c "%Y" "$path" >/dev/null 2>&1; then
+      stat -c "%Y" "$path"
+      return 0
+    fi
+  fi
+
+  date +%s
+}
+
+make_video_thumbnail() {
+  local video_path="$1"
+  local thumb_path="$2"
+  local duration=""
+  local -a tries
+  local best_time=""
+  local best_yavg="-1"
+  local yavg=""
+  local is_better="0"
+  local t
+
+  if [[ "$FFMPEG_AVAILABLE" -ne 1 ]]; then
+    return 1
+  fi
+
+  # Probe duration and sample multiple moments to avoid black intros.
+  if command -v ffprobe >/dev/null 2>&1; then
+    duration="$(ffprobe -v error -show_entries format=duration -of default=nk=1:nw=1 "$video_path" 2>/dev/null | head -n 1 | tr -d '\r')"
+  fi
+
+  tries=("1" "3" "5" "8" "12")
+
+  if [[ -n "$duration" ]]; then
+    mid1="$(awk -v d="$duration" 'BEGIN{printf "%.3f", (d * 0.35)}')"
+    mid2="$(awk -v d="$duration" 'BEGIN{printf "%.3f", (d * 0.55)}')"
+    mid3="$(awk -v d="$duration" 'BEGIN{printf "%.3f", (d * 0.75)}')"
+    tries+=("$mid1" "$mid2" "$mid3")
+  fi
+
+  # Pick the brightest candidate frame first to reduce black thumbnails.
+  for t in "${tries[@]}"; do
+    yavg="$(ffmpeg -v error -ss "$t" -i "$video_path" -vf "signalstats,metadata=print:file=-" -frames:v 1 -f null - 2>&1 | sed -n 's/^lavfi.signalstats.YAVG=//p' | head -n 1)"
+    if [[ -z "$yavg" ]]; then
+      continue
+    fi
+
+    is_better="$(awk -v a="$yavg" -v b="$best_yavg" 'BEGIN{if (a > b) print 1; else print 0}')"
+    if [[ "$is_better" == "1" ]]; then
+      best_yavg="$yavg"
+      best_time="$t"
+    fi
+  done
+
+  if [[ -n "$best_time" ]]; then
+    if ffmpeg -loglevel error -y -ss "$best_time" -i "$video_path" -frames:v 1 -vf "scale='min(960,iw)':-2" "$thumb_path" >/dev/null 2>&1; then
+      if [[ -s "$thumb_path" ]]; then
+        return 0
+      fi
+    fi
+  fi
+
+  for t in "${tries[@]}"; do
+    if ffmpeg -loglevel error -y -ss "$t" -i "$video_path" -frames:v 1 -vf "scale='min(960,iw)':-2" "$thumb_path" >/dev/null 2>&1; then
+      if [[ -s "$thumb_path" ]]; then
+        return 0
+      fi
+    fi
+  done
+
+  # Final fallback: let ffmpeg choose a representative frame from the stream.
+  ffmpeg -loglevel error -y -i "$video_path" -vf "thumbnail=120,scale='min(960,iw)':-2" -frames:v 1 "$thumb_path" >/dev/null 2>&1
 }
 
 while [[ $# -gt 0 ]]; do
@@ -115,6 +205,10 @@ fi
 if [[ ! -d "$SOURCE" ]]; then
   echo "Error: source folder does not exist: $SOURCE" >&2
   exit 1
+fi
+
+if command -v ffmpeg >/dev/null 2>&1; then
+  FFMPEG_AVAILABLE=1
 fi
 
 trip_candidates() {
@@ -198,15 +292,38 @@ mkdir -p "$DEST_DIR"
 COPIED_IMAGES_FILE="$(mktemp)"
 trap 'rm -f "$COPIED_IMAGES_FILE"' EXIT
 
-# Copy typical image formats recursively into the page bundle.
-while IFS= read -r -d '' img; do
-  rel="${img#$SOURCE_TRIP/}"
+# Copy supported media formats recursively into the page bundle.
+# Sort source paths to keep import deterministic across filesystems.
+while IFS= read -r -d '' media; do
+  rel="${media#$SOURCE_TRIP/}"
   safe_rel="$(sanitize_filename "$rel")"
-  cp "$img" "${DEST_DIR}/${safe_rel}"
+  cp "$media" "${DEST_DIR}/${safe_rel}"
   echo "$safe_rel" >> "$COPIED_IMAGES_FILE"
-done < <(find "$SOURCE_TRIP" -type f \( \
-  -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \
-\) -print0)
+done < <(
+  find "$SOURCE_TRIP" -type f \( \
+    -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' \
+    -o -iname '*.mp4' -o -iname '*.mov' -o -iname '*.m4v' -o -iname '*.webm' \
+  \) -print0 | LC_ALL=C sort -z
+)
+
+if [[ "$FFMPEG_AVAILABLE" -eq 1 ]]; then
+  while IFS= read -r media_name; do
+    if ! is_video_file "$media_name"; then
+      continue
+    fi
+
+    video_path="${DEST_DIR}/${media_name}"
+    thumb_name="${media_name%.*}__thumb.jpg"
+    thumb_path="${DEST_DIR}/${thumb_name}"
+    if [[ -f "$thumb_path" ]]; then
+      continue
+    fi
+
+    make_video_thumbnail "$video_path" "$thumb_path" || true
+  done < "$COPIED_IMAGES_FILE"
+else
+  echo "Warning: ffmpeg not found; video thumbnails were not generated." >&2
+fi
 
 TEXT_SOURCE=""
 if [[ -n "$TEXT_FILE" && -f "$TEXT_FILE" ]]; then
@@ -279,27 +396,61 @@ def is_image(filename):
   lower = filename.lower()
   return lower.endswith('.jpg') or lower.endswith('.jpeg') or lower.endswith('.png') or lower.endswith('.webp') or lower.endswith('.gif')
 
-all_images = [f for f in os.listdir(dest_dir) if os.path.isfile(os.path.join(dest_dir, f)) and is_image(f)]
-all_images.sort()
+def is_video(filename):
+  lower = filename.lower()
+  return lower.endswith('.mp4') or lower.endswith('.mov') or lower.endswith('.m4v') or lower.endswith('.webm')
 
-image_meta = {}
-for img in all_images:
-  # Polarsteps export filenames often look like:
-  # <uuid_a>_<uuid_b>.jpg
-  # We observed that ordering by uuid_b descending matches UI order better
-  # than destination-file mtimes (which reflect copy order).
-  source_name = img.split('__photos__', 1)[1] if '__photos__' in img else img
-  base = source_name.rsplit('.', 1)[0]
-  parts = base.split('_', 1)
-  uuid_b = parts[1] if len(parts) == 2 else ''
-
-  image_meta[img] = {
-    'uuid_b': uuid_b,
-    'source_name': source_name,
-  }
+def cache_busted_url(filename):
+  path = os.path.join(dest_dir, filename)
+  if not os.path.isfile(path):
+    return filename
+  try:
+    ts = int(os.path.getmtime(path))
+  except Exception:
+    return filename
+  return f'{filename}?v={ts}'
 
 UUID = r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 PAIR_RE = re.compile(rf'({UUID}_{UUID})')
+VIDEO_RE = re.compile(rf'({UUID}_video)', re.IGNORECASE)
+
+all_media = [f for f in os.listdir(dest_dir) if os.path.isfile(os.path.join(dest_dir, f)) and (is_image(f) or is_video(f))]
+all_media.sort()
+
+media_meta = {}
+for media_name in all_media:
+  # Polarsteps export filenames often look like:
+  # <uuid_a>_<uuid_b>.jpg
+  # or for videos:
+  # <uuid>_video.mp4
+  # We observed that ordering by uuid_b descending matches UI order better
+  # than destination-file mtimes (which reflect copy order).
+  source_name = media_name
+  if '__photos__' in source_name:
+    source_name = source_name.split('__photos__', 1)[1]
+  elif '__videos__' in source_name:
+    source_name = source_name.split('__videos__', 1)[1]
+
+  base = source_name.rsplit('.', 1)[0]
+  parts = base.split('_', 1)
+  uuid_b = parts[1] if len(parts) == 2 else ''
+  pair_token = ''
+  pair_match = PAIR_RE.search(base)
+  if pair_match:
+    pair_token = pair_match.group(1).lower()
+  video_token = ''
+  video_match = VIDEO_RE.search(base)
+  if video_match:
+    video_token = video_match.group(1).lower()
+  kind = 'video' if is_video(media_name) else 'image'
+
+  media_meta[media_name] = {
+    'uuid_b': uuid_b,
+    'source_name': source_name,
+    'pair_token': pair_token,
+    'video_token': video_token,
+    'kind': kind,
+  }
 
 def media_pair_from_text(value):
   if not isinstance(value, str):
@@ -317,50 +468,73 @@ def media_pair_from_text(value):
     return m.group(1).lower()
   return None
 
-def collect_step_pairs(node, out):
+def collect_step_tokens(node, out):
   if isinstance(node, dict):
     for _, val in node.items():
-      collect_step_pairs(val, out)
+      collect_step_tokens(val, out)
   elif isinstance(node, list):
     for item in node:
-      collect_step_pairs(item, out)
+      collect_step_tokens(item, out)
   else:
+    if not isinstance(node, str):
+      return
     pair = media_pair_from_text(node)
     if pair:
       out.append(pair)
+    m = VIDEO_RE.search(node)
+    if m:
+      out.append(m.group(1).lower())
 
-def step_images_from_json(step, step_images):
-  if not step_images:
+def step_media_from_json(step, step_media):
+  if not step_media:
     return []
 
-  token_to_images = {}
-  for img in step_images:
-    source_name = image_meta.get(img, {}).get('source_name', img)
+  token_to_media = {}
+  for media_name in step_media:
+    source_name = media_meta.get(media_name, {}).get('source_name', media_name)
     base = source_name.rsplit('.', 1)[0].lower()
-    token_to_images.setdefault(base, []).append(img)
+    token_to_media.setdefault(base, []).append(media_name)
 
-  ordered_pairs = []
-  collect_step_pairs(step, ordered_pairs)
-  if not ordered_pairs:
+    pair_token = media_meta.get(media_name, {}).get('pair_token')
+    if pair_token:
+      token_to_media.setdefault(pair_token, []).append(media_name)
+
+    video_token = media_meta.get(media_name, {}).get('video_token')
+    if video_token:
+      token_to_media.setdefault(video_token, []).append(media_name)
+
+  ordered_tokens = []
+  collect_step_tokens(step, ordered_tokens)
+  if not ordered_tokens:
     return []
 
   out = []
   seen = set()
-  for pair in ordered_pairs:
-    for img in token_to_images.get(pair, []):
-      if img not in seen:
-        out.append(img)
-        seen.add(img)
+  for token in ordered_tokens:
+    for media_name in token_to_media.get(token, []):
+      if media_name not in seen:
+        out.append(media_name)
+        seen.add(media_name)
 
   return out
 
-images_by_prefix = {}
-for img in all_images:
-  if '__photos__' in img:
-    prefix = img.split('__photos__', 1)[0]
+def sort_fallback_media(step_media):
+  imgs = [n for n in step_media if media_meta.get(n, {}).get('kind') == 'image']
+  vids = [n for n in step_media if media_meta.get(n, {}).get('kind') == 'video']
+
+  imgs = sorted(imgs, key=lambda n: (media_meta.get(n, {}).get('uuid_b', ''), n), reverse=True)
+  vids = sorted(vids, key=lambda n: (media_meta.get(n, {}).get('uuid_b', ''), n), reverse=True)
+  return imgs + vids
+
+media_by_prefix = {}
+for media_name in all_media:
+  if '__photos__' in media_name:
+    prefix = media_name.split('__photos__', 1)[0]
+  elif '__videos__' in media_name:
+    prefix = media_name.split('__videos__', 1)[0]
   else:
     prefix = ''
-  images_by_prefix.setdefault(prefix, []).append(img)
+  media_by_prefix.setdefault(prefix, []).append(media_name)
 
 print('## Überblick')
 print('')
@@ -443,26 +617,49 @@ for step in steps:
   if step_slug and step_id:
     candidates.append(f'{step_slug}_{step_id}')
 
-  step_images = []
+  step_media = []
   for c in candidates:
-    step_images.extend(images_by_prefix.get(c, []))
+    step_media.extend(media_by_prefix.get(c, []))
 
-  json_order = step_images_from_json(step, step_images)
+  json_order = step_media_from_json(step, step_media)
   if json_order:
     ordered_set = set(json_order)
-    remaining = [img for img in step_images if img not in ordered_set]
-    step_images = json_order + sorted(remaining, key=lambda n: (image_meta.get(n, {}).get('uuid_b', ''), n), reverse=True)
+    remaining = [m for m in step_media if m not in ordered_set]
+    step_media = json_order + sort_fallback_media(remaining)
   else:
-    step_images = sorted(step_images, key=lambda n: (image_meta.get(n, {}).get('uuid_b', ''), n), reverse=True)
+    step_media = sort_fallback_media(step_media)
 
-  if step_images:
+  if step_media:
     group_id = f'step-{step_id}' if step_id else f'step-{step_slug or "unknown"}'
     print('<div class="step-gallery">')
-    for idx, img in enumerate(step_images, start=1):
+    for idx, media_name in enumerate(step_media, start=1):
       safe_name = step_name.replace('"', '&quot;')
-      print(f'  <a href="{img}" class="step-thumb-link" data-gallery="{group_id}" data-index="{idx}">')
-      print(f'    <img src="{img}" alt="{safe_name}" loading="lazy" class="step-thumb">')
-      print('  </a>')
+      kind = media_meta.get(media_name, {}).get('kind', 'image')
+      if kind == 'video':
+        thumb_name_jpg = media_name.rsplit('.', 1)[0] + '__thumb.jpg'
+        thumb_name_png = media_name.rsplit('.', 1)[0] + '__thumb.png'
+        thumb_name = ''
+        if os.path.isfile(os.path.join(dest_dir, thumb_name_jpg)):
+          thumb_name = thumb_name_jpg
+        elif os.path.isfile(os.path.join(dest_dir, thumb_name_png)):
+          thumb_name = thumb_name_png
+
+        has_thumb = bool(thumb_name)
+        thumb_url = cache_busted_url(thumb_name) if has_thumb else ''
+        poster_attr = f' data-video-poster="{thumb_url}"' if has_thumb else ''
+        print(f'  <a href="{media_name}" class="step-thumb-link step-video-link" data-gallery="{group_id}" data-index="{idx}" data-media-kind="video"{poster_attr}>')
+        if has_thumb:
+          print(f'    <img src="{thumb_url}" alt="{safe_name} (Video)" loading="lazy" class="step-thumb step-thumb-video">')
+        else:
+          print(f'    <video class="step-thumb step-thumb-video" preload="metadata" muted playsinline>')
+          print(f'      <source src="{media_name}" type="video/mp4">')
+          print('    </video>')
+        print('    <span class="step-video-badge">Video</span>')
+        print('  </a>')
+      else:
+        print(f'  <a href="{media_name}" class="step-thumb-link" data-gallery="{group_id}" data-index="{idx}" data-media-kind="image">')
+        print(f'    <img src="{media_name}" alt="{safe_name}" loading="lazy" class="step-thumb">')
+        print('  </a>')
     print('</div>')
     print('')
 PY
@@ -485,8 +682,37 @@ EOF
     if [[ -n "$images_list" ]]; then
       echo "## Galerie"
       echo
-      while IFS= read -r img; do
-        echo "![${TITLE_ESC} - ${img}](${img})"
+      while IFS= read -r media_name; do
+        lower_name="$(printf '%s' "$media_name" | tr '[:upper:]' '[:lower:]')"
+        if [[ "$lower_name" == *.mp4 || "$lower_name" == *.mov || "$lower_name" == *.m4v || "$lower_name" == *.webm ]]; then
+          thumb_name_jpg="${media_name%.*}__thumb.jpg"
+          thumb_name_png="${media_name%.*}__thumb.png"
+          thumb_name=""
+          if [[ -f "${DEST_DIR}/${thumb_name_jpg}" ]]; then
+            thumb_name="$thumb_name_jpg"
+          elif [[ -f "${DEST_DIR}/${thumb_name_png}" ]]; then
+            thumb_name="$thumb_name_png"
+          fi
+
+          if [[ -n "$thumb_name" ]]; then
+            thumb_bust="$(file_cache_buster "${DEST_DIR}/${thumb_name}" || true)"
+            thumb_url="$thumb_name"
+            if [[ -n "$thumb_bust" ]]; then
+              thumb_url="${thumb_name}?v=${thumb_bust}"
+            fi
+            echo "<a href=\"${media_name}\" class=\"step-thumb-link step-video-link\" data-media-kind=\"video\" data-video-poster=\"${thumb_url}\">"
+            echo "  <img src=\"${thumb_url}\" alt=\"${TITLE_ESC} - Video\" loading=\"lazy\" class=\"step-thumb step-thumb-video\">"
+            echo "  <span class=\"step-video-badge\">Video</span>"
+            echo "</a>"
+          else
+            echo "<video controls preload=\"metadata\" class=\"step-thumb-video\">"
+            echo "  <source src=\"${media_name}\" type=\"video/mp4\">"
+            echo "  Dein Browser unterstuetzt das Video-Element nicht."
+            echo "</video>"
+          fi
+        else
+          echo "![${TITLE_ESC} - ${media_name}](${media_name})"
+        fi
         echo
       done <<< "$images_list"
     fi

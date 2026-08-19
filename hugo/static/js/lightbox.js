@@ -19,15 +19,17 @@
   overlay.className = 'lightbox-overlay';
   overlay.innerHTML =
     '<button class="lightbox-close" aria-label="Schliessen">×</button>' +
-    '<button class="lightbox-prev" aria-label="Vorheriges Bild">‹</button>' +
+    '<button class="lightbox-prev" aria-label="Vorheriges Medium">‹</button>' +
     '<figure class="lightbox-figure">' +
     '  <img class="lightbox-image" alt="" />' +
+    '  <video class="lightbox-video" controls playsinline preload="metadata"></video>' +
     '  <figcaption class="lightbox-caption"></figcaption>' +
     '</figure>' +
-    '<button class="lightbox-next" aria-label="Naechstes Bild">›</button>';
+    '<button class="lightbox-next" aria-label="Naechstes Medium">›</button>';
   document.body.appendChild(overlay);
 
   var imageEl = overlay.querySelector('.lightbox-image');
+  var videoEl = overlay.querySelector('.lightbox-video');
   var captionEl = overlay.querySelector('.lightbox-caption');
   var closeBtn = overlay.querySelector('.lightbox-close');
   var prevBtn = overlay.querySelector('.lightbox-prev');
@@ -53,9 +55,35 @@
     }
 
     var link = arr[currentIndex];
+    var kind = link.getAttribute('data-media-kind') || 'image';
     var img = link.querySelector('img');
-    imageEl.src = link.getAttribute('href');
-    imageEl.alt = img ? img.getAttribute('alt') || '' : '';
+
+    if (kind === 'video') {
+      imageEl.style.display = 'none';
+      videoEl.style.display = 'block';
+      var poster = link.getAttribute('data-video-poster') || '';
+      if (poster) {
+        videoEl.setAttribute('poster', poster);
+      } else {
+        videoEl.removeAttribute('poster');
+      }
+      videoEl.src = link.getAttribute('href');
+      videoEl.load();
+      var playAttempt = videoEl.play();
+      if (playAttempt && typeof playAttempt.catch === 'function') {
+        playAttempt.catch(function () {});
+      }
+    } else {
+      videoEl.pause();
+      videoEl.removeAttribute('src');
+      videoEl.load();
+      videoEl.style.display = 'none';
+
+      imageEl.style.display = 'block';
+      imageEl.src = link.getAttribute('href');
+      imageEl.alt = img ? img.getAttribute('alt') || '' : '';
+    }
+
     captionEl.textContent = (currentIndex + 1) + ' / ' + arr.length;
   }
 
@@ -71,6 +99,9 @@
     overlay.classList.remove('is-open');
     document.body.classList.remove('lightbox-open');
     imageEl.src = '';
+    videoEl.pause();
+    videoEl.removeAttribute('src');
+    videoEl.load();
   }
 
   function move(delta) {
